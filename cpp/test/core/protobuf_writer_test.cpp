@@ -47,7 +47,7 @@ namespace
         {
             auto msg = _reflection.MutableMessage(&_message, &GetField(id));
             BOOST_ASSERT(msg);
-            return bond::Apply(ToProto(*msg), value);
+            return bond::Apply(ToProto{ *msg }, value);
         }
 
         template <typename T, typename Reader>
@@ -65,7 +65,7 @@ namespace
         {
             auto msg = _reflection.MutableMessage(&_message, &GetField(id));
             BOOST_ASSERT(msg);
-            return bond::Apply(ToProto(*msg), value);
+            return bond::Apply(ToProto{ *msg }, value);
         }
 
         template <typename T>
@@ -133,7 +133,7 @@ namespace
         {
             auto msg = _reflection.AddMessage(&_message, &field);
             BOOST_ASSERT(msg);
-            bond::Apply(ToProto(*msg), value);
+            bond::Apply(ToProto{ *msg }, value);
         }
 
         template <typename T>
@@ -286,13 +286,6 @@ namespace
 BOOST_AUTO_TEST_SUITE(ProtobufWriterTests)
 
 template <typename Proto, typename Bond>
-void CheckBinaryFormat()
-{
-    CheckBinaryFormat<Proto>(InitRandom<Bond>());
-    CheckBinaryFormat<Proto>(Bond{});
-}
-
-template <typename Proto, typename Bond>
 void CheckBinaryFormat(const Bond& bond_struct)
 {
     bond::OutputBuffer output;
@@ -313,6 +306,13 @@ void CheckBinaryFormat(const Bond& bond_struct)
         (bond_data == bond::blob{ proto_data, bond_data.size() })
         || (proto_struct2.ParseFromString(google::protobuf::string{ bond_data.content(), bond_data.size() })
             && google::protobuf::util::MessageDifferencer::Equals(proto_struct, proto_struct2)));
+}
+
+template <typename Proto, typename Bond>
+void CheckBinaryFormat()
+{
+    CheckBinaryFormat<Proto>(Bond{});
+    CheckBinaryFormat<Proto>(InitRandom<Bond>());
 }
 
 template <typename Bond>
@@ -449,27 +449,37 @@ BOOST_AUTO_TEST_CASE(IntegerSetContainerTests)
 
 BOOST_AUTO_TEST_CASE(StringContainerTests)
 {
-    CheckBinaryFormat<unittest::proto::StringContainer, unittest::BoxWrongPackingWrongEncoding<std::vector<std::string> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::vector<std::string> > >();
 }
 
 BOOST_AUTO_TEST_CASE(StringSetContainerTests)
 {
-    CheckBinaryFormat<unittest::proto::StringContainer, unittest::BoxWrongPackingWrongEncoding<std::set<std::string> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::set<std::string> > >();
 }
 
 BOOST_AUTO_TEST_CASE(BlobContainerTests)
 {
-    CheckBinaryFormat<unittest::proto::BlobContainer, unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > >();
+    CheckBinaryFormat<
+        unittest::proto::BlobContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > >();
 }
 
 BOOST_AUTO_TEST_CASE(StructContainerTests)
 {
-    CheckBinaryFormat<unittest::proto::StructContainer, unittest::BoxWrongPackingWrongEncoding<std::vector<unittest::Integers> > >();
+    CheckBinaryFormat<
+        unittest::proto::StructContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::vector<unittest::Integers> > >();
 }
 
 BOOST_AUTO_TEST_CASE(NestedStructTests)
 {
-    CheckBinaryFormat<unittest::proto::NestedStruct, unittest::BoxWrongPackingWrongEncoding<unittest::Integers> >();
+    CheckBinaryFormat<
+        unittest::proto::NestedStruct,
+        unittest::BoxWrongPackingWrongEncoding<unittest::Integers> >();
 
     unittest::BoxWrongPackingWrongEncoding<bond::bonded<unittest::Integers> > box;
     box.value = bond::bonded<unittest::Integers>{ InitRandom<unittest::Integers>() };
@@ -486,7 +496,9 @@ BOOST_AUTO_TEST_CASE(IntegerMapKeyTests)
 
 BOOST_AUTO_TEST_CASE(StringMapKeyTests)
 {
-    CheckBinaryFormat<unittest::proto::StringMapKey, unittest::Box<std::map<std::string, uint32_t> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringMapKey,
+        unittest::Box<std::map<std::string, uint32_t> > >();
 
     CheckUnsupportedType<unittest::Box<std::map<std::wstring, uint32_t> > >();
 }
@@ -498,19 +510,25 @@ BOOST_AUTO_TEST_CASE(IntegerMapValueTests)
 
 BOOST_AUTO_TEST_CASE(StringMapValueTests)
 {
-    CheckBinaryFormat<unittest::proto::StringMapValue, unittest::Box<std::map<uint32_t, std::string> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringMapValue,
+        unittest::Box<std::map<uint32_t, std::string> > >();
 
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::wstring> > >();
 }
 
 BOOST_AUTO_TEST_CASE(BlobMapValueTests)
 {
-    CheckBinaryFormat<unittest::proto::BlobMapValue, unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, bond::blob> > >();
+    CheckBinaryFormat<
+        unittest::proto::BlobMapValue,
+        unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, bond::blob> > >();
 }
 
 BOOST_AUTO_TEST_CASE(StructMapValueTests)
 {
-    CheckBinaryFormat<unittest::proto::StructMapValue, unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, unittest::Integers> > >();
+    CheckBinaryFormat<
+        unittest::proto::StructMapValue,
+        unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, unittest::Integers> > >();
 }
 
 BOOST_AUTO_TEST_CASE(NestedContainersTests)

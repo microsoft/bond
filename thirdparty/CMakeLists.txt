@@ -6,10 +6,10 @@ if (BOND_ENABLE_GRPC)
 endif()
 
 if (NOT BOND_SKIP_CORE_TESTS)
-    set(protobuf_BUILD_TESTS OFF)
+    option(protobuf_BUILD_TESTS OFF)
 
     if (MSVC)
-        set(protobuf_MSVC_STATIC_RUNTIME FALSE)
+        option(protobuf_MSVC_STATIC_RUNTIME OFF)
     endif()
 
     add_subdirectory(protobuf/cmake)

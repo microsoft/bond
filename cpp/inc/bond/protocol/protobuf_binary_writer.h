@@ -96,7 +96,7 @@ namespace bond
                 detail::proto::NotSupportedException("Inheritance");
             }
 
-            if (_fields.size() != 0)
+            if (!_fields.empty())
             {
                 const auto& info = _fields.top(std::nothrow);
 
@@ -119,7 +119,7 @@ namespace bond
 
             LengthEnd();
 
-            if (_fields.size() != 0)
+            if (!_fields.empty())
             {
                 auto& info = _fields.top(std::nothrow);
 
@@ -135,7 +135,9 @@ namespace bond
         {
             FieldInfo::Element elem;
             elem.encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
-            elem.tag = detail::proto::MakeTag(id, detail::proto::GetWireType(get_type_id<T>::value, elem.encoding));
+            elem.tag = detail::proto::MakeTag(
+                id,
+                detail::proto::GetWireType(get_type_id<T>::value, elem.encoding));
 
             WriteTag(elem.tag);
             WriteScalar(value, elem);
@@ -171,6 +173,8 @@ namespace bond
 
             if (!info.has_element)
             {
+                BOOST_ASSERT(info.field.metadata);
+
                 FieldInfo::Element elem;
                 elem.encoding = detail::proto::ReadEncoding(type, *info.field.metadata);
 
@@ -179,7 +183,7 @@ namespace bond
                 case Packing::False:
                     elem.tag = detail::proto::MakeTag(
                         info.field.id,
-                        type == BT_LIST
+                        type == BT_LIST // blob
                             ? WireType::LengthDelimited
                             : detail::proto::GetWireType(type, elem.encoding));
                     break;
@@ -207,7 +211,9 @@ namespace bond
 
             if (!info.has_element)
             {
-                const Metadata& metadata = *info.field.metadata;
+                BOOST_ASSERT(info.field.metadata);
+
+                const auto& metadata = *info.field.metadata;
 
                 info.element.map_tag = detail::proto::MakeTag(info.field.id, WireType::LengthDelimited);
 
@@ -219,7 +225,7 @@ namespace bond
                 info.element.value.encoding = detail::proto::ReadValueEncoding(type.second, metadata);
                 info.element.value.tag = detail::proto::MakeTag(
                     2,
-                    type.second == BT_LIST
+                    type.second == BT_LIST // blob
                         ? WireType::LengthDelimited
                         : detail::proto::GetWireType(type.second, info.element.value.encoding));
 
@@ -246,7 +252,8 @@ namespace bond
             }
             else
             {
-                WriteTaggedKeyValue(value, info);
+                WriteTaggedScalar(value, KeyValueBegin(info));
+                KeyValueEnd(info);
             }
         }
 
@@ -346,9 +353,9 @@ namespace bond
                 detail::proto::NotSupportedException("Blob with encoding attribute");
             }
 
-            const bool hasTag = TryWriteTag(elem);
+            const bool has_tag = TryWriteTag(elem);
 
-            if (hasTag)
+            if (has_tag)
             {
                 if (static_cast<WireType>(elem.tag & 0x7) != WireType::LengthDelimited)
                 {
@@ -360,17 +367,10 @@ namespace bond
 
             _output.Write(value);
 
-            if (hasTag)
+            if (has_tag)
             {
                 LengthEnd();
             }
-        }
-
-        template <typename T>
-        void WriteTaggedKeyValue(const T& value, FieldInfo& info)
-        {
-            WriteTaggedScalar(value, KeyValueBegin(info));
-            KeyValueEnd(info);
         }
 
         const FieldInfo::Element& KeyValueBegin(const FieldInfo& info)
@@ -550,7 +550,7 @@ namespace bond
         template <typename T>
         void StructLengthBegin(T&)
         {
-            if (_fields.size() != 0)
+            if (!_fields.empty())
             {
                 WriteVarInt(*_it);
             }

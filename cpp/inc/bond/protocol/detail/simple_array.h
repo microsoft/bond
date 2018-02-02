@@ -37,6 +37,11 @@ public:
         memfree();
     }
 
+    bool empty() const
+    {
+        return size() == 0;
+    }
+
     uint32_t size() const
     {
         return _size;
@@ -49,7 +54,7 @@ public:
 
     const T& top() const
     {
-        if (_size == 0)
+        if (empty())
         {
             throw std::underflow_error("Accessing empty array");
         }
@@ -58,13 +63,13 @@ public:
 
     const T& top(const std::nothrow_t&) const
     {
-        BOOST_ASSERT(_size != 0);
+        BOOST_ASSERT(!empty());
         return _data[_size - 1];
     }
 
     T& top()
     {
-        if (_size == 0)
+        if (empty())
         {
             throw std::underflow_error("Accessing empty array");
         }
@@ -73,13 +78,13 @@ public:
 
     T& top(const std::nothrow_t&)
     {
-        BOOST_ASSERT(_size != 0);
+        BOOST_ASSERT(!empty());
         return _data[_size - 1];
     }
 
     const T& pop()
     {
-        if (_size == 0)
+        if (empty())
         {
             throw std::underflow_error("Can't pop empty array");
         }
@@ -88,7 +93,7 @@ public:
 
     const T& pop(const std::nothrow_t&)
     {
-        BOOST_ASSERT(_size != 0);
+        BOOST_ASSERT(!empty());
         return _data[--_size];
     }
 

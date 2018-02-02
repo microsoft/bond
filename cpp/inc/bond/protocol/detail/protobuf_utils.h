@@ -111,6 +111,9 @@ namespace proto
         case BT_WSTRING:
             NotSupportedException("Wide string");
             break;
+
+        default:
+            break;
         }
 
         BOOST_ASSERT(false);
