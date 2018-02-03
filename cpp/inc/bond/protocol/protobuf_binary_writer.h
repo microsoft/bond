@@ -166,10 +166,11 @@ namespace bond
 
         void WriteContainerBegin(uint32_t size, BondDataType type)
         {
-            BOOST_VERIFY(size != 0);
-
             auto& info = _fields.top(std::nothrow);
             ++info.level;
+
+            BOOST_VERIFY(size != 0
+                || (info.has_element && type == BT_INT8));  // Nested empty blob
 
             if (!info.has_element)
             {
@@ -204,10 +205,10 @@ namespace bond
         // container of 2-tuples (e.g. map)
         void WriteContainerBegin(uint32_t size, const std::pair<BondDataType, BondDataType>& type)
         {
-            BOOST_VERIFY(size != 0);
-
             auto& info = _fields.top(std::nothrow);
             ++info.level;
+
+            BOOST_VERIFY(size != 0);
 
             if (!info.has_element)
             {

@@ -449,6 +449,26 @@ struct UnpackedIntegersSetContainer
     24: set<uint16> uif16;
 }
 
+struct Nullable
+{
+    [ProtoPack("False")]
+    1: nullable<uint32> ui32;
+
+    2: nullable<string> str;
+
+    3: nullable<blob> b;
+
+    4: nullable<Integers> s;
+
+    5: nullable<uint32> vui32;
+
+    6: nullable<string> vstr;
+
+    7: nullable<blob> vb;
+
+    8: nullable<Integers> vs;
+}
+
 struct IntegerMapKeys
 {
     1: map<int32, uint32> i32;

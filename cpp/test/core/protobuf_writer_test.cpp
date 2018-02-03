@@ -42,34 +42,7 @@ namespace
         }
 
         template <typename T>
-        typename boost::enable_if<bond::is_bond_type<T>, bool>::type
-        Field(uint16_t id, const bond::Metadata& /*metadata*/, const T& value) const
-        {
-            auto msg = _reflection.MutableMessage(&_message, &GetField(id));
-            BOOST_ASSERT(msg);
-            return bond::Apply(ToProto{ *msg }, value);
-        }
-
-        template <typename T, typename Reader>
-        typename boost::enable_if<bond::is_basic_type<T>, bool>::type
-        Field(uint16_t id, const bond::Metadata& metadata, const bond::value<T, Reader>& value) const
-        {
-            T data = T();
-            value.Deserialize(data);
-            return Field(id, metadata, data);
-        }
-
-        template <typename T, typename Reader>
-        typename boost::disable_if<bond::is_basic_type<T>, bool>::type
-        Field(uint16_t id, const bond::Metadata& /*metadata*/, const bond::value<T, Reader>& value) const
-        {
-            auto msg = _reflection.MutableMessage(&_message, &GetField(id));
-            BOOST_ASSERT(msg);
-            return bond::Apply(ToProto{ *msg }, value);
-        }
-
-        template <typename T>
-        typename boost::enable_if_c<!bond::is_bond_type<T>::value && !bond::is_container<T>::value, bool>::type
+        typename boost::disable_if<bond::is_container<T>, bool>::type
         Field(uint16_t id, const bond::Metadata& /*metadata*/, const T& value) const
         {
             SetValue(GetField(id), value);
@@ -84,6 +57,33 @@ namespace
             for (bond::const_enumerator<T> items(value); items.more(); )
             {
                 AddValue(field, items.next());
+            }
+            return false;
+        }
+
+        template <typename T, typename Reader>
+        typename boost::enable_if<bond::is_basic_type<T>, bool>::type
+        Field(uint16_t id, const bond::Metadata& metadata, const bond::value<T, Reader>& value) const
+        {
+            T data{};
+            value.Deserialize(data);
+            return Field(id, metadata, data);
+        }
+
+        template <typename T>
+        bool Field(uint16_t id, const bond::Metadata& /*metadata*/, const bond::nullable<T>& value) const
+        {
+            if (value.hasvalue())
+            {
+                const auto& field = GetField(id);
+                if (field.is_repeated())
+                {
+                    AddValue(field, value.value());
+                }
+                else
+                {
+                    SetValue(field, value.value());
+                }
             }
             return false;
         }
@@ -125,6 +125,24 @@ namespace
         void AddValue(const google::protobuf::FieldDescriptor& field, const std::pair<T1, T2>& value) const
         {
             AddValue(field, std::forward_as_tuple(std::ignore, value.first, value.second));
+        }
+
+        template <typename T>
+        typename boost::enable_if<bond::is_bond_type<T> >::type
+        SetValue(const google::protobuf::FieldDescriptor& field, const T& value) const
+        {
+            auto msg = _reflection.MutableMessage(&_message, &field);
+            BOOST_ASSERT(msg);
+            bond::Apply(ToProto{ *msg }, value);
+        }
+
+        template <typename T, typename Reader>
+        typename boost::disable_if<bond::is_basic_type<T> >::type
+        SetValue(const google::protobuf::FieldDescriptor& field, const bond::value<T, Reader>& value) const
+        {
+            auto msg = _reflection.MutableMessage(&_message, &field);
+            BOOST_ASSERT(msg);
+            bond::Apply(ToProto{ *msg }, value);
         }
 
         template <typename T>
@@ -466,6 +484,10 @@ BOOST_AUTO_TEST_CASE(BlobContainerTests)
     CheckBinaryFormat<
         unittest::proto::BlobContainer,
         unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > >();
+
+    unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > box;
+    box.value.resize(2, bond::blob{});
+    CheckBinaryFormat<unittest::proto::BlobContainer>(box);
 }
 
 BOOST_AUTO_TEST_CASE(StructContainerTests)
@@ -484,6 +506,11 @@ BOOST_AUTO_TEST_CASE(NestedStructTests)
     unittest::BoxWrongPackingWrongEncoding<bond::bonded<unittest::Integers> > box;
     box.value = bond::bonded<unittest::Integers>{ InitRandom<unittest::Integers>() };
     CheckBinaryFormat<unittest::proto::NestedStruct>(box);
+}
+
+BOOST_AUTO_TEST_CASE(NullableTests)
+{
+    CheckBinaryFormat<unittest::proto::Nullable, unittest::Nullable>();
 }
 
 BOOST_AUTO_TEST_CASE(IntegerMapKeyTests)

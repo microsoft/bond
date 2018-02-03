@@ -121,6 +121,18 @@ message NestedStruct
     Integers value = 1;
 }
 
+message Nullable
+{
+    uint32 ui32 = 1;
+    string str = 2;
+    bytes b = 3;
+    Integers s = 4;
+    repeated uint32 vui32 = 5;
+    repeated string vstr = 6;
+    repeated bytes vb = 7;
+    repeated Integers vs = 8;
+}
+
 message IntegerMapKeys
 {
     map<int32, uint32> i32 = 1;
