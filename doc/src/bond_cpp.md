@@ -26,6 +26,7 @@ Basic example
 
 In Bond data schemas are defined using idl-like [syntax](compiler.html#idl-syntax):
 
+```
     namespace example
 
     struct Record
@@ -33,18 +34,22 @@ In Bond data schemas are defined using idl-like [syntax](compiler.html#idl-synta
         0: string          name;
         1: vector<double>  items;
     }
+```
 
 In order to use the schema in a C++ program, it needs to be compiled using the
 Bond compiler [`gbc`](compiler.html). This step is sometimes also referred to as
 code generation (or codegen) because the compilation generates C++ code
 corresponding to the schema definition.
 
+```
     gbc c++ example.bond
+```
 
 Using the generated C++ code, we can write a simple program that will
 serialize and deserialize an instance of the Record schema using [Compact
 Binary](#compact-binary) protocol:
 
+```cpp
     #include "example_reflection.h"
 
     #include <bond/core/bond.h>
@@ -71,6 +76,7 @@ Binary](#compact-binary) protocol:
 
         return 0;
     }
+```
 
 Serialization
 =============
@@ -79,6 +85,7 @@ The core feature provided by Bond is the ability to serialize and deserialize
 instances of user-defined schemas. The serialization APIs are declared in the
 `bond\core\bond.h` header file:
 
+```cpp
     template <typename T, typename Writer>
     void Serialize(const T& obj, Writer& output);
 
@@ -87,6 +94,7 @@ instances of user-defined schemas. The serialization APIs are declared in the
 
     template <typename T, typename Reader>
     T Deserialize(Reader input);
+```
 
 The `Reader` and `Writer` template parameters specify the serialization
 protocol, and are one of the layers at which Bond serialization can be
@@ -97,11 +105,13 @@ user-defined [protocols](#custom-protocols). By convention, protocol
 implementation is split between two classes implementing the reader, and the
 writer:
 
+```cpp
     template <typename Buffer>
     class CompactBinaryReader;
 
     template <typename Buffer>
     class CompactBinaryWriter;
+```
 
 The `Buffer` template parameter specifies where the serialized payload is
 respectively read from and written to. This constitutes the second layer of
@@ -113,30 +123,36 @@ interfaces.
 The full protocol class names can be unwieldy and it is often convenient to
 define shorter type aliases:
 
+```cpp
     typedef bond::InputBuffer Input;
     typedef bond::CompactBinaryReader<Input> Reader;
     typedef bond::OutputBuffer Output;
     typedef bond::CompactBinaryWriter<Output> Writer;
+```
 
 which then can be used throughout application code:
 
+```cpp
     Output output;
     Writer writer(output);
     Serialize(obj1, writer);
 
     Reader reader(output.GetBuffer());
     Deserialize(reader, obj2);
+```
 
 In storage scenarios, when untagged protocols, such as the [Simple
 Protocol](#simple-protocol), are used, applications need to specify the payload
 schema during deserialization. The deserialization API has an overloaded
 version to accommodate this usage:
 
+```cpp
     template <typename T, typename Reader>
     void Deserialize(Reader input, T& obj, const RuntimeSchema& schema);
 
     template <typename T, typename Reader>
     T Deserialize(Reader input, const RuntimeSchema& schema);
+```
 
 Typically the [runtime schema](#runtime-schema) is stored together with the
 data, for example in a system table or a header of a data file. Since Bond may
@@ -144,6 +160,7 @@ need to access the runtime schema after the `Deserialize` function returns (to
 support [lazy deserialization](#lazy-deserialization)), it is recommended that
 applications manage lifetime of the schema object using smart pointers:
 
+```cpp
     boost::shared_ptr<bond::SchemaDef> schema(boost::make_shared<bond::SchemaDef>());
 
     // Deserialize the runtime schema
@@ -153,6 +170,7 @@ applications manage lifetime of the schema object using smart pointers:
     // Deserialize the object using the runtime schema
     bond::SimpleBinaryReader<bond::InputBuffer> simple_reader(object_data);
     Deserialize(simple_reader, obj, schema);
+```
 
 See examples:
 
@@ -172,14 +190,16 @@ and version.
 provides an input stream with payload data, rather than an instance of a
 particular protocol reader:
 
-        bond::OutputBuffer output;
-        bond::CompactBinaryWriter<bond::OutputBuffer> writer(output);
+```cpp
+    bond::OutputBuffer output;
+    bond::CompactBinaryWriter<bond::OutputBuffer> writer(output);
 
-        Marshal(src, writer);
+    Marshal(src, writer);
 
-        bond::InputBuffer input(output.GetBuffer());
+    bond::InputBuffer input(output.GetBuffer());
 
-        Unmarshal(input, dst);
+    Unmarshal(input, dst);
+```
 
 See example: `examples/cpp/core/marshaling`.
 
@@ -281,12 +301,14 @@ Sometimes it is necessary to distinguish between any of the possible values
 of a field and absence of a value. To support such scenarios Bond allows
 non-struct fields' default values to be explicitly set to `nothing` [^1]:
 
+```
     struct AboutNothing
     {
         0: uint16 n = nothing;
         1: string name = nothing;
         2: list<float> floats = nothing;
     }
+```
 
 Setting a field's default to `nothing` doesn't affect the schema type of the
 field, however it may affect what type the field is mapped to in the
@@ -324,11 +346,13 @@ For any type in the Bond meta-schema, `nullable<T>` defines a nullable type.
 A nullable type can store all the same values as its base type plus one
 additional value: `null`.
 
+```
     struct Nullables
     {
         0: nullable<bool>         b; // can be true, false, or null
         1: list<nullable<string>> l; // can be a (possibly empty) list or null
     }
+```
 
 The default value for a field of a nullable type is always implicitly set to
 `null`. Explicit default values for nullable fields are not supported.
@@ -352,6 +376,7 @@ The canonical scenario where a nullable type is the right choice is
 recursive structures. For example here's how Bond `TypeDef` struct is
 defined:
 
+```
     struct TypeDef
     {
         // Type identifier
@@ -372,6 +397,7 @@ defined:
         // True if the type is bonded<T>; used only when id == BT_STRUCT
         4: bool bonded_type;
     }
+```
 
 The `TypeDef` struct is used to represent the type of a field in a Bond
 schema. If the type is a container such as a list or map, the type
@@ -388,11 +414,13 @@ compile-time. In order to address such scenarios Bond defines a type
 `SchemaDef` to represent schemas at runtime. Applications can obtain an
 instance of `SchemaDef` for a particular type using the `GetRuntimeSchema` API:
 
+```cpp
     // from type T
     auto schema = bond::GetRuntimeSchema<Example>();
 
     // from an instance
     auto schema = bond::GetRuntimeSchema(obj);
+```
 
 The value returned by `GetRuntimeSchema` is of type `bond::RuntimeSchema`,
 which is a thin wrapper over `SchemaDef`. The runtime schema object returned by
@@ -404,26 +432,34 @@ a static object).
 `SchemaDef` is a Bond type, defined in `bond.bond`, and as such can be
 de/serialized like any other Bond type:
 
+```cpp
     Serialize(bond::GetRuntimeSchema<Example>(), writer);
+```
 
 A runtime schema is often used to describe the schema of a serialized payload,
 in particular when using an untagged [protocol](#protocols):
 
+```cpp
     bond::SimpleBinaryReader reader(dataPayload);
     auto schema = boost::make_shared<bond::SchemaDef>();
 
     Unmarshal(schemaPayload, *schema);
     Deserialize(reader, obj, schema);
+```
 
 The Deserialize API in the above code snippet is a thin wrapper around the
 generic way to describe payload with a runtime schema: `bonded<void>`:
 
+```cpp
     bond::bonded<void> data(reader, schema);
+```
 
 A `bonded<void>` object can be used like any
 [`bonded<T>`](#understanding-bondedt), e.g. it can be serialized/transcoded:
 
+```cpp
     Serialize(data, writer);
+```
 
 When an application creates an instance of `SchemaDef` in order to use it with
 Bond APIs, it is strongly recommended to always dynamically allocate the object
@@ -497,8 +533,10 @@ more versatile than a simple struct instance. Before we explore its
 capabilities, let's first look at C++ declaration of [`bonded`
 class][bonded_reference]:
 
+```cpp
     template <typename T, typename Reader = ProtocolReader<T, InputBuffer>>
     class bonded;
+```
 
 The class template has two parameters. The first one, `T`, represents schema
 (or type) of the data. Usually it is a struct defined via Bond
@@ -515,7 +553,7 @@ The `bonded` class defines several constructors which allow creation of
 - Instance of `T` or a type derived from `T` [^slicing]
 
 <!-- -->
-
+```cpp
     using bond::bonded;
 
     MyStruct obj;
@@ -529,21 +567,23 @@ The `bonded` class defines several constructors which allow creation of
     // Store shared_ptr to object
     auto ptr = boost::make_shared<MyStruct>();
     bonded<MyStruct> b3(ptr);
+```
 
 - Serialized payload
 
 <!-- -->
-
+```cpp
     bond::CompactBinaryReader<bond::InputBuffer> reader(payload);
 
     bonded<MyStruct> b4(reader);
 
     bonded<void> b5(reader, schema);
+```
 
 - Compatible instance of `bonded`
 
 <!-- -->
-
+```cpp
     // Implicit up-casting
     bonded<MyStructBase> b6(b4);
 
@@ -555,6 +595,7 @@ The `bonded` class defines several constructors which allow creation of
 
     // Explicit cast from bonded<void>
     bonded<MyStruct> b9(b8);
+```
 
 APIs associated with `bonded<T>` are very simple. Given an instance of
 `bonded<T>` we can essentially perform two operations on the contained data:
@@ -574,11 +615,13 @@ Because `bonded<T>` can store (or more accurately, refer to) data representing
 a serialized struct, it can be used to de facto delay deserialization of some
 parts of payload:
 
+```
     struct Example
     {
         0: Always            m_always;
         1: bonded<Sometimes> m_sometimes;
     }
+```
 
 The schema defined above contains two nested fields. When an object of type
 `Example` is deserialized, the field `m_always` will be fully instantiated and
@@ -586,6 +629,7 @@ deserialized, but field `m_sometimes`, which is declared as
 `bonded<Sometimes>`, will be merely initialized with a reference to its
 serialized representation [^bonded_cost].
 
+```cpp
     Example example;
 
     Deserialize(reader, example);
@@ -597,6 +641,7 @@ serialized representation [^bonded_cost].
 
         example.m_sometimes.Deserialize(sometimes);
     }
+```
 
 [^bonded_cost]: Cost of deserializing `bonded<T>` is protocol dependent. Most
 protocols need to parse the payload in order to find where the corresponding
@@ -619,6 +664,7 @@ Bond is able to preserve all fields, even those that are not part of struct `T`
 fact `bonded<T>` can be serialized *even* if definition of type `T` is not
 known!
 
+```cpp
     // Declare Unknown; actual definition is not needed
     struct Unknown;
 
@@ -630,16 +676,19 @@ known!
     bond::SimpleJsonWriter<bond::OutputBuffer> writer(json);
 
     Serialize(payload, writer);
+```
 
 The sample code above would preserve all the fields from the source data,
 however it would not preserve the field names, producing JSON output looking
 something like this:
 
+```javascript
     {
         "10": "Sample Konfabulator Widget",
         "30": 500,
         "40": 500
     }
+```
 
 The output is sufficient to deserialize the object using Bond, but it is not
 particularly human-readable. If we wanted to preserve fields names in JSON
@@ -647,6 +696,7 @@ output, we would need to specify the payload schema, by using either `bonded`
 of a defined Bond struct rather than `Unknown`, or `bonded<void>` with a schema
 provided at runtime.
 
+```cpp
     // Transcode data from Compact Binary to JSON using runtime schema
     bond::CompactBinary<bond::InputBuffer> reader(data);
     bond::bonded<void> payload(reader, schema);
@@ -655,16 +705,19 @@ provided at runtime.
     bond::SimpleJsonWriter<bond::OutputBuffer> writer(json);
 
     Serialize(payload, writer);
+```
 
 The `schema` object in the example above is an instance of
 [`bond::SchemaDef`](#runtime-schema). With full schema information transcoded
 JSON output will be more human-friendly:
 
+```javascript
     {
         "title": "Sample Konfabulator Widget",
         "width": 500,
         "height": 500
     }
+```
 
 See also: `examples/cpp/core/protocol_transcoding`
 
@@ -683,6 +736,7 @@ pass-through is often the right solution.
 As an example let's imagine a simple aggregator which receives responses from
 upstream services and aggregates top results.
 
+```
     struct Response;
 
     struct Upstream
@@ -695,12 +749,14 @@ upstream services and aggregates top results.
     {
         0: list<bonded<Response>> responses;
     }
+```
 
 Using `bonded<Response>` allows the intermediary to aggregate responses,
 preserving their full content, even though schema of `Response` is not known
 when the aggregator is built, and thus it doesn't need to be rebuilt or
 redeployed when schema of `Response` changes.
 
+```cpp
     void ProcessResponse(const Upstream& upstream)
     {
         if (upstream.ranking > threshold)
@@ -708,6 +764,7 @@ redeployed when schema of `Response` changes.
             m_aggregated.responses.push_back(upstream.response);
         }
     }
+```
 
 Polymorphism
 ------------
@@ -719,6 +776,7 @@ which inherits from `Base`. Together with the ability to down-cast
 `bonded<Base>` to `bonded<Dervied>`, this enables use of Bond schemas
 supporting serialization of polymorphic objects.
 
+```
     enum Kind
     {
         rectangle,
@@ -746,6 +804,7 @@ supporting serialization of polymorphic objects.
     {
         0: list<bonded<Shape>> shapes;
     }
+```
 
 For details on implementing polymorphism see the following examples:
 
@@ -813,8 +872,10 @@ any unknown parts present in the payload.
 The `Merge` API takes as input an instance of a Bond object and a serialized
 payload and writes the merged result to the specified protocol writer:
 
+```cpp
     template <typename T, typename Reader, typename Writer>
     void Merge(const T& obj, Reader input, Writer& output);
+```
 
 The `Reader` and `Writer` can be for different protocols (in other words
 merging can transcode payload at the same time). The type `T` of the object is
@@ -827,12 +888,14 @@ The `Merge` API is a thin wrapper around the `Merger` transform which can be
 applied to a [`bonded<T>`](#understanding-bondedt) in order to merge its
 payload with an instance of T, e.g.:
 
+```cpp
     typedef bond::CompactBinaryWriter<bond::OutputBuffer> Writer;
     T obj;
     bond::bonded<T> payload;
     // ...
     Writer output(buffer);
     Apply(bond::Merger<T, Writer>(obj, output), payload);
+```
 
 For fields that are present in the object's schema, the value in the object is
 serialized, otherwise the value for the unknown field in the payload is
@@ -851,9 +914,11 @@ example, merging of containers when elements have been added or removed.
 The helper method Merge supports the common scenario where the result of merge
 is put back as payload of `bonded<T>`:
 
+```cpp
     template <typename T>
     template <typename X>
     void bonded<T>::Merge(const X& var);
+```
 
 See example: `examples/cpp/core/merge`.
 
@@ -877,10 +942,12 @@ fields is generally considered a good rule of thumb.
 
 Required fields can be declared using the following syntax.
 
+```
     struct Example
     {
         0: required int32 field;
     }
+```
 
 Required fields _must_ be present in the payload during deserialization
 (otherwise an exception is thrown) and consequently they are always written to
@@ -921,16 +988,20 @@ Tuples
 Bond can de/serialize instances of std::tuple<T...> as if they were regular
 Bond-defined structs. For example the following tuple instance:
 
+```cpp
     std::tuple<std::string, double, std::vector<uint32_t>>
+```
 
 is equivalent to this Bond schema:
 
+```
     struct tuple
     {
         0: string item0;
         1: double item1;
         2: vector<uint32> item2;
     }
+```
 
 Field ordinals used for Bond serialization are the same as tuple item
 identifiers used with std::get<N> function. Field names are `item`*N* where is
@@ -946,34 +1017,42 @@ subsequent items.
 Tuple instances can be used with all Bond APIs that accept regular Bond defined
 structs, e.g:
 
+```cpp
     auto obj = std::tuple<string, double>;
 
     Serialize(obj, writer);
     Deserialize(reader, obj);
     auto schema = bond::GetRuntimeSchema(obj);
+```
 
 Bond provides helper functions `Pack` and `Unpack` which can be used
 respectively to create/serialize a tuple from several values and deserialize
 fields into several variables.
 
+```cpp
     std::string str;
     Pack(writer, str, 10);
 
     int n;
     std::string str2;
     Unpack(reader, str2, n);
+```
 
 If the payload contains more fields than variables provided to `Unpack` the
 tail fields are ignored. The special object `std::ignore` can be passed as an
 argument to `Pack` and `Unpack` in order to ignore field(s) at particular
 position(s). For example:
 
+```cpp
     Pack(writer, std::ignore, 10);
+```
 
 will serialize a struct/tuple containing one field with ordinal 1 and type
 `int`. Similarly:
 
+```cpp
     Unpack(reader, std::ignore, n);
+```
 
 will ignore the field with ordinal 0, if any, and deserialize the field with
 ordinal 1 into the variable `n`.
@@ -993,6 +1072,7 @@ are flexible and have good performance characteristics, the core APIs like
 `Serialize` and `Deserialize` are in fact implemented as applications of
 transforms.
 
+```cpp
     // Serialize and Deserialize APIs as defined in bond.h
 
     template <typename T, typename Writer>
@@ -1006,6 +1086,7 @@ transforms.
     {
         Apply(To<T>(obj), bonded<T, Reader&>(input));
     }
+```
 
 Transforms are an instance of the visitor pattern. A transform class implements
 methods which are called by a Bond parser for the fields of a Bond type
@@ -1020,6 +1101,7 @@ Transforms are applied using the `bond::Apply` API. The first argument to
 second argument is an object the transform should be applied to. There are
 essentially three overloads of `Apply` API [^apply_overloads]:
 
+```cpp
     template <typename Transform, typename T, typename Reader>
     bool Apply(const Transform& transform, const bonded<T, Reader>& bonded);
 
@@ -1028,6 +1110,7 @@ essentially three overloads of `Apply` API [^apply_overloads]:
 
     template <typename Transform, typename T>
     bool Apply(const Transform& transform, T& value);
+```
 
 [^apply_overloads]: Reviewing `apply.h` will reveal that in fact there are a
 few more overloads of `Apply`, and their signatures are more complex. However
@@ -1054,6 +1137,7 @@ Transform concept
 
 A transform class has to implement the following concept:
 
+```cpp
     struct Transform
     {
         // All transforms
@@ -1082,7 +1166,7 @@ A transform class has to implement the following concept:
         template <typename Key, typename T>
         void Container(const Key& key, const T& value, uint32_t size) const;
     };
-
+```
 
 The type `T` of the values visited by a transform depends on what the transform
 is applied to. If it is applied to an instance of a Bond type, the visited
@@ -1098,7 +1182,7 @@ A transform can generally do one of two things with the serialized values:
 1. Deserialize using the Deserialize method
 
 <!-- -->
-
+```cpp
     template <typename T, typename Reader>
     typename boost::enable_if<bond::is_basic_type<T>>::type
     Field(uint16_t, const bond::Metadata&, const bond::value<T, Reader>& value) const
@@ -1107,16 +1191,18 @@ A transform can generally do one of two things with the serialized values:
         value.Deserialize(x);
         return false;
     }
+```
 
 2. Recursively apply the transform
 
 <!-- -->
-
+```cpp
     template <typename T>
     bool Base(const T& value) const
     {
         return Apply(MyTransform(), value);
     }
+```
 
 Recursive application of transforms is a key technique which enables
 transformations of arbitrary complex/nested schemas/containers. By creating and
@@ -1242,6 +1328,7 @@ conflicts between fields of base and derived Bond structs. It is possible to
 resolve such conflicts without the need to actually rename the fields by
 annotating fields with `JsonName` attribute, e.g.:
 
+```
     struct Base
     {
         0: string foo;
@@ -1252,6 +1339,7 @@ annotating fields with `JsonName` attribute, e.g.:
         [JsonName("DerivedFoo")]
         0: string foo;
     }
+```
 
 Note that Simple JSON is not designed to be able to read arbitrary JSON
 objects. Simple JSON has its own way of encoding Bond objects in JSON that
@@ -1295,23 +1383,31 @@ Codegen parameters
 When generating code for a schema that uses [type aliases](compiler.html#type-aliases), the
 user can specify a custom type to represent each alias in the generated code:
 
+```
     gbc c++ --using="time=boost::posix_time::ptime" time.bond
+```
 
 The value of the `--using` parameter is a custom alias mapping in the following
 format:
 
+```
     alias-name=generated-type-name
+```
 
 Generated code using custom types usually has to include a header file with
 appropriate declarations. The `gbc` compiler supports the `--header` parameter
 for that purpose:
 
+```
     gbc c++ --header="<time_alias.h>" --using="time=boost::posix_time::ptime" time.bond
+```
 
 The above command will add the following statement at the top of the generated
 header file `time_types.h`:
 
+```cpp
     #include <time_alias.h>
+```
 
 Additionally `--type-aliases` flag can be used to generate corresponding C++
 [type aliases](http://en.cppreference.com/w/cpp/language/type_alias) in `time_types.h`.
@@ -1330,6 +1426,7 @@ to its implementation.
 The first step is to identify a type as an appropriate container by
 specializing one of the following traits:
 
+```cpp
     template <typename T> struct
     is_set_container
         : std::false_type {};
@@ -1341,37 +1438,45 @@ specializing one of the following traits:
     template <typename T> struct
     is_list_container
         : std::false_type {};
+```
 
 For example the following specialization would allow Bond to treat `std::array`
 as a list type:
 
+```cpp
     template <typename T, std::size_t N> struct
     is_list_container<std::array<T, N> >
         : std::true_type {};
+```
 
 The second trait called `element_type` specifies the type of the container
 elements:
 
+```cpp
     template <typename T> struct
     element_type
     {
         typedef typename T::value_type type;
     };
+```
 
 The default implementation assumes a commonly used STL convention of using
 a nested `value_type` typedef and will likely work for many container
 implementations from libraries like Boost. For other containers the trait can
 specialized, e.g.:
 
+```cpp
     template <typename T> struct
     element_type<MyList<T> >
     {
         typedef T type;
     };
+```
 
 The next part of the container concept consists of free functions exposing
 container size and operations to add and remove elements.
 
+```cpp
     template <typename T>
     uint32_t container_size(const T& container);
 
@@ -1389,6 +1494,7 @@ container size and operations to add and remove elements.
 
     template <typename M, typename K, typename T>
     T& mapped_at(M& map, const K& key);
+```
 
 Note that unlike the traits which need to be specialized in the `bond`
 namespace, these function can be overloaded in the namespace of the container
@@ -1396,6 +1502,7 @@ type.
 
 The final part of the container concept are enumerators:
 
+```cpp
     template <typename T>
     class enumerator
     {
@@ -1404,7 +1511,6 @@ The final part of the container concept are enumerators:
         typename element_type<T>::type& next();
     };
 
-
     template <typename T>
     class const_enumerator
     {
@@ -1412,6 +1518,7 @@ The final part of the container concept are enumerators:
         bool more() const;
         const typename element_type<T>::type& next();
     };
+```
 
 The `const_enumerator` must be implemented for any custom container while the
 `enumerator` is used only for lists. As the name indicates, the enumerators
@@ -1419,7 +1526,7 @@ abstract iteration over elements of the container. The default implementation
 of `const_enumerator` illustrates well the simple semantics of the interface
 [^enumerator]:
 
-
+```cpp
     template <typename T>
     class const_enumerator
     {
@@ -1443,6 +1550,7 @@ of `const_enumerator` illustrates well the simple semantics of the interface
     private:
         typename T::const_iterator it, end;
     };
+```
 
 - `examples/cpp/core/container_of_pointers`
 - `examples/cpp/core/multiprecision`
@@ -1460,6 +1568,7 @@ as an interface between a custom string type and Bond.
 
 Custom string types are identified by specializing the appropriate trait:
 
+```cpp
     template <typename T> struct
     is_string
         : std::false_type {};
@@ -1467,17 +1576,21 @@ Custom string types are identified by specializing the appropriate trait:
     template <typename T> struct
     is_wstring
         : std::false_type {};
+```
 
 For example the following specialization would allow Bond to treat
 `boost::string_ref` as a string type:
 
+```cpp
     template <> struct
     is_string<boost::string_ref>
         : std::true_type {};
+```
 
 The operations on custom strings are exposed by overloading the following free
 functions:
 
+```cpp
     template<typename C, typename T>
     const C* string_data(const T& str);
 
@@ -1489,6 +1602,7 @@ functions:
 
     template<typename T>
     void resize_string(T& str, uint32_t size);
+```
 
 - `examples/cpp/core/string_ref`
 
@@ -1501,29 +1615,35 @@ as an interface between Bond and a custom type aliasing a built-in scalar type.
 The `aliased_type` trait is used to specify which built-in type is being
 aliased:
 
+```cpp
     template <typename T> struct
     aliased_type
     {
         typedef void type;
     };
+```
 
 For example the following specialization would tell Bond to treat
 `boost::posix_time::ptime` as if it were an alias of `int64`.
 
+```cpp
     template <> struct
     aliased_type<boost::posix_time::ptime>
     {
         typedef int64_t type;
     };
+```
 
 Conversions to/from a custom type and its aliased type are implemented as
 a pair of free function:
 
+```cpp
     template <typename T>
     void set_aliased_value(T& var, typename aliased_type<T>::type value);
 
     template <typename T>
     typename aliased_type<T>::type get_aliased_value(const T& value);
+```
 
 - `examples/cpp/core/time_alias`
 
@@ -1533,7 +1653,9 @@ Custom allocators
 The Bond compiler flag `--allocator` can be used to generate schema structs
 such that all containers are declared to use a custom allocator type:
 
+```
     gbc c++ --allocator=my::arena example.bond
+```
 
 If the allocator is stateful, the application can pass a const reference to an
 allocator instance to the struct constructor. The allocator will then be passed
@@ -1554,11 +1676,13 @@ particular `bond::OutputMemoryStream`, which can be used as output stream for
 Bond serialization, can allocate the memory blobs for serialized payload with
 a user specified allocator.
 
+```cpp
     typedef bond::OutputMemoryStream<my::arena> Output;
 
     my::arena arena;
     Output output(arena);
     bond::CompactBinaryWriter<Output> writer(output);
+```
 
 See example `examples/cpp/core/output_stream_allocator`.
 
@@ -1570,6 +1694,7 @@ Applications can define custom buffers used for writing/reading data during
 
 An input stream class implements the following input stream concept [^concept]:
 
+```cpp
     class InputStream
     {
     public:
@@ -1583,9 +1708,11 @@ An input stream class implements the following input stream concept [^concept]:
         // Read into a memory blob
         void Read(bond::blob& blob, uint32_t size);
     };
+```
 
 An output stream class implements the following output stream concept:
 
+```cpp
     class OutputStream
     {
     public:
@@ -1599,6 +1726,7 @@ An output stream class implements the following output stream concept:
         // Write a memory blob
         void Write(const bond::blob& blob);
     };
+```
 
 [^concept]: Note that input/output streams are not _interface classes_ which
 can be derived from. They are conceptual interfaces, a set of method signatures
@@ -1618,6 +1746,7 @@ the following technique to defined standalone enum types.
 Define your enumerations in a .bond file. You can use the same identifiers for
 constants in different enumerations in the same namespace scope.
 
+```
     namespace example
 
     enum Fruit
@@ -1631,10 +1760,12 @@ constants in different enumerations in the same namespace scope.
         Green = 1,
         Orange = 7
     }
+```
 
 Use the `--enum-header` gbc compiler option to generate a standalone
 _filename_`_enum.h` header file that you can include for scoped enumerations.
 
+```cpp
     #include "enumerations_enum.h"
 
     int main()
@@ -1650,6 +1781,7 @@ _filename_`_enum.h` header file that you can include for scoped enumerations.
 
         return 0;
     }
+```
 
 This solution uses the Bond compiler to generate the code that you use but your
 code does not take a dependency on the Bond library.
@@ -1790,7 +1922,9 @@ do so may lead to violation of the C++ One Definition rule [^one_definition].
 To avoid this problem the recommended way to set these macros is via the C++
 compiler command line flags in the makefile, e.g.:
 
+```
     /DBOND_COMPACT_BINARY_PROTOCOL /DBOND_SIMPLE_BINARY_PROTOCOL
+```
 
 C++ templates are instantiated separately in every compilation unit. This means
 that building an application which has calls to Bond APIs deserializing a
@@ -1811,7 +1945,9 @@ The Bond compiler command line switch `--apply` can be use to control which
 protocols are included in the generated `_apply` files. This can be used to
 reduce compilation time for `_apply.cpp`.
 
+```
     gbc c++ --apply=fast example.bond
+```
 
 Compiling generated _filename_`_apply.cpp` results in instantiation of all the
 templates used by the most common APIs such a Serialize and Deserialize for all
@@ -1841,11 +1977,15 @@ several orders of magnitude times longer than the 64-bit version. You can force
 
 For Visual Studio 2012:
 
+```
     set _IsNativeEnvironment=true
+```
 
 For Visual Studio 2013:
 
+```
     set PreferredToolArchitecture=x64
+```
 
 Link-time code generation can also lead to egregiously long link times. It is
 strongly recommended to disable it for projects using Bond. Link-time code

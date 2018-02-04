@@ -27,6 +27,7 @@ Basic example
 In Bond data schemas are defined using idl-like
 [syntax](compiler.html#idl-syntax):
 
+```
     namespace Examples
 
     struct Record
@@ -34,18 +35,22 @@ In Bond data schemas are defined using idl-like
         0: string Name;
         1: vector<double> Constants;
     }
+```
 
 In order to use the schema in a C# program, it needs to be compiled using the
 Bond compiler. This step is sometimes also referred to as code generation (or
 codegen) because the compilation generates C# code corresponding to the schema
 definition.
 
+```
     gbc c# example.bond
+```
 
 Using the generated C# code, we can write a simple program that will
 serialize and deserialize an instance of the Record schema using [Compact
 Binary](bond_cpp.html#compact-binary) protocol:
 
+```csharp
     namespace Examples
     {
         using Bond;
@@ -77,6 +82,7 @@ Binary](bond_cpp.html#compact-binary) protocol:
             }
         }
     }
+```
 
 Code generation
 ===============
@@ -92,18 +98,22 @@ that `string` in Bond IDL will be mapped to C# `string`, which is a reference
 type, but the value `null` will not be valid. In order to allow `null` values, a
 type must be declared as [`nullable`](bond_cpp.html#nullable-types), e.g.:
 
+```
     struct Foo
     {
         0: list<nullable<string>> listOfNullableStrings;
     }
+```
 
 The value `null` is also legal for fields declared in Bond IDL to have a [default
 of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
 
+```
     struct Bar
     {
         0: string str = nothing;
     }
+```
 
 Code generation can be customized by passing one or more of the following
 command line options to `gbc`:
@@ -131,12 +141,16 @@ Serializer
 Bond serialization API is provided by the `Serializer` class. It is a generic
 class parameterized with type of protocol writer used for serialization:
 
+```csharp
     Serializer<CompactBinaryWriter<OutputStream>>
+```
 
 The constructor of the `Serializer` class takes the type of a class or struct
 representing Bond schema:
 
+```csharp
     new Serializer<CompactBinaryWriter<OutputStream>>(typeof(Record))
+```
 
 The constructor is non-trivial so application usually should create an instance
 of `Serializer` outside of the inner loop and reuse it.
@@ -145,7 +159,9 @@ The `Serializer` class exposes one public method `Serialize` which takes two
 arguments, an object to be serialized and an instance of the protocol writer to
 be used for serialization.
 
+```csharp
     serializer.Serialize(obj, writer);
+```
 
 The object's type must be the same as the type passed to the `Serializer`
 constructor, otherwise the behaviour is undefined.
@@ -153,7 +169,9 @@ constructor, otherwise the behaviour is undefined.
 Bond provides a helper static API for applications that use schema types known
 at compile-time and don't need to manage lifetime of the `Serializer`:
 
+```csharp
     Serialize.To(writer, obj);
+```
 
 When the API is called for the first time, a static instance of appropriate
 `Serializer` is created. Because of this the first call to the API for given
@@ -167,12 +185,16 @@ Bond serialization API is provided by the `Deserializer` class. It is a generic
 class parameterized with type of the protocol reader to be used for
 deserialization:
 
+```csharp
     Deserializer<CompactBinaryReader<InputStream>>
+```
 
 The constructor of the `Deserializer` class takes the type of a class or struct
 representing Bond schema:
 
+```csharp
     new Deserializer<CompactBinaryReader<InputStream>>(typeof(Record))
+```
 
 The constructor is non-trivial so application usually should create an instance
 of `Deserializer` outside of the inner loop and reuse it.
@@ -181,7 +203,9 @@ The `Deserializer` class exposes one generic public method `Deserialize` which
 takes as an argument an instance of the protocol reader and returns
 a deserialized object:
 
+```csharp
     var record = deserializer.Deserialize<Record>(reader);
+```
 
 The object created by `Deserialize` is always of the type specified during
 `Deserializer` construction. The type parameter of the method is only used to
@@ -192,10 +216,12 @@ requires specifying schema of the payload. To address this scenario the
 `Deserializer` class has an additional constructor taking
 a [`RuntimeSchema`](#runtime-schema) as an argument:
 
+```csharp
     RuntimeSchema schema;
     // ...
     var d = new Deserializer<SimpleReader<InputStream>>(typeof(Record), schema);
     var obj = d.Deserialize<Record>(reader);
+```
 
 An instance of `Deserializer` created this way is tied to the triplet of
 protocol, object type and payload schema. In order to deserialize from payload
@@ -205,7 +231,9 @@ Bond provides a helper static API for applications that use schema types known
 at compile-time, don't need to specify payload schema and don't need to manage
 lifetime of the `Deserializer`:
 
+```csharp
     var obj = Deserialize<Record>.From(reader);
+```
 
 When an application calls this API for the first time, a static instance of
 appropriate `Deserializer` is created. Because of this the first call to the
@@ -230,6 +258,7 @@ adding a payload header with the protocol identifier and version.
 provides an input stream with payload data, rather than an instance of a
 particular protocol reader:
 
+```csharp
     var src = new Example
     {
         Name = "foo",
@@ -244,6 +273,7 @@ particular protocol reader:
     var input = new InputBuffer(output.Data);
 
     var dst = Unmarshal<Example>.From(input);
+```
 
 See also the following example:
 
@@ -347,12 +377,14 @@ Sometimes it is necessary to distinguish between any of the possible values
 of a field and absence of a value. To support such scenarios Bond allows
 non-struct fields' default values to be explicitly set to `nothing` [^1]:
 
+```
     struct AboutNothing
     {
         0: uint16 n = nothing;
         1: string name = nothing;
         2: list<float> floats = nothing;
     }
+```
 
 Setting a field's default to `nothing` doesn't affect the schema type of the
 field, however it may affect what type the field is mapped to in the
@@ -394,11 +426,13 @@ For any type in the Bond meta-schema, `nullable<T>` defines a nullable type.
 A nullable type can store all the same values as its base type plus one
 additional value: `null`.
 
+```
     struct Nullables
     {
         0: nullable<bool>         b; // can be true, false, or null
         1: list<nullable<string>> l; // can be a (possibly empty) list or null
     }
+```
 
 The default value for a field of a nullable type is always implicitly set to
 `null`. Explicit default values for nullable fields are not supported.
@@ -434,6 +468,7 @@ The canonical scenario where a nullable type is the right choice is
 recursive structures. For example here's how Bond `TypeDef` struct is
 defined:
 
+```
     struct TypeDef
     {
         // Type identifier
@@ -454,6 +489,7 @@ defined:
         // True if the type is bonded<T>; used only when id == BT_STRUCT
         4: bool bonded_type;
     }
+```
 
 The `TypeDef` struct is used to represent the type of a field in a Bond
 schema. If the type is a container such as a list or map, the type
@@ -556,6 +592,7 @@ conflicts between fields of base and derived Bond structs. It is possible to
 resolve such conflicts without the need to actually rename the fields by
 annotating fields with `JsonName` attribute, e.g.:
 
+```
     struct Base
     {
         0: string foo;
@@ -566,6 +603,7 @@ annotating fields with `JsonName` attribute, e.g.:
         [JsonName("DerivedFoo")]
         0: string foo;
     }
+```
 
 Note that Simple JSON is not designed to be able to read arbitrary JSON
 objects. Simple JSON has its own way of encoding Bond objects in JSON that
@@ -593,16 +631,20 @@ to know the C# type representing payload schema.
 The `Transcoder` is a generic class parameterized with types of source protocol
 reader and destination protocol writer, e.g.:
 
+```csharp
     Transcoder<CompactBinaryReader<InputStream>, SimpleWriter<OutputStream>>
+```
 
 The constructor of the `Transcoder` class takes as an optional argument the
 [runtime schema](#runtime-schema) of the payload. The argument is optional when
 transcoding between tagged protocols but must be specified when transcoding
 from an untagged protocol or to a text protocol.
 
+```csharp
     RuntimeSchema schema;
     // ...
     var t = new Transcoder<<SimpleReader<InputStream>, CompactBinaryWriter<OutputStream>>(schema);
+```
 
 The `Transcoder` constructor is non-trivial so application usually should
 create an instance of `Transcoder` outside of the inner loop and reuse it.
@@ -611,17 +653,21 @@ The `Transcoder` class exposes one public method `Transcode` which takes two
 arguments, protocol reader representing payload to transcode from, and protocol
 writer to be used to write the result.
 
+```csharp
     t.Transcode(reader, writer);
+```
 
 Bond provides a static helper API for application that don't need to explicitly
 manage `Transcoder` lifetime and don't specify payload schema or use a schema
 known at compile-time:
 
+```csharp
     // transcoding w/o schema
     Transcode.FromTo(reader, writer);
 
     // transcoding with compile-time schema Foo
     Transcode<Foo>.FromTo(reader, writer);
+```
 
 When an application calls this API for the first time, a static instance of
 appropriate `Transcoder` is created. Because of this the first call to the API
@@ -656,6 +702,7 @@ uses unsafe code to optimize for performance. It is included in the
 implementations have identical class names and APIs; the only difference is
 the namespace in which they are defined.
 
+```csharp
     // Create an output buffer with initial size of 16KB
     var output = new OutputBuffer(16 * 1024);
     var writer = new CompactBinaryWriter<OutputBuffer>(output);
@@ -664,6 +711,7 @@ the namespace in which they are defined.
 
     // Get the serialized payload form the output buffer
     ArraySegment<byte> data = output.Data;
+```
 
 The
 [`InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs)
@@ -673,9 +721,11 @@ Like `OutputBuffer` it comes in two flavors, the safe and portable
 and the performance optimized via use of unsafe code
 [`Bond.IO.Unsafe.InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputBuffer.cs).
 
+```csharp
     // Create an input buffer on top of a byte[]
     var input = new InputBuffer(byteArray);
     var reader = new CompactBinaryReader<InputBuffer>(input);
+```
 
 The
 [`InputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputStream.cs)
@@ -689,12 +739,14 @@ unsafe code. `In/OutputStream` can be used with any `Stream`, including
 significantly better performance and are recommended when working with
 in-memory payloads.
 
+```csharp
     using (var stream = new FileStream("example.bin", FileMode.Open))
     {
         var input = new InputStream(stream);
         var reader = new CompactBinaryReader<InputStream>(input);
         var example = Deserialize<Example>.From(reader);
     }
+```
 
 Cloner
 ======
@@ -708,7 +760,9 @@ The `Cloner` is a generic class parameterized with the source type and its
 constructor takes one argument representing the type of clones to be created
 e.g.:
 
+```csharp
     var cloner = new Cloner<Foo>(typeof(Bar));
+```
 
 The constructor is non-trivial so application usually should create an instance
 of `Cloner` outside of the inner loop and reuse it.
@@ -716,7 +770,9 @@ of `Cloner` outside of the inner loop and reuse it.
 The `Cloner` exposes one public, generic method `Clone` which takes as the
 argument the source object and returns a clone:
 
+```csharp
     var clone = cloner.Clone<Bar>(foo);
+```
 
 The object created by `Clone` is always of the type specified during `Cloner`
 construction. The type parameter of the method is only used to cast the result.
@@ -724,8 +780,10 @@ construction. The type parameter of the method is only used to cast the result.
 Bond provides a helper static API which creates and caches appropriate instance
 of `Cloner` the first time it is used, e.g.:
 
+```csharp
     var foo = new Foo();
     var clone = Clone<Bar>.From(foo);
+```
 
 See also the following example:
 
@@ -738,10 +796,12 @@ The `Comparer` class provides API for deep comparison for equality of objects
 representing Bond schemas. The class exposes one public, static, generic method
 `Equal` which takes two parameters representing objects to be compared.
 
+```csharp
     var left = new Foo();
     var right = new Foo();
 
     bool equal = Comparer.Equal(left, right);
+```
 
 Note that the `Comparer` doesn't compare arbitrary C# objects, it compares
 instances of Bond schemas. Only fields/properties decorated with Bond
@@ -766,7 +826,7 @@ how to achieve the best performance.
     it can be reused repeatedly and calling the Serialize/Deserialize/Transcode
     methods will be very fast.
 
-    ``` {.cs .numberLines}
+    ```csharp
     var exampleSerializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Example));
     var exampleDeserializer = new Deserializer<CompactBinaryReader<InputBuffer>>(typeof(Example));
 
@@ -785,7 +845,7 @@ how to achieve the best performance.
     schema type so it is easy to cache these objects for multiple schemas used
     in an application:
 
-    ``` {.cs .numberLines}
+    ```csharp
     var serializerCache = new Dictionary<Type, Serializer<CompactBinaryWriter<OutputBuffer>>>
         {
             {
@@ -832,7 +892,7 @@ how to achieve the best performance.
     pressure. Whenever possible pool and reuse buffers, simply resetting their
     position after or before use:
 
-    ```
+    ```csharp
     buffer.Position = 0;
     ```
 5. Choose the right protocol
@@ -854,32 +914,40 @@ compile-time. In order to address such scenarios Bond defines a type
 `SchemaDef` to represent schemas at runtime. Applications can obtain an
 instance of `SchemaDef` for a particular type using the `Schema` class:
 
+```csharp
     // from a type T
     var schema = Schema<T>.RuntimeSchema;
 
     // from type of an object
     var schema = Schema.GetRuntimeSchema(typeof(obj));
+```
 
 The APIs return an object of type `RuntimeSchema`, which is a thin wrapper over
 `SchemaDef`. Access to underlying schema is provided via public properties:
 
+```csharp
     var schemaDef = schema.SchemaDef
+```
 
 The `SchemaDef` object is always self contained, including the runtime schema
 definitions for all nested types (if any). The `RuntimeSchema` class instance
 can be constructed from a `SchemaDef`, and then it represents the whole schema,
 or from any embedded `TypeDef`:
 
+```csharp
     // runtime schema of Foo
     var schema = Schema<Foo>.RuntimeSchema;
 
     // runtime schema of the first field of Foo
     var fieldSchema = new RuntimeSchema(schema, schema.StructDef.fields[0].type);
+```
 
 `SchemaDef` is a Bond type, defined in `bond.bond`, and as such can be
 de/serialized like any other Bond type:
 
+```csharp
     Serialize.To(writer, Schema<T>.RuntimeSchema.SchemaDef);
+```
 
 A serialized representation of `SchemaDef` can be also obtained directly from
 a schema definition IDL file using [bond compiler](compiler.html#runtime-schema).
@@ -907,6 +975,7 @@ The standard implementations always use default implementations of `Serializer/D
 In order to customize this behavior, the user can pass custom `ObjectBondedFactory` or `PayloadBondedFactory` delegates
 as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
 
+```csharp
     // create serializer for schema type T and protocol reader W
     // using custom InstanceBondedFactory
     new Serializer<W>(typeof(T), new ObjectParser(typeof(T), CustomObjectBondedFactory), ...);
@@ -914,6 +983,7 @@ as parameters to `ObjectParser` or `ParserFactory<R>.Create()`:
     // create deserializer for schema type T and protocol reader R
     // using custom PayloadBondedFactory
     new Deserializer<R>(typeof(T), ParserFactory<R>.Create(typeof(T), CustomPayloadBondedFactory), ...);
+```
 
 Lazy deserialization
 --------------------
@@ -922,11 +992,13 @@ Because `bonded<T>` can store (or more accurately, refer to) data representing
 a serialized data, it can be used to de facto delay deserialization of some
 parts of payload:
 
+```
     struct Example
     {
         0: Always always;
         1: bonded<Sometimes> sometimes;
     }
+```
 
 The schema defined above contains two nested fields. When an object of type
 `Example` is deserialized, the field `always` will be fully instantiated and
@@ -934,6 +1006,7 @@ deserialized, but field `sometimes`, which is declared as `bonded<Sometimes>`,
 will be merely initialized with a reference to its serialized representation.
 Application can then deserialize the object only when needed:
 
+```csharp
     var example = Deserialize<Example>.From(reader);
 
     // Deserialize sometimes only when needed
@@ -941,6 +1014,7 @@ Application can then deserialize the object only when needed:
     {
         var sometimes = example.sometimes.Deserialize();
     }
+```
 
 Pass-through
 ------------
@@ -955,6 +1029,7 @@ change doesn't necessitate redeployment of all the nodes in a pipeline. Using
 As an example let's imagine a simple aggregator which receives responses from
 upstream services and aggregates top results.
 
+```
     struct Upstream
     {
         0: bonded<Response> response;
@@ -965,11 +1040,13 @@ upstream services and aggregates top results.
     {
         0: list<bonded<Response>> responses;
     }
+```
 
 Using `bonded<Response>` allows the intermediary to aggregate responses,
 preserving their full content, even if the aggregator doesn't use the same
 version of the `Response` schema as the upstream.
 
+```csharp
     void ProcessResponse(Upstream upstream)
     {
         if (upstream.ranking > threshold)
@@ -977,6 +1054,7 @@ version of the `Response` schema as the upstream.
             aggregated.responses.Add(upstream.response);
         }
     }
+```
 
 Polymorphism
 ------------
@@ -985,6 +1063,7 @@ The type parameter `T` in `IBonded<T>` interface is covariant which enables
 polymorphism. A `IBonded<Base>` can be initialized with an instance of
 `Bonded<Derived>`. For example, given the following schema:
 
+```
     enum Kind
     {
         rectangle,
@@ -1012,11 +1091,13 @@ polymorphism. A `IBonded<Base>` can be initialized with an instance of
     {
         0: vector<bonded<Shape>> shapes;
     }
+```
 
 The type of the `shapes` field in C# class `Example` will be
 `List<IBonded<Shape>>` and an instance of the `Example` can be initialized as
 following:
 
+```csharp
     var src = new Example
     {
         shapes =
@@ -1025,6 +1106,7 @@ following:
             new Bonded<Rectangle>(new Rectangle {kind = Kind.rectangle, width = 4, height = 5)
         }
     };
+```
 
 See also the following example:
 
@@ -1054,12 +1136,16 @@ When generating code for a schema that uses [type
 aliases](compiler.html#type-aliases), the user can specify a custom type to
 represent each alias in the generated code:
 
+```
     gbc c# --using="DateTime=System.DateTime" date_time.bond
+```
 
 The value of the `/using` parameter consists of one or more alias substitutions
 separated by semicolons, each in the following format:
 
+```
     alias-name=generated-type-name
+```
 
 Custom containers
 -----------------
@@ -1081,13 +1167,16 @@ must provide converter between the custom type and the default type. The
 converter is a public class named `BondTypeAliasConverter` defining a pair of
 public static `Convert` methods for each type alias:
 
+```csharp
     public static CustomType Convert(AliasedType value, CustomType unused)
     public static AliasedType Convert(CustomType value, AliasedType unused)
+```
 
 For example if `System.DateTime` was mapped to an alias of `int64` the
 following class could be defined to provide conversions between `DateTime` and
 `long` (the default type for `int64`):
 
+```csharp
     public static class BondTypeAliasConverter
     {
         public static long Convert(DateTime value, long unused)
@@ -1100,6 +1189,7 @@ following class could be defined to provide conversions between `DateTime` and
             return new DateTime(value);
         }
     }
+```
 
 The converter class must be defined in the same assembly and namespace as the
 class representing the Bond schema(s) in which the type alias is used or
@@ -1115,6 +1205,7 @@ Xml
 Bond supports Xml serialization via Simple Xml protocol implemented by the
 `SimpleXmlReader` and `SimpleXmlWriter` classes:
 
+```csharp
     var stream = new System.IO.MemoryStream();
     var writer = new SimpleXmlWriter(stream);
 
@@ -1126,6 +1217,7 @@ Bond supports Xml serialization via Simple Xml protocol implemented by the
     var reader = new SimpleXmlReader(stream);
 
     var dst = Deserialize<Record>.From(reader);
+```
 
 In the example above the Xml reader and writer are constructed directly from an
 instance of `System.Stream`. Underneath however they use `System.Xml.XmlReader`
@@ -1133,28 +1225,34 @@ and `System.Xml.XmlWriter` which provide fast, non-cached, forward-only Xml
 parsing and generation on top of many different data readers and writers. For
 example to deserialize Xml payload from a string:
 
+```csharp
     var xmlString = "<Record><Name>test</Name><Numbers><Item>3.14</Item></Numbers></Record>";
 
     var reader = new SimpleXmlReader(XmlReader.Create(new StringReader(xmlString)));
     var record = Deserialize<Record>.From(reader);
+```
 
 The Simple Xml protocol flattens the inheritance hierarchy, putting fields from
 base and derived classes together under a single element. In order to prevent
 name conflicts, Simple Xml protocol provides support for optional use of fully
 qualified schema names as field element namespaces, e.g.:
 
+```xml
     <Derived xmlns:b="urn:Examples.Base" xmlns:d="urn:Examples.Derived">
         <d:Field>10</d:Field>
         <b:Field>foo</b:Field>
     </Derived>
+```
 
 Namespaces can be enabled when serializing to Xml via the `UseNamespaces` flag
 in SimpleXmlWriter.Settings:
 
+```csharp
     var writer = new SimpleXmlWriter(stream, new SimpleXmlWriter.Settings
     {
         UseNamespaces = true
     });
+```
 
 There is no need to enable namespace support for the SimpleXmlReader. The
 elements representing fields are always matched against field names and their
@@ -1178,6 +1276,7 @@ the `SimpleJsonReader` and `SimpleJsonWriter` classes. The JSON protocol
 depends on the Newtonsoft JSON parser and the classes are in a separate
 assembly `Bond.JSON.dll`.
 
+```csharp
     var stream = new System.IO.MemoryStream();
     var writer = new SimpleJsonWriter(stream);
 
@@ -1189,22 +1288,26 @@ assembly `Bond.JSON.dll`.
     var reader = new SimpleJsonReader(stream);
 
     var dst = Deserialize<Record>.From(reader);
+```
 
 In the example above the JSON reader and writer are constructed directly from
 an instance of `System.Stream`. Alternatively they can be also constructed from
 `System.IO.TextReader` and `System.IO.TextWriter`. For example to deserialize
 JSON payload from a string:
 
+```csharp
     var jsonString = "{Name: test, Numbers: [3.14]}";
 
     var reader = new SimpleJsonReader(new StringReader(jsonString));
     var record = Deserialize<Record>.From(reader);
+```
 
 The Simple JSON protocol flattens the inheritance hierarchy, putting fields
 from base and derived schemas together in the same JSON object. Name conflicts
 in the JSON representation between fields of base and derived schema can be
 resolved using `JsonName` schema field attribute:
 
+```
     struct Base
     {
         0: string name;
@@ -1215,6 +1318,7 @@ resolved using `JsonName` schema field attribute:
         [JsonName("DerivedName")]
         0: string name;
     }
+```
 
 See also the following example:
 
@@ -1238,6 +1342,7 @@ The `Schema` attribute is used to mark types that represent Bond schemas and
 thus can be used with Bond APIs. The attribute can be applied to classes,
 structs and interfaces.
 
+```csharp
     [Bond.Schema]
     public class Foo {}
 
@@ -1246,6 +1351,7 @@ structs and interfaces.
 
     [Bond.Schema]
     public interface IFoo {}
+```
 
 The `Schema` attribute applies to the specific type only and is not inherited.
 When a class decorated with the `Schema` attribute derives from another class
@@ -1276,12 +1382,14 @@ be decorated with the `Id` attribute to specify the field's identifier (also
 called field ordinal). The ordinal value must an unsigned 16-bit integer,
 unique for each field within a type.
 
+```csharp
     [Bond.Schema]
     public class Foo
     {
         [Bond.Id(0)]
         public string message { get; set; }
     }
+```
 
 A type representing a schema may have additional fields/properties that don't
 represent schema fields and thus are not decorated with Bond attributes.
@@ -1292,6 +1400,7 @@ By default fields of Bond schemas are optional. [Required
 fields](bond_cpp.html#required-fields) must be marked with the `Required`
 attribute.
 
+```csharp
     /* Bond schema
     struct Foo
     {
@@ -1304,6 +1413,7 @@ attribute.
         [Bond.Id(0), Bond.Required]
         public string message { get; set; }
     }
+```
 
 ### TypeAttribute ###
 
@@ -1316,6 +1426,7 @@ to Bond type system. For example C# `string` can represent either Bond type
 can represent both *nullable* and *non-nullable* type in Bond schema. One of
 the uses for the `Type` is resolving such ambiguities.
 
+```csharp
     using Bond.Tag;
 
     /* Bond schema
@@ -1334,6 +1445,7 @@ the uses for the `Type` is resolving such ambiguities.
         [Bond.Id(1)]
         public string str2 = null;
     }
+```
 
 Bond defines the following tag types that can be used in a `Type` attribute:
 
@@ -1346,6 +1458,7 @@ Bond defines the following tag types that can be used in a `Type` attribute:
 The `Type` attribute can also be used to specify type of object to be created
 during deserialization when a field/property type is an interface.
 
+```csharp
     [Bond.Schema]
     public class Foo
     {
@@ -1355,6 +1468,7 @@ during deserialization when a field/property type is an interface.
         [Bond.Id(1), Bond.Type(typeof(HashSet<string>))]
         public ISet<string> strings2 { get; set; }
     }
+```
 
 ### DefaultAttribute ###
 
@@ -1364,6 +1478,7 @@ default field values must be specified explicitly by decorating the interface
 properties with the `Default` attribute. The value specified in the attribute
 must be compatible with the field type, otherwise the behaviour is undefined.
 
+```csharp
     [Bond.Schema]
     public interface IFoo
     {
@@ -1373,6 +1488,7 @@ must be compatible with the field type, otherwise the behaviour is undefined.
         [Bond.Id(0), Default(3.14f)]
         public float { get; set; }
     }
+```
 
 The `Default` attribute is optional for properties that are decorated with
 `nullable` tag (the default is implicitly `null`). For non-nullable collections
@@ -1386,6 +1502,7 @@ no concept of a default value thus the `Default` attribute is not applicable.
 The `Attribute` attribute can be used to specify user defined attribute(s) for
 schemas, fields and enums.
 
+```csharp
     [Bond.Schema]
     [Bond.Attribute("name", "value")]
     public class Foo
@@ -1395,6 +1512,7 @@ schemas, fields and enums.
         [Bond.Attribute("custom2", "value2")]
         public string foo;
     }
+```
 
 Schema attributes are usually used by transforms to customize code generation
 but they can also be accessed by applications via reflection.
@@ -1410,11 +1528,13 @@ custom protocols with extra information.
 The `Reader` attribute is used on a protocol writer implementation and
 specifies the type that implements the reader for that protocol.
 
+```csharp
     [Bond.Reader(typeof(SimpleXmlReader))]
     public struct SimpleXmlWriter : IProtocolWriter
     {
         // ...
     }
+```
 
 ### ParserAttribute ###
 
@@ -1427,6 +1547,7 @@ with one type parameter, it must implement `IParser` interface and have two
 public constructors, one accepting `RuntimeSchema` argument and one accepting
 `Type` argument (compile-time schema).
 
+```csharp
     [Bond.Parser(typeof(SimpleXmlParser<>))]
     public struct SimpleXmlReader : IXmlReader
     {
@@ -1445,6 +1566,7 @@ public constructors, one accepting `RuntimeSchema` argument and one accepting
             // ...
         }
     }
+```
 
 ### SerializerAttribute ###
 
@@ -1455,6 +1577,7 @@ attribute must be a generic type definition with two type parameters `R` and
 `W`, it must implement `ISerializerGenerator<R, W>` interface and define two
 public constructors:
 
+```csharp
     [Bond.Serializer(typeof(CustomSerializer<,>))]
     public struct SimpleXmlWriter : IProtocolWriter
     {
@@ -1473,6 +1596,7 @@ public constructors:
             // ...
         }
     }
+```
 
 NuGet packages
 ==============

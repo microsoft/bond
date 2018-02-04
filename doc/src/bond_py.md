@@ -29,6 +29,7 @@ Basic example
 
 We start with defining a data schema using Bond idl language:
 
+```
     namespace example
 
     struct Record
@@ -36,17 +37,21 @@ We start with defining a data schema using Bond idl language:
         0: string          name;
         1: vector<double>  items;
     };
+```
 
 In order to use the schema in a Python program we need to implement a Python 
 extension that exposes types representing the schema. The first step is to 
 generate Bond C++ bindings for the schema using the Bond compiler:
 
+```
     gbc c++ example.bond
+```
 
 With the generated C++ code (`example_reflection.h` in this case) implementing 
 the Python extension is as simple as specifying which structs we want to expose 
 to Python:
 
+```cpp
     #include "example_reflection.h"
     #include <bond/python/struct.h>
 
@@ -54,12 +59,13 @@ to Python:
     {
         bond::python::struct_<example::Record>()
             .def();
-    } 
+    }
+```
 
 Finally, we can import the extension as a module that can be used in a Python 
 program:
 
-~~~{.python .numberLines}
+```python
     import example
 
     src = example.Record()
@@ -71,7 +77,7 @@ program:
 
     dst = example.Record()
     example.Deserialize(data, dst)
-~~~
+```
 
 Building extensions
 ===================
@@ -103,6 +109,7 @@ exposed types always use unqualified name. If it is necessary to use the
 qualified name for a struct, it should be explicitly exposed *before* its 
 dependent structs.
 
+```cpp
     BOOST_PYTHON_MODULE(example)
     {
         using namespace bond::python;
@@ -113,6 +120,7 @@ dependent structs.
         struct_<example::Example>()
             .def();
     }
+```
 
 Enums
 -----
@@ -128,6 +136,7 @@ method has two overloads. When `def` is called without any arguments the enum
 is exposed using unqualified name. To expose an enum using the fully qualified 
 name, the `def` method can be called with `bond::qualified_name` as argument.
 
+```cpp
     BOOST_PYTHON_MODULE(example)
     {
         using namespace bond::python;
@@ -138,7 +147,7 @@ name, the `def` method can be called with `bond::qualified_name` as argument.
         struct_<example::Example>()
             .def();
     }
-
+```
 
 Containers
 ----------
@@ -168,15 +177,17 @@ Nullable and `nothing`
 The `null` value for nullable types and default value of `nothing` are both 
 mapped to the Python `None` object. For example, given the schema:
 
+```
     struct Record
     {
         0: int32 x = nothing;
         1: nullable<string> s;
     }
+```
 
 We can write the following Python program:
 
-~~~{.python .numberLines}
+```python
     obj = example.Record()
 
     assert(obj.x is None)
@@ -187,7 +198,7 @@ We can write the following Python program:
 
     assert(obj.x is not None)
     assert(obj.s is not None)
-~~~
+```
 
 Generics
 --------
@@ -197,6 +208,7 @@ program, specific instances of generic schemas can be used like any other
 concrete structs. In fact any instances of a generic schema used within exposed 
 structs are also implicitly exposed, just like any other nested struct.
 
+```
     namespace generic
 
     struct Generic<T>
@@ -208,11 +220,13 @@ structs are also implicitly exposed, just like any other nested struct.
     {
         0: Generic<string> field;
     }
+```
 
 For example, an extension exposing the struct `Example` will also automatically 
 expose the instance `Generic<string>`. Additionally, we can explicitly expose 
 other instances of `Generic<T>`:
 
+```cpp
     BOOST_PYTHON_MODULE(example)
     {
         // Expose Example and implicitly Generic<string>
@@ -223,7 +237,7 @@ other instances of `Generic<T>`:
         bond::python::struct_<generic.Generic<bond::GUID> >()
             .def();
     }
-
+```
 
 The name of a generic schema instance is converted to a valid Python identifier 
 by replacing all non-alphanumeric characters with an underscore. The names of 
@@ -231,7 +245,7 @@ type parameters that are Bond-defined structs are used in their fully qualified
 form. For example, using the extension defined above we can use the following 
 types:
 
-~~~{.python .numberLines}
+```python
     import example
 
     # The instance Generic<string>
@@ -239,7 +253,7 @@ types:
 
     # The instance Generic<bond.GUID>
     obj2 = example.Generic_bond_GUID_()
-~~~
+```
 
 Exposed APIs
 ============
@@ -270,7 +284,7 @@ protocol by default but they also take an optional argument of type
 The `Deserialize` and `Unmarshal` APIs take an optional argument of type 
 `SchemaDef` to specify the schema of the serialized data.
 
-~~~{.python .numberLines}
+```python
     import example
 
     obj = example.Record()
@@ -290,8 +304,7 @@ The `Deserialize` and `Unmarshal` APIs take an optional argument of type
 
     # deserialize from Simple Protocol with runtime schema
     example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)
-~~~
-
+```
 
 References
 ==========
