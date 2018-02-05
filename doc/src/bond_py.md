@@ -30,13 +30,13 @@ Basic example
 We start with defining a data schema using Bond idl language:
 
 ```
-    namespace example
+namespace example
 
-    struct Record
-    {
-        0: string          name;
-        1: vector<double>  items;
-    };
+struct Record
+{
+    0: string          name;
+    1: vector<double>  items;
+};
 ```
 
 In order to use the schema in a Python program we need to implement a Python 
@@ -44,7 +44,7 @@ extension that exposes types representing the schema. The first step is to
 generate Bond C++ bindings for the schema using the Bond compiler:
 
 ```
-    gbc c++ example.bond
+gbc c++ example.bond
 ```
 
 With the generated C++ code (`example_reflection.h` in this case) implementing 
@@ -52,31 +52,31 @@ the Python extension is as simple as specifying which structs we want to expose
 to Python:
 
 ```cpp
-    #include "example_reflection.h"
-    #include <bond/python/struct.h>
+#include "example_reflection.h"
+#include <bond/python/struct.h>
 
-    BOOST_PYTHON_MODULE(example)
-    {
-        bond::python::struct_<example::Record>()
-            .def();
-    }
+BOOST_PYTHON_MODULE(example)
+{
+    bond::python::struct_<example::Record>()
+        .def();
+}
 ```
 
 Finally, we can import the extension as a module that can be used in a Python 
 program:
 
 ```python
-    import example
+import example
 
-    src = example.Record()
+src = example.Record()
 
-    src.name = "test"
-    src.items = [3.14, 6.28]
+src.name = "test"
+src.items = [3.14, 6.28]
 
-    data = example.Serialize(src)
+data = example.Serialize(src)
 
-    dst = example.Record()
-    example.Deserialize(data, dst)
+dst = example.Record()
+example.Deserialize(data, dst)
 ```
 
 Building extensions
@@ -110,16 +110,16 @@ qualified name for a struct, it should be explicitly exposed *before* its
 dependent structs.
 
 ```cpp
-    BOOST_PYTHON_MODULE(example)
-    {
-        using namespace bond::python;
+BOOST_PYTHON_MODULE(example)
+{
+    using namespace bond::python;
 
-        struct_<example::Nested>()
-            .def(bond::qualified_name);
+    struct_<example::Nested>()
+        .def(bond::qualified_name);
 
-        struct_<example::Example>()
-            .def();
-    }
+    struct_<example::Example>()
+        .def();
+}
 ```
 
 Enums
@@ -137,16 +137,16 @@ is exposed using unqualified name. To expose an enum using the fully qualified
 name, the `def` method can be called with `bond::qualified_name` as argument.
 
 ```cpp
-    BOOST_PYTHON_MODULE(example)
-    {
-        using namespace bond::python;
+BOOST_PYTHON_MODULE(example)
+{
+    using namespace bond::python;
 
-        enum_<example::Colors>()
-            .def(bond::qualified_name);
+    enum_<example::Colors>()
+        .def(bond::qualified_name);
 
-        struct_<example::Example>()
-            .def();
-    }
+    struct_<example::Example>()
+        .def();
+}
 ```
 
 Containers
@@ -178,26 +178,26 @@ The `null` value for nullable types and default value of `nothing` are both
 mapped to the Python `None` object. For example, given the schema:
 
 ```
-    struct Record
-    {
-        0: int32 x = nothing;
-        1: nullable<string> s;
-    }
+struct Record
+{
+    0: int32 x = nothing;
+    1: nullable<string> s;
+}
 ```
 
 We can write the following Python program:
 
 ```python
-    obj = example.Record()
+obj = example.Record()
 
-    assert(obj.x is None)
-    assert(obj.s is None)
+assert(obj.x is None)
+assert(obj.s is None)
 
-    x = 100
-    s = "test"
+x = 100
+s = "test"
 
-    assert(obj.x is not None)
-    assert(obj.s is not None)
+assert(obj.x is not None)
+assert(obj.s is not None)
 ```
 
 Generics
@@ -209,17 +209,17 @@ concrete structs. In fact any instances of a generic schema used within exposed
 structs are also implicitly exposed, just like any other nested struct.
 
 ```
-    namespace generic
+namespace generic
 
-    struct Generic<T>
-    {
-        0: T field;
-    }
+struct Generic<T>
+{
+    0: T field;
+}
 
-    struct Example
-    {
-        0: Generic<string> field;
-    }
+struct Example
+{
+    0: Generic<string> field;
+}
 ```
 
 For example, an extension exposing the struct `Example` will also automatically 
@@ -227,16 +227,16 @@ expose the instance `Generic<string>`. Additionally, we can explicitly expose
 other instances of `Generic<T>`:
 
 ```cpp
-    BOOST_PYTHON_MODULE(example)
-    {
-        // Expose Example and implicitly Generic<string>
-        bond::python::struct_<generic.Example>()
-            .def();
+BOOST_PYTHON_MODULE(example)
+{
+    // Expose Example and implicitly Generic<string>
+    bond::python::struct_<generic.Example>()
+        .def();
 
-        // Explicitly expose Generic<bond.GUID>
-        bond::python::struct_<generic.Generic<bond::GUID> >()
-            .def();
-    }
+    // Explicitly expose Generic<bond.GUID>
+    bond::python::struct_<generic.Generic<bond::GUID> >()
+        .def();
+}
 ```
 
 The name of a generic schema instance is converted to a valid Python identifier 
@@ -246,13 +246,13 @@ form. For example, using the extension defined above we can use the following
 types:
 
 ```python
-    import example
+import example
 
-    # The instance Generic<string>
-    obj1 = example.Generic_string_()
+# The instance Generic<string>
+obj1 = example.Generic_string_()
 
-    # The instance Generic<bond.GUID>
-    obj2 = example.Generic_bond_GUID_()
+# The instance Generic<bond.GUID>
+obj2 = example.Generic_bond_GUID_()
 ```
 
 Exposed APIs
@@ -285,25 +285,25 @@ The `Deserialize` and `Unmarshal` APIs take an optional argument of type
 `SchemaDef` to specify the schema of the serialized data.
 
 ```python
-    import example
+import example
 
-    obj = example.Record()
+obj = example.Record()
 
-    # serialize to Compact Binary
-    data = example.Serialize(obj)
+# serialize to Compact Binary
+data = example.Serialize(obj)
 
-    # serialize to JSON
-    json = example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
+# serialize to JSON
+json = example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
 
-    # marshal schema to Compact Binary
-    data = example.Marshal(example.GetRuntimeSchema(obj))
+# marshal schema to Compact Binary
+data = example.Marshal(example.GetRuntimeSchema(obj))
 
-    # unmarshal SchemaDef
-    schema = example.SchemaDef()
-    example.Unmarshal(data, schema)
+# unmarshal SchemaDef
+schema = example.SchemaDef()
+example.Unmarshal(data, schema)
 
-    # deserialize from Simple Protocol with runtime schema
-    example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)
+# deserialize from Simple Protocol with runtime schema
+example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)
 ```
 
 References
