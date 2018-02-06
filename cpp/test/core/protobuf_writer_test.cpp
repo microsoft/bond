@@ -471,6 +471,10 @@ BOOST_AUTO_TEST_CASE(StringContainerTests)
     CheckBinaryFormat<
         unittest::proto::StringContainer,
         unittest::BoxWrongPackingWrongEncoding<std::vector<std::string> > >();
+
+    CheckBinaryFormat<
+        unittest::proto::StringContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::vector<std::wstring> > >();
 }
 
 BOOST_AUTO_TEST_CASE(StringSetContainerTests)
@@ -478,6 +482,10 @@ BOOST_AUTO_TEST_CASE(StringSetContainerTests)
     CheckBinaryFormat<
         unittest::proto::StringContainer,
         unittest::BoxWrongPackingWrongEncoding<std::set<std::string> > >();
+
+    CheckBinaryFormat<
+        unittest::proto::StringContainer,
+        unittest::BoxWrongPackingWrongEncoding<std::set<std::wstring> > >();
 }
 
 BOOST_AUTO_TEST_CASE(BlobContainerTests)
