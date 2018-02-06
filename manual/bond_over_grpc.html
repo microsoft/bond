@@ -6,6 +6,41 @@
   <meta name="generator" content="pandoc" />
   <title>Bond-over-gRPC</title>
   <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
   body {
       line-height: 1.5;
       font-family: Helvetica, Arial, sans-serif;
@@ -145,37 +180,37 @@
 <li>The proxy stub, which is named with the name of the service plus the suffix <code>Client' (e.g.:</code>Example.ExampleClient`). This is used to invoke the service from the client side.</li>
 </ul>
 <p>To build the service functionality, simply write a concrete service implementation by subclassing the server base and supplying the business logic:</p>
-<pre><code>public class ExampleServiceImpl : Example.ExampleBase
+<div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="kw">public</span> <span class="kw">class</span> ExampleServiceImpl : Example.<span class="fu">ExampleBase</span>
 {
-    public override async Task&lt;IMessage&lt;ExampleResponse&gt;&gt; ExampleMethod(IMessage&lt;ExampleRequest&gt; param, ServerCallContext context)
+    <span class="kw">public</span> <span class="kw">override</span> async Task&lt;IMessage&lt;ExampleResponse&gt;&gt; <span class="fu">ExampleMethod</span>(IMessage&lt;ExampleRequest&gt; param, ServerCallContext context)
     {
-        ExampleRequest request = param.Payload.Deserialize();
-        var response = new ExampleResponse();
+        ExampleRequest request = param.<span class="fu">Payload</span>.<span class="fu">Deserialize</span>();
+        <span class="dt">var</span> response = <span class="kw">new</span> <span class="fu">ExampleResponse</span>();
 
-        // Service business logic goes here
+        <span class="co">// Service business logic goes here</span>
 
-        return Message.From(response);
+        <span class="kw">return</span> Message.<span class="fu">From</span>(response);
     }
-}</code></pre>
+}</code></pre></div>
 <p>This service implementation is hooked up to a gRPC server as follows:</p>
-<pre><code>var server = new Grpc.Core.Server
+<div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="dt">var</span> server = <span class="kw">new</span> Grpc.<span class="fu">Core</span>.<span class="fu">Server</span>
 {
-    Services = { Example.BindService(new ExampleServiceImpl()) },
-    Ports = { new Grpc.Core.ServerPort(ExampleHost, ExamplePort, Grpc.Core.ServerCredentials.Insecure) }
+    Services = { Example.<span class="fu">BindService</span>(<span class="kw">new</span> <span class="fu">ExampleServiceImpl</span>()) },
+    Ports = { <span class="kw">new</span> Grpc.<span class="fu">Core</span>.<span class="fu">ServerPort</span>(ExampleHost, ExamplePort, Grpc.<span class="fu">Core</span>.<span class="fu">ServerCredentials</span>.<span class="fu">Insecure</span>) }
 };
-server.Start();</code></pre>
+server.<span class="fu">Start</span>();</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
-<pre><code>var channel = new Grpc.Core.Channel(ExampleHost, ExamplePort, Grpc.Core.ChannelCredentials.Insecure);
-var client = new Example.ExampleClient(channel);</code></pre>
+<div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="dt">var</span> channel = <span class="kw">new</span> Grpc.<span class="fu">Core</span>.<span class="fu">Channel</span>(ExampleHost, ExamplePort, Grpc.<span class="fu">Core</span>.<span class="fu">ChannelCredentials</span>.<span class="fu">Insecure</span>);
+<span class="dt">var</span> client = <span class="kw">new</span> Example.<span class="fu">ExampleClient</span>(channel);</code></pre></div>
 <p>The proxy stub can then be used to make calls to the server as follows:</p>
-<pre><code>var request = new ExampleRequest();
-// Fill in request fields here
+<div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="dt">var</span> request = <span class="kw">new</span> <span class="fu">ExampleRequest</span>();
+<span class="co">// Fill in request fields here</span>
 
-IMessage&lt;ExampleResponse&gt; responseMessage = await client.Method(request);
+IMessage&lt;ExampleResponse&gt; responseMessage = await client.<span class="fu">Method</span>(request);
 
-ExampleResponse response = responseMessage.Payload.Deserialize().Payload;
-// Examine response here</code></pre>
+ExampleResponse response = responseMessage.<span class="fu">Payload</span>.<span class="fu">Deserialize</span>().<span class="fu">Payload</span>;
+<span class="co">// Examine response here</span></code></pre></div>
 <p>Note that the signatures generated by <code>gbc</code> are slightly different from the ones in the gRPC documentation: on the service side, the request is wrapped in <code>IMessage&lt;T&gt;</code> and on the client side, the response is wrapped in `IMessage<T>; this allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. Note also that Bond-over-gRPC does not provide synchronous APIs in C# by design.</p>
 <p>For more information about gRPC in C#, take a look at the <a href="http://www.grpc.io/docs/tutorials/basic/csharp.html">gRPC C# tutorial</a>.</p>
 <p>There is a <a href="https://github.com/Microsoft/bond-grpc-examples">Bond-over-gRPC standalone example project</a>.</p>
@@ -198,52 +233,52 @@ ExampleResponse response = responseMessage.Payload.Deserialize().Payload;
 <li>The proxy stub, which is an inner class named <code>Client</code> (e.g.: <code>Example::Client</code>). This is used to invoke the service from the client side. (Likewise, <code>Client</code> is a type alias for <code>ClientCore&lt;bond::ext::gRPC::thread_pool&gt;</code>. The <code>ClientCore&lt;T&gt;</code> template can be used to customize the client implementation to use a different thread pool implementation.)</li>
 </ul>
 <p>To build the service functionality, simply write a concrete service implementation by subclassing the server base and supplying the business logic:</p>
-<pre><code>class ExampleServiceImpl final : Example::Service
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">class</span> ExampleServiceImpl <span class="kw">final</span> : Example::Service
 {
-    void ExampleMethod(
+    <span class="dt">void</span> ExampleMethod(
         bond::ext::gRPC::unary_call&lt;
             bond::bonded&lt;ExampleRequest&gt;,
-            ExampleResponse&gt; call) override
+            ExampleResponse&gt; call) <span class="kw">override</span>
     {
         ExampleRequest request = call.request().Deserialize();
         ExampleResponse response;
 
-        // Service business logic goes here
+        <span class="co">// Service business logic goes here</span>
 
         call.Finish(response);
     }
-}</code></pre>
+}</code></pre></div>
 <p>This service implementation is hooked up to a gRPC server as follows:</p>
-<pre><code>auto ioManager = std::make_shared&lt;bond::ext::gRPC::io_manager&gt;();
-auto threadPool = std::make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
-const std::string server_address(Host + &quot;:&quot; + Port);
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
+<span class="kw">auto</span> threadPool = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+<span class="at">const</span> <span class="bu">std::</span>string server_address(Host + <span class="st">&quot;:&quot;</span> + Port);
 
 ExampleServiceImpl service;
 bond::ext::gRPC::server_builder builder;
 builder.SetThreadPool(threadPool);
 builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 builder.RegisterService(&amp;service);
-std::unique_ptr&lt;bond::ext::gRPC::server&gt; server(builder.BuildAndStart());</code></pre>
+<span class="bu">std::</span>unique_ptr&lt;bond::ext::gRPC::server&gt; server(builder.BuildAndStart());</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
-<pre><code>auto ioManager = std::make_shared&lt;bond::ext::gRPC::io_manager&gt;();
-auto threadPool = std::make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
-const std::string server_address(Host + &quot;:&quot; + Port);
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
+<span class="kw">auto</span> threadPool = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+<span class="at">const</span> <span class="bu">std::</span>string server_address(Host + <span class="st">&quot;:&quot;</span> + Port);
 
 Example::Client client(
     grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
     ioManager,
-    threadPool);</code></pre>
+    threadPool);</code></pre></div>
 <p>The proxy stub can then be used to make calls to the server as follows:</p>
-<pre><code>ExampleRequest request;
-// Fill in request fields here
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">ExampleRequest request;
+<span class="co">// Fill in request fields here</span>
 
 bond::ext::gRPC::wait_callback&lt;ExampleResponse&gt; cb;
 client.AsyncExampleMethod(request, callback);
 
 callback.wait();
 ExampleResponse response = callback.response().Deserialize();
-// Examine response here</code></pre>
+<span class="co">// Examine response here</span></code></pre></div>
 <p>Note these APIs are significantly different from the APIs presented in the gRPC documentation; Bond-over-gRPC is attempting to provide a more straightforward API for asynchronous communication than gRPC currently presents in C++. Bond-over-gRPC does not provide synchronous APIs in C++ by design. The use of <a href="../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html"><code>wait_callback&lt;T&gt;</code></a> here is for illustrative purposes; any callback implementation with the same signature can be used. <code>wait_callback</code> satisfies the signature and provides a <code>wait()</code> method to adapt the asynchronous proxy method into an effectively synchronous call.</p>
 <p>The proxy stub has a number of overloads for each method. The simplest is demonstrated above, and there are ones that take <code>bonded&lt;T&gt;</code> and <code>grpc::ClientContext</code> arguments.</p>
 <p>Using <code>bonded&lt;T&gt;</code> to wrap the request and response objects allows for better control over the time of deserialization and also helps prevent slicing when using polymorphic Bond types. As demonstrated above, convenience APIs are provided in some places to hide the use <code>bonded&lt;T&gt;</code> where possible. For use of <code>bonded</code> request objects and <code>ClientContext</code> arguments, see the pingpong example.</p>

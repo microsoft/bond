@@ -171,80 +171,43 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>The Python support is implemented as a library for building C++ extensions exposing Bond generated types and associated APIs to Python.</p>
 <h1 id="basic-example">Basic example</h1>
 <p>We start with defining a data schema using Bond idl language:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">namespace</span> example
+<pre><code>namespace example
 
-<span class="kw">struct</span> Record
+struct Record
 {
-    <span class="dv">0</span>: string          name;
-    <span class="dv">1</span>: vector&lt;<span class="dt">double</span>&gt;  items;
-};</code></pre></td></tr></table></div>
+    0: string          name;
+    1: vector&lt;double&gt;  items;
+};</code></pre>
 <p>In order to use the schema in a Python program we need to implement a Python extension that exposes types representing the schema. The first step is to generate Bond C++ bindings for the schema using the Bond compiler:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp">gbc c++ example.bond</code></pre></td></tr></table></div>
+<pre><code>gbc c++ example.bond</code></pre>
 <p>With the generated C++ code (<code>example_reflection.h</code> in this case) implementing the Python extension is as simple as specifying which structs we want to expose to Python:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&quot;example_reflection.h&quot;</span>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&quot;example_reflection.h&quot;</span>
 <span class="pp">#include </span><span class="im">&lt;bond/python/struct.h&gt;</span>
 
 <span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     bond::python::<span class="va">struct_</span>&lt;example::Record&gt;()
         .def();
-} </code></pre></td></tr></table></div>
+}</code></pre></div>
 <p>Finally, we can import the extension as a module that can be used in a Python program:</p>
-<div class="sourceCode"><table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> example
 
-    src <span class="op">=</span> example.Record()
+src <span class="op">=</span> example.Record()
 
-    src.name <span class="op">=</span> <span class="st">&quot;test&quot;</span>
-    src.items <span class="op">=</span> [<span class="fl">3.14</span>, <span class="fl">6.28</span>]
+src.name <span class="op">=</span> <span class="st">&quot;test&quot;</span>
+src.items <span class="op">=</span> [<span class="fl">3.14</span>, <span class="fl">6.28</span>]
 
-    data <span class="op">=</span> example.Serialize(src)
+data <span class="op">=</span> example.Serialize(src)
 
-    dst <span class="op">=</span> example.Record()
-    example.Deserialize(data, dst)</code></pre></td></tr></table></div>
+dst <span class="op">=</span> example.Record()
+example.Deserialize(data, dst)</code></pre></div>
 <h1 id="building-extensions">Building extensions</h1>
 <p>Python extensions are simply shared libraries with the same file name as the module name. On Windows the extension should have .pyd file extension. Bond extensions depend on <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html">Boost Python</a> library, and thus need to be linked with both the Boost Python library and the Python library. Refer to <a href="http://www.boost.org/doc/libs/1_54_0/libs/python/doc/building.html">Boost documentation</a> for details.</p>
 <h1 id="exposing-types">Exposing types</h1>
 <h2 id="structs">Structs</h2>
 <p>Structs generated from Bond schemas can be exposed by calling <code>def</code> method of the <code>bond::python::struct_</code> class template within a <code>BOOST_PYTHON_MODULE</code> block. The template takes one parameter: the C++ struct to be exposed. The <code>def</code> method has two overloads. When <code>def</code> if called without any arguments the struct is exposed using unqualified name. To expose a struct using the fully qualified name, the <code>def</code> method can be called with <code>bond::qualified_name</code> as argument.</p>
 <p>If a struct is exposed, all of its dependencies are implicitly exposed as well and often don’t need to be exposed explicitly. Note however that <a href="#exposed-apis">APIs</a> are defined only for explicitly exposed types. Implicitly exposed types always use unqualified name. If it is necessary to use the qualified name for a struct, it should be explicitly exposed <em>before</em> its dependent structs.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
 
@@ -253,21 +216,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
     <span class="va">struct_</span>&lt;example::Example&gt;()
         .def();
-}</code></pre></td></tr></table></div>
+}</code></pre></div>
 <h2 id="enums">Enums</h2>
 <p>Since enums are almost always used in exposed structs, usually it is not necessary to expose them explicitly. One common exception, as was the case with structs, is when we want to explicitly expose an enum using the qualified name.</p>
 <p>Enumerator types generated from Bond schema can be exposed by calling <code>def</code> method of the <code>bond::python::enum_</code> class template from a <code>BOOST_PYTHON_MODULE</code> block. The template takes one parameter: the C++ enum to be exposed. The <code>def</code> method has two overloads. When <code>def</code> is called without any arguments the enum is exposed using unqualified name. To expose an enum using the fully qualified name, the <code>def</code> method can be called with <code>bond::qualified_name</code> as argument.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="kw">using</span> <span class="kw">namespace</span> bond::python;
 
@@ -276,7 +229,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 
     <span class="va">struct_</span>&lt;example::Example&gt;()
         .def();
-}</code></pre></td></tr></table></div>
+}</code></pre></div>
 <h2 id="containers">Containers</h2>
 <p>Any container classes used in exposed schema structs are automatically exposed to Python. The exposed types behave just like Python built-in equivalent containers, supporting Python style indexing, including slices and negative indices, list/set/dictionary comprehension as well as many of the built-in functions and operations like <code>len()</code>, <code>del</code> and <code>in</code>. Built-in container objects also are implicitly convertible to containers exposed by Bond.</p>
 <p>There is a noteworthy difference between Bond <code>map</code> and Python <code>dictionary</code>: iterating over elements of a <code>map</code> doesn’t yield tuples <code>(key, value)</code> but instead objects with two methods: <code>key()</code> and <code>data()</code>.</p>
@@ -284,73 +237,37 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond <code>blob</code> is represented as either a string object in Python2 or a bytes object in Python3. Initializing a <code>blob</code> from a Python object does not involve a memory copy; instead, the reference count on the underlying Python object is increased.</p>
 <h2 id="nullable-and-nothing">Nullable and <code>nothing</code></h2>
 <p>The <code>null</code> value for nullable types and default value of <code>nothing</code> are both mapped to the Python <code>None</code> object. For example, given the schema:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">struct</span> Record
+<pre><code>struct Record
 {
-    <span class="dv">0</span>: int32 x = nothing;
-    <span class="dv">1</span>: nullable&lt;string&gt; s;
-}</code></pre></td></tr></table></div>
+    0: int32 x = nothing;
+    1: nullable&lt;string&gt; s;
+}</code></pre>
 <p>We can write the following Python program:</p>
-<div class="sourceCode"><table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    obj <span class="op">=</span> example.Record()
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">obj <span class="op">=</span> example.Record()
 
-    <span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="va">None</span>)
-    <span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="va">None</span>)
+<span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="va">None</span>)
+<span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="va">None</span>)
 
-    x <span class="op">=</span> <span class="dv">100</span>
-    s <span class="op">=</span> <span class="st">&quot;test&quot;</span>
+x <span class="op">=</span> <span class="dv">100</span>
+s <span class="op">=</span> <span class="st">&quot;test&quot;</span>
 
-    <span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)
-    <span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)</code></pre></td></tr></table></div>
+<span class="cf">assert</span>(obj.x <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)
+<span class="cf">assert</span>(obj.s <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>)</code></pre></div>
 <h2 id="generics">Generics</h2>
 <p>While generic Bond schemas can not be instantiated from within a Python program, specific instances of generic schemas can be used like any other concrete structs. In fact any instances of a generic schema used within exposed structs are also implicitly exposed, just like any other nested struct.</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="kw">namespace</span> generic
+<pre><code>namespace generic
 
-<span class="kw">struct</span> Generic&lt;T&gt;
+struct Generic&lt;T&gt;
 {
-    <span class="dv">0</span>: T field;
+    0: T field;
 }
 
-<span class="kw">struct</span> Example
+struct Example
 {
-    <span class="dv">0</span>: Generic&lt;string&gt; field;
-}</code></pre></td></tr></table></div>
+    0: Generic&lt;string&gt; field;
+}</code></pre>
 <p>For example, an extension exposing the struct <code>Example</code> will also automatically expose the instance <code>Generic&lt;string&gt;</code>. Additionally, we can explicitly expose other instances of <code>Generic&lt;T&gt;</code>:</p>
-<div class="sourceCode"><table class="sourceCode cpp numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="sourceCode"><pre><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ex">BOOST_</span>PYTHON_MODULE(example)
 {
     <span class="co">// Expose Example and implicitly Generic&lt;string&gt;</span>
     bond::python::<span class="va">struct_</span>&lt;generic.Example&gt;()
@@ -359,22 +276,15 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
     <span class="co">// Explicitly expose Generic&lt;bond.GUID&gt;</span>
     bond::python::<span class="va">struct_</span>&lt;generic.Generic&lt;bond::GUID&gt; &gt;()
         .def();
-}</code></pre></td></tr></table></div>
+}</code></pre></div>
 <p>The name of a generic schema instance is converted to a valid Python identifier by replacing all non-alphanumeric characters with an underscore. The names of type parameters that are Bond-defined structs are used in their fully qualified form. For example, using the extension defined above we can use the following types:</p>
-<div class="sourceCode"><table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> example
 
-    <span class="co"># The instance Generic&lt;string&gt;</span>
-    obj1 <span class="op">=</span> example.Generic_string_()
+<span class="co"># The instance Generic&lt;string&gt;</span>
+obj1 <span class="op">=</span> example.Generic_string_()
 
-    <span class="co"># The instance Generic&lt;bond.GUID&gt;</span>
-    obj2 <span class="op">=</span> example.Generic_bond_GUID_()</code></pre></td></tr></table></div>
+<span class="co"># The instance Generic&lt;bond.GUID&gt;</span>
+obj2 <span class="op">=</span> example.Generic_bond_GUID_()</code></pre></div>
 <h1 id="exposed-apis">Exposed APIs</h1>
 <p>For every exposed schema struct Bond exposes appropriate overloads of the following API functions:</p>
 <ul>
@@ -387,44 +297,25 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p>The <code>Serialize</code>, <code>Deserialize</code> and <code>Marshal</code> APIs use the Compact Binary protocol by default but they also take an optional argument of type <code>bond::ProtocolType</code> to specify a different protocol.</p>
 <p>The <code>Deserialize</code> and <code>Unmarshal</code> APIs take an optional argument of type <code>SchemaDef</code> to specify the schema of the serialized data.</p>
-<div class="sourceCode"><table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="sourceCode"><pre><code class="sourceCode python">    <span class="im">import</span> example
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> example
 
-    obj <span class="op">=</span> example.Record()
+obj <span class="op">=</span> example.Record()
 
-    <span class="co"># serialize to Compact Binary</span>
-    data <span class="op">=</span> example.Serialize(obj)
+<span class="co"># serialize to Compact Binary</span>
+data <span class="op">=</span> example.Serialize(obj)
 
-    <span class="co"># serialize to JSON</span>
-    json <span class="op">=</span> example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
+<span class="co"># serialize to JSON</span>
+json <span class="op">=</span> example.Serialize(obj, example.ProtocolType.SIMPLE_JSON_PROTOCOL)
 
-    <span class="co"># marshal schema to Compact Binary</span>
-    data <span class="op">=</span> example.Marshal(example.GetRuntimeSchema(obj))
+<span class="co"># marshal schema to Compact Binary</span>
+data <span class="op">=</span> example.Marshal(example.GetRuntimeSchema(obj))
 
-    <span class="co"># unmarshal SchemaDef</span>
-    schema <span class="op">=</span> example.SchemaDef()
-    example.Unmarshal(data, schema)
+<span class="co"># unmarshal SchemaDef</span>
+schema <span class="op">=</span> example.SchemaDef()
+example.Unmarshal(data, schema)
 
-    <span class="co"># deserialize from Simple Protocol with runtime schema</span>
-    example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)</code></pre></td></tr></table></div>
+<span class="co"># deserialize from Simple Protocol with runtime schema</span>
+example.Deserialize(data, obj, schema, example.ProtocolType.SIMPLE_PROTOCOL)</code></pre></div>
 <h1 id="references">References</h1>
 <h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cpp"><a href="bond_cpp.html">C++ User’s Manual</a></h2>

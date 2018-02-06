@@ -210,7 +210,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <h2 id="import-statements">Import statements</h2>
 <p>In order to use types defined in another schema definition file, the other file needs to be explicitly imported. Schema file can contain zero or more import statements and they must appear at the top of the file:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">import <span class="st">&quot;file.bond&quot;</span></code></pre></div>
+<pre><code>import &quot;file.bond&quot;</code></pre>
 <p>The file being imported can be specified using a partial path which is resolved by Bond compiler relative to the directory containing the schema file being compiled and any import path(s) specified using the –import-dir option(s) passed to gbc.</p>
 <p>See examples:</p>
 <ul>
@@ -219,32 +219,32 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <h2 id="namespace-definition">Namespace definition</h2>
 <p>All schema types are always defined within a namespace. Namespace scope starts with namespace definition statement and ends at the end of the file.</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> some.unique.name</code></pre></div>
+<pre><code>namespace some.unique.name</code></pre>
 <h2 id="enum-definition">Enum definition</h2>
 <p>Bond enums are very similar to C++ enums, both in semantics and syntax used to define them:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">enum</span> Protocols
+<pre><code>enum Protocols
 {
     TCP,
-    UDP = <span class="dv">10</span>
-}</code></pre></div>
+    UDP = 10
+}</code></pre>
 <p>On the wire values of enums types are equivalent to 32-bit signed integers.</p>
 <h2 id="forward-declaration">Forward declaration</h2>
 <p>In order to define recursive schemas, such as trees, it may be necessary to declare a struct before it is defined. A forward declaration statement serves this purpose:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Node;</code></pre></div>
+<pre><code>struct Node;</code></pre>
 <p>Forward declared structs can be used in field declarations as the base type for nullable&lt;T&gt; and bonded&lt;T&gt; or the element type of a container.</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Node;
+<pre><code>struct Node;
 
-<span class="kw">struct</span> Node
+struct Node
 {
-    <span class="dv">0</span>: nullable&lt;Node&gt; left;
-    <span class="dv">1</span>: nullable&lt;Node&gt; right;
-}</code></pre></div>
+    0: nullable&lt;Node&gt; left;
+    1: nullable&lt;Node&gt; right;
+}</code></pre>
 <h2 id="struct-definition">Struct definition</h2>
 <p>Struct definition consists of a struct name, an optional base struct, and zero or more fields.</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example : Base
+<pre><code>struct Example : Base
 {
-    <span class="dv">0</span>: uint32 fieldName = <span class="dv">10</span>;
-}</code></pre></div>
+    0: uint32 fieldName = 10;
+}</code></pre>
 <p>Field definition consists of an ordinal, type, name and optional default value. Field type can be:</p>
 <ul>
 <li><p>Basic type: <code>bool</code>, <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>, <code>float</code>, <code>double</code>, <code>string</code>, <code>wstring</code>.</p></li>
@@ -253,35 +253,35 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields must have an explicit default value which must be one of the enum named constants or <a href="#default-value-of-nothing"><code>nothing</code></a>.</p>
 <p>Names of structs and enums defined in another namespace must be qualified with the namespace name:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">import <span class="st">&quot;bond/core/bond.bond&quot;</span>
+<pre><code>import &quot;bond/core/bond.bond&quot;
 
-<span class="kw">namespace</span> example
+namespace example
 
-<span class="kw">struct</span> Example
+struct Example
 {
-    <span class="dv">0</span>: bond.GUID id;
-    <span class="dv">1</span>: bond.BondDataType type = BT_UNAVAILABLE;
-}</code></pre></div>
+    0: bond.GUID id;
+    1: bond.BondDataType type = BT_UNAVAILABLE;
+}</code></pre>
 <h2 id="generic-struct">Generic struct</h2>
 <p>Generic structs are parameterized with one or more type parameters which can be used within the struct definition in any place where a concrete type could be used (e.g. base struct, field type, container element type, parameter of a generic struct).</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T1, T2&gt; : T<span class="dv">1</span>
+<pre><code>struct Example&lt;T1, T2&gt; : T1
 {
-    <span class="dv">0</span>: T1 field;
-    <span class="dv">1</span>: list&lt;T2&gt; list;
-    <span class="dv">2</span>: Generic&lt;T2&gt; generic;
-}</code></pre></div>
+    0: T1 field;
+    1: list&lt;T2&gt; list;
+    2: Generic&lt;T2&gt; generic;
+}</code></pre>
 <p>The usage of a type parameter within a generic struct definition may implicitly constrain what type(s) can be used to instantiate the generic struct:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T&gt;
+<pre><code>struct Example&lt;T&gt;
 {
-    <span class="co">// The default value of 10 implicitly constrains T to numeric types</span>
-    <span class="dv">0</span>: T x = <span class="dv">10</span>;
-}</code></pre></div>
+    // The default value of 10 implicitly constrains T to numeric types
+    0: T x = 10;
+}</code></pre>
 <p>Using a type parameter in a <a href="#nullable-types"><code>nullable</code></a> or as the type of a field with default value of <a href="#default-value-of-nothing"><code>nothing</code></a> constrains the type parameter to be non-scalar type. If this is undesired then explicit constraint to value type can be specified in the generic schema definition:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example&lt;T : value&gt;
+<pre><code>struct Example&lt;T : value&gt;
 {
-    <span class="dv">0</span>: nullable&lt;T&gt; x;
-    <span class="dv">1</span>: T y = nothing;
-}</code></pre></div>
+    0: nullable&lt;T&gt; x;
+    1: T y = nothing;
+}</code></pre>
 <p>When instantiating a generic struct all type parameters must be concrete types. Bond IDL doesn’t support the equivalent of C++ template template parameters.</p>
 <p>See examples:</p>
 <ul>
@@ -291,10 +291,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <h2 id="type-aliases">Type aliases</h2>
 <p>The syntax to define type aliases is very similar to C++:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">using</span> time = int64;
-<span class="kw">using</span> array&lt;T&gt; = vector&lt;T&gt;;</code></pre></div>
+<pre><code>using time = int64;
+using array&lt;T&gt; = vector&lt;T&gt;;</code></pre>
 <p>An alias can be used in any context where the aliased type could be used, including a definition of another alias:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">using</span> times = array&lt;time&gt;;</code></pre></div>
+<pre><code>using times = array&lt;time&gt;;</code></pre>
 <p>Type aliases can optionally be <a href="#custom-type-mappings">mapped to custom types</a> in the generated code.</p>
 <p>See examples:</p>
 <ul>
@@ -310,33 +310,33 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <h2 id="struct-views">Struct views</h2>
 <p>A view definition is syntactic sugar to define a struct that has a subset of the fields of another struct:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> Example
+<pre><code>struct Example
 {
-    <span class="dv">0</span>: int16 x;
-    <span class="dv">1</span>: string y;
-    <span class="dv">2</span>: list&lt;<span class="dt">bool</span>&gt; z;
+    0: int16 x;
+    1: string y;
+    2: list&lt;bool&gt; z;
 }
 
-<span class="kw">struct</span> View view_of Example
+struct View view_of Example
 {
     x,z;
-}</code></pre></div>
+}</code></pre>
 <p>In the above example, the definition of <code>View</code> is equivalent to:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">struct</span> View
+<pre><code>struct View
 {
-    <span class="dv">0</span>: int16 x;
-    <span class="dv">2</span>: list&lt;<span class="dt">bool</span>&gt; z;
-}</code></pre></div>
+    0: int16 x;
+    2: list&lt;bool&gt; z;
+}</code></pre>
 <p>A view of a generic struct is also a generic struct with the same number of type parameters.</p>
 <p>See example: <code>examples/cpp/core/schema_view</code></p>
 <h2 id="service-definition">Service definition</h2>
 <p>A service definition consists of a service name and methods:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Calculator
+<pre><code>service Calculator
 {
     Result Calculate(Operation);
-    <span class="dt">void</span> Configure(Settings);
+    void Configure(Settings);
     Stats GetStats();
-}</code></pre></div>
+}</code></pre>
 <p>Methods take one parameter and can return a result. A method can return:</p>
 <ul>
 <li>a <a href="#struct-definition">struct</a></li>
@@ -345,103 +345,103 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p>A method can take as input up to one struct. <code>void</code> may optionally be used in place of a struct name to indicate that the methods doesn’t take any input.</p>
 <p>Methods with the result of <code>nothing</code> are one-way, fire and forget methods: the service doesn’t send any response regardless of whether the service method execution resulted in success or failure. This is different from methods returning <code>void</code> which send back a response with an empty payload and may indicate failure using errors.</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Watchdog
+<pre><code>service Watchdog
 {
     nothing Heartbeat(Identifier);
-}</code></pre></div>
+}</code></pre>
 <h2 id="generic-service">Generic service</h2>
 <p>Generic services are parameterized with one or more type parameters which can be used within the service definition in any place where a concrete type could be used.</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">service Gateway&lt;Token&gt;
+<pre><code>service Gateway&lt;Token&gt;
 {
     Result Authenticate(Token);
-}</code></pre></div>
+}</code></pre>
 <p>The usage of a type parameter within a generic service definition may implicitly constrain what type(s) can be used to instantiate the generic service. For example in the above definition the <code>Token</code> type parameter must be a <a href="#struct-definition">struct</a>.</p>
 <h2 id="custom-attributes">Custom attributes</h2>
 <p>Struct, service, enum as well as struct field and service method definitions can be annotated with custom attributes which are in effect name, string-values pairs:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">[Validate(<span class="st">&quot;True&quot;</span>)]
-<span class="kw">struct</span> Example
+<pre><code>[Validate(&quot;True&quot;)]
+struct Example
 {
-    [Max(<span class="st">&quot;100&quot;</span>)]
-    <span class="dv">0</span>: uint32 value;
+    [Max(&quot;100&quot;)]
+    0: uint32 value;
 }
 
-[service_id(<span class="st">&quot;MyExample&quot;</span>)]
+[service_id(&quot;MyExample&quot;)]
 service Example
 {
-    [Tracing(<span class="st">&quot;enabled&quot;</span>)]
+    [Tracing(&quot;enabled&quot;)]
     Result Method(Param);
-}</code></pre></div>
+}</code></pre>
 <p>Attributes are available in code generation templates and thus can be used to drive custom code generation. They are also available to applications via <a href="#compile-time-schema">compile-time</a> and <a href="#runtime-schema">runtime</a> schema, and as <code>Metadata</code> argument in <a href="#transforms">transforms</a> and <a href="#protocols">protocols</a>.</p>
 <p>See example: <code>examples/cpp/core/attributes</code></p>
 <h2 id="comments">Comments</h2>
 <p>Bond IDL supports C++ style comments:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="co">/*</span>
-<span class="co">    Multi-line </span>
-<span class="co">    comment</span>
-<span class="co">*/</span>
-<span class="kw">struct</span> Example
+<pre><code>/*
+    Multi-line 
+    comment
+*/
+struct Example
 {
-    <span class="co">// One line comment</span>
-}</code></pre></div>
+    // One line comment
+}</code></pre>
 <h1 id="schema-ast">Schema AST</h1>
 <p>The compiler exposes a JSON representation of the schema Abstract Syntax Tree. The AST is intended for tools that need to access to the schema information contained in Bond IDL files with the full fidelity. The compiler can also take the JSON representation of the AST as an input, enabling tools which programmatically construct/modify Bond schemas.</p>
 <h2 id="example">Example</h2>
 <p>Given the following schema definition:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> example.some
+<pre><code>namespace example.some
 
-<span class="kw">struct</span> SomeStruct
+struct SomeStruct
 {
-    <span class="dv">0</span>: int32 someField = <span class="dv">123</span>;
-}</code></pre></div>
+    0: int32 someField = 123;
+}</code></pre>
 <p>Below is the JSON representation of the schema’s Abstract Syntax Tree generated using <code>gbc schema example.bond</code> command:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;imports&quot;</span>: [],
-  <span class="st">&quot;namespaces&quot;</span>: [
-    {
-      <span class="st">&quot;name&quot;</span>: [
-          <span class="st">&quot;example&quot;</span>,
-          <span class="st">&quot;some&quot;</span>
-      ]
-    }
-  ],
-  <span class="st">&quot;declarations&quot;</span>: [
-    {
-      <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Struct&quot;</span>,
-      <span class="st">&quot;declNamespaces&quot;</span>: [
-        {
-          <span class="st">&quot;name&quot;</span>: [
-              <span class="st">&quot;example&quot;</span>,
-              <span class="st">&quot;some&quot;</span>
-          ]
-        }
-      ],
-      <span class="st">&quot;declAttributes&quot;</span>: [],
-      <span class="st">&quot;declParams&quot;</span>: [],
-      <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;SomeStruct&quot;</span>,
-      <span class="st">&quot;structFields&quot;</span>: [
-        {
-          <span class="st">&quot;fieldOrdinal&quot;</span>: <span class="dv">0</span>,
-          <span class="st">&quot;fieldType&quot;</span>: <span class="st">&quot;int32&quot;</span>,
-          <span class="st">&quot;fieldName&quot;</span>: <span class="st">&quot;someField&quot;</span>,
-          <span class="st">&quot;fieldDefault&quot;</span>: {
-            <span class="st">&quot;value&quot;</span>: <span class="dv">123</span>,
-            <span class="st">&quot;type&quot;</span>: <span class="st">&quot;integer&quot;</span>
-          }
-        }
-      ]
-    }
-  ]
-} </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;imports&quot;</span><span class="op">:</span> []<span class="op">,</span>
+    <span class="st">&quot;namespaces&quot;</span><span class="op">:</span> [
+    <span class="op">{</span>
+        <span class="st">&quot;name&quot;</span><span class="op">:</span> [
+            <span class="st">&quot;example&quot;</span><span class="op">,</span>
+            <span class="st">&quot;some&quot;</span>
+        ]
+    <span class="op">}</span>
+    ]<span class="op">,</span>
+    <span class="st">&quot;declarations&quot;</span><span class="op">:</span> [
+    <span class="op">{</span>
+        <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Struct&quot;</span><span class="op">,</span>
+        <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+        <span class="op">{</span>
+            <span class="st">&quot;name&quot;</span><span class="op">:</span> [
+                <span class="st">&quot;example&quot;</span><span class="op">,</span>
+                <span class="st">&quot;some&quot;</span>
+            ]
+        <span class="op">}</span>
+        ]<span class="op">,</span>
+        <span class="st">&quot;declAttributes&quot;</span><span class="op">:</span> []<span class="op">,</span>
+        <span class="st">&quot;declParams&quot;</span><span class="op">:</span> []<span class="op">,</span>
+        <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;SomeStruct&quot;</span><span class="op">,</span>
+        <span class="st">&quot;structFields&quot;</span><span class="op">:</span> [
+        <span class="op">{</span>
+            <span class="st">&quot;fieldOrdinal&quot;</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>
+            <span class="st">&quot;fieldType&quot;</span><span class="op">:</span> <span class="st">&quot;int32&quot;</span><span class="op">,</span>
+            <span class="st">&quot;fieldName&quot;</span><span class="op">:</span> <span class="st">&quot;someField&quot;</span><span class="op">,</span>
+            <span class="st">&quot;fieldDefault&quot;</span><span class="op">:</span> <span class="op">{</span>
+            <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">123</span><span class="op">,</span>
+            <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;integer&quot;</span>
+            <span class="op">}</span>
+        <span class="op">}</span>
+        ]
+    <span class="op">}</span>
+    ]
+<span class="op">}</span></code></pre></div>
 <h2 id="bond">Bond</h2>
 <p>The top level JSON object represents the parsed Bond IDL file and has the following structure:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;imports&quot;</span>: [
-  ],
-  <span class="st">&quot;namespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declarations&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;imports&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;namespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declarations&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>imports</code> is an array of <a href="#import">imports</a>.</li>
@@ -450,40 +450,40 @@ service Example
 </ul>
 <h2 id="import">Import</h2>
 <p>Imports are represented by JSON strings. For example the following IDL:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">import <span class="st">&quot;bond/core/bond.bond&quot;</span></code></pre></div>
+<pre><code>import &quot;bond/core/bond.bond&quot;</code></pre>
 <p>is represented in the AST as:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="st">&quot;bond/core/bond.bond&quot;</span></code></pre></div>
+<pre><code>&quot;bond/core/bond.bond&quot;</code></pre>
 <h2 id="namespace">Namespace</h2>
 <p>The namespace declaration is represented by a JSON object:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;name&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;name&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>name</code> is <a href="#qualified-name">qualified name</a> of the namespace.</li>
 </ul>
 <p>For example:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> foo.bar</code></pre></div>
+<pre><code>namespace foo.bar</code></pre>
 <p>is represented as:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;name&quot;</span>: [
-    <span class="st">&quot;foo&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;name&quot;</span><span class="op">:</span> [
+    <span class="st">&quot;foo&quot;</span><span class="op">,</span>
     <span class="st">&quot;bar&quot;</span>
-  ]
-}</code></pre></div>
+    ]
+<span class="op">}</span></code></pre></div>
 <h2 id="declaration">Declaration</h2>
 <p>A declaration is represented by a JSON object with the following common properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Tag&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;Name&quot;</span>,
-  <span class="st">&quot;declParams&quot;</span>: [
-  ],
-  <span class="st">&quot;declAttributes&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Tag&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;Name&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declParams&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declAttributes&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>tag</code> is a string indicating the type of the declaration. It can have one of the following values: <code>&quot;Struct&quot;</code>, <code>&quot;Enum&quot;</code>, <code>&quot;Alias&quot;</code>, <code>&quot;Forward&quot;</code>, <code>&quot;Service&quot;</code>, <code>&quot;Function&quot;</code>, <code>&quot;Event&quot;</code>.</li>
@@ -494,19 +494,19 @@ service Example
 </ul>
 <h3 id="struct">Struct</h3>
 <p>A JSON object representing a <code>Struct</code> declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Struct&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;StructName&quot;</span>,
-  <span class="st">&quot;declParams&quot;</span>: [
-  ],
-  <span class="st">&quot;declAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;structBase&quot;</span>: null,
-  <span class="st">&quot;structFields&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Struct&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;StructName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declParams&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;structBase&quot;</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span>
+    <span class="st">&quot;structFields&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>structBase</code> is <code>null</code> or a <a href="#type">type</a> representing the struct base. The property is optional and may be omitted.</li>
@@ -514,34 +514,34 @@ service Example
 </ul>
 <h3 id="service">Service</h3>
 <p>A JSON object representing a <code>Service</code> declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Service&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;ServiceName&quot;</span>,
-  <span class="st">&quot;declParams&quot;</span>: [
-  ],
-  <span class="st">&quot;declAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;serviceMethods&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Service&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;ServiceName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declParams&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;serviceMethods&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>serviceMethods</code> is an array of zero or more <a href="#methods">methods</a>.</li>
 </ul>
 <h4 id="methods">Methods</h4>
 <p>A JSON object representing a <code>Function</code> declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Function&quot;</span>,
-  <span class="st">&quot;methodName&quot;</span>: <span class="st">&quot;methodName&quot;</span>,
-  <span class="st">&quot;methodAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;methodResult&quot;</span>: {
-  },
-  <span class="st">&quot;methodInput&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Function&quot;</span><span class="op">,</span>
+    <span class="st">&quot;methodName&quot;</span><span class="op">:</span> <span class="st">&quot;methodName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;methodAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;methodResult&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">},</span>
+    <span class="st">&quot;methodInput&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>methodResult</code> is a user defined type struct, alias to struct, parameter or null.</li>
@@ -549,14 +549,14 @@ service Example
 <li><code>methodAttributes</code> is an array of zero or more <a href="#attribute">attributes</a></li>
 </ul>
 <p>A JSON object representing an <code>Event</code> declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Event&quot;</span>,
-  <span class="st">&quot;methodName&quot;</span>: <span class="st">&quot;methodName&quot;</span>,
-  <span class="st">&quot;methodAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;methodInput&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Event&quot;</span><span class="op">,</span>
+    <span class="st">&quot;methodName&quot;</span><span class="op">:</span> <span class="st">&quot;methodName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;methodAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;methodInput&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>methodInput</code> is a user defined type struct, alias to struct, parameter or null.</li>
@@ -564,26 +564,26 @@ service Example
 </ul>
 <h3 id="enum">Enum</h3>
 <p>A JSON object representing an <code>Enum</code> declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Enum&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;EnumName&quot;</span>,
-  <span class="st">&quot;declAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;enumConstants&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Enum&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;EnumName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;enumConstants&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>enumConstants</code> is an array of one or more <a href="#constant">constants</a>.</li>
 </ul>
 <h4 id="constant">Constant</h4>
 <p>An enum constant is represented by the following JSON object:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;constantName&quot;</span>: <span class="st">&quot;ConstantName&quot;</span>,
-  <span class="st">&quot;constantValue&quot;</span>: null
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;constantName&quot;</span><span class="op">:</span> <span class="st">&quot;ConstantName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;constantValue&quot;</span><span class="op">:</span> <span class="kw">null</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>constantName</code> is a string.</li>
@@ -591,43 +591,43 @@ service Example
 </ul>
 <h3 id="type-alias">Type alias</h3>
 <p>A JSON object representing a type alias declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Alias&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;AliasName&quot;</span>,
-  <span class="st">&quot;declParams&quot;</span>: [
-  ],
-  <span class="st">&quot;aliasType&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Alias&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;AliasName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declParams&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;aliasType&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>aliasType</code> is the aliased <a href="#type"><code>type</code></a>.</li>
 </ul>
 <h3 id="forward-declaration-1">Forward declaration</h3>
 <p>A JSON object representing a forward declaration has the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;tag&quot;</span>: <span class="st">&quot;Forward&quot;</span>,
-  <span class="st">&quot;declNamespaces&quot;</span>: [
-  ],
-  <span class="st">&quot;declName&quot;</span>: <span class="st">&quot;StructName&quot;</span>,
-  <span class="st">&quot;declParams&quot;</span>: [
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;tag&quot;</span><span class="op">:</span> <span class="st">&quot;Forward&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declNamespaces&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;declName&quot;</span><span class="op">:</span> <span class="st">&quot;StructName&quot;</span><span class="op">,</span>
+    <span class="st">&quot;declParams&quot;</span><span class="op">:</span> [
+    ]
+<span class="op">}</span></code></pre></div>
 <h2 id="qualified-name">Qualified name</h2>
 <p>Qualified names are represented in JSON by an array of strings. For example:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">foo.bar</code></pre></div>
+<pre><code>foo.bar</code></pre>
 <p>is represented by:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">[ <span class="st">&quot;foo&quot;</span>,
-  <span class="st">&quot;bar&quot;</span>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript">[ <span class="st">&quot;foo&quot;</span><span class="op">,</span>
+    <span class="st">&quot;bar&quot;</span>
 ]</code></pre></div>
 <h2 id="type-parameter">Type parameter</h2>
 <p>Type parameters are represented by JSON objects with the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;paramName&quot;</span>: <span class="st">&quot;T&quot;</span>,
-  <span class="st">&quot;paramConstraint&quot;</span>: null
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;paramName&quot;</span><span class="op">:</span> <span class="st">&quot;T&quot;</span><span class="op">,</span>
+    <span class="st">&quot;paramConstraint&quot;</span><span class="op">:</span> <span class="kw">null</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>paramName</code> is a string.</li>
@@ -635,11 +635,11 @@ service Example
 </ul>
 <h2 id="attribute">Attribute</h2>
 <p>Attributes are represented by JSON objects with the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;attrName&quot;</span>: [
-  ],
-  <span class="st">&quot;attrValue&quot;</span>: <span class="st">&quot;Value&quot;</span>
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;attrName&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;attrValue&quot;</span><span class="op">:</span> <span class="st">&quot;Value&quot;</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>attrName</code> is a <a href="#qualified-name">qualified name</a>.</li>
@@ -647,16 +647,16 @@ service Example
 </ul>
 <h2 id="struct-field">Struct field</h2>
 <p>A struct field is represented by a JSON object with the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;fieldModifier&quot;</span>: <span class="st">&quot;Optional&quot;</span>,
-  <span class="st">&quot;fieldDefault&quot;</span>: null,
-  <span class="st">&quot;fieldType&quot;</span>: {
-  },
-  <span class="st">&quot;fieldName&quot;</span>: <span class="st">&quot;name&quot;</span>,
-  <span class="st">&quot;fieldAttributes&quot;</span>: [
-  ],
-  <span class="st">&quot;fieldOrdinal&quot;</span>: <span class="dv">0</span>
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;fieldModifier&quot;</span><span class="op">:</span> <span class="st">&quot;Optional&quot;</span><span class="op">,</span>
+    <span class="st">&quot;fieldDefault&quot;</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span>
+    <span class="st">&quot;fieldType&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">},</span>
+    <span class="st">&quot;fieldName&quot;</span><span class="op">:</span> <span class="st">&quot;name&quot;</span><span class="op">,</span>
+    <span class="st">&quot;fieldAttributes&quot;</span><span class="op">:</span> [
+    ]<span class="op">,</span>
+    <span class="st">&quot;fieldOrdinal&quot;</span><span class="op">:</span> <span class="dv">0</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>fieldModifier</code> is one of the following strings: <code>&quot;Optional&quot;</code>, <code>&quot;Required&quot;</code>, <code>&quot;RequiredOptional&quot;</code>. The property is optional and <code>fieldModifier</code> defaults to <code>Optional</code> if omitted.</li>
@@ -668,10 +668,10 @@ service Example
 </ul>
 <h3 id="field-default-value">Field default value</h3>
 <p>A field default value is represented by a JSON object with the following properties:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;enum&quot;</span>,
-  <span class="st">&quot;value&quot;</span>: <span class="st">&quot;Value2&quot;</span>
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;enum&quot;</span><span class="op">,</span>
+    <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="st">&quot;Value2&quot;</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>type</code> is one of the following strings: <code>&quot;enum&quot;</code>, <code>&quot;bool&quot;</code>, <code>&quot;integer&quot;</code>, <code>&quot;float&quot;</code>, <code>&quot;string&quot;</code>, <code>&quot;nothing&quot;</code>.</li>
@@ -680,7 +680,7 @@ service Example
 <h2 id="type">Type</h2>
 <h3 id="basic-types">Basic types</h3>
 <p>Basic types are represented by JSON strings:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="st">&quot;int8&quot;</span>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="st">&quot;int8&quot;</span>
 <span class="st">&quot;int16&quot;</span>
 <span class="st">&quot;int32&quot;</span>
 <span class="st">&quot;int64&quot;</span>
@@ -696,48 +696,48 @@ service Example
 <span class="st">&quot;blob&quot;</span></code></pre></div>
 <h3 id="complex-types">Complex types</h3>
 <p>Complex types are represented by JSON objects with a <code>type</code> property indicating the complex type. If the <code>type</code> property is one of the following: <code>&quot;vector&quot;</code>, <code>&quot;list&quot;</code>, <code>&quot;set&quot;</code>, <code>&quot;nullable&quot;</code>, <code>&quot;maybe&quot;</code>, <code>&quot;bonded&quot;</code> then the object has the following structure:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;vector&quot;</span>,
-  <span class="st">&quot;element&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;vector&quot;</span><span class="op">,</span>
+    <span class="st">&quot;element&quot;</span><span class="op">:</span> <span class="op">{</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where <code>element</code> is the <a href="#type">type</a> of the element (or the nested type).</p>
 <p>Other complex types are:</p>
 <ul>
 <li><p>map</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;map&quot;</span>,
-  <span class="st">&quot;key&quot;</span>: {
-  },
-  <span class="st">&quot;element&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+  <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;map&quot;</span><span class="op">,</span>
+  <span class="st">&quot;key&quot;</span><span class="op">:</span> <span class="op">{</span>
+  <span class="op">},</span>
+  <span class="st">&quot;element&quot;</span><span class="op">:</span> <span class="op">{</span>
+  <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>key</code> is the <a href="#type">type</a> of the map key.</li>
 <li><code>element</code> is the <a href="#type">type</a> of map value.</li>
 </ul></li>
 <li><p>type parameter</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;parameter&quot;</span>,
-  <span class="st">&quot;value&quot;</span>: {
-  }
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+  <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;parameter&quot;</span><span class="op">,</span>
+  <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="op">{</span>
+  <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>where <code>value</code> is a <a href="#type-parameter">type parameter</a>.</p></li>
 <li><p>numeric type argument</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;constant,</span>
-  <span class="st">&quot;value&quot;</span>: <span class="dv">0</span>
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+  <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;constant&quot;</span><span class="op">,</span>
+  <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">0</span>
+<span class="op">}</span></code></pre></div>
 <p>where <code>value</code> is an integer.</p></li>
 <li><p>user defined type</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;type&quot;</span>: <span class="st">&quot;user&quot;</span>,
-  <span class="st">&quot;declaration&quot;</span>: {
-  },
-  <span class="st">&quot;arguments&quot;</span>: [
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+  <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="st">&quot;user&quot;</span><span class="op">,</span>
+  <span class="st">&quot;declaration&quot;</span><span class="op">:</span> <span class="op">{</span>
+  <span class="op">},</span>
+  <span class="st">&quot;arguments&quot;</span><span class="op">:</span> [
   ]
-}</code></pre></div>
+<span class="op">}</span></code></pre></div>
 <p>where:</p>
 <ul>
 <li><code>declaration</code> is a <a href="#declaration">declaration</a> of a user defined type.</li>
@@ -749,37 +749,37 @@ service Example
 <p>Usually <code>SchemaDef</code> is produced at runtime using Bond APIs. However in some scenarios it may be desirable to be able to obtain <code>SchemaDef</code> object(s) directly from a schema definition IDL file. The compiler can generate <code>SchemaDef</code> serialized in Simple JSON protocol which can be deserialized using standard Bond APIs.</p>
 <h2 id="example-1">Example</h2>
 <p>Given the following schema definition contained a file <code>example.bond</code>:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">namespace</span> example.some
+<pre><code>namespace example.some
 
-<span class="kw">struct</span> SomeStruct
+struct SomeStruct
 {
-    <span class="dv">0</span>: int32 someField = <span class="dv">123</span>;
-}</code></pre></div>
+    0: int32 someField = 123;
+}</code></pre>
 <p>The command <code>gbc schema --runtime-schema example.bond</code> would produce a file named <code>example.SomeStruct.json</code> with the following content:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">{
-  <span class="st">&quot;structs&quot;</span>: [
-    {
-      <span class="st">&quot;metadata&quot;</span>: {
-        <span class="st">&quot;qualified_name&quot;</span>: <span class="st">&quot;example.some.SomeStruct&quot;</span>,
-        <span class="st">&quot;name&quot;</span>: <span class="st">&quot;SomeStruct&quot;</span>
-      },
-      <span class="st">&quot;fields&quot;</span>: [
-        {
-          <span class="st">&quot;metadata&quot;</span>: {
-            <span class="st">&quot;default_value&quot;</span>: {
-              <span class="st">&quot;int_value&quot;</span>: <span class="dv">123</span>
-            },
-            <span class="st">&quot;name&quot;</span>: <span class="st">&quot;someField&quot;</span>
-          },
-          <span class="st">&quot;id&quot;</span>: <span class="dv">0</span>,
-          <span class="st">&quot;type&quot;</span>: {
-            <span class="st">&quot;id&quot;</span>: <span class="dv">16</span>
-          }
-        }
-      ]
-    }
-  ]
-}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">{</span>
+    <span class="st">&quot;structs&quot;</span><span class="op">:</span> [
+    <span class="op">{</span>
+        <span class="st">&quot;metadata&quot;</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">&quot;qualified_name&quot;</span><span class="op">:</span> <span class="st">&quot;example.some.SomeStruct&quot;</span><span class="op">,</span>
+        <span class="st">&quot;name&quot;</span><span class="op">:</span> <span class="st">&quot;SomeStruct&quot;</span>
+        <span class="op">},</span>
+        <span class="st">&quot;fields&quot;</span><span class="op">:</span> [
+        <span class="op">{</span>
+            <span class="st">&quot;metadata&quot;</span><span class="op">:</span> <span class="op">{</span>
+            <span class="st">&quot;default_value&quot;</span><span class="op">:</span> <span class="op">{</span>
+                <span class="st">&quot;int_value&quot;</span><span class="op">:</span> <span class="dv">123</span>
+            <span class="op">},</span>
+            <span class="st">&quot;name&quot;</span><span class="op">:</span> <span class="st">&quot;someField&quot;</span>
+            <span class="op">},</span>
+            <span class="st">&quot;id&quot;</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span>
+            <span class="st">&quot;type&quot;</span><span class="op">:</span> <span class="op">{</span>
+            <span class="st">&quot;id&quot;</span><span class="op">:</span> <span class="dv">16</span>
+            <span class="op">}</span>
+        <span class="op">}</span>
+        ]
+    <span class="op">}</span>
+    ]
+<span class="op">}</span></code></pre></div>
 <h1 id="library">Library</h1>
 <p>The Bond IDL compiler and codegen functionality is accessible programatically via the <a href="https://hackage.haskell.org/package/bond">bond</a> Haskell package. The library can be used to implement custom codegen tools. See examples/codegen in the repository.</p>
 </div>
