@@ -222,16 +222,16 @@ namespace
 
         template <typename T>
         typename boost::enable_if<bond::is_wstring<T> >::type
-        SetValue(const google::protobuf::FieldDescriptor& /*field*/, const T& /*value*/) const
+        SetValue(const google::protobuf::FieldDescriptor& field, const T& value) const
         {
-            BOOST_ASSERT(false);
+            SetValue(field, boost::locale::conv::utf_to_utf<char>(value));
         }
 
         template <typename T>
         typename boost::enable_if<bond::is_wstring<T> >::type
-        AddValue(const google::protobuf::FieldDescriptor& /*field*/, const T& /*value*/) const
+        AddValue(const google::protobuf::FieldDescriptor& field, const T& value) const
         {
-            BOOST_ASSERT(false);
+            AddValue(field, boost::locale::conv::utf_to_utf<char>(value));
         }
 
         void SetValue(const google::protobuf::FieldDescriptor& field, bool value) const
@@ -382,7 +382,8 @@ BOOST_AUTO_TEST_CASE(StringTests)
     CheckBinaryFormat<unittest::proto::String, unittest::Box<std::string> >();
     CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongEncoding<std::string> >();
 
-    CheckUnsupportedType<unittest::Box<std::wstring> >();
+    CheckBinaryFormat<unittest::proto::String, unittest::Box<std::wstring> >();
+    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongEncoding<std::wstring> >();
 }
 
 BOOST_AUTO_TEST_CASE(BlobTests)
@@ -527,7 +528,9 @@ BOOST_AUTO_TEST_CASE(StringMapKeyTests)
         unittest::proto::StringMapKey,
         unittest::Box<std::map<std::string, uint32_t> > >();
 
-    CheckUnsupportedType<unittest::Box<std::map<std::wstring, uint32_t> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringMapKey,
+        unittest::Box<std::map<std::wstring, uint32_t> > >();
 }
 
 BOOST_AUTO_TEST_CASE(IntegerMapValueTests)
@@ -541,7 +544,9 @@ BOOST_AUTO_TEST_CASE(StringMapValueTests)
         unittest::proto::StringMapValue,
         unittest::Box<std::map<uint32_t, std::string> > >();
 
-    CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::wstring> > >();
+    CheckBinaryFormat<
+        unittest::proto::StringMapValue,
+        unittest::Box<std::map<uint32_t, std::wstring> > >();
 }
 
 BOOST_AUTO_TEST_CASE(BlobMapValueTests)

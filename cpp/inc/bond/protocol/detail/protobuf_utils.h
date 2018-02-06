@@ -106,11 +106,8 @@ namespace proto
 
         case BT_STRUCT:
         case BT_STRING:
-            return WireType::LengthDelimited;
-
         case BT_WSTRING:
-            NotSupportedException("Wide string");
-            break;
+            return WireType::LengthDelimited;
 
         default:
             break;
@@ -180,14 +177,14 @@ namespace proto
         case BT_INT64:
             return ReadEncoding(name, metadata);
 
-        case BT_WSTRING:
         case BT_SET:
         case BT_MAP:
-            NotSupportedException("Wide string or nested set/map");
+            NotSupportedException("Nested set/map");
 
         case BT_BOOL:
         case BT_LIST:
         case BT_STRING:
+        case BT_WSTRING:
         case BT_STRUCT:
         default:
             return Unavailable<Encoding>();
@@ -235,14 +232,14 @@ namespace proto
         switch (type)
         {
         case BT_STRING:
+        case BT_WSTRING:
         case BT_STRUCT:
         case BT_LIST:
             return Packing::False;
 
-        case BT_WSTRING:
         case BT_SET:
         case BT_MAP:
-            NotSupportedException("Wide string or nested set/map");
+            NotSupportedException("Nested set/map");
 
         default:
             return ReadPacking(AttributeName<>::pack, metadata);

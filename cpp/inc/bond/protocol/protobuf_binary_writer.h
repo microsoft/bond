@@ -10,6 +10,8 @@
 
 #include <bond/stream/output_counter.h>
 
+#include <boost/locale.hpp>
+
 /*
     Implements Protocol Buffers binary encoding.
     See https://developers.google.com/protocol-buffers/docs/encoding for details.
@@ -504,9 +506,16 @@ namespace bond
         // Write for wstrings
         template <typename T>
         typename boost::enable_if<is_wstring<T> >::type
-        WriteScalar(const T& /*value*/, const FieldInfo::Element& /*elem*/)
+        WriteScalar(const T& value, const FieldInfo::Element& elem)
         {
-            BOOST_ASSERT(false);
+            try
+            {
+                WriteScalar(boost::locale::conv::utf_to_utf<char>(value), elem);
+            }
+            catch (const boost::locale::conv::conversion_error&)
+            {
+                UnicodeConversionException();
+            }
         }
 
         void LengthBegin()

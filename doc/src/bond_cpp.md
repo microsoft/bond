@@ -1282,7 +1282,9 @@ It requires a compatible .bond schema definition that will map to corresponding
 - Field ordinals must match.
 - The `bool`, `enum`, `uint32`, `uint64`, `int32`, `int64`, `float`,
   `double`, and `string` types are mapped to corresponding ones with same name.
-- The `bytes` is represented as a `blob`.
+- Bond's `wstring` type can also be mapped to `string` in which case it will
+  be converted to UTF-8.
+- The `bytes` type is represented as a `blob`.
 - The `fixed32`, `fixed64`, `sfixed32` and `sfixed64` types can be expressed
   as `uint32`, `uint64`, `int32` and `int64` respectively, but require an
   additional `ProtoEncode("Fixed")` attribute.

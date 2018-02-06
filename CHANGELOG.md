@@ -55,7 +55,7 @@ different versioning scheme, following the Haskell community's
 * Fixed a race condition when `bond::ext::gRPC::io_manager::shutdown` and
   `bond::ext::gRPC::io_manager::wait` are called concurrently.
 * Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
-* Added `bond::ProtobufBinaryWriter<Buffer>` for serialization to Protocol
+* Added `bond::ProtobufBinaryWriter<Buffer>` for serialization to the Protocol
   Buffers binary format.
 
 ### C# ###
