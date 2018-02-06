@@ -875,7 +875,7 @@ Other complex types are:
 
     ```javascript
     {
-      "type": "constant,
+      "type": constant,
       "value": 0
     }
     ```
