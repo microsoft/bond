@@ -24,51 +24,57 @@ Basic example
 In Bond data schemas are defined using idl-like
 [syntax](compiler.html#idl-syntax):
 
-    namespace examples
+```
+namespace examples
 
-    struct Record
-    {
-        0: string name;
-        1: vector<double> constants;
-    }
+struct Record
+{
+    0: string name;
+    1: vector<double> constants;
+}
+```
 
 In order to use the schema in a Java program, it needs to be compiled using the
 Bond compiler. This step is sometimes also referred to as code generation (or
 codegen) because the compilation generates Java code corresponding to the schema
 definition.
 
-    gbc java example.bond
+```
+gbc java example.bond
+```
 
 Using the generated Java code, we can write a simple program that will
 serialize and deserialize an instance of the Record schema using the [Compact
 Binary](bond_cpp.html#compact-binary) protocol:
 
-    package examples;
+```java
+package examples;
 
-    import org.bondlib.*;
+import org.bondlib.*;
 
-    import java.io.*;
+import java.io.*;
 
-    public class Example {
-        public static void main(String[] args) throws IOException {
-            final Record src = new Record();
-            src.name = "FooBar";
-            src.constants.add(3.14);
-            src.constants.add(6.28);
+public class Example {
+    public static void main(String[] args) throws IOException {
+        final Record src = new Record();
+        src.name = "FooBar";
+        src.constants.add(3.14);
+        src.constants.add(6.28);
 
-            final ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
-            final Serializer<Record> serializer = new Serializer<>();
-            serializer.serialize(src, writer);
+        final Serializer<Record> serializer = new Serializer<>();
+        serializer.serialize(src, writer);
 
-            final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-            final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
+        final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        final CompactBinaryReader reader = new CompactBinaryReader(input, 1);
 
-            final Deserializer<Record> deserializer = new Deserializer<>(Record.BOND_TYPE);
-            final Record dst = deserializer.deserialize(reader);
-        }
+        final Deserializer<Record> deserializer = new Deserializer<>(Record.BOND_TYPE);
+        final Record dst = deserializer.deserialize(reader);
     }
+}
+```
 
 Code generation
 ===============
@@ -86,18 +92,22 @@ is a reference type, but the value `null` will not be valid. In order to allow
 [`nullable`](bond_cpp.html#nullable-types),
 e.g.:
 
-    struct Foo
-    {
-        0: list<nullable<string>> listOfNullableStrings;
-    }
+```
+struct Foo
+{
+    0: list<nullable<string>> listOfNullableStrings;
+}
+```
 
 The value `null` is also legal for fields declared in Bond IDL to have a
 [default of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
 
-    struct Bar
-    {
-        0: string str = nothing;
-    }
+```
+struct Bar
+{
+    0: string str = nothing;
+}
+```
 
 Serializer
 ==========
@@ -105,16 +115,20 @@ Serializer
 The Bond serialization API is provided by the `Serializer` class. It is a
 generic class parameterized with a single Bond-generated type:
 
-    Serializer<Record>
+```java
+Serializer<Record>
+```
 
 The constructor of the `Serializer` class takes a `BondType`, which contains the
 information necessary to serialize the generated type:
 
-    new Serializer<Record>(Record.BOND_TYPE)
-    // or
-    new Serializer<Record>(someRecord.getBondType())
+```java
+new Serializer<Record>(Record.BOND_TYPE)
+// or
+new Serializer<Record>(someRecord.getBondType())
 
-    serializer.serialize(obj, writer);
+serializer.serialize(obj, writer);
+```
 
 Deserializer
 ============
@@ -122,26 +136,32 @@ Deserializer
 The Bond deserialization API is provided by the `Deserializer` class. It is a
 generic class parameterized with a single Bond-generated type:
 
-    Deserializer<Record>
+```java
+Deserializer<Record>
+```
 
 The constructor of the `Deserializer` class takes a `BondType`, which contains
 the information necessary to deserialize the generated type:
 
-    deserializer = new Deserializer<Record>(Record.BOND_TYPE)
-    // or
-    deserializer = new Deserializer<Record>(someRecord.getBondType())
+```java
+deserializer = new Deserializer<Record>(Record.BOND_TYPE)
+// or
+deserializer = new Deserializer<Record>(someRecord.getBondType())
 
-    record = deserializer.deserialize(reader);
+record = deserializer.deserialize(reader);
+```
 
 Deserializing from a payload encoded in an untagged protocol like [Simple
 Binary](#simple-binary) requires specifying the schema of the payload. To
 address this scenario, `Deserializer.deserialize()` has an overload that takes a
 [`RuntimeSchema`](#runtime-schema) as an argument:
 
-    RuntimeSchema schema;
-    // ...
-    deserializer = new Deserializer<Record>(Record.BOND_TYPE);
-    record = deserializer.deserialize(reader, schema);
+```java
+RuntimeSchema schema;
+// ...
+deserializer = new Deserializer<Record>(Record.BOND_TYPE);
+record = deserializer.deserialize(reader, schema);
+```
 
 See also the following example:
 
@@ -161,18 +181,20 @@ The `Marshal` and `Unmarshal` APIs are similar to `Serializer` and
 provides an input stream with payload data, rather than an instance of a
 particular protocol reader:
 
-    final Record src = new Record();
-    src.foo = "foo";
-    src.constants.add(3.14);
-    src.constants.add(6.28);
+```java
+final Record src = new Record();
+src.foo = "foo";
+src.constants.add(3.14);
+src.constants.add(6.28);
 
-    final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
+final ByteArrayOutputStream output = new ByteArrayOutputStream();
+final CompactBinaryWriter writer = new CompactBinaryWriter(output, 1);
 
-    Marshal.marshal(src, writer);
+Marshal.marshal(src, writer);
 
-    final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-    final Record dst = Unmarshal.unmarshal(input, Record.BOND_TYPE);
+final ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+final Record dst = Unmarshal.unmarshal(input, Record.BOND_TYPE);
+```
 
 See also the following example:
 
@@ -290,12 +312,14 @@ Sometimes it is necessary to distinguish between any of the possible values
 of a field and absence of a value. To support such scenarios Bond allows
 non-struct fields' default values to be explicitly set to `nothing` [^1]:
 
-    struct AboutNothing
-    {
-        0: uint16 n = nothing;
-        1: string name = nothing;
-        2: list<float> floats = nothing;
-    }
+```
+struct AboutNothing
+{
+    0: uint16 n = nothing;
+    1: string name = nothing;
+    2: list<float> floats = nothing;
+}
+```
 
 Setting a field's default to `nothing` doesn't affect the schema type of the
 field, but does change the generated Java type. Types that would be references
@@ -334,11 +358,13 @@ For any type in the Bond meta-schema, `nullable<T>` defines a nullable type.
 A nullable type can store all the same values as its base type plus one
 additional value: `null`.
 
-    struct Nullables
-    {
-        0: nullable<bool>         b; // can be true, false, or null
-        1: list<nullable<string>> l; // can be a (possibly empty) list or null
-    }
+```
+struct Nullables
+{
+    0: nullable<bool>         b; // can be true, false, or null
+    1: list<nullable<string>> l; // can be a (possibly empty) list or null
+}
+```
 
 The default value for a field of a nullable type is always implicitly set to
 `null`. Explicit default values for nullable fields are not supported.
@@ -366,26 +392,28 @@ The canonical scenario where a nullable type is the right choice is
 recursive structures. For example here's how Bond `TypeDef` struct is
 defined:
 
-    struct TypeDef
-    {
-        // Type identifier
-        0: BondDataType id = BT_STRUCT;
+```
+struct TypeDef
+{
+    // Type identifier
+    0: BondDataType id = BT_STRUCT;
 
-        // Index of struct definition in SchemaDef.structs when id == BT_STRUCT
-        1: uint16 struct_def = 0;
+    // Index of struct definition in SchemaDef.structs when id == BT_STRUCT
+    1: uint16 struct_def = 0;
 
-        // Type definition for:
-        //  list elements (id == BT_LIST),
-        //  set elements (id == BT_SET),
-        //  or mapped value (id == BT_MAP)
-        2: nullable<TypeDef> element;
+    // Type definition for:
+    //  list elements (id == BT_LIST),
+    //  set elements (id == BT_SET),
+    //  or mapped value (id == BT_MAP)
+    2: nullable<TypeDef> element;
 
-        // Type definition for map key when id == BT_MAP
-        3: nullable<TypeDef> key;
+    // Type definition for map key when id == BT_MAP
+    3: nullable<TypeDef> key;
 
-        // True if the type is bonded<T>; used only when id == BT_STRUCT
-        4: bool bonded_type;
-    }
+    // True if the type is bonded<T>; used only when id == BT_STRUCT
+    4: bool bonded_type;
+}
+```
 
 The `TypeDef` struct is used to represent the type of a field in a Bond
 schema. If the type is a container such as a list or map, the type
@@ -469,17 +497,21 @@ compile-time. In order to address such scenarios, Bond defines a type
 `SchemaDef` to represent schemas at runtime. Applications can obtain an
 instance of `SchemaDef` for a particular type through its `BondType`:
 
-    // from a concrete class:
-    final SchemaDef schema = Record.BOND_TYPE.buildSchemaDef();
+```java
+// from a concrete class:
+final SchemaDef schema = Record.BOND_TYPE.buildSchemaDef();
 
-    // from an instance of a concrete or generic type:
-    final SchemaDef schema = myInstance.getBondType().buildSchemaDef();
+// from an instance of a concrete or generic type:
+final SchemaDef schema = myInstance.getBondType().buildSchemaDef();
+```
 
 The `SchemaDef` object is always self contained, including the runtime schema
 definitions for all nested types (if any). `SchemaDef` is a Bond type, defined
 in `bond.bond`, and as such can be de/serialized like any other Bond type:
 
-    serializer.serialize(Record.BOND_TYPE.buildSchemaDef(), writer);
+```java
+serializer.serialize(Record.BOND_TYPE.buildSchemaDef(), writer);
+```
 
 A serialized representation of `SchemaDef` can be also obtained directly from
 a schema definition IDL file using the [bond
@@ -509,11 +541,13 @@ Because `bonded<T>` can store (or, more accurately, refer to) data representing
 a serialized object, it can be used to delay deserialization of some parts of a
 payload:
 
-    struct Example
-    {
-        0: Always always;
-        1: bonded<Sometimes> sometimes;
-    }
+```
+struct Example
+{
+    0: Always always;
+    1: bonded<Sometimes> sometimes;
+}
+```
 
 The schema defined above contains two nested fields. When an object of type
 `Example` is deserialized, the field `always` will be fully instantiated and
@@ -521,12 +555,14 @@ deserialized, but the field `sometimes`, which is declared as `bonded<Sometimes>
 will be merely initialized with a reference to its serialized representation.
 Applications can then deserialize the object only when needed:
 
-    final Example ex = deserializer.deserialize(reader);
+```java
+final Example ex = deserializer.deserialize(reader);
 
-    // Deserialize sometimes only when needed
-    if (needSometimes) {
-        final Sometimes sometimes = ex.sometimes.deserialize();
-    }
+// Deserialize sometimes only when needed
+if (needSometimes) {
+    final Sometimes sometimes = ex.sometimes.deserialize();
+}
+```
 
 Polymorphism
 ------------
@@ -547,7 +583,9 @@ Codegen parameters
 Bond file containing a `namespace examples` declaration and want your classes
 generated into `org.bondlib.examples`, you can invoke gbc like this:
 
-    gbc java --namespace="examples=org.bondlib.examples" example.bond
+```
+gbc java --namespace="examples=org.bondlib.examples" example.bond
+```
 
 Multiple aliases may be given to a single `--namespace` option by separating
 them with semicolons.
@@ -594,11 +632,15 @@ With all of this done, you're ready to build the Bond library and the Bond
 gradle plugin (optional, but strongly recommended). To build the plugin and
 install it to your local maven repository:
 
-    cd java/gradle-plugin; gradle build install
+```
+cd java/gradle-plugin; gradle build install
+```
 
 To build the library and install it to your local maven repository:
 
-    cd java/core; gradle build install
+```
+cd java/core; gradle build install
+```
 
 To consume either component from your local maven repository, see the
 [`build.gradle`](https://github.com/Microsoft/bond/blob/master/examples/java/core/serialization/build.gradle)
