@@ -121,7 +121,7 @@ assuming you have enough memory.)
 ### macOS
 
 Install Xcode and then run the following command to install the required
-packages using Homebrew ([http://brew.sh/](http://brew.sh/)):
+packages using [Homebrew](https://brew.sh/):
 
 ```bash
 brew install \
@@ -152,7 +152,7 @@ cmake -DBOND_ENABLE_GRPC=FALSE -G Xcode ..
 ```
 
 You can build and run unit tests by building the `check` target in Xcode or by
-running make in the build directory:
+running `make` in the build directory:
 
 ```bash
 make --jobs 8 check
@@ -181,9 +181,9 @@ Install the following tools:
 
 - Visual Studio 2013 or 2015
     - Visual Studio 2015 is required to build C# Bond from source
-- CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
-- .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
+- [CMake](http://www.cmake.org/download/)
+- [Haskell Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows)
+- [.NET Core SDK](https://www.microsoft.com/net/core#windows)
 
 If you are building on a network behind a proxy, set the environment variable
 `HTTP_PROXY`, e.g.:
@@ -205,8 +205,8 @@ switch is used to run the unit tests as well.
 
 The C++ and Python versions of Bond additionally require:
 
-- Boost 1.58+ ([http://www.boost.org/users/download/](http://www.boost.org/users/download/))
-- Python 2.7 ([https://www.python.org/downloads/](https://www.python.org/downloads/))
+- [Boost 1.58+](http://www.boost.org/users/download/)
+- [Python 2.7](https://www.python.org/downloads/)
 
 You may need to set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR`
 to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be
