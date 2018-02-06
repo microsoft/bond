@@ -27,21 +27,6 @@ function (add_unit_test)
 endfunction()
 
 
-#
-# add_protobuf_codegen_cpp file
-#
-function (add_protobuf_codegen_cpp file)
-    add_custom_command(
-      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.cc
-             ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.h
-      DEPENDS protoc ${file}.proto
-      COMMAND protoc ${file}.proto
-          --cpp_out=${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          -I${CMAKE_CURRENT_SOURCE_DIR}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endfunction()
-
-
 # Codegen for .proto files.
 add_protobuf_codegen_cpp (protobuf_writer)
 add_library (protobuf_test_codegen

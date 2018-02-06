@@ -1275,7 +1275,7 @@ Protocol Buffers Interop
 ========================
 
 Bond provides a `ProtobufBinaryWriter` that can be used as any other built-in
-protocol writer in order to serialize objects to Protocol Buffers binary format.
+protocol writer in order to serialize objects to the Protocol Buffers binary format.
 It requires a compatible .bond schema definition that will map to corresponding
 .proto schema:
 
@@ -1303,6 +1303,9 @@ It requires a compatible .bond schema definition that will map to corresponding
 - The smaller 8 and 16 bit numeric Bond types can also be mapped to 32 or 64 bit
   ones with corresponding encoding.
 
+See examples:
+
+- `examples/cpp/core/protobuf_serialization`
 
 Custom type mappings
 ====================
