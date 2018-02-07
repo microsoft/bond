@@ -32,6 +32,9 @@ public:
           _data(_insitu)
     {}
 
+    SimpleArray(const SimpleArray& other) = delete;
+    SimpleArray& operator=(const SimpleArray& other) = delete;
+
     ~SimpleArray()
     {
         memfree();
