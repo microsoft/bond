@@ -156,7 +156,7 @@ namespace proto
             return Encoding::ZigZag;
         }
 
-        InvalidEnumValueException(name.c_str(), "Encoding");
+        InvalidEnumValueException(it->second.c_str(), "Encoding");
     }
 
     inline Encoding ReadEncoding(BondDataType type, const Metadata& metadata, const std::string& name)
@@ -224,7 +224,7 @@ namespace proto
             return Packing::False;
         }
 
-        InvalidEnumValueException(name.c_str(), "Packing");
+        InvalidEnumValueException(it->second.c_str(), "Packing");
     }
 
     inline Packing ReadPacking(BondDataType type, const Metadata& metadata)
