@@ -1284,7 +1284,10 @@ It requires a compatible .bond schema definition that will map to corresponding
   `double`, and `string` types are mapped to corresponding ones with same name.
 - Bond's `wstring` type can also be mapped to `string` in which case it will
   be converted to UTF-8.
-- The `bytes` type is represented as a `blob`.
+- The `bytes` type is represented as a `blob`. Since `blob` is represented as
+  a list of `int8` on the wire, therefore the `vector<int8>`, `list<int8>` and
+  `nullable<int8>` Bond types are treated as a `blob` too and should be mapped
+  to `bytes` type.
 - The `fixed32`, `fixed64`, `sfixed32` and `sfixed64` types can be expressed
   as `uint32`, `uint64`, `int32` and `int64` respectively, but require an
   additional `ProtoEncode("Fixed")` attribute.
@@ -1299,9 +1302,11 @@ It requires a compatible .bond schema definition that will map to corresponding
   also be used to represent a scalar field (`optional` for `proto2`) or a
   `repeated` one which is expected to have at most one element. Note, that in
   case of a numeric scalar field or an unpacked `repeated` numeric type, the
-  `ProtoPack("False")` must be used.
-- The smaller 8 and 16 bit numeric Bond types can also be mapped to 32 or 64 bit
-  ones with corresponding encoding.
+  `ProtoPack("False")` must be used. This does not apply to `nullable<int8>`.
+- The smaller 8 and 16 bit numeric Bond types can also be mapped to 32 bit ones
+  with corresponding encoding (except `vector<int8>`, `list<int8>` and
+  `nullable<int8>` that are treated as a `blob`).
+- The `bonded<T>` can also be used in addition to a nested struct.
 
 See examples:
 
