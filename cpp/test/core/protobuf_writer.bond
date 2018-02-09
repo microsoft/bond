@@ -25,14 +25,14 @@ struct BoxWrongEncoding<T>
 
 struct BoxWrongPackingWrongKeyEncoding<T>
 {
-    [ProtoEncode("WrongValue")]
+    [ProtoPack("WrongValue")]
     [ProtoEncodeKey("WrongValue")]
     1: T value;
 }
 
 struct BoxWrongPackingWrongValueEncoding<T>
 {
-    [ProtoEncode("WrongValue")]
+    [ProtoPack("WrongValue")]
     [ProtoEncodeValue("WrongValue")]
     1: T value;
 }
