@@ -27,11 +27,10 @@ execute_process (
     COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} build :${target} --no-run-tests ${stack_options} --ghc-options=${buildGhcOptions}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error
-    OUTPUT_VARIABLE build_output
-    ERROR_VARIABLE build_output)
+    ERROR_VARIABLE build_errors)
 
 if (error)
-    message (FATAL_ERROR ${build_output})
+    message (FATAL_ERROR ${build_errors})
 endif()
 
 # Copy results to builddir
