@@ -26,11 +26,10 @@ set (buildGhcOptions "-O2")
 execute_process (
     COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} build :${target} --no-run-tests ${stack_options} --ghc-options=${buildGhcOptions}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    RESULT_VARIABLE error
-    ERROR_VARIABLE build_errors)
+    RESULT_VARIABLE error)
 
 if (error)
-    message (FATAL_ERROR ${build_errors})
+    message (FATAL_ERROR "build failed - scroll up for its output")
 endif()
 
 # Copy results to builddir
