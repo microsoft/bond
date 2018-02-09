@@ -94,6 +94,18 @@ namespace
             return false;
         }
 
+        bool Field(uint16_t id, const bond::Metadata& /*metadata*/, const std::vector<bond::blob::value_type>& value) const
+        {
+            SetValue(GetField(id), value);
+            return false;
+        }
+
+        bool Field(uint16_t id, const bond::Metadata& /*metadata*/, const bond::nullable<bond::blob::value_type>& value) const
+        {
+            SetValue(GetField(id), value);
+            return false;
+        }
+
         template <typename T>
         bool UnknownField(uint16_t /*id*/, const T& /*value*/) const
         {
@@ -289,9 +301,37 @@ namespace
             SetValue(field, google::protobuf::string{ value.content(), value.size() });
         }
 
+        void SetValue(const google::protobuf::FieldDescriptor& field, const std::vector<bond::blob::value_type>& value) const
+        {
+            SetValue(field, bond::blob{ value.data(), static_cast<uint32_t>(value.size()) });
+        }
+
+        void SetValue(const google::protobuf::FieldDescriptor& field, const bond::nullable<bond::blob::value_type>& value) const
+        {
+            SetValue(
+                field,
+                value.hasvalue()
+                    ? google::protobuf::string(1, static_cast<char>(value.value()))
+                    : google::protobuf::string{});
+        }
+
         void AddValue(const google::protobuf::FieldDescriptor& field, const bond::blob& value) const
         {
             AddValue(field, google::protobuf::string{ value.content(), value.size() });
+        }
+
+        void AddValue(const google::protobuf::FieldDescriptor& field, const std::vector<bond::blob::value_type>& value) const
+        {
+            AddValue(field, bond::blob{ value.data(), static_cast<uint32_t>(value.size()) });
+        }
+
+        void AddValue(const google::protobuf::FieldDescriptor& field, const bond::nullable<bond::blob::value_type>& value) const
+        {
+            AddValue(
+                field,
+                value.hasvalue()
+                    ? google::protobuf::string(1, static_cast<char>(value.value()))
+                    : google::protobuf::string{});
         }
 
         google::protobuf::Message& _message;
@@ -303,27 +343,48 @@ namespace
 
 BOOST_AUTO_TEST_SUITE(ProtobufWriterTests)
 
-template <typename Proto, typename Bond>
-void CheckBinaryFormat(const Bond& bond_struct)
+template <typename Bond, typename Proto>
+void CheckBinaryFormat(
+    const bond::bonded<Bond>& bond_struct,
+    const Proto& proto_struct,
+    const bond::blob& proto_data)
 {
     bond::OutputBuffer output;
     bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
-    bond::Serialize(bond_struct, writer);
-
-    Proto proto_struct;
-    bond::Apply(ToProto{ proto_struct }, bond_struct);
+    bond_struct.Serialize(writer);
 
     bond::blob bond_data = output.GetBuffer();
-    BOOST_REQUIRE_EQUAL(bond_data.size(), proto_struct.ByteSizeLong());
-
-    auto proto_data = boost::make_shared_noinit<char[]>(bond_data.size());
-    BOOST_CHECK(proto_struct.SerializeToArray(proto_data.get(), bond_data.size()));
+    BOOST_REQUIRE_EQUAL(bond_data.size(), proto_data.size());
 
     Proto proto_struct2;
     BOOST_CHECK(
-        (bond_data == bond::blob{ proto_data, bond_data.size() })
+        (bond_data == proto_data)
         || (proto_struct2.ParseFromString(google::protobuf::string{ bond_data.content(), bond_data.size() })
             && google::protobuf::util::MessageDifferencer::Equals(proto_struct, proto_struct2)));
+}
+
+template <typename Proto, typename Bond>
+void CheckBinaryFormat(const Bond& bond_struct)
+{
+    Proto proto_struct;
+    bond::Apply(ToProto{ proto_struct }, bond_struct);
+
+    auto size = proto_struct.ByteSizeLong();
+    auto buffer = boost::make_shared_noinit<char[]>(size);
+    BOOST_REQUIRE(proto_struct.SerializeToArray(buffer.get(), static_cast<int>(size)));
+    bond::blob proto_data{ buffer, static_cast<uint32_t>(size) };
+
+    // Serialization
+    CheckBinaryFormat(bond::bonded<Bond>{ boost::ref(bond_struct) }, proto_struct, proto_data);
+
+    // Transcoding from compact binary
+    CheckBinaryFormat(
+        GetBonded<
+            bond::CompactBinaryReader<bond::InputBuffer>,
+            bond::CompactBinaryWriter<bond::OutputBuffer>,
+            Bond>(bond_struct),
+        proto_struct,
+        proto_data);
 }
 
 template <typename Proto, typename Bond>
@@ -343,6 +404,8 @@ void CheckUnsupportedType()
 
     BOOST_CHECK_THROW(bond::Serialize(bond_struct, writer), bond::CoreException);
 }
+
+using blob_types = boost::mpl::list<bond::blob, std::vector<int8_t>, bond::nullable<int8_t> >;
 
 BOOST_AUTO_TEST_CASE(InheritanceTests)
 {
@@ -379,23 +442,14 @@ BOOST_AUTO_TEST_CASE(IntegerTests)
 
 BOOST_AUTO_TEST_CASE(StringTests)
 {
-    CheckBinaryFormat<unittest::proto::String, unittest::Box<std::string> >();
-    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongEncoding<std::string> >();
+    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongPackingWrongEncoding<std::string> >();
 
-    CheckBinaryFormat<unittest::proto::String, unittest::Box<std::wstring> >();
-    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongEncoding<std::wstring> >();
+    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongPackingWrongEncoding<std::wstring> >();
 }
 
-BOOST_AUTO_TEST_CASE(BlobTests)
+BOOST_AUTO_TEST_CASE_TEMPLATE(BlobTests, T, blob_types)
 {
-    CheckBinaryFormat<unittest::proto::Blob, unittest::Box<bond::blob> >();
-
-    CheckUnsupportedType<unittest::BoxZigZag<bond::blob> >();
-    CheckUnsupportedType<unittest::BoxFixed<bond::blob> >();
-    CheckUnsupportedType<unittest::BoxWrongEncoding<bond::blob> >();
-
-    CheckUnsupportedType<unittest::BoxUnpacked<bond::blob> >();
-    CheckUnsupportedType<unittest::BoxWrongPacking<bond::blob> >();
+    CheckBinaryFormat<unittest::proto::Blob, unittest::BoxWrongPackingWrongEncoding<T> >();
 }
 
 BOOST_AUTO_TEST_CASE(IntegerContainerTests)
@@ -407,7 +461,6 @@ BOOST_AUTO_TEST_CASE(IntegerContainerTests)
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<uint16_t> > >();
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<uint32_t> > >();
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<uint64_t> > >();
-    CheckUnsupportedType<unittest::BoxWrongEncoding<vector<int8_t> > >();
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<int16_t> > >();
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<int32_t> > >();
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<int64_t> > >();
@@ -422,7 +475,6 @@ BOOST_AUTO_TEST_CASE(IntegerContainerTests)
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<uint16_t> > >();
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<uint32_t> > >();
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<uint64_t> > >();
-    CheckUnsupportedType<unittest::BoxWrongPacking<vector<int8_t> > >();
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<int16_t> > >();
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<int32_t> > >();
     CheckUnsupportedType<unittest::BoxWrongPacking<vector<int64_t> > >();
@@ -488,14 +540,18 @@ BOOST_AUTO_TEST_CASE(StringSetContainerTests)
         unittest::BoxWrongPackingWrongEncoding<std::set<std::wstring> > >();
 }
 
-BOOST_AUTO_TEST_CASE(BlobContainerTests)
+BOOST_AUTO_TEST_CASE_TEMPLATE(BlobContainerTests, T, blob_types)
 {
     CheckBinaryFormat<
         unittest::proto::BlobContainer,
-        unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > >();
+        unittest::BoxWrongPackingWrongEncoding<std::vector<T> > >();
 
-    unittest::BoxWrongPackingWrongEncoding<std::vector<bond::blob> > box;
-    box.value.resize(2, bond::blob{});
+    CheckBinaryFormat<
+        unittest::proto::BlobContainer,
+        unittest::BoxWrongPackingWrongEncoding<bond::nullable<T> > >();
+
+    unittest::BoxWrongPackingWrongEncoding<std::vector<T> > box;
+    box.value.resize(2);
     CheckBinaryFormat<unittest::proto::BlobContainer>(box);
 }
 
@@ -534,11 +590,11 @@ BOOST_AUTO_TEST_CASE(StringMapKeyTests)
 {
     CheckBinaryFormat<
         unittest::proto::StringMapKey,
-        unittest::Box<std::map<std::string, uint32_t> > >();
+        unittest::BoxWrongPackingWrongKeyEncoding<std::map<std::string, uint32_t> > >();
 
     CheckBinaryFormat<
         unittest::proto::StringMapKey,
-        unittest::Box<std::map<std::wstring, uint32_t> > >();
+        unittest::BoxWrongPackingWrongKeyEncoding<std::map<std::wstring, uint32_t> > >();
 }
 
 BOOST_AUTO_TEST_CASE(IntegerMapValueTests)
@@ -550,25 +606,25 @@ BOOST_AUTO_TEST_CASE(StringMapValueTests)
 {
     CheckBinaryFormat<
         unittest::proto::StringMapValue,
-        unittest::Box<std::map<uint32_t, std::string> > >();
+        unittest::BoxWrongPackingWrongValueEncoding<std::map<uint32_t, std::string> > >();
 
     CheckBinaryFormat<
         unittest::proto::StringMapValue,
-        unittest::Box<std::map<uint32_t, std::wstring> > >();
+        unittest::BoxWrongPackingWrongValueEncoding<std::map<uint32_t, std::wstring> > >();
 }
 
-BOOST_AUTO_TEST_CASE(BlobMapValueTests)
+BOOST_AUTO_TEST_CASE_TEMPLATE(BlobMapValueTests, T, blob_types)
 {
     CheckBinaryFormat<
         unittest::proto::BlobMapValue,
-        unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, bond::blob> > >();
+        unittest::BoxWrongPackingWrongValueEncoding<std::map<uint32_t, T> > >();
 }
 
 BOOST_AUTO_TEST_CASE(StructMapValueTests)
 {
     CheckBinaryFormat<
         unittest::proto::StructMapValue,
-        unittest::BoxWrongPackingWrongEncoding<std::map<uint32_t, unittest::Integers> > >();
+        unittest::BoxWrongPackingWrongValueEncoding<std::map<uint32_t, unittest::Integers> > >();
 }
 
 BOOST_AUTO_TEST_CASE(NestedContainersTests)
@@ -577,7 +633,6 @@ BOOST_AUTO_TEST_CASE(NestedContainersTests)
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<uint16_t> > > >();
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<uint32_t> > > >();
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<uint64_t> > > >();
-    CheckUnsupportedType<unittest::Box<std::vector<std::vector<int8_t> > > >();
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<int16_t> > > >();
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<int32_t> > > >();
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<int64_t> > > >();
@@ -609,7 +664,6 @@ BOOST_AUTO_TEST_CASE(NestedContainersTests)
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<uint16_t> > > >();
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<uint32_t> > > >();
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<uint64_t> > > >();
-    CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<int8_t> > > >();
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<int16_t> > > >();
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<int32_t> > > >();
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<int64_t> > > >();
@@ -650,5 +704,6 @@ BOOST_AUTO_TEST_SUITE_END()
 bool init_unit_test()
 {
     boost::debug::detect_memory_leaks(false);
+    bond::RandomProtocolReader::Seed(time(nullptr), time(nullptr) / 1000);
     return true;
 }

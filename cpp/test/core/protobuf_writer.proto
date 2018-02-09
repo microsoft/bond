@@ -61,16 +61,13 @@ message IntegersContainer
     repeated bool b = 12;
     repeated float f = 13;
     repeated double d = 14;
-    repeated int32 iv8 = 15;
-    repeated sint32 iz8 = 16;
-    repeated sfixed32 if8 = 17;
-    repeated int32 iv16 = 18;
-    repeated sint32 iz16 = 19;
-    repeated sfixed32 if16 = 20;
-    repeated uint32 uiv8 = 21;
-    repeated fixed32 uif8 = 22;
-    repeated uint32 uiv16 = 23;
-    repeated fixed32 uif16 = 24;
+    repeated int32 iv16 = 15;
+    repeated sint32 iz16 = 16;
+    repeated sfixed32 if16 = 17;
+    repeated uint32 uiv8 = 18;
+    repeated fixed32 uif8 = 19;
+    repeated uint32 uiv16 = 20;
+    repeated fixed32 uif16 = 21;
 }
 
 message UnpackedIntegersContainer
@@ -89,16 +86,13 @@ message UnpackedIntegersContainer
     repeated bool b = 12 [packed=false];
     repeated float f = 13 [packed=false];
     repeated double d = 14 [packed=false];
-    repeated int32 iv8 = 15 [packed=false];
-    repeated sint32 iz8 = 16 [packed=false];
-    repeated sfixed32 if8 = 17 [packed=false];
-    repeated int32 iv16 = 18 [packed=false];
-    repeated sint32 iz16 = 19 [packed=false];
-    repeated sfixed32 if16 = 20 [packed=false];
-    repeated uint32 uiv8 = 21 [packed=false];
-    repeated fixed32 uif8 = 22 [packed=false];
-    repeated uint32 uiv16 = 23 [packed=false];
-    repeated fixed32 uif16 = 24 [packed=false];
+    repeated int32 iv16 = 15 [packed=false];
+    repeated sint32 iz16 = 16 [packed=false];
+    repeated sfixed32 if16 = 17 [packed=false];
+    repeated uint32 uiv8 = 18 [packed=false];
+    repeated fixed32 uif8 = 19 [packed=false];
+    repeated uint32 uiv16 = 20 [packed=false];
+    repeated fixed32 uif16 = 21 [packed=false];
 }
 
 message StringContainer

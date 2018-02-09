@@ -23,6 +23,20 @@ struct BoxWrongEncoding<T>
     1: T value;
 }
 
+struct BoxWrongPackingWrongKeyEncoding<T>
+{
+    [ProtoEncode("WrongValue")]
+    [ProtoEncodeKey("WrongValue")]
+    1: T value;
+}
+
+struct BoxWrongPackingWrongValueEncoding<T>
+{
+    [ProtoEncode("WrongValue")]
+    [ProtoEncodeValue("WrongValue")]
+    1: T value;
+}
+
 struct BoxUnpacked<T>
 {
     [ProtoPack("False")]
@@ -176,31 +190,23 @@ struct IntegersContainer
     [ProtoEncode("RandomValue")]
     14: vector<double> d;
 
-    15: vector<int8> iv8;
+    15: vector<int16> iv16;
 
     [ProtoEncode("ZigZag")]
-    16: vector<int8> iz8;
+    16: vector<int16> iz16;
 
     [ProtoEncode("Fixed")]
-    17: vector<int8> if8;
+    17: vector<int16> if16;
 
-    18: vector<int16> iv16;
-
-    [ProtoEncode("ZigZag")]
-    19: vector<int16> iz16;
+    18: vector<uint8> uiv8;
 
     [ProtoEncode("Fixed")]
-    20: vector<int16> if16;
+    19: vector<uint8> uif8;
 
-    21: vector<uint8> uiv8;
-
-    [ProtoEncode("Fixed")]
-    22: vector<uint8> uif8;
-
-    23: vector<uint16> uiv16;
+    20: vector<uint16> uiv16;
 
     [ProtoEncode("Fixed")]
-    24: vector<uint16> uif16;
+    21: vector<uint16> uif16;
 }
 
 struct UnpackedIntegersContainer
@@ -257,40 +263,29 @@ struct UnpackedIntegersContainer
     14: vector<double> d;
 
     [ProtoPack("False")]
-    15: vector<int8> iv8;
+    15: vector<int16> iv16;
 
     [ProtoPack("False")]
     [ProtoEncode("ZigZag")]
-    16: vector<int8> iz8;
+    16: vector<int16> iz16;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    17: vector<int8> if8;
+    17: vector<int16> if16;
 
     [ProtoPack("False")]
-    18: vector<int16> iv16;
-
-    [ProtoPack("False")]
-    [ProtoEncode("ZigZag")]
-    19: vector<int16> iz16;
+    18: vector<uint8> uiv8;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    20: vector<int16> if16;
+    19: vector<uint8> uif8;
 
     [ProtoPack("False")]
-    21: vector<uint8> uiv8;
-
-    [ProtoPack("False")]
-    [ProtoEncode("Fixed")]
-    22: vector<uint8> uif8;
-
-    [ProtoPack("False")]
-    23: vector<uint16> uiv16;
+    20: vector<uint16> uiv16;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    24: vector<uint16> uif16;
+    21: vector<uint16> uif16;
 }
 
 struct IntegersSetContainer
@@ -332,31 +327,23 @@ struct IntegersSetContainer
     [ProtoEncode("RandomValue")]
     14: set<double> d;
 
-    15: set<int8> iv8;
+    15: set<int16> iv16;
 
     [ProtoEncode("ZigZag")]
-    16: set<int8> iz8;
+    16: set<int16> iz16;
 
     [ProtoEncode("Fixed")]
-    17: set<int8> if8;
+    17: set<int16> if16;
 
-    18: set<int16> iv16;
-
-    [ProtoEncode("ZigZag")]
-    19: set<int16> iz16;
+    18: set<uint8> uiv8;
 
     [ProtoEncode("Fixed")]
-    20: set<int16> if16;
+    19: set<uint8> uif8;
 
-    21: set<uint8> uiv8;
-
-    [ProtoEncode("Fixed")]
-    22: set<uint8> uif8;
-
-    23: set<uint16> uiv16;
+    20: set<uint16> uiv16;
 
     [ProtoEncode("Fixed")]
-    24: set<uint16> uif16;
+    21: set<uint16> uif16;
 }
 
 struct UnpackedIntegersSetContainer
@@ -413,40 +400,29 @@ struct UnpackedIntegersSetContainer
     14: set<double> d;
 
     [ProtoPack("False")]
-    15: set<int8> iv8;
+    15: set<int16> iv16;
 
     [ProtoPack("False")]
     [ProtoEncode("ZigZag")]
-    16: set<int8> iz8;
+    16: set<int16> iz16;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    17: set<int8> if8;
+    17: set<int16> if16;
 
     [ProtoPack("False")]
-    18: set<int16> iv16;
-
-    [ProtoPack("False")]
-    [ProtoEncode("ZigZag")]
-    19: set<int16> iz16;
+    18: set<uint8> uiv8;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    20: set<int16> if16;
+    19: set<uint8> uif8;
 
     [ProtoPack("False")]
-    21: set<uint8> uiv8;
-
-    [ProtoPack("False")]
-    [ProtoEncode("Fixed")]
-    22: set<uint8> uif8;
-
-    [ProtoPack("False")]
-    23: set<uint16> uiv16;
+    20: set<uint16> uiv16;
 
     [ProtoPack("False")]
     [ProtoEncode("Fixed")]
-    24: set<uint16> uif16;
+    21: set<uint16> uif16;
 }
 
 struct Nullable

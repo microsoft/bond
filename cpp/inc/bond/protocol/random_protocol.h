@@ -38,7 +38,7 @@ public:
         return (state[1] = (s1 ^ s0 ^ (s1 >> 17) ^ (s0 >> 26))) + s0;
     }
 
-    void Seed(uint64_t s0 = seed1, uint64_t s1 = seed2)
+    static void Seed(uint64_t s0 = seed1, uint64_t s1 = seed2)
     {
         state[0] = s0;
         state[1] = s1;

@@ -282,13 +282,14 @@ namespace proto
                 uint32_t map_tag;
                 Element value;
                 Element key;
+                bool is_blob;
                 bool is_key;
 
             } element;
         };
 
         bool has_element;
-        uint8_t level;
+        bool is_list;
     };
 
 } // namespace proto

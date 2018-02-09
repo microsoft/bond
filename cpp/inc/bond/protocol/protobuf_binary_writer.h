@@ -102,11 +102,6 @@ namespace bond
             {
                 const auto& info = _fields.top(std::nothrow);
 
-                if (info.level > 1)
-                {
-                    detail::proto::NotSupportedException("Container nesting");
-                }
-
                 WriteTag(info.has_element
                     ? info.element.value.tag
                     : detail::proto::MakeTag(info.field.id, WireType::LengthDelimited));
@@ -135,23 +130,16 @@ namespace bond
         template <typename T>
         void WriteField(uint16_t id, const Metadata& metadata, const T& value)
         {
-            FieldInfo::Element elem;
-            elem.encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
-            elem.tag = detail::proto::MakeTag(
-                id,
-                detail::proto::GetWireType(get_type_id<T>::value, elem.encoding));
-
-            WriteTag(elem.tag);
-            WriteScalar(value, elem);
+            WriteBasic(id, metadata, value);
         }
 
         void WriteFieldBegin(BondDataType type, uint16_t id, const Metadata& metadata)
         {
             FieldInfo info;
-            info.has_element = false;
-            info.level = 0;
             info.field.id = id;
             info.field.metadata = &metadata;
+            info.has_element = false;
+            info.is_list = (type == BT_LIST);
 
             _fields.push(info);
         }
@@ -169,24 +157,45 @@ namespace bond
         void WriteContainerBegin(uint32_t size, BondDataType type)
         {
             auto& info = _fields.top(std::nothrow);
-            ++info.level;
 
             BOOST_VERIFY(size != 0
                 || (info.has_element && type == BT_INT8));  // Nested empty blob
 
             if (!info.has_element)
             {
-                BOOST_ASSERT(info.field.metadata);
+                bool is_blob;
+                if (type == BT_INT8)
+                {
+                    is_blob = info.is_list;
+                }
+                else
+                {
+                    info.is_list = (type == BT_LIST);
+                    is_blob = false;
+                }
 
                 FieldInfo::Element elem;
-                elem.encoding = detail::proto::ReadEncoding(type, *info.field.metadata);
+                Packing packing;
 
-                switch (detail::proto::ReadPacking(type, *info.field.metadata))
+                if (is_blob)
+                {
+                    elem.encoding = detail::proto::Unavailable<Encoding>();
+                    packing = Packing::False;
+                }
+                else
+                {
+                    BOOST_ASSERT(info.field.metadata);
+
+                    elem.encoding = detail::proto::ReadEncoding(type, *info.field.metadata);
+                    packing = detail::proto::ReadPacking(type, *info.field.metadata);
+                }
+
+                switch (packing)
                 {
                 case Packing::False:
                     elem.tag = detail::proto::MakeTag(
                         info.field.id,
-                        type == BT_LIST // blob
+                        info.is_list // blob
                             ? WireType::LengthDelimited
                             : detail::proto::GetWireType(type, elem.encoding));
                     break;
@@ -200,7 +209,22 @@ namespace bond
 
                 info.element.map_tag = 0;
                 info.element.value = elem;
+                info.element.is_blob = is_blob;
                 info.has_element = true;
+            }
+            else if (info.is_list && type == BT_INT8) // blob
+            {
+                BOOST_ASSERT(!info.element.is_blob);
+                info.element.is_blob = true;
+            }
+            else
+            {
+                detail::proto::NotSupportedException("Container nesting");
+            }
+
+            if (info.element.is_blob)
+            {
+                BlobBegin(info);
             }
         }
 
@@ -208,16 +232,15 @@ namespace bond
         void WriteContainerBegin(uint32_t size, const std::pair<BondDataType, BondDataType>& type)
         {
             auto& info = _fields.top(std::nothrow);
-            ++info.level;
 
             BOOST_VERIFY(size != 0);
 
             if (!info.has_element)
             {
                 BOOST_ASSERT(info.field.metadata);
-
                 const auto& metadata = *info.field.metadata;
 
+                info.is_list = (type.second == BT_LIST);
                 info.element.map_tag = detail::proto::MakeTag(info.field.id, WireType::LengthDelimited);
 
                 info.element.key.encoding = detail::proto::ReadKeyEncoding(type.first, metadata);
@@ -228,37 +251,40 @@ namespace bond
                 info.element.value.encoding = detail::proto::ReadValueEncoding(type.second, metadata);
                 info.element.value.tag = detail::proto::MakeTag(
                     2,
-                    type.second == BT_LIST // blob
+                    info.is_list // blob
                         ? WireType::LengthDelimited
                         : detail::proto::GetWireType(type.second, info.element.value.encoding));
 
                 info.element.is_key = true;
+                info.element.is_blob = false;
                 info.has_element = true;
-            }
-        }
-
-        // Write for container element
-        template <typename T>
-        typename boost::enable_if_c<is_basic_type<T>::value || std::is_same<T, blob>::value>::type
-        Write(const T& value)
-        {
-            auto& info = _fields.top(std::nothrow);
-            BOOST_ASSERT(info.has_element);
-
-            if (info.level > (std::is_same<T, blob>::value ? 2 : 1))
-            {
-                detail::proto::NotSupportedException("Container nesting");
-            }
-
-            if (info.element.map_tag == 0)
-            {
-                WriteTaggedScalar(value, info.element.value);
             }
             else
             {
-                WriteTaggedScalar(value, KeyValueBegin(info));
-                KeyValueEnd(info);
+                detail::proto::NotSupportedException("Container nesting");
             }
+        }
+
+        template <typename T>
+        typename boost::enable_if<is_basic_type<T> >::type
+        Write(const T& value)
+        {
+            auto& info = _fields.top(std::nothrow);
+
+            if (info.has_element)
+            {
+                WriteElement(value, info);
+            }
+            else
+            {
+                BOOST_ASSERT(info.field.metadata);
+                WriteBasic(info.field.id, *info.field.metadata, value);
+            }
+        }
+
+        void Write(const blob& value)
+        {
+            WriteElement(value, _fields.top(std::nothrow));
         }
 
         void WriteContainerEnd()
@@ -266,7 +292,11 @@ namespace bond
             auto& info = _fields.top(std::nothrow);
             BOOST_ASSERT(info.has_element);
 
-            --info.level;
+            if (info.element.is_blob)
+            {
+                BlobEnd(info);
+                info.element.is_blob = false;
+            }
 
             if (info.element.value.tag == 0)
             {
@@ -344,36 +374,98 @@ namespace bond
         }
 
         template <typename T>
-        void WriteTaggedScalar(const T& value, const FieldInfo::Element& elem)
+        void WriteBasic(uint16_t id, const Metadata& metadata, const T& value)
         {
-            TryWriteTag(elem);
+            FieldInfo::Element elem;
+            elem.encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
+            elem.tag = detail::proto::MakeTag(
+                id,
+                detail::proto::GetWireType(get_type_id<T>::value, elem.encoding));
+
+            WriteTag(elem.tag);
             WriteScalar(value, elem);
         }
 
-        void WriteTaggedScalar(const blob& value, const FieldInfo::Element& elem)
+        template <typename T>
+        void WriteElement(const T& value, FieldInfo& info)
         {
-            if (elem.encoding != detail::proto::Unavailable<Encoding>())
+            BOOST_ASSERT(info.has_element);
+
+            WriteTaggedElement(value, info);
+        }
+
+        void WriteElement(const blob::value_type& value, FieldInfo& info)
+        {
+            BOOST_ASSERT(info.has_element);
+
+            if (info.element.is_blob)
             {
-                detail::proto::NotSupportedException("Blob with encoding attribute");
+                _output.Write(value);
             }
-
-            const bool has_tag = TryWriteTag(elem);
-
-            if (has_tag)
+            else
             {
-                if (static_cast<WireType>(elem.tag & 0x7) != WireType::LengthDelimited)
-                {
-                    detail::proto::NotSupportedException("Blob with unpacked attribute");
-                }
+                WriteTaggedElement(value, info);
+            }
+        }
 
-                LengthBegin();
+        void WriteElement(const blob& value, FieldInfo& info)
+        {
+            BOOST_ASSERT(info.has_element);
+
+            if (info.element.map_tag != 0)
+            {
+                KeyValueBegin(info);
             }
 
             _output.Write(value);
+        }
 
-            if (has_tag)
+        template <typename T>
+        void WriteTaggedElement(const T& value, FieldInfo& info)
+        {
+            BOOST_ASSERT(info.has_element);
+
+            const bool is_map = (info.element.map_tag != 0);
+
+            const auto& elem = is_map ? KeyValueBegin(info) : info.element.value;
+            TryWriteTag(elem);
+            WriteScalar(value, elem);
+
+            if (is_map)
+            {
+                KeyValueEnd(info);
+            }
+        }
+
+        void BlobBegin(const FieldInfo& info)
+        {
+            BOOST_ASSERT(info.has_element);
+            BOOST_ASSERT(info.element.is_blob);
+
+            if (info.element.map_tag != 0)
+            {
+                KeyValueBegin(info);
+            }
+
+            if (TryWriteTag(info.element.value))
+            {
+                LengthBegin();
+            }
+        }
+
+        void BlobEnd(FieldInfo& info)
+        {
+            BOOST_ASSERT(info.has_element);
+            BOOST_ASSERT(info.element.is_blob);
+
+            if (info.element.value.tag != 0)
             {
                 LengthEnd();
+            }
+
+            if (info.element.map_tag != 0)
+            {
+                KeyValueEnd(info);
             }
         }
 
