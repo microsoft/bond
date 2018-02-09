@@ -39,6 +39,7 @@ before_install:
     - docker images # Dump the image ID
 
 script:
+    # TODO: when switching to consuming an image that has a saved .stack-work, remove the .stack caching and mounting.
     - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_CONTAINER $HOME $FLAVOR $BOOST $COMPILER
     # docker runs as root and may leave files in the following directories that are not readable by the travis user
     - sudo chown -R travis:travis $HOME/.ccache $HOME/.stack `pwd`

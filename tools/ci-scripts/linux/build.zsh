@@ -7,7 +7,6 @@ FLAVOR=$2
 BOOST=${3:-}
 COMPILER=${4:-clang}
 
-export BOND_ROOT=/root/bond
 export BUILD_ROOT=/root/build
 BUILD_SCRIPTS=$BOND_ROOT/tools/ci-scripts/linux
 
@@ -37,7 +36,22 @@ export BOOST_ROOT=/opt/boosts/boost_1_63_0
 
 mkdir -p $SYMLINKED_HOME $BUILD_ROOT
 ln -s /root/.ccache $SYMLINKED_HOME/.ccache
-ln -s /root/.stack $SYMLINKED_HOME/.stack
+
+# Point the build's .stack-work at one saved in the image, but only if the
+# image contains a saved stack-work and the source volume wasn't mounted
+# with an existing one.
+SAVED_STACK_WORK=/opt/stack/stack-work
+BUILD_STACK_WORK=$BOND_ROOT/compiler/.stack-work
+if [[ -d $SAVED_STACK_WORK && ! -d $BUILD_STACK_WORK ]]; then
+    ln -s $SAVED_STACK_WORK $BUILD_STACK_WORK
+else
+    # We're building without a saved .stack-work, so symlink .stack to
+    # something that may end up in the Travis cache.
+    #
+    # This branch can be removed after we've switched over to using the
+    # saved .stack-work everywhere.
+    ln -s /root/.stack $SYMLINKED_HOME/.stack
+fi
 
 cd $BUILD_ROOT
 
