@@ -20,14 +20,19 @@ template <typename Bond, typename Proto>
 void CheckBinaryFormat(
     const bond::bonded<Bond>& bond_struct,
     const Proto& proto_struct,
-    const bond::blob& proto_data)
+    const bond::blob& proto_data,
+    bool require_same_size = true)
 {
     bond::OutputBuffer output;
     bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
     bond_struct.Serialize(writer);
 
     bond::blob bond_data = output.GetBuffer();
-    BOOST_REQUIRE_EQUAL(bond_data.size(), proto_data.size());
+
+    if (require_same_size)
+    {
+        BOOST_REQUIRE_EQUAL(bond_data.size(), proto_data.size());
+    }
 
     Proto proto_struct2;
     BOOST_CHECK(
@@ -58,6 +63,16 @@ void CheckBinaryFormat(const Bond& bond_struct)
             Bond>(bond_struct),
         proto_struct,
         proto_data);
+
+    // Transcoding from simple binary
+    CheckBinaryFormat(
+        GetBonded<
+            bond::SimpleBinaryReader<bond::InputBuffer>,
+            bond::SimpleBinaryWriter<bond::OutputBuffer>,
+            Bond>(bond_struct),
+        proto_struct,
+        proto_data,
+        false);     // Simple binary does not omit fields
 }
 
 template <typename Proto, typename Bond>
@@ -72,10 +87,13 @@ void CheckUnsupportedType()
 {
     auto bond_struct = InitRandom<Bond>();
 
-    bond::OutputBuffer output;
-    bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
+    if (bond_struct != Bond{})
+    {
+        bond::OutputBuffer output;
+        bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
 
-    BOOST_CHECK_THROW(bond::Serialize(bond_struct, writer), bond::CoreException);
+        BOOST_CHECK_THROW(bond::Serialize(bond_struct, writer), bond::CoreException);
+    }
 }
 
 using blob_types = boost::mpl::list<bond::blob, std::vector<int8_t>, bond::nullable<int8_t> >;

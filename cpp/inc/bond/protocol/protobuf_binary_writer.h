@@ -162,8 +162,6 @@ namespace bond
 
             if (!info.has_element)
             {
-                BOOST_VERIFY(size != 0);
-
                 bool is_blob;
                 if (type == BT_INT8)
                 {
@@ -200,9 +198,16 @@ namespace bond
                     break;
 
                 default:
-                    WriteTag(detail::proto::MakeTag(info.field.id, WireType::LengthDelimited));
-                    LengthBegin();
-                    elem.tag = 0;
+                    if (size != 0)
+                    {
+                        WriteTag(detail::proto::MakeTag(info.field.id, WireType::LengthDelimited));
+                        LengthBegin();
+                        elem.tag = 0;
+                    }
+                    else
+                    {
+                        elem.tag = 1; // Avoid LengthEnd call in WriteContainerEnd
+                    }
                     break;
                 }
 
@@ -234,8 +239,6 @@ namespace bond
 
             if (!info.has_element)
             {
-                BOOST_VERIFY(size != 0);
-
                 const Metadata* metadata = info.field.metadata;
 
                 info.is_list = (type.second == BT_LIST);
@@ -287,19 +290,17 @@ namespace bond
         void WriteContainerEnd()
         {
             auto& info = _fields.top(std::nothrow);
+            BOOST_ASSERT(info.has_element);
 
-            if (info.has_element)
+            if (info.element.is_blob)
             {
-                if (info.element.is_blob)
-                {
-                    BlobEnd(info);
-                    info.element.is_blob = false;
-                }
+                BlobEnd(info);
+                info.element.is_blob = false;
+            }
 
-                if (info.element.value.tag == 0)
-                {
-                    LengthEnd();
-                }
+            if (info.element.value.tag == 0)
+            {
+                LengthEnd();
             }
         }
 
@@ -355,11 +356,11 @@ namespace bond
             _output.Write(value);
         }
 
-        bool TryWriteTag(const FieldInfo::Element& elem)
+        bool TryWriteTag(uint32_t tag)
         {
-            if (elem.tag != 0)
+            if (tag != 0)
             {
-                WriteTag(elem.tag);
+                WriteTag(tag);
                 return true;
             }
 
@@ -386,14 +387,10 @@ namespace bond
         template <typename T>
         void WriteBasic(uint16_t id, const Metadata* metadata, const T& value)
         {
-            FieldInfo::Element elem;
-            elem.encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
-            elem.tag = detail::proto::MakeTag(
-                id,
-                detail::proto::GetWireType(get_type_id<T>::value, elem.encoding));
+            Encoding encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
 
-            WriteTag(elem.tag);
-            WriteScalar(value, elem);
+            WriteTag(detail::proto::MakeTag(id, detail::proto::GetWireType(get_type_id<T>::value, encoding)));
+            WriteScalar(value, encoding);
         }
 
         template <typename T>
@@ -438,8 +435,8 @@ namespace bond
             const bool is_map = (info.element.map_tag != 0);
 
             const auto& elem = is_map ? KeyValueBegin(info) : info.element.value;
-            TryWriteTag(elem);
-            WriteScalar(value, elem);
+            TryWriteTag(elem.tag);
+            WriteScalar(value, elem.encoding);
 
             if (is_map)
             {
@@ -457,7 +454,7 @@ namespace bond
                 KeyValueBegin(info);
             }
 
-            if (TryWriteTag(info.element.value))
+            if (TryWriteTag(info.element.value.tag))
             {
                 LengthBegin();
             }
@@ -516,10 +513,10 @@ namespace bond
         // Write for floating point
         template <typename T>
         typename boost::enable_if<std::is_floating_point<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(T) <= sizeof(double));
-            BOOST_VERIFY(elem.encoding == Encoding::Fixed);
+            BOOST_VERIFY(encoding == Encoding::Fixed);
 
             WriteFixed(value);
         }
@@ -527,11 +524,11 @@ namespace bond
         // Write for unsigned integers
         template <typename T>
         typename boost::enable_if<std::is_unsigned<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(value) <= sizeof(uint64_t));
 
-            switch (elem.encoding)
+            switch (encoding)
             {
             case Encoding::Fixed:
                 WriteFixed(value);
@@ -550,11 +547,11 @@ namespace bond
         // Write for signed integers
         template <typename T>
         typename boost::enable_if<is_signed_int<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(value) <= sizeof(int64_t));
 
-            switch (elem.encoding)
+            switch (encoding)
             {
             case Encoding::Fixed:
                 WriteFixed(value);
@@ -573,18 +570,18 @@ namespace bond
         // Write for enums
         template <typename T>
         typename boost::enable_if<std::is_enum<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(value) == sizeof(int32_t));
 
-            WriteScalar(static_cast<int32_t>(value), elem);
+            WriteScalar(static_cast<int32_t>(value), encoding);
         }
 
         // Write for bool
-        void WriteScalar(const bool& value, const FieldInfo::Element& elem)
+        void WriteScalar(const bool& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(value) == sizeof(uint8_t));
-            BOOST_VERIFY(elem.encoding == detail::proto::Unavailable<Encoding>());
+            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>());
 
             WriteVarInt(static_cast<uint8_t>(value));
         }
@@ -592,10 +589,9 @@ namespace bond
         // Write for strings
         template <typename T>
         typename boost::enable_if<is_string<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
-            BOOST_VERIFY(elem.tag != 0);
-            BOOST_VERIFY(elem.encoding == detail::proto::Unavailable<Encoding>());
+            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>());
 
             LengthBegin();
 
@@ -608,11 +604,11 @@ namespace bond
         // Write for wstrings
         template <typename T>
         typename boost::enable_if<is_wstring<T> >::type
-        WriteScalar(const T& value, const FieldInfo::Element& elem)
+        WriteScalar(const T& value, Encoding encoding)
         {
             try
             {
-                WriteScalar(boost::locale::conv::utf_to_utf<char>(value), elem);
+                WriteScalar(boost::locale::conv::utf_to_utf<char>(value), encoding);
             }
             catch (const boost::locale::conv::conversion_error&)
             {
