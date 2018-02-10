@@ -1,0 +1,3 @@
+# Python pre-compiled stuff
+__pycache__/
+*.pyc
