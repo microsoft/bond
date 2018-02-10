@@ -221,6 +221,7 @@ message ComplexItem
 message ComplexStruct
 {
     ComplexItem item = 1;
-    map<fixed64, ComplexItem> mitems = 2;
+    map<uint64, ComplexItem> mitems = 2;
     repeated ComplexItem items = 3;
+    string str = 4;
 }

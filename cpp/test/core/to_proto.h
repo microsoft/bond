@@ -228,14 +228,14 @@ namespace proto
         typename boost::enable_if<is_wstring<T> >::type
         SetValue(const google::protobuf::FieldDescriptor& field, const T& value) const
         {
-            SetValue(field, boost::locale::conv::utf_to_utf<char>(value));
+            SetValue(field, boost::locale::conv::utf_to_utf<google::protobuf::string::value_type>(value));
         }
 
         template <typename T>
         typename boost::enable_if<is_wstring<T> >::type
         AddValue(const google::protobuf::FieldDescriptor& field, const T& value) const
         {
-            AddValue(field, boost::locale::conv::utf_to_utf<char>(value));
+            AddValue(field, boost::locale::conv::utf_to_utf<google::protobuf::string::value_type>(value));
         }
 
         void SetValue(const google::protobuf::FieldDescriptor& field, bool value) const

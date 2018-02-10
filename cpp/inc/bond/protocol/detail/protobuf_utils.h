@@ -159,7 +159,7 @@ namespace proto
         InvalidEnumValueException(it->second.c_str(), "Encoding");
     }
 
-    inline Encoding ReadEncoding(BondDataType type, const Metadata& metadata, const std::string& name)
+    inline Encoding ReadEncoding(BondDataType type, const Metadata* metadata, const std::string& name)
     {
         switch (type)
         {
@@ -175,7 +175,9 @@ namespace proto
         case BT_INT16:
         case BT_INT32:
         case BT_INT64:
-            return ReadEncoding(name, metadata);
+            return metadata
+                ? ReadEncoding(name, *metadata)
+                : BOND_THROW(CoreException, "Ambiguous unknown field is encountered.");
 
         case BT_SET:
         case BT_MAP:
@@ -191,12 +193,12 @@ namespace proto
         }
     }
 
-    inline Encoding ReadEncoding(BondDataType type, const Metadata& metadata)
+    inline Encoding ReadEncoding(BondDataType type, const Metadata* metadata)
     {
         return ReadEncoding(type, metadata, AttributeName<>::encode);
     }
 
-    inline Encoding ReadKeyEncoding(BondDataType type, const Metadata& metadata)
+    inline Encoding ReadKeyEncoding(BondDataType type, const Metadata* metadata)
     {
         if (type == BT_FLOAT || type == BT_DOUBLE)
         {
@@ -206,7 +208,7 @@ namespace proto
         return ReadEncoding(type, metadata, AttributeName<>::encode_key);
     }
 
-    inline Encoding ReadValueEncoding(BondDataType type, const Metadata& metadata)
+    inline Encoding ReadValueEncoding(BondDataType type, const Metadata* metadata)
     {
         return ReadEncoding(type, metadata, AttributeName<>::encode_value);
     }
@@ -227,7 +229,7 @@ namespace proto
         InvalidEnumValueException(it->second.c_str(), "Packing");
     }
 
-    inline Packing ReadPacking(BondDataType type, const Metadata& metadata)
+    inline Packing ReadPacking(BondDataType type, const Metadata* metadata)
     {
         switch (type)
         {
@@ -242,7 +244,9 @@ namespace proto
             NotSupportedException("Nested set/map");
 
         default:
-            return ReadPacking(AttributeName<>::pack, metadata);
+            return metadata
+                ? ReadPacking(AttributeName<>::pack, *metadata)
+                : BOND_THROW(CoreException, "Ambiguous unknown field is encountered.");
         }
     }
 

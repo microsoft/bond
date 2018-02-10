@@ -63,14 +63,16 @@ namespace bond
         using Reader = ProtobufBinaryReader<Buffer>;
         using Pass0 = ProtobufBinaryWriter<Counter>;
 
-        explicit ProtobufBinaryWriter(Buffer& output)
+        explicit ProtobufBinaryWriter(Buffer& output, bool skip_unknowns = false)
             : _output{ output },
+              _skip_unknowns{ skip_unknowns },
               _it{ nullptr }
         {}
 
         template <typename T>
-        ProtobufBinaryWriter(Counter& output, const ProtobufBinaryWriter<T>& /*pass1*/)
+        ProtobufBinaryWriter(Counter& output, const ProtobufBinaryWriter<T>& pass1)
             : _output{ output },
+              _skip_unknowns{ pass1._skip_unknowns },
               _it{ nullptr }
         {}
 
@@ -102,6 +104,11 @@ namespace bond
             {
                 const auto& info = _fields.top(std::nothrow);
 
+                if (IsSkipped(info))
+                {
+                    return;
+                }
+
                 WriteTag(info.has_element
                     ? info.element.value.tag
                     : detail::proto::MakeTag(info.field.id, WireType::LengthDelimited));
@@ -113,6 +120,11 @@ namespace bond
         void WriteStructEnd(bool base = false)
         {
             BOOST_VERIFY(!base);
+
+            if (IsSkipped())
+            {
+                return;
+            }
 
             LengthEnd();
 
@@ -130,23 +142,17 @@ namespace bond
         template <typename T>
         void WriteField(uint16_t id, const Metadata& metadata, const T& value)
         {
-            WriteBasic(id, metadata, value);
+            WriteBasic(id, &metadata, value);
         }
 
         void WriteFieldBegin(BondDataType type, uint16_t id, const Metadata& metadata)
         {
-            FieldInfo info;
-            info.field.id = id;
-            info.field.metadata = &metadata;
-            info.has_element = false;
-            info.is_list = (type == BT_LIST);
-
-            _fields.push(info);
+            _fields.push(MakeFieldInfo(type, id, &metadata));
         }
 
         void WriteFieldBegin(BondDataType type, uint16_t id)
         {
-            WriteFieldBegin(type, id, schema<Unknown>::type::metadata);
+            _fields.push(MakeFieldInfo(type, id, nullptr));
         }
 
         void WriteFieldEnd()
@@ -158,11 +164,15 @@ namespace bond
         {
             auto& info = _fields.top(std::nothrow);
 
-            BOOST_VERIFY(size != 0
-                || (info.has_element && type == BT_INT8));  // Nested empty blob
+            if (IsSkipped(info))
+            {
+                return;
+            }
 
             if (!info.has_element)
             {
+                BOOST_VERIFY(size != 0);
+
                 bool is_blob;
                 if (type == BT_INT8)
                 {
@@ -184,10 +194,8 @@ namespace bond
                 }
                 else
                 {
-                    BOOST_ASSERT(info.field.metadata);
-
-                    elem.encoding = detail::proto::ReadEncoding(type, *info.field.metadata);
-                    packing = detail::proto::ReadPacking(type, *info.field.metadata);
+                    elem.encoding = detail::proto::ReadEncoding(type, info.field.metadata);
+                    packing = detail::proto::ReadPacking(type, info.field.metadata);
                 }
 
                 switch (packing)
@@ -233,12 +241,16 @@ namespace bond
         {
             auto& info = _fields.top(std::nothrow);
 
-            BOOST_VERIFY(size != 0);
+            if (IsSkipped(info))
+            {
+                return;
+            }
 
             if (!info.has_element)
             {
-                BOOST_ASSERT(info.field.metadata);
-                const auto& metadata = *info.field.metadata;
+                BOOST_VERIFY(size != 0);
+
+                const Metadata* metadata = info.field.metadata;
 
                 info.is_list = (type.second == BT_LIST);
                 info.element.map_tag = detail::proto::MakeTag(info.field.id, WireType::LengthDelimited);
@@ -271,14 +283,18 @@ namespace bond
         {
             auto& info = _fields.top(std::nothrow);
 
+            if (IsSkipped(info))
+            {
+                return;
+            }
+
             if (info.has_element)
             {
                 WriteElement(value, info);
             }
             else
             {
-                BOOST_ASSERT(info.field.metadata);
-                WriteBasic(info.field.id, *info.field.metadata, value);
+                WriteBasic(info.field.id, info.field.metadata, value);
             }
         }
 
@@ -290,17 +306,24 @@ namespace bond
         void WriteContainerEnd()
         {
             auto& info = _fields.top(std::nothrow);
-            BOOST_ASSERT(info.has_element);
 
-            if (info.element.is_blob)
+            if (IsSkipped(info))
             {
-                BlobEnd(info);
-                info.element.is_blob = false;
+                return;
             }
 
-            if (info.element.value.tag == 0)
+            if (info.has_element)
             {
-                LengthEnd();
+                if (info.element.is_blob)
+                {
+                    BlobEnd(info);
+                    info.element.is_blob = false;
+                }
+
+                if (info.element.value.tag == 0)
+                {
+                    LengthEnd();
+                }
             }
         }
 
@@ -373,8 +396,29 @@ namespace bond
             WriteVarInt(tag);
         }
 
+        static FieldInfo MakeFieldInfo(BondDataType type, uint16_t id, const Metadata* metadata)
+        {
+            FieldInfo info;
+            info.field.id = id;
+            info.field.metadata = metadata;
+            info.has_element = false;
+            info.is_list = (type == BT_LIST);
+
+            return info;
+        }
+
+        bool IsSkipped() const
+        {
+            return !_fields.empty() && IsSkipped(_fields.top(std::nothrow));
+        }
+
+        bool IsSkipped(const FieldInfo& info) const
+        {
+            return _skip_unknowns && !info.has_element && !info.field.metadata;
+        }
+
         template <typename T>
-        void WriteBasic(uint16_t id, const Metadata& metadata, const T& value)
+        void WriteBasic(uint16_t id, const Metadata* metadata, const T& value)
         {
             FieldInfo::Element elem;
             elem.encoding = detail::proto::ReadEncoding(get_type_id<T>::value, metadata);
@@ -667,6 +711,7 @@ namespace bond
 
 
         Buffer& _output;
+        const bool _skip_unknowns;
         const uint32_t* _it;
         detail::SimpleArray<uint32_t> _stack;
         detail::SimpleArray<uint32_t> _lengths;

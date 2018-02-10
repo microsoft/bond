@@ -591,9 +591,7 @@ struct ComplexItem
 struct ComplexStruct
 {
     1: ComplexItem item;
-
-    [ProtoEncodeKey("Fixed")]
     2: map<uint64, ComplexItem> mitems;
-
     3: vector<ComplexItem> items;
+    4: string str;
 }

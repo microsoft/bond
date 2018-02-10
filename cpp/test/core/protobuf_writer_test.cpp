@@ -372,6 +372,80 @@ BOOST_AUTO_TEST_CASE(ComplexStructTests)
     CheckBinaryFormat<unittest::proto::ComplexStruct, unittest::ComplexStruct>();
 }
 
+BOOST_AUTO_TEST_CASE(UnknownFieldsTests)
+{
+    using Bond = unittest::ComplexStruct;
+    using Proto = unittest::proto::ComplexStruct;
+
+    using BondSkippedString = std::tuple<
+        const bond::detail::ignore_t&,
+        decltype(Bond::item),
+        decltype(Bond::mitems),
+        decltype(Bond::items),
+        const bond::detail::ignore_t&>; // str
+
+    auto bond_struct = InitRandom<Bond>();
+
+    auto skipped_string_struct = GetBonded<
+        bond::CompactBinaryReader<bond::InputBuffer>,
+        bond::CompactBinaryWriter<bond::OutputBuffer>,
+        BondSkippedString>(bond_struct);
+
+    // Ok with unknown string
+    {
+        bond::OutputBuffer output;
+        bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
+        skipped_string_struct.Serialize(writer);
+        auto bond_data = output.GetBuffer();
+
+        Proto proto_struct;
+        BOOST_REQUIRE(proto_struct.ParseFromString(
+            google::protobuf::string{ bond_data.content(), bond_data.size() }));
+        BOOST_CHECK_EQUAL(proto_struct.str(), bond_struct.str);
+
+        Proto proto_struct2;
+        bond::Apply(bond::detail::proto::ToProto{ proto_struct2 }, bond_struct);
+        BOOST_CHECK(google::protobuf::util::MessageDifferencer::Equals(proto_struct, proto_struct2));
+    }
+
+    using BondSkippedMap = std::tuple<
+        const bond::detail::ignore_t&,
+        decltype(Bond::item),
+        const bond::detail::ignore_t&,  // mitems
+        decltype(Bond::items),
+        decltype(Bond::str)>;
+
+    auto skipped_map_struct = GetBonded<
+        bond::CompactBinaryReader<bond::InputBuffer>,
+        bond::CompactBinaryWriter<bond::OutputBuffer>,
+        BondSkippedMap>(bond_struct);
+
+    // Throw when cannot skip
+    {
+        bond::OutputBuffer output;
+        bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output);
+        BOOST_CHECK_THROW(skipped_map_struct.Serialize(writer), bond::CoreException);
+    }
+
+    // Skip unknown map
+    {
+        bond::OutputBuffer output;
+        bond::ProtobufBinaryWriter<bond::OutputBuffer> writer(output, true);
+        skipped_map_struct.Serialize(writer);
+        auto bond_data = output.GetBuffer();
+
+        Proto proto_struct;
+        BOOST_REQUIRE(proto_struct.ParseFromString(
+            google::protobuf::string{ bond_data.content(), bond_data.size() }));
+        BOOST_CHECK_EQUAL(proto_struct.mitems_size(), 0);
+
+        Proto proto_struct2;
+        bond::Apply(bond::detail::proto::ToProto{ proto_struct2 }, bond_struct);
+        proto_struct2.clear_mitems();
+        BOOST_CHECK(google::protobuf::util::MessageDifferencer::Equals(proto_struct, proto_struct2));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 bool init_unit_test()
