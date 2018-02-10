@@ -104,11 +104,6 @@ namespace bond
             {
                 const auto& info = _fields.top(std::nothrow);
 
-                if (IsSkipped(info))
-                {
-                    return;
-                }
-
                 WriteTag(info.has_element
                     ? info.element.value.tag
                     : detail::proto::MakeTag(info.field.id, WireType::LengthDelimited));
@@ -120,11 +115,6 @@ namespace bond
         void WriteStructEnd(bool base = false)
         {
             BOOST_VERIFY(!base);
-
-            if (IsSkipped())
-            {
-                return;
-            }
 
             LengthEnd();
 
@@ -150,9 +140,15 @@ namespace bond
             _fields.push(MakeFieldInfo(type, id, &metadata));
         }
 
-        void WriteFieldBegin(BondDataType type, uint16_t id)
+        bool WriteFieldBegin(BondDataType type, uint16_t id)
         {
+            if (_skip_unknowns)
+            {
+                return false;
+            }
+
             _fields.push(MakeFieldInfo(type, id, nullptr));
+            return true;
         }
 
         void WriteFieldEnd()
@@ -163,11 +159,6 @@ namespace bond
         void WriteContainerBegin(uint32_t size, BondDataType type)
         {
             auto& info = _fields.top(std::nothrow);
-
-            if (IsSkipped(info))
-            {
-                return;
-            }
 
             if (!info.has_element)
             {
@@ -241,11 +232,6 @@ namespace bond
         {
             auto& info = _fields.top(std::nothrow);
 
-            if (IsSkipped(info))
-            {
-                return;
-            }
-
             if (!info.has_element)
             {
                 BOOST_VERIFY(size != 0);
@@ -283,11 +269,6 @@ namespace bond
         {
             auto& info = _fields.top(std::nothrow);
 
-            if (IsSkipped(info))
-            {
-                return;
-            }
-
             if (info.has_element)
             {
                 WriteElement(value, info);
@@ -306,11 +287,6 @@ namespace bond
         void WriteContainerEnd()
         {
             auto& info = _fields.top(std::nothrow);
-
-            if (IsSkipped(info))
-            {
-                return;
-            }
 
             if (info.has_element)
             {
@@ -405,16 +381,6 @@ namespace bond
             info.is_list = (type == BT_LIST);
 
             return info;
-        }
-
-        bool IsSkipped() const
-        {
-            return !_fields.empty() && IsSkipped(_fields.top(std::nothrow));
-        }
-
-        bool IsSkipped(const FieldInfo& info) const
-        {
-            return _skip_unknowns && !info.has_element && !info.field.metadata;
         }
 
         template <typename T>

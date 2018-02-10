@@ -125,6 +125,17 @@ bool omit_field(const Metadata& /*metadata*/, const value<T, Reader>& /*value*/)
 
 
 template <typename T, typename Enable = void> struct
+implements_unknown_field_omitting
+    : std::false_type {};
+
+template <typename Writer> struct
+implements_unknown_field_omitting<Writer,
+    typename boost::enable_if<bond::check_method<bool (Writer::*)(BondDataType, uint16_t), &Writer::WriteFieldBegin> >::type>
+    : std::true_type {};
+
+
+
+template <typename T, typename Enable = void> struct
 implements_field_omitting
     : std::false_type {};
 

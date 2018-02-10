@@ -148,13 +148,27 @@ public:
         return false;
     }
 
-    // unknown field
-    template <typename T>
-    bool UnknownField(uint16_t id, const T& value) const
+    // unknown field without omitting
+    template <typename T, typename W = Writer>
+    typename boost::disable_if<detail::implements_unknown_field_omitting<W>, bool>::type
+    UnknownField(uint16_t id, const T& value) const
     {
         _output.WriteFieldBegin(GetTypeId(value), id);
         Write(value);
         _output.WriteFieldEnd();
+        return false;
+    }
+
+    // unknown field with omitting
+    template <typename T, typename W = Writer>
+    typename boost::enable_if<detail::implements_unknown_field_omitting<W>, bool>::type
+    UnknownField(uint16_t id, const T& value) const
+    {
+        if (_output.WriteFieldBegin(GetTypeId(value), id))
+        {
+            Write(value);
+            _output.WriteFieldEnd();
+        }
         return false;
     }
 
