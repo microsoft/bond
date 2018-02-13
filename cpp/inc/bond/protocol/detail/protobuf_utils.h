@@ -39,23 +39,16 @@ namespace proto
     };
 
     template <typename T>
-    inline BOND_CONSTEXPR T Unavailable()
+    struct Unavailable : std::integral_constant<T, static_cast<T>(0xF)>
     {
         BOOST_STATIC_ASSERT(std::is_same<T, Encoding>::value
                             || std::is_same<T, Packing>::value
                             || std::is_same<T, WireType>::value);
-
-        return static_cast<T>(0xF);
-    }
+    };
 
     BOND_NORETURN inline void NotSupportedException(const char* name)
     {
         BOND_THROW(CoreException, name << " is not supported.");
-    }
-
-    BOND_NORETURN inline void ZigZagEncodingException()
-    {
-        BOND_THROW(CoreException, "Unsigned integers cannot have ZigZag encoding.");
     }
 
     inline WireType GetWireType(BondDataType type, Encoding encoding)
@@ -81,7 +74,6 @@ namespace proto
                 return type == BT_UINT64 ? WireType::Fixed64 : WireType::Fixed32;
 
             case Encoding::ZigZag:
-                ZigZagEncodingException();
                 break;
 
             default:
@@ -114,7 +106,7 @@ namespace proto
         }
 
         BOOST_ASSERT(false);
-        return Unavailable<WireType>();
+        return Unavailable<WireType>::value;
     }
 
     template <typename Unused = void>
@@ -143,7 +135,7 @@ namespace proto
         auto it = metadata.attributes.find(name);
         if (it == metadata.attributes.end())
         {
-            return Unavailable<Encoding>();
+            return Unavailable<Encoding>::value;
         }
 
         if (std::strcmp(it->second.c_str(), "Fixed") == 0)
@@ -171,6 +163,16 @@ namespace proto
         case BT_UINT16:
         case BT_UINT32:
         case BT_UINT64:
+            {
+                Encoding encoding = metadata
+                    ? ReadEncoding(name, *metadata)
+                    : BOND_THROW(CoreException, "Ambiguous unknown field is encountered.");
+
+                return encoding != Encoding::ZigZag
+                    ? encoding
+                    : BOND_THROW(CoreException, "Unsigned integers cannot have ZigZag encoding.");
+            }
+
         case BT_INT8:
         case BT_INT16:
         case BT_INT32:
@@ -189,7 +191,7 @@ namespace proto
         case BT_WSTRING:
         case BT_STRUCT:
         default:
-            return Unavailable<Encoding>();
+            return Unavailable<Encoding>::value;
         }
     }
 
@@ -218,7 +220,7 @@ namespace proto
         auto it = metadata.attributes.find(name);
         if (it == metadata.attributes.end())
         {
-            return Unavailable<Packing>();
+            return Unavailable<Packing>::value;
         }
 
         if (std::strcmp(it->second.c_str(), "False") == 0)
@@ -249,52 +251,6 @@ namespace proto
                 : BOND_THROW(CoreException, "Ambiguous unknown field is encountered.");
         }
     }
-
-    inline uint32_t MakeTag(uint16_t id, WireType wireType)
-    {
-        BOOST_ASSERT(wireType != Unavailable<WireType>());
-
-        if (id == 0 || (id >= 19000 && id <= 19999))
-        {
-            NotSupportedException("Field ordinal with value 0 or in the range 19000-19999");
-        }
-
-        uint32_t tag = (uint32_t(id) << 3) | uint32_t(wireType);
-        BOOST_ASSERT(tag != 0);
-        return tag;
-    }
-
-    struct FieldInfo
-    {
-        struct Element
-        {
-            uint32_t tag;
-            Encoding encoding;
-        };
-
-        union
-        {
-            struct
-            {
-                const Metadata* metadata;
-                uint16_t id;
-
-            } field;
-
-            struct
-            {
-                uint32_t map_tag;
-                Element value;
-                Element key;
-                bool is_blob;
-                bool is_key;
-
-            } element;
-        };
-
-        bool has_element;
-        bool is_list;
-    };
 
 } // namespace proto
 } // namespace detail

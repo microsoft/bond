@@ -19,6 +19,60 @@
 
 namespace bond
 {
+    namespace detail
+    {
+    namespace proto
+    {
+        inline uint32_t MakeTag(uint16_t id, WireType wireType)
+        {
+            BOOST_ASSERT(wireType != Unavailable<WireType>::value);
+
+            if (id == 0 || (id >= 19000 && id <= 19999))
+            {
+                NotSupportedException("Field ordinal with value 0 or in the range 19000-19999");
+            }
+
+            uint32_t tag = (uint32_t(id) << 3) | uint32_t(wireType);
+            BOOST_ASSERT(tag != 0);
+            return tag;
+        }
+
+        struct FieldInfo
+        {
+            struct Element
+            {
+                uint32_t tag;
+                Encoding encoding;
+            };
+
+            union
+            {
+                struct
+                {
+                    const Metadata* metadata;
+                    uint16_t id;
+
+                } field;
+
+                struct
+                {
+                    uint32_t map_tag;
+                    Element value;
+                    Element key;
+                    bool is_blob;
+                    bool is_key;
+
+                } element;
+            };
+
+            bool has_element;
+            bool is_list;
+        };
+
+    } // namespace proto
+    } // namespace detail
+
+
     template <typename BufferT>
     class ProtobufBinaryWriter;
 
@@ -178,7 +232,7 @@ namespace bond
 
                 if (is_blob)
                 {
-                    elem.encoding = detail::proto::Unavailable<Encoding>();
+                    elem.encoding = detail::proto::Unavailable<Encoding>::value;
                     packing = Packing::False;
                 }
                 else
@@ -535,7 +589,7 @@ namespace bond
                 break;
 
             case Encoding::ZigZag:
-                detail::proto::ZigZagEncodingException();
+                BOOST_ASSERT(false);
                 break;
 
             default:
@@ -581,7 +635,7 @@ namespace bond
         void WriteScalar(const bool& value, Encoding encoding)
         {
             BOOST_STATIC_ASSERT(sizeof(value) == sizeof(uint8_t));
-            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>());
+            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>::value);
 
             WriteVarInt(static_cast<uint8_t>(value));
         }
@@ -591,7 +645,7 @@ namespace bond
         typename boost::enable_if<is_string<T> >::type
         WriteScalar(const T& value, Encoding encoding)
         {
-            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>());
+            BOOST_VERIFY(encoding == detail::proto::Unavailable<Encoding>::value);
 
             LengthBegin();
 
