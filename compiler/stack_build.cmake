@@ -14,11 +14,11 @@ execute_process (
     COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} setup
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error
-    OUTPUT_QUIET
-    ERROR_QUIET)
+    OUTPUT_VARIABLE setup_output
+    ERROR_VARIABLE setup_output)
 
 if (error)
-    message (FATAL_ERROR)
+    message (FATAL_ERROR ${setup_output})
 endif()
 
 set (buildGhcOptions "-O2")
@@ -29,7 +29,7 @@ execute_process (
     RESULT_VARIABLE error)
 
 if (error)
-    message (FATAL_ERROR)
+    message (FATAL_ERROR "build failed - scroll up for its output")
 endif()
 
 # Copy results to builddir
@@ -37,10 +37,11 @@ execute_process (
     COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} path --dist-dir
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT_VARIABLE dist_dir
-    RESULT_VARIABLE error)
+    RESULT_VARIABLE error
+    ERROR_VARIABLE path_errors)
 
 if (error)
-    message (FATAL_ERROR)
+    message (FATAL_ERROR ${path_errors})
 endif()
 
 string (STRIP ${dist_dir} dist_dir)
