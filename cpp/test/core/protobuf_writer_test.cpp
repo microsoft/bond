@@ -8,6 +8,7 @@
 
 #include <bond/protocol/protobuf_binary_writer.h>
 
+#include <google/protobuf/wrappers.pb.h>
 #include <google/protobuf/util/message_differencer.h>
 
 #include <boost/test/debug.hpp>
@@ -133,14 +134,14 @@ BOOST_AUTO_TEST_CASE(IntegerTests)
 
 BOOST_AUTO_TEST_CASE(StringTests)
 {
-    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongPackingWrongEncoding<std::string> >();
+    CheckBinaryFormat<google::protobuf::StringValue, unittest::BoxWrongPackingWrongEncoding<std::string> >();
 
-    CheckBinaryFormat<unittest::proto::String, unittest::BoxWrongPackingWrongEncoding<std::wstring> >();
+    CheckBinaryFormat<google::protobuf::StringValue, unittest::BoxWrongPackingWrongEncoding<std::wstring> >();
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(BlobTests, T, blob_types)
 {
-    CheckBinaryFormat<unittest::proto::Blob, unittest::BoxWrongPackingWrongEncoding<T> >();
+    CheckBinaryFormat<google::protobuf::BytesValue, unittest::BoxWrongPackingWrongEncoding<T> >();
 }
 
 BOOST_AUTO_TEST_CASE(IntegerContainerTests)

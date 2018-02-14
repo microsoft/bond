@@ -35,16 +35,6 @@ message Integers
     fixed32 uif16 = 24;
 }
 
-message String
-{
-    string value = 1;
-}
-
-message Blob
-{
-    bytes value = 1;
-}
-
 message IntegersContainer
 {
     repeated int32 i32 = 1;
