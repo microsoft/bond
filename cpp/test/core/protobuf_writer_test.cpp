@@ -97,24 +97,14 @@ void CheckUnsupportedType()
     }
 }
 
+template <typename List, typename... T>
+using expand = boost::mpl::joint_view<List, boost::mpl::list<T...> >;
+
 using blob_types = boost::mpl::list<bond::blob, std::vector<int8_t>, bond::nullable<int8_t> >;
-
 using string_types = boost::mpl::list<std::string, std::wstring>;
-
-template <typename... T>
-using unsigned_integer_types = boost::mpl::joint_view<
-    boost::mpl::list<uint8_t, uint16_t, uint32_t, uint64_t>,
-    boost::mpl::list<T...> >;
-
-template <typename... T>
-using integer_types = boost::mpl::joint_view<
-    unsigned_integer_types<int16_t, int32_t, int64_t, unittest::Enum>,
-    boost::mpl::list<T...> >;
-
-template <typename... T>
-using basic_types = boost::mpl::joint_view<
-    integer_types<bool, float, double, std::string, std::wstring>,
-    boost::mpl::list<T...> >;
+using unsigned_integer_types = boost::mpl::list<uint8_t, uint16_t, uint32_t, uint64_t>;
+using integer_types = expand<unsigned_integer_types, int16_t, int32_t, int64_t, unittest::Enum>;
+using basic_types = expand<integer_types, bool, float, double, std::string, std::wstring>;
 
 BOOST_AUTO_TEST_CASE(InheritanceTests)
 {
@@ -133,13 +123,13 @@ BOOST_AUTO_TEST_CASE(IntegerTests)
     CheckBinaryFormat<unittest::proto::Integers, unittest::Integers>();
 }
 
-using IntegerWrongEncodingTests_Types = integer_types<int8_t>;
+using IntegerWrongEncodingTests_Types = expand<integer_types, int8_t>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerWrongEncodingTests, T, IntegerWrongEncodingTests_Types)
 {
     CheckUnsupportedType<unittest::BoxWrongEncoding<T> >();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerUnsignedZigZagTests, T, unsigned_integer_types<>)
+BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerUnsignedZigZagTests, T, unsigned_integer_types)
 {
     CheckUnsupportedType<unittest::BoxZigZag<T> >();
 }
@@ -165,17 +155,17 @@ BOOST_AUTO_TEST_CASE(IntegerContainerTests)
         unittest::proto::UnpackedIntegersContainer, unittest::UnpackedIntegersContainer>();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerContainerWrongEncodingTests, T, integer_types<>)
+BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerContainerWrongEncodingTests, T, integer_types)
 {
     CheckUnsupportedType<unittest::BoxWrongEncoding<vector<T> > >();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerContainerUnsignedZigZagTests, T, unsigned_integer_types<>)
+BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerContainerUnsignedZigZagTests, T, unsigned_integer_types)
 {
     CheckUnsupportedType<unittest::BoxZigZag<vector<T> > >();
 }
 
-using IntegerContainerWrongPackingTests_Types = integer_types<bool, float, double>;
+using IntegerContainerWrongPackingTests_Types = expand<integer_types, bool, float, double>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerContainerWrongPackingTests, T,
     IntegerContainerWrongPackingTests_Types)
 {
@@ -191,18 +181,20 @@ BOOST_AUTO_TEST_CASE(IntegerSetContainerTests)
         unittest::proto::UnpackedIntegersContainer, unittest::UnpackedIntegersSetContainer>();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerSetContainerWrongEncodingTests, T, integer_types<int8_t>)
+using IntegerSetContainerWrongEncodingTests_Types = expand<integer_types, int8_t>;
+BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerSetContainerWrongEncodingTests, T,
+    IntegerSetContainerWrongEncodingTests_Types)
 {
     CheckUnsupportedType<unittest::BoxWrongEncoding<set<T> > >();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerSetContainerUnsignedZigZagTests, T, unsigned_integer_types<>)
+BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerSetContainerUnsignedZigZagTests, T, unsigned_integer_types)
 {
     CheckUnsupportedType<unittest::BoxZigZag<set<T> > >();
 }
 
 using IntegerSetContainerWrongPackingTests_Types =
-    integer_types<int8_t, bool, float, double>;
+    expand<integer_types, int8_t, bool, float, double>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(IntegerSetContainerWrongPackingTests, T,
     IntegerSetContainerWrongPackingTests_Types)
 {
@@ -302,37 +294,37 @@ BOOST_AUTO_TEST_CASE(StructMapValueTests)
         unittest::BoxWrongPackingWrongValueEncoding<std::map<uint32_t, unittest::Integers> > >();
 }
 
-using NestedVectorVectorTests_Types = basic_types<bond::blob, unittest::Integers>;
+using NestedVectorVectorTests_Types = expand<basic_types, bond::blob, unittest::Integers>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedVectorVectorTests, T, NestedVectorVectorTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::vector<std::vector<T> > > >();
 }
 
-using NestedVectorSetTests_Types = basic_types<int8_t>;
+using NestedVectorSetTests_Types = expand<basic_types, int8_t>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedVectorSetTests, T, NestedVectorSetTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::vector<std::set<T> > > >();
 }
 
-using NestedVectorMapTests_Types = basic_types<int8_t, bond::blob, unittest::Integers>;
+using NestedVectorMapTests_Types = expand<basic_types, int8_t, bond::blob, unittest::Integers>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedVectorMapTests, T, NestedVectorMapTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::vector<std::map<uint32_t, T> > > >();
 }
 
-using NestedMapVectorTests_Types = basic_types<bond::blob, unittest::Integers>;
+using NestedMapVectorTests_Types = expand<basic_types, bond::blob, unittest::Integers>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedMapVectorTests, T, NestedMapVectorTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::vector<T> > > >();
 }
 
-using NestedMapSetTests_Types = basic_types<int8_t>;
+using NestedMapSetTests_Types = expand<basic_types, int8_t>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedMapSetTests, T, NestedMapSetTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::set<T> > > >();
 }
 
-using NestedMapMapTests_Types = basic_types<int8_t, bond::blob, unittest::Integers>;
+using NestedMapMapTests_Types = expand<basic_types, int8_t, bond::blob, unittest::Integers>;
 BOOST_AUTO_TEST_CASE_TEMPLATE(NestedMapMapTests, T, NestedMapMapTests_Types)
 {
     CheckUnsupportedType<unittest::Box<std::map<uint32_t, std::map<uint32_t, T> > > >();
