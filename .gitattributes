@@ -13,33 +13,42 @@
 *.csproj text
 *.css text
 *.doxygen text
+*.el text
 *.expressions text
-*.filters text
 *.gitattributes text
 *.gitignore text
 *.gitmodules text
+*.gradle text
+*.groovy text
 *.h text
 *.hs text
 *.html text
+*.iml text
+*.java text
 *.json text
 *.md text
+*.name text
 *.nuspec text
+*.proj text
+*.properties text
 *.props text
+*.ps1 text
 *.py text
 *.targets text
 *.tmLanguage text
 *.txt text
-*.vcxproj text
 *.xml text
-*.yml text
-LICENSE text
+*.yaml text
 
 # Some Windows-specific files should always be CRLF
 
-*.DotSettings eol=crlf
-*.sln    eol=crlf
+*.cmd text eol=crlf
+*.DotSettings text eol=crlf
+*.sln text eol=crlf
 
 # These are binary file types.
 
 *.dat binary
+*.pfx binary
+*.png binary
 *.snk binary
