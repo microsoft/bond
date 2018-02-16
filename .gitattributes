@@ -40,11 +40,17 @@
 *.xml text
 *.yaml text
 
-# Some Windows-specific files should always be CRLF
+# Some Windows-specific files should always be CRLF.
 
 *.cmd text eol=crlf
 *.DotSettings text eol=crlf
 *.sln text eol=crlf
+
+# Linux scripts need to always have LF. If not, things like building a
+# Docker image from Windows will result in un-runable scripts.
+
+*.sh text eol=lf
+*.zsh text eol=lf
 
 # These are binary file types.
 
