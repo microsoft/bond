@@ -7,13 +7,13 @@ FLAVOR=$2
 BOOST=${3:-}
 COMPILER=${4:-clang}
 
-export BUILD_ROOT=/root/build
-BUILD_SCRIPTS=$BOND_ROOT/tools/ci-scripts/linux
-
 if [ -z "${BOND_ROOT+set}" ]; then
    # We're not yet running in a container with this value baked in.
    export BOND_ROOT=/root/bond
 fi
+
+export BUILD_ROOT=/root/build
+BUILD_SCRIPTS=$BOND_ROOT/tools/ci-scripts/linux
 
 # We set our cflags in non-standard variables because Stack chokes on some
 # otherwise acceptable configurations.
