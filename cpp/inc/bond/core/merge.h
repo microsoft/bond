@@ -18,7 +18,7 @@ namespace bond
 
 template <typename T, typename Writer, typename Protocols = BuiltInProtocols>
 class Merger
-    : public Serializer<Writer>
+    : public Serializer<Writer, Protocols>
 {
 public:
     typedef T FastPathType;
@@ -30,7 +30,7 @@ public:
     using Serializer<Writer, Protocols>::Container;
 
     Merger(const T& var, Writer& output, bool base = false)
-        : Serializer<Writer>(output, base),
+        : Serializer<Writer, Protocols>(output, base),
           _var(var)
     {}
 
