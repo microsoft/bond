@@ -3,14 +3,14 @@
 import logging
 import re
 import subprocess
-from typing import AbstractSet, Iterable, NewType, Sequence
+from typing import AbstractSet, Iterable, NewType, Sequence, Set
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
 logger = logging.getLogger(__name__)
 
-_RevListRoots = NewType('RevListRoots', Sequence[Sequence[str]]) # pylint: disable=invalid-name
-_BlobId = NewType('BlobId', str) # pylint: disable=invalid-name
+_RevListRoots = NewType('_RevListRoots', Sequence[Sequence[str]]) # pylint: disable=invalid-name
+_BlobId = NewType('_BlobId', str) # pylint: disable=invalid-name
 
 """A type for the full name of an image. E.g.,
 "bondciimages.azurecr.io/ubuntu-1604:build-12345".
@@ -71,7 +71,7 @@ specified by the given `roots`.
                 raise ValueError('Cannot parse ls-tree output: "{}"'.format(line))
 
             obj_type = parts[1]
-            blob_id = parts[2]
+            blob_id = _BlobId(parts[2])
             if obj_type == 'blob':
                 blob_ids.add(blob_id)
 
@@ -97,7 +97,7 @@ CI build in the given blobs.
     CI_BUILD_CONTAINER=...
     """
 
-    container_names = set()
+    container_names = set() # type: Set[ImageName]
 
     for commit in commits:
         git_show_cmd_line = ['git', '-C', repo_path, 'show', commit]
@@ -107,7 +107,7 @@ CI build in the given blobs.
         matches = re.finditer(b'^.+CI_BUILD_CONTAINER=(.+)\\s*$',
                               git_show_output,
                               re.MULTILINE)
-        container_names.update(map((lambda match: str(match.group(1), 'utf-8')),
+        container_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
                                    matches))
         logger.debug('Container names currently: %s', container_names)
 
@@ -138,7 +138,7 @@ the commits specified by the given `roots`.
     to limit the matched commits.
     """
     expected_prefix = '{}.azurecr.io/{}'.format(REGISTRY_NAME, REPOSITORY_NAME)
-    def matches_expected_prefix(image_name: str) -> bool:
+    def matches_expected_prefix(image_name: ImageName) -> bool:
         """Check (and log) whether an image name is from the expected repository."""
         if image_name.startswith(expected_prefix):
             return True
@@ -149,5 +149,5 @@ the commits specified by the given `roots`.
             expected_prefix)
         return False
 
-    return frozenset(map((lambda image_name: image_name.split(':')[1]),
+    return frozenset(map((lambda image_name: ImageTag(image_name.split(':')[1])),
                          filter(matches_expected_prefix, live_images(repo_path, roots))))
