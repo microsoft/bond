@@ -46,6 +46,10 @@ def main() -> None:
     parser.add_argument('--manifests',
                         help="""path to a JSON file with image manifests to use instead of
                         running an `az` command.""")
+    parser.add_argument('--dry-run', '-n',
+                        action='store_true',
+                        help="""report which images would be deleted, but do not actually delete
+                        them""")
     parser.add_argument('--verbosity', '-v',
                         default='WARNING',
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET'],
@@ -74,7 +78,11 @@ def main() -> None:
         manifests = get_image_manifests(args.manifests)
 
         for manifest in find_garbage_manifests(min_age_before_gc, active_tags, manifests):
-            delete_image_by_manifest(manifest)
+            if args.dry_run:
+                print('{}: would delete'.format(manifest.digest))
+            else:
+                delete_image_by_manifest(manifest)
+                print('{}: deleted'.format(manifest.digest))
 
     except subprocess.CalledProcessError as cpe:
         print('Subprocess {} failed with exit code {}'.format(

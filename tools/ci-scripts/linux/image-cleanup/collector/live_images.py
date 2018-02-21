@@ -108,7 +108,7 @@ CI build in the given blobs.
                               git_show_output,
                               re.MULTILINE)
         image_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
-                                   matches))
+                               matches))
         logger.debug('Image names currently: %s', image_names)
 
     return frozenset(image_names)

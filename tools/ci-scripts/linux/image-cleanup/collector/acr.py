@@ -74,7 +74,7 @@ def get_image_manifests(manifest_path: Optional[str] = None) -> Iterable[ImageMa
         manifests = json.loads(str(output, encoding='utf-8'))
 
     if not isinstance(manifests, list):
-        msg = 'Expected an array of manifests ("[{{...}},{{...}}]" in but got {}'.format(
+        msg = 'Expected an array of manifests ("[{{...}},{{...}}]" but got {}'.format(
             type(manifests).__name__)
         raise ValueError(msg)
 
@@ -89,6 +89,7 @@ def delete_image_by_manifest(manifest: ImageManifest) -> None:
                           '--manifest', manifest.digest,
                           '--yes']
     logger.debug('Invoking %s', az_delete_cmd_line)
+    # This will eventually be replaced with subprocess.run, like below.
     print('Would run: {}'.format(az_delete_cmd_line))
     # p = subprocess.run(az_delete_cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # p.check_returncode()
