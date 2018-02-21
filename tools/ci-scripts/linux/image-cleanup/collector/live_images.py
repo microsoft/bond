@@ -3,7 +3,7 @@
 import logging
 import re
 import subprocess
-from typing import AbstractSet, Iterable, NewType, Sequence, Set
+from typing import AbstractSet, Iterable, NewType, Sequence, Set # pylint: disable=unused-import
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
