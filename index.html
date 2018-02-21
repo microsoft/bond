@@ -179,10 +179,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
     clang \
     cmake \
-    haskell-stack \
     zlib1g-dev \
     libboost-dev \
     libboost-thread-dev</code></pre></div>
+<p>Additionally, you need the <a href="https://docs.haskellstack.org/en/stable/README/">Haskell Tool Stack</a>. If your distro isn’t shipping a new enough version of it, you may encounter some non-obvious build failures, so we recommend installing the latest Stack outside of package management:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">curl</span> -sSL https://get.haskellstack.org/ <span class="kw">|</span> <span class="fu">sh</span></code></pre></div>
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
