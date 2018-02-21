@@ -43,9 +43,6 @@ def main() -> None:
                         type=int,
                         help="""the minimum length of time, in days, to keep images around, even
                         if they are not referenced by the source code.""")
-    parser.add_argument('--manifests',
-                        help="""path to a JSON file with image manifests to use instead of
-                        running an `az` command.""")
     parser.add_argument('--dry-run', '-n',
                         action='store_true',
                         help="""report which images would be deleted, but do not actually delete
@@ -75,7 +72,7 @@ def main() -> None:
             raise ValueError('No active tags. This can delete all images, so aborting.')
         logging.info('Active tags: {%s}', ','.join(active_tags))
 
-        manifests = get_image_manifests(args.manifests)
+        manifests = get_image_manifests()
 
         for manifest in find_garbage_manifests(min_age_before_gc, active_tags, manifests):
             if args.dry_run:

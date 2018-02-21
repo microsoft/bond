@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import logging
 import json
 import subprocess
-from typing import Mapping, Iterable, Optional
+from typing import Mapping, Iterable
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
@@ -53,25 +53,19 @@ class ImageManifest: # pylint: disable=too-few-public-methods
         except:
             raise ManifestParseError(kwargs)
 
-def get_image_manifests(manifest_path: Optional[str] = None) -> Iterable[ImageManifest]:
+def get_image_manifests() -> Iterable[ImageManifest]:
     """Get the current ACR image manifests.
 
     Invokes the ``az`` CLI tool to discover the current images.
     """
-    manifests = None
-
-    if manifest_path:
-        with open(manifest_path, mode='rt', encoding='utf-8') as file:
-            manifests = json.load(file)
-    else:
-        az_show_manifests_cmd_line = ['az', 'acr', 'repository', 'show-manifests',
-                                      '--name', REGISTRY_NAME,
-                                      '--repository', REPOSITORY_NAME,
-                                      '--output', 'json']
-        logger.debug('Invoking %s', az_show_manifests_cmd_line)
-        output = subprocess.check_output(az_show_manifests_cmd_line,
-                                         stderr=subprocess.PIPE)
-        manifests = json.loads(str(output, encoding='utf-8'))
+    az_show_manifests_cmd_line = ['az', 'acr', 'repository', 'show-manifests',
+                                  '--name', REGISTRY_NAME,
+                                  '--repository', REPOSITORY_NAME,
+                                  '--output', 'json']
+    logger.debug('Invoking %s', az_show_manifests_cmd_line)
+    output = subprocess.check_output(az_show_manifests_cmd_line,
+                                     stderr=subprocess.PIPE)
+    manifests = json.loads(str(output, encoding='utf-8'))
 
     if not isinstance(manifests, list):
         msg = 'Expected an array of manifests ("[{{...}},{{...}}]" but got {}'.format(
