@@ -64,10 +64,19 @@ build the core Bond library on Ubuntu 14.04:
 sudo apt-get install \
     clang \
     cmake \
-    haskell-stack \
     zlib1g-dev \
     libboost-dev \
     libboost-thread-dev
+```
+
+Additionally, you need the [Haskell Tool
+Stack](https://docs.haskellstack.org/en/stable/README/). If your distro isn't
+shipping a new enough version of it, you may encounter some non-obvious build
+failures, so we recommend installing the latest Stack outside of package
+management:
+
+```bash
+curl -sSL https://get.haskellstack.org/ | sh
 ```
 
 In the root `bond` directory run:
