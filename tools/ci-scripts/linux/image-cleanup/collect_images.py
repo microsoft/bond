@@ -6,6 +6,7 @@ from datetime import timedelta
 import logging
 import subprocess
 import sys
+from typing import Iterable
 
 from collector.acr import (
     delete_image_by_manifest,
@@ -18,11 +19,11 @@ longer needed. Images are considered needed a) if they are referenced by the
 .travis.yml file in any of the commits included by the provided
 root_filters, or b) if they are younger than the provided min-age."""
 
-def semi_list(semi_str):
+def semi_list(semi_str: str) -> Iterable[str]:
     """Splits a semi-colon delimited string into a list of string."""
     return semi_str.split(';')
 
-def main():
+def main() -> None:
     """Program main entry point."""
     import argparse
     parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)

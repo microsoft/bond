@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import logging
 import json
 import subprocess
-from typing import Iterable
+from typing import Mapping, Iterable, Optional
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
@@ -17,14 +17,14 @@ class ManifestParseError(Exception):
     Used to collect the dictionary that was parsed to ease debugging.
     """
 
-    def __init__(self, dct):
+    def __init__(self, dct: Mapping[str, str]) -> None:
         super().__init__()
         self.dct = dct
 
 class ImageManifest: # pylint: disable=too-few-public-methods
     """Represents an ACR image manifest."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: str) -> None:
         """Initalize an ImageManifest from a dictionary.
 
         This is written to handle the JSON representation of one
@@ -53,7 +53,7 @@ class ImageManifest: # pylint: disable=too-few-public-methods
         except:
             raise ManifestParseError(kwargs)
 
-def get_image_manifests(manifest_path: str = None) -> Iterable[ImageManifest]:
+def get_image_manifests(manifest_path: Optional[str] = None) -> Iterable[ImageManifest]:
     """Get the current ACR image manifests.
 
     Invokes the ``az`` CLI tool to discover the current images.
@@ -81,7 +81,7 @@ def get_image_manifests(manifest_path: str = None) -> Iterable[ImageManifest]:
     return map((lambda json_object: ImageManifest(**json_object)),
                manifests)
 
-def delete_image_by_manifest(manifest: ImageManifest):
+def delete_image_by_manifest(manifest: ImageManifest) -> None:
     """Delete a ACR image (and all its tags)."""
     az_delete_cmd_line = ['az', 'acr', 'repository', 'delete',
                           '--name', REGISTRY_NAME,
