@@ -1,4 +1,4 @@
-"""Find referenced containers from Git commits."""
+"""Find referenced images from Git commits."""
 
 import logging
 import re
@@ -87,17 +87,17 @@ CI build in the given blobs.
     :param repo_path: Path to the repository to inspect.
 
     :param commits: The Git blob IDs of files in which to look for
-    containers. It's assumed that these are blob IDs of .travis.yml or
+    image names. It's assumed that these are blob IDs of .travis.yml or
     similar files.
 
-    :return The full container names used by the specificed blobs.
+    :return The full image names used by the specificed blobs.
 
-    Containers are found by looking for a line like
+    Images are found by looking for a line like
 
     CI_BUILD_CONTAINER=...
     """
 
-    container_names = set() # type: Set[ImageName]
+    image_names = set() # type: Set[ImageName]
 
     for commit in commits:
         git_show_cmd_line = ['git', '-C', repo_path, 'show', commit]
@@ -107,11 +107,11 @@ CI build in the given blobs.
         matches = re.finditer(b'^.+CI_BUILD_CONTAINER=(.+)\\s*$',
                               git_show_output,
                               re.MULTILINE)
-        container_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
+        image_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
                                    matches))
-        logger.debug('Container names currently: %s', container_names)
+        logger.debug('Image names currently: %s', image_names)
 
-    return frozenset(container_names)
+    return frozenset(image_names)
 
 def live_images(
         repo_path: str,

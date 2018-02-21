@@ -35,16 +35,16 @@ def main() -> None:
                         type=semi_list,
                         help="""semi-colon seperated list of arguments for one invocation of `git
                         rev-parse`. The commits in the union of these
-                        rev-parse invocations are used to find containers
+                        rev-parse invocations are used to find container images
                         that are referenced by source code. Ex:
                         '--remotes=origin;--since=2~weeks~ago' or '--tags;-n;1'""")
     parser.add_argument('--min-age', '-m',
                         required=True,
                         type=int,
-                        help="""the minimum length of time, in days, to keep containers around, even
+                        help="""the minimum length of time, in days, to keep images around, even
                         if they are not referenced by the source code.""")
     parser.add_argument('--manifests',
-                        help="""path to a JSON file with container manifests to use instead of
+                        help="""path to a JSON file with image manifests to use instead of
                         running an `az` command.""")
     parser.add_argument('--verbosity', '-v',
                         default='WARNING',
