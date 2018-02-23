@@ -110,8 +110,9 @@ CI build in the given blobs.
         matches = re.finditer(b'^.+CI_BUILD_IMAGE=(.+)\\s*$',
                               git_show_output,
                               re.MULTILINE)
-        image_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
-                               matches))
+        matched_names = (ImageName(str(match.group(1), 'utf-8'))
+                         for match in matches)
+        image_names.update(matched_names)
         _LOGGER.debug('Image names currently: %s', image_names)
 
     return frozenset(image_names)
@@ -152,5 +153,6 @@ the commits specified by the given `roots`.
             expected_prefix)
         return False
 
-    return frozenset(map((lambda image_name: ImageTag(image_name.split(':')[1])),
-                         filter(matches_expected_prefix, live_images(repo_path, roots))))
+    return frozenset((ImageTag(image_name.split(':')[1])
+                      for image_name in live_images(repo_path, roots)
+                      if matches_expected_prefix(image_name)))
