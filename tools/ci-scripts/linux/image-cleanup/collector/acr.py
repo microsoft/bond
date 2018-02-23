@@ -1,15 +1,16 @@
 """Functions and types for interacting with Azure Container Registry via the
 ``az`` command line tool."""
 
-from datetime import datetime, timezone
-import logging
 import json
+import logging
 import subprocess
+
+from datetime import datetime, timezone
 from typing import Mapping, Iterable
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 class ManifestParseError(Exception):
     """Represents an error parsing a manifest dictionary.
@@ -20,6 +21,9 @@ class ManifestParseError(Exception):
     def __init__(self, dct: Mapping[str, str]) -> None:
         super().__init__()
         self.dct = dct
+
+    def __str__(self) -> str:
+        return '{}'.format(self.dct)
 
 class ImageManifest: # pylint: disable=too-few-public-methods
     """Represents an ACR image manifest."""
@@ -43,7 +47,7 @@ class ImageManifest: # pylint: disable=too-few-public-methods
         """
 
         try:
-            logger.debug('Parsing %s', kwargs)
+            _LOGGER.debug('Parsing %s', kwargs)
 
             self.digest = kwargs['digest']
             self.tags = frozenset(kwargs['tags'])
@@ -62,7 +66,7 @@ def get_image_manifests() -> Iterable[ImageManifest]:
                                   '--name', REGISTRY_NAME,
                                   '--repository', REPOSITORY_NAME,
                                   '--output', 'json']
-    logger.debug('Invoking %s', az_show_manifests_cmd_line)
+    _LOGGER.debug('Invoking %s', az_show_manifests_cmd_line)
     output = subprocess.check_output(az_show_manifests_cmd_line,
                                      stderr=subprocess.PIPE)
     manifests = json.loads(str(output, encoding='utf-8'))
@@ -72,8 +76,7 @@ def get_image_manifests() -> Iterable[ImageManifest]:
             type(manifests).__name__)
         raise ValueError(msg)
 
-    return map((lambda json_object: ImageManifest(**json_object)),
-               manifests)
+    return [ImageManifest(**o) for o in manifests]
 
 def delete_image_by_manifest(manifest: ImageManifest) -> None:
     """Delete a ACR image (and all its tags)."""
@@ -82,7 +85,7 @@ def delete_image_by_manifest(manifest: ImageManifest) -> None:
                           '--repository', REPOSITORY_NAME,
                           '--manifest', manifest.digest,
                           '--yes']
-    logger.debug('Invoking %s', az_delete_cmd_line)
+    _LOGGER.debug('Invoking %s', az_delete_cmd_line)
     # This will eventually be replaced with subprocess.run, like below.
     print('Would run: {}'.format(az_delete_cmd_line))
     # p = subprocess.run(az_delete_cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

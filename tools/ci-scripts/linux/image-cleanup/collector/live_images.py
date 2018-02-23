@@ -3,14 +3,17 @@
 import logging
 import re
 import subprocess
+
 from typing import AbstractSet, Iterable, NewType, Sequence, Set # pylint: disable=unused-import
 
 from .config import REGISTRY_NAME, REPOSITORY_NAME
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
-_RevListRoots = NewType('_RevListRoots', Sequence[Sequence[str]]) # pylint: disable=invalid-name
 _BlobId = NewType('_BlobId', str) # pylint: disable=invalid-name
+
+"""A type for a collection of parameters to ``git rev-list``."""
+RevListRoots = NewType('RevListRoots', Sequence[Sequence[str]]) # pylint: disable=invalid-name
 
 """A type for the full name of an image. E.g.,
 "bondciimages.azurecr.io/ubuntu-1604:build-12345".
@@ -22,7 +25,7 @@ ImageTag = NewType('ImageTag', str) # pylint: disable=invalid-name
 
 def _blobs_from_roots(
         repo_path: str,
-        roots: _RevListRoots) -> AbstractSet[_BlobId]:
+        roots: RevListRoots) -> AbstractSet[_BlobId]:
     """Return the blob IDs of the revisions of .travis.yml for all the commits
 specified by the given `roots`.
 
@@ -39,11 +42,11 @@ specified by the given `roots`.
         git_rev_list_cmd_line = ['git', '-C', repo_path, 'rev-list']
         git_rev_list_cmd_line.extend(root_args)
 
-        logger.debug('Invoking %s', git_rev_list_cmd_line)
+        _LOGGER.debug('Invoking %s', git_rev_list_cmd_line)
 
         rev_list_output = subprocess.check_output(git_rev_list_cmd_line, stderr=subprocess.PIPE)
         commit_ids.update(str(rev_list_output, 'utf-8').splitlines())
-        logger.debug('Commit IDs currently: %s', commit_ids)
+        _LOGGER.debug('Commit IDs currently: %s', commit_ids)
 
     blob_ids = set()
     for commit in commit_ids:
@@ -51,11 +54,11 @@ specified by the given `roots`.
                                 '-C', repo_path,
                                 'ls-tree', commit,
                                 '--', ':/.travis.yml']
-        logger.debug('Invoking %s', git_ls_tree_cmd_line)
+        _LOGGER.debug('Invoking %s', git_ls_tree_cmd_line)
         ls_tree_output = subprocess.check_output(git_ls_tree_cmd_line, stderr=subprocess.PIPE)
 
         for line in str(ls_tree_output, 'utf-8').splitlines():
-            logger.debug('Parsing ls-tree output: "%s"', line)
+            _LOGGER.debug('Parsing ls-tree output: "%s"', line)
 
             # Expecing output like:
             #
@@ -75,7 +78,7 @@ specified by the given `roots`.
             if obj_type == 'blob':
                 blob_ids.add(blob_id)
 
-    logger.debug('Blobs: %s', blob_ids)
+    _LOGGER.debug('Blobs: %s', blob_ids)
     return frozenset(blob_ids)
 
 def _images_from_blobs(
@@ -94,28 +97,28 @@ CI build in the given blobs.
 
     Images are found by looking for a line like
 
-    CI_BUILD_CONTAINER=...
+    CI_BUILD_IMAGE=...
     """
 
     image_names = set() # type: Set[ImageName]
 
     for commit in commits:
         git_show_cmd_line = ['git', '-C', repo_path, 'show', commit]
-        logger.debug('Invoking %s', git_show_cmd_line)
+        _LOGGER.debug('Invoking %s', git_show_cmd_line)
         git_show_output = subprocess.check_output(git_show_cmd_line, stderr=subprocess.PIPE)
 
-        matches = re.finditer(b'^.+CI_BUILD_CONTAINER=(.+)\\s*$',
+        matches = re.finditer(b'^.+CI_BUILD_IMAGE=(.+)\\s*$',
                               git_show_output,
                               re.MULTILINE)
         image_names.update(map((lambda match: ImageName(str(match.group(1), 'utf-8'))),
                                matches))
-        logger.debug('Image names currently: %s', image_names)
+        _LOGGER.debug('Image names currently: %s', image_names)
 
     return frozenset(image_names)
 
 def live_images(
         repo_path: str,
-        roots: _RevListRoots) -> AbstractSet[ImageName]:
+        roots: RevListRoots) -> AbstractSet[ImageName]:
     """Return the image names used by all of the commits specified by the
 given `roots`.
 
@@ -128,7 +131,7 @@ given `roots`.
                               _blobs_from_roots(repo_path, roots))
 
 def live_tags(repo_path: str,
-              roots: _RevListRoots) -> AbstractSet[ImageTag]:
+              roots: RevListRoots) -> AbstractSet[ImageTag]:
     """Return the image tags that are referenced by .travis.yml files in
 the commits specified by the given `roots`.
 
@@ -143,7 +146,7 @@ the commits specified by the given `roots`.
         if image_name.startswith(expected_prefix):
             return True
 
-        logger.info(
+        _LOGGER.info(
             'Discarding image "%s" that does not match expected prefix "%s"',
             image_name,
             expected_prefix)

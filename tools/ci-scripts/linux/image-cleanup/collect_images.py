@@ -2,15 +2,15 @@
 
 """Main entry point for garbage image cleanup."""
 
-from datetime import timedelta
+import argparse
 import logging
 import subprocess
 import sys
+
+from datetime import timedelta
 from typing import Iterable
 
-from collector.acr import (
-    delete_image_by_manifest,
-    get_image_manifests)
+from collector.acr import (delete_image_by_manifest, get_image_manifests)
 from collector.garbage_manifests import find_garbage_manifests
 from collector.live_images import live_tags
 
@@ -25,7 +25,6 @@ def semi_list(semi_str: str) -> Iterable[str]:
 
 def main() -> None:
     """Program main entry point."""
-    import argparse
     parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
     parser.add_argument('--repo-path', '-p',
                         required=True,
@@ -41,8 +40,9 @@ def main() -> None:
     parser.add_argument('--min-age', '-m',
                         required=True,
                         type=int,
-                        help="""the minimum length of time, in days, to keep images around, even
-                        if they are not referenced by the source code.""")
+                        help="""the minimum length of time, in days, before images are eligible for
+                        deletion, even if they are not referenced by the
+                        source code.""")
     parser.add_argument('--dry-run', '-n',
                         action='store_true',
                         help="""report which images would be deleted, but do not actually delete
