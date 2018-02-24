@@ -454,7 +454,8 @@ public:
     void UnknownEnd() const
     {}
 
-    bool UnknownField(...) const
+    template <typename X>
+    bool UnknownField(uint16_t /*id*/, const X& /*value*/) const
     {
         return false;
     }
