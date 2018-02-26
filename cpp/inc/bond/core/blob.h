@@ -398,8 +398,4 @@ inline T blob_cast(const blob& from)
 }
 
 
-template <> struct
-is_blob<blob>
-    : std::true_type {};
-
 } // namespace bond
