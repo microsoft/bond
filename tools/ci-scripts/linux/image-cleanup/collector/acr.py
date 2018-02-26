@@ -23,7 +23,7 @@ class ManifestParseError(Exception):
         self.dct = dct
 
     def __str__(self) -> str:
-        return '{}'.format(self.dct)
+        return str(self.dct)
 
 class ImageManifest: # pylint: disable=too-few-public-methods
     """Represents an ACR image manifest."""

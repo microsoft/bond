@@ -10,7 +10,7 @@ import sys
 from datetime import timedelta
 from typing import Iterable
 
-from collector.acr import (delete_image_by_manifest, get_image_manifests)
+from collector.acr import delete_image_by_manifest, get_image_manifests
 from collector.garbage_manifests import find_garbage_manifests
 from collector.live_images import live_tags
 
@@ -41,8 +41,7 @@ def main() -> None:
                         required=True,
                         type=int,
                         help="""the minimum length of time, in days, before images are eligible for
-                        deletion, even if they are not referenced by the
-                        source code.""")
+                        deletion, even if they are not referenced by the source code.""")
     parser.add_argument('--dry-run', '-n',
                         action='store_true',
                         help="""report which images would be deleted, but do not actually delete
