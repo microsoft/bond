@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule
+    Name="BondImportDirectory"
+    DisplayName="General"
+    PageTemplate="generic"
+    Description="Bond import search directory"
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" HasConfigurationCondition="False" ItemType="BondImportDirectory" />
+  </Rule.DataSource>
+
+  <StringProperty Name="FullPath" DisplayName="Full Path" ReadOnly="true" Category="Misc">
+    <StringProperty.DataSource>
+      <DataSource Persistence="Intrinsic" ItemType="BondImportDirectory" PersistedName="FullPath" />
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <DynamicEnumProperty Name="{}{ItemType}"
+                       DisplayName="Build Action"
+                       Category="Advanced"
+                       Description="How the file relates to the build and deployment processes."
+                       EnumProvider="ItemTypes" />
+
+  <BoolProperty Name="Visible" Visible="false" />
+  <StringProperty Name="DependentUpon" Visible="false" />
+  <StringProperty Name="Link" Visible="false" />
+</Rule>

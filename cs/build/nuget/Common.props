@@ -21,4 +21,20 @@
       <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(BOND_PATH)\tools\inc</BOND_INCLUDE_PATH>
       <_bond_common_props_imported>true</_bond_common_props_imported>
   </PropertyGroup>
+
+  <!-- When EnableDefaultItems is turned on, the expectation is that all
+       files in the project directory and below will automatically be
+       included.
+
+       This is done in the .props file instead of the .targets file so that
+       any updated to the ItemGroup that Visual Studio may make can be done
+       in the center of the project file, where these modifications are
+       expected, instead of after importing the targets. -->
+  <ItemGroup
+      Condition=" '$(EnableDefaultItems)' == 'true' ">
+    <BondCodegen Include="**/*.bond" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(EnableDefaultItems)' == 'true' ">
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/*.bond</DefaultItemExcludes>
+  </PropertyGroup>
 </Project>

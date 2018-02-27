@@ -35,10 +35,26 @@
     </BondImportDirectory>
   </ItemDefinitionGroup>
 
-  <!-- Let Visual Studio know about the BondCodegen item so it can display
+  <!-- Let Visual Studio up to 2015 know about the BondCodegen item so it can display
        it in the UI as a potential action for files. -->
   <ItemGroup>
     <AvailableItemName Include="BondCodegen" />
+  </ItemGroup>
+
+  <!-- In Visual Studio 2017+, some .NET projects (e.g., .NET Core) use the
+       Common Project System (CPS) instead of AvailableItemName to make
+       items and actions visible in the UI. Tell Visual Studio where to find
+       these metadata definitions.-->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\ProjectItemsSchema.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\BondCodegen.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\BondImportDirectory.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
   </ItemGroup>
 
   <!-- Attempt to find gbc in a platform-agnostic way. -->
