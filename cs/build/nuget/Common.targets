@@ -35,10 +35,26 @@
     </BondImportDirectory>
   </ItemDefinitionGroup>
 
-  <!-- Let Visual Studio know about the BondCodegen item so it can display
+  <!-- Let Visual Studio up to 2015 know about the BondCodegen item so it can display
        it in the UI as a potential action for files. -->
   <ItemGroup>
     <AvailableItemName Include="BondCodegen" />
+  </ItemGroup>
+
+  <!-- In Visual Studio 2017+, some .NET projects (e.g., .NET Core) use the
+       Common Project System (CPS) instead of AvailableItemName to make
+       items and actions visible in the UI. Tell Visual Studio where to find
+       these metadata definitions.-->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\ProjectItemsSchema.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\BondCodegen.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\BondImportDirectory.xaml">
+      <Context>File;BrowseObject;</Context>
+    </PropertyPageSchema>
   </ItemGroup>
 
   <!-- Attempt to find gbc in a platform-agnostic way. -->
@@ -56,6 +72,35 @@
     <UpToDateCheckInput Include="$(_PreExistingBondExe)" />
   </ItemGroup>
 
+  <!-- Fail the build if there are duplicate items in @BondCodegen. This is
+       unlikely in classic project files, but is likely to be encountered
+       when migrating to .NET Core project files. Without a check like this,
+       gbc produces really abstruse file I/O error messages. -->
+  <Target Name="BondCheckDuplicateCodegen"
+          BeforeTargets="BondCodegenCs"
+          Condition="'@(BondCodegen)' != ''">
+    <RemoveDuplicates
+        Inputs="@(BondCodegen)">
+      <Output
+          TaskParameter="Filtered"
+          ItemName="_BondCodegenFiltered"/>
+    </RemoveDuplicates>
+
+    <PropertyGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
+      <_DefaultItemsMessage> The Bond package includes BondCodegen items for all .bond files from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultCompileItems' property to 'false' if you want to explicitly include them in your project file. To set per-item metadata, use the item update syntax (https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).</_DefaultItemsMessage>
+    </PropertyGroup>
+
+    <!-- This condition relies on the RemoveDuplicates task to preserve the
+         input order. It's not currently documented as having this behavior,
+         but it is currently implemented as such
+         (https://github.com/Microsoft/msbuild/blob/a9f64ebd108702c3fc65339c66cb124217854524/src/Tasks/ListOperators/RemoveDuplicates.cs).
+         There's an open issue
+         (https://github.com/MicrosoftDocs/visualstudio-docs/issues/622)
+         requesting clarification of the guarantees. -->
+    <Error Condition=" '@(BondCodegen)' != '@(_BondCodegenFiltered)' "
+           Text="Duplicate BondCodegen items were included.$(_DefaultItemsMessage)" />
+  </Target>
+
   <!-- BondCodegenCs - transform .bond files into .cs files
 
        If we were to use an output transform from BondCodegen to the
@@ -70,7 +115,8 @@
        selective.
 
        NOTE: This still won't catch changes to files imported outside the
-       BondCodegen item. -->
+       BondCodegen item or metadata changes the require codegen to be
+       re-run. -->
   <Target Name="BondCodegenCs"
           Inputs="$(_PreExistingBondExe);@(BondCodegen)"
           Outputs="$(BondOutputDirectory)\bondcodegen.done"

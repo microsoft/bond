@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<ProjectSchemaDefinitions
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <ContentType
+        Name="BondIDL"
+        DisplayName="Bond IDL file"
+        ItemType="BondCodegen">
+    </ContentType>
+
+    <ItemType Name="BondCodegen" DisplayName="Bond code generation"/>
+    <ItemType Name="BondImportDirectory" DisplayName="Bond import search directory"/>
+
+    <FileExtension Name=".bond" ContentType="BondIDL"/>
+</ProjectSchemaDefinitions>

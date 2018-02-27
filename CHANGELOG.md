@@ -16,7 +16,7 @@ different versioning scheme, following the Haskell community's
 * IDL core version: TBD
 * IDL comm version: TBD
 * C++ version: (major bump needed)
-* C# NuGet version: (minor bump needed)
+* C# NuGet version: (major bump needed)
 * C# Comm NuGet version: TBD
 
 ### `gbc` and Bond compiler library ###
@@ -65,6 +65,16 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* **Breaking change** The Bond.CSharp and Bond.Compiler.CSharp NuGet
+  packages perform implicit codegen when the simplified .NET Core `.csproj`
+  format is used. This breaking change *does not* affect projects using the
+  classic `.csproj` format. Any .NET Core projects that encounter the build
+  error "Duplicate BondCodegen items were included." and were explicitly
+  listing `BondCodegen` items will either need to rely on implicit codegen
+  or [disable all implicit inclusion](https://aka.ms/sdkimplicititems). To
+  set per-item metadata, use the [item update
+  syntax](https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).
+  [Issue #636](https://github.com/Microsoft/bond/issues/636)
 * The C# attribute `Bond.Attribute` can now be applied to methods. This
   fixes broken codegen when attributes are used on service methods.
   [Issue #617](https://github.com/Microsoft/bond/issues/617)
@@ -73,6 +83,8 @@ different versioning scheme, following the Haskell community's
   attributes.
 * Grpc.Core v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
+* `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
+  Core projects.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0
