@@ -12,6 +12,12 @@ cmake \
     $BOND_ROOT
 make install
 
+# Try to debug failures on travis.
+make gradle-plugin
+find ~/.m2
+cat ~/.m2/repository/org/bondlib/bond-gradle/maven-metadata-local.xml
+cat ~/.m2/repository/org/bondlib/bond-gradle/*/bond-gradle*.pom
+
 # Build and test all Java components.
 make java
 
