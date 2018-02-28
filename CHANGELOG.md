@@ -62,9 +62,12 @@ different versioning scheme, following the Haskell community's
   packages perform implicit codegen when the simplified .NET Core `.csproj`
   format is used. This breaking change *does not* affect projects using the
   classic `.csproj` format. Any .NET Core projects that encounter the build
-  error "Duplicate Compile items were included" and were explicitly listing
-  `BondCodegen` items will either need to rely on implicit codegen or
-  [disable all implicit inclusion](https://aka.ms/sdkimplicititems).
+  error "Duplicate BondCodegen items were included." and were explicitly
+  listing `BondCodegen` items will either need to rely on implicit codegen
+  or [disable all implicit inclusion](https://aka.ms/sdkimplicititems). To
+  set per-item metadata, use the [item update
+  syntax](https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).
+  [Issue #636](https://github.com/Microsoft/bond/issues/636)
 * The C# attribute `Bond.Attribute` can now be applied to methods. This
   fixes broken codegen when attributes are used on service methods.
   [Issue #617](https://github.com/Microsoft/bond/issues/617)
