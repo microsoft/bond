@@ -42,6 +42,7 @@ different versioning scheme, following the Haskell community's
 
 * **Breaking change** Constructors accepting a `Comparer` have been removed from
   `bond::maybe` and `bond::nullable` types.
+* **Breaking change** The `bond::is_blob` and `bond::is_nullable` traits are removed.
 * The CMake build now enforces a minimum Boost version of 1.58. The build
   has required Boost 1.58 or later since version 5.2.0, but this was not
   enforced.

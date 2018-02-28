@@ -47,16 +47,6 @@ is_wstring
 
 
 template <typename T> struct
-is_blob
-    : std::false_type {};
-
-
-template <typename T> struct
-is_nullable
-    : std::false_type {};
-
-
-template <typename T> struct
 element_type
 {
     typedef typename T::value_type type;
