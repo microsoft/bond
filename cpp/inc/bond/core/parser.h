@@ -142,26 +142,18 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && !is_nested_field<T>::value, bool>::type
+    typename boost::enable_if<is_reader<Input, T>, bool>::type
     NextField(const T& field, const Transform& transform)
     {
-        return detail::Field(field, transform, value<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && is_nested_field<T>::value, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return detail::Field(field, transform, bonded<typename T::field_type, Input>(_input));
+        return detail::Field(field, transform, _input);
     }
 
 
     template <typename T, typename Transform>
     typename boost::disable_if<is_reader<Input, T>, bool>::type
-    NextField(const T&, const Transform& transform)
+    NextField(const T& field, const Transform& transform)
     {
-        return transform.Field(T::id, T::metadata, T::GetVariable(_input));
+        return detail::Field(field, transform, T::GetVariable(_input));
     }
 
 
@@ -333,18 +325,9 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if<is_nested_field<T>, bool>::type
-    NextField(const T& field, const Transform& transform)
+    bool NextField(const T& field, const Transform& transform)
     {
-        return detail::Field(field, transform, bonded<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::disable_if<is_nested_field<T>, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return detail::Field(field, transform, value<typename T::field_type, Input>(_input));
+        return detail::Field(field, transform, _input);
     }
 
 
@@ -529,18 +512,9 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if<is_nested_field<T>, bool>::type
-    NextField(const T& field, const Transform& transform, Input input)
+    bool NextField(const T& field, const Transform& transform, Input input)
     {
-        return detail::Field(field, transform, bonded<typename T::field_type, Input>(input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::disable_if<is_nested_field<T>, bool>::type
-    NextField(const T& field, const Transform& transform, Input input)
-    {
-        return detail::Field(field, transform, value<typename T::field_type, Input>(input));
+        return detail::Field(field, transform, input);
     }
 
 

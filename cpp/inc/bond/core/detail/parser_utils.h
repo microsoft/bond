@@ -28,32 +28,59 @@ namespace detail
     }
 
 
+    template <typename T, typename Reader>
+    typename boost::enable_if_c<is_reader<Reader>::value && is_nested_field<T>::value,
+        bonded<typename T::field_type, Reader&> >::type
+    inline GetFieldValue(Reader& input)
+    {
+        return bonded<typename T::field_type, Reader&>(input);
+    }
+
+
+    template <typename T, typename Reader>
+    typename boost::enable_if_c<is_reader<Reader>::value && !is_nested_field<T>::value,
+        value<typename T::field_type, Reader&> >::type
+    inline GetFieldValue(Reader& input)
+    {
+        return value<typename T::field_type, Reader&>(input);
+    }
+
+
+    template <typename T, typename X>
+    typename boost::disable_if<is_reader<X>, X&&>::type
+    inline GetFieldValue(X&& value)
+    {
+        return std::forward<X>(value);
+    }
+
+
     template <typename T, typename Transform, typename X>
     typename boost::enable_if<is_fast_path_field<T, Transform>, bool>::type
-    inline Field(const T& field, const Transform& transform, const X& value)
+    inline Field(const T& field, const Transform& transform, X&& value)
     {
-        return transform.Field(field, value);
+        return transform.Field(field, GetFieldValue<T>(std::forward<X>(value)));
     }
 
 
     template <typename T, typename Transform, typename X>
     typename boost::disable_if<is_fast_path_field<T, Transform>, bool>::type
-    inline Field(const T&, const Transform& transform, const X& value)
+    inline Field(const T&, const Transform& transform, X&& value)
     {
-        return transform.Field(T::id, T::metadata, value);
+        return transform.Field(T::id, T::metadata, GetFieldValue<T>(std::forward<X>(value)));
     }
 
-    template <typename Transform, typename Reader>
+
+    template <typename Reader, typename Transform>
     inline bool Field(const FieldDef& field, const RuntimeSchema& schema, const Transform& transform, Reader& input)
     {
         if (field.type.id == BT_STRUCT)
         {
-            return transform.Field(field.id, field.metadata, bonded<void, Input>(input, RuntimeSchema(schema, field)));
+            return transform.Field(field.id, field.metadata, bonded<void, Reader&>(input, RuntimeSchema(schema, field)));
         }
         else
         {
             BOOST_ASSERT(field.type.id == BT_LIST || field.type.id == BT_SET || field.type.id == BT_MAP);
-            return transform.Field(field.id, field.metadata, value<void, Input>(input, RuntimeSchema(schema, field)));
+            return transform.Field(field.id, field.metadata, value<void, Reader&>(input, RuntimeSchema(schema, field)));
         }
     }
 
