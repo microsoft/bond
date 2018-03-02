@@ -43,5 +43,19 @@ namespace detail
         return transform.Field(T::id, T::metadata, value);
     }
 
+    template <typename Transform, typename Reader>
+    inline bool Field(const FieldDef& field, const RuntimeSchema& schema, const Transform& transform, Reader& input)
+    {
+        if (field.type.id == BT_STRUCT)
+        {
+            return transform.Field(field.id, field.metadata, bonded<void, Input>(input, RuntimeSchema(schema, field)));
+        }
+        else
+        {
+            BOOST_ASSERT(field.type.id == BT_LIST || field.type.id == BT_SET || field.type.id == BT_MAP);
+            return transform.Field(field.id, field.metadata, value<void, Input>(input, RuntimeSchema(schema, field)));
+        }
+    }
+
 } // namespace detail
 } // namespace bond

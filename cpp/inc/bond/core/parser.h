@@ -182,13 +182,12 @@ private:
                 continue;
             }
 
-            if (field.type.id == bond::BT_STRUCT)
+            if (field.type.id == bond::BT_STRUCT
+                || field.type.id == bond::BT_LIST
+                || field.type.id == bond::BT_SET
+                || field.type.id == bond::BT_MAP)
             {
-                done = transform.Field(field.id, field.metadata, bonded<void, Input>(_input, RuntimeSchema(schema, field)));
-            }
-            else if (field.type.id == bond::BT_LIST || field.type.id == bond::BT_SET || field.type.id == bond::BT_MAP)
-            {
-                done = transform.Field(field.id, field.metadata, value<void, Input>(_input, RuntimeSchema(schema, field)));
+                done = detail::Field(field, schema, transform, _input);
             }
             else
             {
@@ -404,19 +403,11 @@ private:
             {
                 const FieldDef& field = *it++;
 
-                if (type == bond::BT_STRUCT)
+                if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
                 {
                     if (field.type.id == type)
                     {
-                        transform.Field(id, field.metadata, bonded<void, Input>(_input, RuntimeSchema(schema, field)));
-                        continue;
-                    }
-                }
-                else if (type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
-                {
-                    if (field.type.id == type)
-                    {
-                        transform.Field(id, field.metadata, value<void, Input>(_input, RuntimeSchema(schema, field)));
+                        detail::Field(field, schema, transform, _input);
                         continue;
                     }
                 }
@@ -567,12 +558,17 @@ private:
             {
                 Reader input(_input, *field);
 
-                if (fieldDef.type.id == BT_STRUCT)
-                    done = transform.Field(fieldDef.id, fieldDef.metadata, bonded<void, Input>(input, RuntimeSchema(schema, fieldDef)));
-                else if (fieldDef.type.id == BT_LIST || fieldDef.type.id == BT_SET || fieldDef.type.id == BT_MAP)
-                    done = transform.Field(fieldDef.id, fieldDef.metadata, value<void, Input>(input, RuntimeSchema(schema, fieldDef)));
+                if (fieldDef.type.id == BT_STRUCT
+                    || fieldDef.type.id == BT_LIST
+                    || fieldDef.type.id == BT_SET
+                    || fieldDef.type.id == BT_MAP)
+                {
+                    done = detail::Field(fieldDef, schema, transform, input);
+                }
                 else
+                {
                     done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, fieldDef.type.id, transform, input);
+                }
             }
         }
 
