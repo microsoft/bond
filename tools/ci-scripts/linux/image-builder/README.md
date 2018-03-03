@@ -1,6 +1,6 @@
 # Image Builder
 
-This directory contains the source for a Docker container that is used for
+This directory contains the source for a Docker image that is used for
 building Bond.
 
 The image is based on Ubuntu 16.04 (Xenial Xerus) and contains:
@@ -16,13 +16,24 @@ The image is based on Ubuntu 16.04 (Xenial Xerus) and contains:
 A new image is automatically built when the master branch of the main Bond
 repository (https://github.com/Microsoft/bond) is changed. These images are
 then pushed to the bondciimages.azurecr.io/ubuntu-1604 container repository.
-The Travis CI builds pull a fixed version of the image and use that.
+The Travis CI builds pull a fixed version of the image specified in
+`.travis.yml` and use that.
 
 The image is built on a Microsoft VSTS instance. Its status is shown in the
 image above. Currently, access to the results of this build are limited to
 Microsoft employees. If you need details about a given build, please
 [open an issue](https://github.com/Microsoft/bond/issues/new) and one of the
 maintainers from Microsoft can get you the details.
+
+## Cleanup
+
+![Docker Ubuntu umage cleanup status](https://msazure.visualstudio.com/_apis/public/build/definitions/b32aa71e-8ed2-41b2-9d77-5bc261222004/21361/badge)
+
+Not all of the images built automatically are used by CI builds. We have
+another VSTS build that runs a cleanup script to delete unused images. It
+keeps images that are referenced in `.travis.yml` in the past two week's of
+commits in the main GitHub repository or any tags on that repository. It
+also keeps any image younger than seven days.
 
 # Manual Builds
 
@@ -71,4 +82,4 @@ You can build Bond inside the container:
 
 Be sure to change `path/to/your/bond/repository`. The `FLAVOR`, `BOOST`, and
 `COMPILER` arguments (in this example `cpp-core`, `1.64.0`, and `gcc`,
-repsectively) can be adjusted as needed. See `build.zsh` for details.
+respectively) can be adjusted as needed. See `build.zsh` for details.
