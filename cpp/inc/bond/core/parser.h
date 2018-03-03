@@ -151,23 +151,21 @@ private:
         for (const_enumerator<std::vector<FieldDef> > enumerator(schema.GetStruct().fields); enumerator.more() && !done;)
         {
             const FieldDef& field = enumerator.next();
+            const auto type = field.type.id;
 
             if (detail::ReadFieldOmitted(_input))
             {
-                transform.OmittedField(field.id, field.metadata, field.type.id);
+                transform.OmittedField(field.id, field.metadata, type);
                 continue;
             }
-
-            if (field.type.id == bond::BT_STRUCT
-                || field.type.id == bond::BT_LIST
-                || field.type.id == bond::BT_SET
-                || field.type.id == bond::BT_MAP)
+            
+            if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
             {
                 done = detail::Field(field, schema, transform, _input);
             }
             else
             {
-                done = detail::BasicTypeField(field.id, field.metadata, field.type.id, transform, _input);
+                done = detail::BasicTypeField(field.id, field.metadata, type, transform, _input);
             }
         }
 
@@ -497,21 +495,19 @@ private:
         for (const_enumerator<std::vector<FieldDef> > enumerator(schema.GetStruct().fields); enumerator.more() && !done;)
         {
             const FieldDef& fieldDef = enumerator.next();
+            const auto type = fieldDef.type.id;
 
-            if (const typename Reader::Field* field = _input.FindField(fieldDef.id, fieldDef.metadata, fieldDef.type.id))
+            if (const typename Reader::Field* field = _input.FindField(fieldDef.id, fieldDef.metadata, type))
             {
                 Reader input(_input, *field);
 
-                if (fieldDef.type.id == BT_STRUCT
-                    || fieldDef.type.id == BT_LIST
-                    || fieldDef.type.id == BT_SET
-                    || fieldDef.type.id == BT_MAP)
+                if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
                 {
                     done = detail::Field(fieldDef, schema, transform, input);
                 }
                 else
                 {
-                    done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, fieldDef.type.id, transform, input);
+                    done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, type, transform, input);
                 }
             }
         }
