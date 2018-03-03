@@ -26,6 +26,8 @@ template <typename Protocols, typename Transform, typename T, typename Reader>
 typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
 ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
+
+// Helper function move_data for dealing with [not] moving a Reader& in bonded<T, Reader&>
 template <typename T, typename U>
 typename boost::enable_if<std::is_reference<T>, T>::type
 inline move_data(U& data)

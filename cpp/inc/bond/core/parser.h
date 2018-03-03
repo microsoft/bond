@@ -142,18 +142,9 @@ private:
 
 
     template <typename T, typename Transform>
-    typename boost::enable_if<is_reader<Input, T>, bool>::type
-    NextField(const T& field, const Transform& transform)
+    bool NextField(const T& field, const Transform& transform)
     {
         return detail::Field(field, transform, _input);
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::disable_if<is_reader<Input, T>, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, T::GetVariable(_input));
     }
 
 

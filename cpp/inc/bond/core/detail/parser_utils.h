@@ -47,15 +47,18 @@ namespace detail
 
 
     template <typename T, typename X>
-    typename boost::disable_if<is_reader<X>, X&&>::type
-    inline GetFieldValue(X&& value)
+    typename boost::disable_if<is_reader<X>,
+        typename std::conditional<std::is_const<X>::value,
+            const typename T::value_type&,
+            typename T::value_type&>::type>::type
+    inline GetFieldValue(X& value)
     {
-        return std::forward<X>(value);
+        return T::GetVariable(value);
     }
 
 
     template <typename T, typename Transform, typename X>
-    typename boost::enable_if<is_fast_path_field<T, Transform>, bool>::type
+    typename boost::enable_if_c<is_reader<X>::value && is_fast_path_field<T, Transform>::value, bool>::type
     inline Field(const T& field, const Transform& transform, X&& value)
     {
         return transform.Field(field, GetFieldValue<T>(std::forward<X>(value)));
@@ -63,7 +66,7 @@ namespace detail
 
 
     template <typename T, typename Transform, typename X>
-    typename boost::disable_if<is_fast_path_field<T, Transform>, bool>::type
+    typename boost::disable_if_c<is_reader<X>::value && is_fast_path_field<T, Transform>::value, bool>::type
     inline Field(const T&, const Transform& transform, X&& value)
     {
         return transform.Field(T::id, T::metadata, GetFieldValue<T>(std::forward<X>(value)));
