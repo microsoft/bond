@@ -86,7 +86,5 @@ def delete_image_by_manifest(manifest: ImageManifest) -> None:
                           '--manifest', manifest.digest,
                           '--yes']
     _LOGGER.debug('Invoking %s', az_delete_cmd_line)
-    # This will eventually be replaced with subprocess.run, like below.
-    print('Would run: {}'.format(az_delete_cmd_line))
-    # p = subprocess.run(az_delete_cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # p.check_returncode()
+    p = subprocess.run(az_delete_cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.check_returncode()
