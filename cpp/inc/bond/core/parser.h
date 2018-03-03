@@ -121,7 +121,7 @@ private:
         if (detail::ReadFieldOmitted(_input))
             detail::OmittedField(Head(), transform);
         else
-            if (bool done = NextField(Head(), transform))
+            if (bool done = detail::Field(Head(), transform, _input))
                 return done;
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
@@ -134,17 +134,10 @@ private:
     {
         typedef typename boost::mpl::deref<Fields>::type Head;
 
-        if (bool done = NextField(Head(), transform))
+        if (bool done = detail::Field(Head(), transform, _input))
             return done;
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
-    }
-
-
-    template <typename T, typename Transform>
-    bool NextField(const T& field, const Transform& transform)
-    {
-        return detail::Field(field, transform, _input);
     }
 
 
@@ -276,7 +269,7 @@ private:
             if (Head::id == id && get_type_id<typename Head::field_type>::value == type)
             {
                 // Exact match
-                NextField(Head(), transform);
+                detail::Field(Head(), transform, _input)
             }
             else if (Head::id >= id && type != bond::BT_STOP && type != bond::BT_STOP_BASE)
             {
@@ -312,13 +305,6 @@ private:
         {
             UnknownField(id, type, transform);
         }
-    }
-
-
-    template <typename T, typename Transform>
-    bool NextField(const T& field, const Transform& transform)
-    {
-        return detail::Field(field, transform, _input);
     }
 
 
@@ -489,7 +475,7 @@ private:
                 std::is_enum<typename Head::field_type>::value))
         {
             Reader input(_input, *field);
-            NextField(Head(), transform, input);
+            detail::Field(Head(), transform, input)
         }
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
@@ -499,13 +485,6 @@ private:
     bool ReadFields(const boost::mpl::l_iter<boost::mpl::l_end>&, const Transform&)
     {
         return false;
-    }
-
-
-    template <typename T, typename Transform>
-    bool NextField(const T& field, const Transform& transform, Input input)
-    {
-        return detail::Field(field, transform, input);
     }
 
 
