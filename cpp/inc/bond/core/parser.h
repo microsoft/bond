@@ -475,7 +475,7 @@ private:
                 std::is_enum<typename Head::field_type>::value))
         {
             Reader input(_input, *field);
-            detail::Field(Head(), transform, input)
+            detail::Field(Head(), transform, input);
         }
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
