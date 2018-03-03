@@ -269,7 +269,7 @@ private:
             if (Head::id == id && get_type_id<typename Head::field_type>::value == type)
             {
                 // Exact match
-                detail::Field(Head(), transform, _input)
+                detail::Field(Head(), transform, _input);
             }
             else if (Head::id >= id && type != bond::BT_STOP && type != bond::BT_STOP_BASE)
             {
