@@ -151,9 +151,9 @@ private:
 
     template <typename T, typename Transform>
     typename boost::disable_if<is_reader<Input, T>, bool>::type
-    NextField(const T& field, const Transform& transform)
+    NextField(const T&, const Transform& transform)
     {
-        return detail::Field(field, transform, T::GetVariable(_input));
+        return transform.Field(T::id, T::metadata, T::GetVariable(_input));
     }
 
 
