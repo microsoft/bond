@@ -209,8 +209,7 @@ public:
 
     // skip value of non-matching type
     template <typename Protocols = BuiltInProtocols, typename X>
-    typename boost::disable_if_c<is_matching<T, X>::value>::type
-    Deserialize(X& /*var*/) const
+    void Deserialize(X& /*var*/, typename boost::disable_if<is_matching<T, X> >::type* = nullptr) const
     {
         Skip();
     }
