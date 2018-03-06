@@ -85,11 +85,11 @@ struct client_unary_call_data
     /// @brief Initiates the client request and wires up completion
     /// notification.
     void dispatch(
-        const grpc::RpcMethod& method,
+        const grpc::internal::RpcMethod& method,
         const bond::bonded<TRequest>& request)
     {
         _responseReader = std::unique_ptr<grpc::ClientAsyncResponseReader<bond::bonded<TResponse>>>(
-            ::grpc::ClientAsyncResponseReader<bond::bonded<TResponse>>::Create(
+            ::grpc::internal::ClientAsyncResponseReaderFactory<bond::bonded<TResponse>>::Create(
                 _channel.get(),
                 _ioManager->cq(),
                 method,
