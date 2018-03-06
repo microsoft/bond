@@ -1,4 +1,4 @@
- Bond Changelog #
+# Bond Changelog #
 
 Notable changes--especially new features and **breaking changes**--are
 recorded here.
