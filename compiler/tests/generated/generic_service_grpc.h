@@ -126,15 +126,15 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        const ::grpc::RpcMethod rpcmethod_foo31_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo31_;
 
-        const ::grpc::RpcMethod rpcmethod_foo32_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo32_;
 
-        const ::grpc::RpcMethod rpcmethod_foo33_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo33_;
 
-        const ::grpc::RpcMethod rpcmethod_ConsumesGeneric1_;
+        const ::grpc::internal::RpcMethod rpcmethod_ConsumesGeneric1_;
 
-        const ::grpc::RpcMethod rpcmethod_ConsumesGeneric2_;
+        const ::grpc::internal::RpcMethod rpcmethod_ConsumesGeneric2_;
     };
 
     using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
@@ -254,11 +254,11 @@ inline Foo<Payload>::ClientCore<TThreadPool>::ClientCore(
     : _channel(channel)
     , _ioManager(ioManager)
     , _threadPool(threadPool)
-    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_ConsumesGeneric1_("/tests.Foo/ConsumesGeneric1", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_ConsumesGeneric2_("/tests.Foo/ConsumesGeneric2", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric1_("/tests.Foo/ConsumesGeneric1", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric2_("/tests.Foo/ConsumesGeneric2", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
     { }
 
 template <typename Payload>

@@ -77,7 +77,7 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        const ::grpc::RpcMethod rpcmethod_foo_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo_;
     };
 
     using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
@@ -132,7 +132,7 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
     : _channel(channel)
     , _ioManager(ioManager)
     , _threadPool(threadPool)
-    , rpcmethod_foo_("/tests.Foo/foo", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo_("/tests.Foo/foo", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
     { }
 
 template <typename TThreadPool>
