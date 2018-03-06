@@ -71,7 +71,7 @@ public:
         int methodIndex,
         grpc::ServerContext* context,
         TRequest* request,
-        grpc::ServerAsyncStreamingInterface* responseStream,
+        grpc::internal::ServerAsyncStreamingInterface* responseStream,
         grpc::ServerCompletionQueue* cq,
         io_manager_tag* tag)
     {
@@ -106,9 +106,9 @@ protected:
 
         // ownership of the service method is transfered to grpc::Service
         AddMethod(
-            new grpc::RpcServiceMethod(
+            new grpc::internal::RpcServiceMethod(
                 methodName,
-                grpc::RpcMethod::NORMAL_RPC,
+                grpc::internal::RpcMethod::NORMAL_RPC,
                 nullptr)); // nullptr indicates async handler
     }
 

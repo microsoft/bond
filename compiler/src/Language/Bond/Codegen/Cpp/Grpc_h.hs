@@ -263,11 +263,11 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded methodInput}{request});
         }|]
 
-        privateProxyMethodDecl Function{..} = [lt|const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
-        privateProxyMethodDecl Event{..} = [lt|const ::grpc::RpcMethod rpcmethod_#{methodName}_;|]
+        privateProxyMethodDecl Function{..} = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName}_;|]
+        privateProxyMethodDecl Event{..} = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName}_;|]
 
-        proxyMethodMemberInit Function{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::RpcMethod::NORMAL_RPC, channel)|]
-        proxyMethodMemberInit Event{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::RpcMethod::NORMAL_RPC, channel)|]
+        proxyMethodMemberInit Function{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
+        proxyMethodMemberInit Event{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
 
         methodDecl Function{..} = [lt|#{template}template <typename TThreadPool>
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
