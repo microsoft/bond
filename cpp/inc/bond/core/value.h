@@ -184,8 +184,8 @@ public:
     {}
 
     value_common(value_common&& rhs) BOND_NOEXCEPT_IF(
-        bond::is_nothrow_copy_constructible<Reader>::value)
-        : _input(rhs._input),
+        BOND_NOEXCEPT_EXPR(detail::move_data<Reader>(rhs._input)))
+        : _input(detail::move_data<Reader>(rhs._input)),
           _skip(std::move(rhs._skip))
     {
         rhs._skip = false;
@@ -473,10 +473,10 @@ public:
     }
 
     value(value&& rhs) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<Reader>::value
+        BOND_NOEXCEPT_EXPR(detail::move_data<Reader>(rhs._input))
         && std::is_nothrow_move_constructible<SchemaDef>::value
         && std::is_nothrow_move_constructible<RuntimeSchema>::value)
-        : _input(rhs._input),
+        : _input(detail::move_data<Reader>(rhs._input)),
           _schemaDef(std::move(rhs._schemaDef)),
           _schema(std::move(rhs._schema)),
           _skip(std::move(rhs._skip))
