@@ -49,11 +49,11 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/channel_interface.h>
-#include <grpc++/impl/codegen/client_context.h>
-#include <grpc++/impl/codegen/completion_queue.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
