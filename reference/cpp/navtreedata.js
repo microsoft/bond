@@ -22,7 +22,7 @@ var NAVTREEINDEX =
 [
 ".html",
 "classbond_1_1maybe.html#adc77edf183f893d0c0bd4bbc337eb297",
-"value__or__reference_8h_source.html"
+"value__extern_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

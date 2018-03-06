@@ -108,10 +108,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5fe63181adf88a1fb0e709a643ed06e0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a5fe63181adf88a1fb0e709a643ed06e0">start</a> (grpc::ServerCompletionQueue *cq, std::shared_ptr&lt; TThreadPool &gt; threadPool)=0</td></tr>
 <tr class="memdesc:a5fe63181adf88a1fb0e709a643ed06e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the service.  <a href="#a5fe63181adf88a1fb0e709a643ed06e0">More...</a><br /></td></tr>
 <tr class="separator:a5fe63181adf88a1fb0e709a643ed06e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a815512722d18e2cbce18155bc2b5fa19"><td class="memTemplParams" colspan="2">template&lt;typename TRequest &gt; </td></tr>
-<tr class="memitem:a815512722d18e2cbce18155bc2b5fa19"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a815512722d18e2cbce18155bc2b5fa19">queue_receive</a> (int methodIndex, grpc::ServerContext *context, TRequest *request, grpc::ServerAsyncStreamingInterface *responseStream, grpc::ServerCompletionQueue *cq, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *tag)</td></tr>
-<tr class="memdesc:a815512722d18e2cbce18155bc2b5fa19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the receive process for a method.  <a href="#a815512722d18e2cbce18155bc2b5fa19">More...</a><br /></td></tr>
-<tr class="separator:a815512722d18e2cbce18155bc2b5fa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c660ee68e60f938523964f36c34e60"><td class="memTemplParams" colspan="2">template&lt;typename TRequest &gt; </td></tr>
+<tr class="memitem:a55c660ee68e60f938523964f36c34e60"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a55c660ee68e60f938523964f36c34e60">queue_receive</a> (int methodIndex, grpc::ServerContext *context, TRequest *request, grpc::internal::ServerAsyncStreamingInterface *responseStream, grpc::ServerCompletionQueue *cq, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *tag)</td></tr>
+<tr class="memdesc:a55c660ee68e60f938523964f36c34e60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the receive process for a method.  <a href="#a55c660ee68e60f938523964f36c34e60">More...</a><br /></td></tr>
+<tr class="separator:a55c660ee68e60f938523964f36c34e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa4858703656e8ed37ee452e9418f7d0"><td class="memItemLeft" align="right" valign="top">grpc::Service *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#aaa4858703656e8ed37ee452e9418f7d0">grpc_service</a> ()</td></tr>
 <tr class="memdesc:aaa4858703656e8ed37ee452e9418f7d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides access to the raw grpc::Service type.  <a href="#aaa4858703656e8ed37ee452e9418f7d0">More...</a><br /></td></tr>
 <tr class="separator:aaa4858703656e8ed37ee452e9418f7d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,8 +184,8 @@ template&lt;typename TThreadPool&gt; </div>
 
 </div>
 </div>
-<a id="a815512722d18e2cbce18155bc2b5fa19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a815512722d18e2cbce18155bc2b5fa19">&#9670;&nbsp;</a></span>queue_receive()</h2>
+<a id="a55c660ee68e60f938523964f36c34e60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c660ee68e60f938523964f36c34e60">&#9670;&nbsp;</a></span>queue_receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -215,7 +215,7 @@ template&lt;typename TRequest &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">grpc::ServerAsyncStreamingInterface *&#160;</td>
+          <td class="paramtype">grpc::internal::ServerAsyncStreamingInterface *&#160;</td>
           <td class="paramname"><em>responseStream</em>, </td>
         </tr>
         <tr>

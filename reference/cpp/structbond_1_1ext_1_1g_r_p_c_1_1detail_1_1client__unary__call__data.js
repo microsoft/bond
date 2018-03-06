@@ -2,7 +2,7 @@ var structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data =
 [
     [ "CallbackType", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ad3e1efc4b02beeaa819a58b4002ec795", null ],
     [ "clean_up_after_receive", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9b486eb65ef3cdeea91bbd7cc09aad44", null ],
-    [ "dispatch", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#aade392da54f0a6214965613a24c4a885", null ],
+    [ "dispatch", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9ff71ea837f32ce8e8c48d3b483f16f1", null ],
     [ "invoke", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9fb798695b1249d495243e7d568942d4", null ],
     [ "_callbackArgs", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a544921d4f932b12d79c38237459ec969", null ],
     [ "_cb", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac0f1b7caa67fca56a749cf6317b766ed", null ],
