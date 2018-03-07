@@ -61,6 +61,7 @@ different versioning scheme, following the Haskell community's
   `bond::ext::gRPC::io_manager::wait` are called concurrently.
 * Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
 * Fixed the broken move constructor of `bond::bonded<T, Reader&>`.
+* Fixed the move constructor of `bond::value` to actually move the underlying reader.
 
 ### C# ###
 
