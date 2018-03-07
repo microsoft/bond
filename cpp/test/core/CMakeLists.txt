@@ -38,12 +38,13 @@ target_link_libraries(protobuf_test_codegen libprotobuf)
 if (MSVC)
     # C4100: unreferenced formal parameter
     # C4125: decimal digit terminates octal escape sequence
+    # C4146: unary minus operator applied to unsigned type, result still unsigned (Fixed in https://github.com/google/protobuf/pull/4000)
     # C4456: declaration of 'size' hides previous local declaration
     # C4505: unreferenced local function has been removed
     # C4510: default constructor could not be generated
     # C4610: struct 'google::protobuf::Map...::Node' can never be instantiated - user defined constructor required
     # C4800: forcing value to bool 'true' or 'false' (performance warning)
-    target_compile_options(protobuf_test_codegen PUBLIC /wd4100 /wd4125 /wd4456 /wd4505 /wd4510 /wd4610 /wd4800)
+    target_compile_options(protobuf_test_codegen PUBLIC /wd4100 /wd4125 /wd4146 /wd4456 /wd4505 /wd4510 /wd4610 /wd4800)
 endif()
 add_target_to_folder (protobuf_test_codegen)
 
