@@ -71,6 +71,8 @@ different versioning scheme, following the Haskell community's
 * Bond Attributes on service methods are now present on all the client
   overloads for the methods. Previously, just the "friendly" method had the
   attributes.
+* Grpc.Core v1.10.0 is now required to use Bond-over-gRPC.
+    * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0
