@@ -2,6 +2,13 @@
 
 set -eux
 
+# Java needs git tags to detect the version it's building. If we haven't
+# released in a while, the last tag might be many commits back, so we'll fetch
+# the entire history here.
+pushd $BOND_ROOT
+git fetch --unshallow --tags
+popd
+
 # Install gbc.
 cmake \
     -DBOND_ENABLE_JAVA=TRUE \
