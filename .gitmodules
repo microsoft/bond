@@ -1,10 +1,6 @@
 [submodule "thirdparty/grpc"]
     path = thirdparty/grpc
     url = https://github.com/grpc/grpc.git
-    # When using CMake to build, the zlib submodule inside of the grpc
-    # submodule ends up with a generated file that makes Git consider
-    # the submodule dirty.
-    ignore = dirty
 
 [submodule "thirdparty/rapidjson"]
     path = thirdparty/rapidjson

@@ -7,8 +7,8 @@
 
 #include <bond/core/bonded.h>
 
-#include <grpc++/impl/codegen/status.h>
-#include <grpc++/client_context.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/client_context.h>
 
 #include <memory>
 #include <utility>

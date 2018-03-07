@@ -50,9 +50,9 @@ public:
 
     /// @brief Move constructor
     bonded(bonded&& other) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<Reader>::value
+        BOND_NOEXCEPT_EXPR(detail::move_data<Reader>(other._data))
         && std::is_nothrow_move_constructible<RuntimeSchema>::value)
-        : _data(std::move(other._data)),
+        : _data(detail::move_data<Reader>(other._data)),
           _schema(std::move(other._schema)),
           _skip(std::move(other._skip)),
           _base(std::move(other._base))

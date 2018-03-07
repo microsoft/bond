@@ -26,6 +26,25 @@ template <typename Protocols, typename Transform, typename T, typename Reader>
 typename boost::enable_if<need_double_pass<Transform>, bool>::type inline
 ApplyTransform(const Transform& transform, const bonded<T, Reader>& bonded);
 
+
+// Helper function move_data for dealing with [not] moving a Reader& in bonded<T, Reader&>
+template <typename T, typename U>
+typename boost::enable_if<std::is_reference<T>, T>::type
+inline move_data(U& data) BOND_NOEXCEPT
+{
+    BOOST_STATIC_ASSERT(std::is_same<T, U&>::value);
+    return data;
+}
+
+template <typename T, typename U>
+typename boost::disable_if<std::is_reference<T>, T&&>::type
+inline move_data(U& data) BOND_NOEXCEPT_IF(
+    std::is_nothrow_move_constructible<T>::value)
+{
+    BOOST_STATIC_ASSERT(std::is_same<T, U>::value);
+    return std::move(data);
+}
+
 } // namespace detail
 
 
@@ -59,9 +78,9 @@ public:
 
     /// @brief Move constructor
     bonded(bonded&& bonded) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<Reader>::value
+        BOND_NOEXCEPT_EXPR(detail::move_data<Reader>(bonded._data))
         && std::is_nothrow_move_constructible<RuntimeSchema>::value)
-        : _data(std::move(bonded._data)),
+        : _data(detail::move_data<Reader>(bonded._data)),
           _schema(std::move(bonded._schema)),
           _skip(std::move(bonded._skip)),
           _base(std::move(bonded._base))

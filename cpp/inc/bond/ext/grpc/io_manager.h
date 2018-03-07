@@ -13,8 +13,8 @@
     #pragma warning (disable: 4100 4702)
 #endif
 
-#include <grpc++/grpc++.h>
-#include <grpc++/impl/codegen/completion_queue.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)

@@ -80,12 +80,11 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
     add_target_to_folder (documentation)
 
     add_pandoc_markdown (src/bond_py.md src/bond_cpp.md
-        CODE "cpp,numberLines"
+        CODE "numberLines"
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/compiler.md
-        CODE cpp
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
@@ -106,17 +105,16 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/bond_cs.md
-        CODE "cs,numberLines"
+        CODE "numberLines"
         OPTIONS --table-of-contents
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/bond_java.md
-        CODE "java,numberLines"
+        CODE "numberLines"
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
     add_pandoc_markdown (src/reference_index.md
-        CODE cpp
         OPTIONS --self-contained "--title-prefix=Bond Reference Index"
         OUTPUT_NAME index
         OUTPUT_DIR reference)
@@ -126,7 +124,6 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OPTIONS --table-of-contents "--title-prefix=Bond, Microsoft's cross-platform framework for working with schematized data")
 
     add_pandoc_markdown (src/why_bond.md
-        CODE python
         OPTIONS --self-contained --table-of-contents)
 
     file(GLOB_RECURSE cpp_headers ../cpp/inc/bond/*.h)

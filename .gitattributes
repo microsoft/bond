@@ -1,45 +1,60 @@
 # Have Git automatically detect text files and normalize them.
 
-*    text=auto
+* text=auto
 
 # Explicit listing for files we know to be text
 
-.bond    text
-.cabal    text
-.cmake    text
-.config    text
-.cpp    text
-.cs    text
-.csproj    text
-.css    text
-.doxygen    text
-.expressions    text
-.filters    text
-.gitattributes    text
-.gitignore    text
-.gitmodules    text
-.h    text
-.hs    text
-.html    text
-.json    text
-.md    text
-.nuspec    text
-.props    text
-.py    text
-.targets    text
-.tmLanguage    text
-.txt    text
-.vcxproj    text
-.xml    text
-.yml    text
-LICENSE    text
+*.bond text
+*.cabal text
+*.cmake text
+*.config text
+*.cpp text
+*.cs text
+*.csproj text
+*.css text
+*.doxygen text
+*.el text
+*.expressions text
+*.gitattributes text
+*.gitignore text
+*.gitmodules text
+*.gradle text
+*.groovy text
+*.h text
+*.hs text
+*.html text
+*.iml text
+*.java text
+*.json text
+*.md text
+*.name text
+*.nuspec text
+*.proj text
+*.properties text
+*.props text
+*.ps1 text
+*.py text
+*.targets text
+*.tmLanguage text
+*.txt text
+*.xml text
+*.yaml text
 
-# Some Windows-specific files should always be CRLF
+# Some Windows-specific files should always be CRLF.
 
-*.DotSettings eol=crlf
-*.sln    eol=crlf
+*.cmd text eol=crlf
+*.DotSettings text eol=crlf
+*.sln text eol=crlf
+
+# Linux scripts need to always have LF. If not, things like building a
+# Docker image from Windows will result in un-runable scripts.
+
+*.sh text eol=lf
+*.zsh text eol=lf
 
 # These are binary file types.
 
-*.dat    binary
-*.snk    binary
+*.dat binary
+*.pfx binary
+*.png binary
+*.snk binary

@@ -7,12 +7,12 @@
     #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
 #endif
 
-#include <grpc++/grpc++.h>
-#include <grpc++/alarm.h>
-#include <grpc++/impl/codegen/completion_queue.h>
-#include <grpc++/impl/grpc_library.h>
 #include <grpc/grpc.h>
 #include <grpc/support/time.h>
+#include <grpcpp/alarm.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/grpc_library.h>
 
 #ifdef _MSC_VER
     #pragma warning(pop)

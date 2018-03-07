@@ -25,11 +25,11 @@
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/channel_interface.h>
-#include <grpc++/impl/codegen/client_context.h>
-#include <grpc++/impl/codegen/completion_queue.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
@@ -77,7 +77,7 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        const ::grpc::RpcMethod rpcmethod_foo_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo_;
     };
 
     using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
@@ -132,7 +132,7 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
     : _channel(channel)
     , _ioManager(ioManager)
     , _threadPool(threadPool)
-    , rpcmethod_foo_("/tests.Foo/foo", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo_("/tests.Foo/foo", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
     { }
 
 template <typename TThreadPool>

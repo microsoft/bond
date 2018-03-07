@@ -46,7 +46,7 @@
     #pragma warning (disable: 4100 4702)
 #endif
 
-#include <grpc++/grpc++.h>
+#include <grpcpp/grpcpp.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)
