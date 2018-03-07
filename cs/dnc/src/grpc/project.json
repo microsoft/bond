@@ -36,7 +36,7 @@
         "attributes": "1.0.0-*",
         "core": "1.0.0-*",
         "Grpc.Core": {
-            "version": "1.1.0"
+            "version": "1.10.0"
         },
         "io": "1.0.0-*",
         "reflection": "1.0.0-*"
@@ -44,7 +44,7 @@
     "frameworks": {
         "netstandard1.6": {
             "dependencies": {
-                "NETStandard.Library": "1.6.0"
+                "NETStandard.Library": "1.6.1"
             }
         }
     }

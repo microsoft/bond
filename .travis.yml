@@ -32,13 +32,13 @@ env:
     - FLAVOR="java"
 
 before_install:
-    - CI_BUILD_CONTAINER=bondciimages.azurecr.io/ubuntu-1604:build-8695914
+    - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-8695914
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
-    - time travis_retry docker pull $CI_BUILD_CONTAINER
+    - time travis_retry docker pull $CI_BUILD_IMAGE
     - docker images # Dump the image ID
 
 script:
-    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_CONTAINER $HOME $FLAVOR $BOOST $COMPILER
+    - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_IMAGE $HOME $FLAVOR $BOOST $COMPILER
     # docker runs as root and may leave files in the following directories that are not readable by the travis user
     - sudo chown -R travis:travis $HOME/.ccache $HOME/.stack `pwd`

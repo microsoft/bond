@@ -10,9 +10,10 @@
     #pragma warning (disable: 4100 4702)
 #endif
 
-#include <grpc++/grpc++.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/service_type.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)
@@ -71,7 +72,7 @@ public:
         int methodIndex,
         grpc::ServerContext* context,
         TRequest* request,
-        grpc::ServerAsyncStreamingInterface* responseStream,
+        grpc::internal::ServerAsyncStreamingInterface* responseStream,
         grpc::ServerCompletionQueue* cq,
         io_manager_tag* tag)
     {
@@ -106,9 +107,9 @@ protected:
 
         // ownership of the service method is transfered to grpc::Service
         AddMethod(
-            new grpc::RpcServiceMethod(
+            new grpc::internal::RpcServiceMethod(
                 methodName,
-                grpc::RpcMethod::NORMAL_RPC,
+                grpc::internal::RpcMethod::NORMAL_RPC,
                 nullptr)); // nullptr indicates async handler
     }
 

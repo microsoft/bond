@@ -9,7 +9,7 @@
 #include <bond/ext/grpc/exception.h>
 #include <bond/ext/grpc/client_callback.h>
 
-#include <grpc++/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/status.h>
 
 #include <boost/optional.hpp>
 

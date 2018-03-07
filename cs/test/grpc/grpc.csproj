@@ -36,7 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Grpc.Core">
-      <HintPath>..\..\packages\Grpc.Core.1.3.0\lib\net45\Grpc.Core.dll</HintPath>
+      <HintPath>..\..\packages\Grpc.Core.1.10.0\lib\net45\Grpc.Core.dll</HintPath>
     </Reference>
     <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
       <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
@@ -76,5 +76,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
-  <Import Project="..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.3.0\build\net45\Grpc.Core.targets')" />
+  <Import Project="..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
 </Project>

@@ -14,10 +14,10 @@
     #pragma warning (disable: 4100 4702)
 #endif
 
-#include <grpc++/grpc++.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
-#include <grpc++/impl/codegen/status.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)

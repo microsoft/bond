@@ -26,11 +26,11 @@
 #pragma warning (disable: 4100 4267)
 #endif
 
-#include <grpc++/impl/codegen/channel_interface.h>
-#include <grpc++/impl/codegen/client_context.h>
-#include <grpc++/impl/codegen/completion_queue.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
 #pragma warning (pop)
@@ -264,45 +264,45 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        const ::grpc::RpcMethod rpcmethod_foo11_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo11_;
 
-        const ::grpc::RpcMethod rpcmethod_foo12_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo12_;
 
-        const ::grpc::RpcMethod rpcmethod_foo12_impl_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo12_impl_;
 
-        const ::grpc::RpcMethod rpcmethod_foo13_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo13_;
 
-        const ::grpc::RpcMethod rpcmethod_foo14_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo14_;
 
-        const ::grpc::RpcMethod rpcmethod_foo15_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo15_;
 
-        const ::grpc::RpcMethod rpcmethod_foo21_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo21_;
 
-        const ::grpc::RpcMethod rpcmethod_foo22_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo22_;
 
-        const ::grpc::RpcMethod rpcmethod_foo23_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo23_;
 
-        const ::grpc::RpcMethod rpcmethod_foo24_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo24_;
 
-        const ::grpc::RpcMethod rpcmethod_foo31_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo31_;
 
-        const ::grpc::RpcMethod rpcmethod_foo32_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo32_;
 
-        const ::grpc::RpcMethod rpcmethod_foo33_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo33_;
 
-        const ::grpc::RpcMethod rpcmethod__rd_foo33_;
+        const ::grpc::internal::RpcMethod rpcmethod__rd_foo33_;
 
-        const ::grpc::RpcMethod rpcmethod_foo34_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo34_;
 
-        const ::grpc::RpcMethod rpcmethod_foo41_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo41_;
 
-        const ::grpc::RpcMethod rpcmethod_foo42_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo42_;
 
-        const ::grpc::RpcMethod rpcmethod_foo43_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo43_;
 
-        const ::grpc::RpcMethod rpcmethod_foo44_;
+        const ::grpc::internal::RpcMethod rpcmethod_foo44_;
 
-        const ::grpc::RpcMethod rpcmethod_cq_;
+        const ::grpc::internal::RpcMethod rpcmethod_cq_;
     };
 
     using Client = ClientCore< ::bond::ext::gRPC::thread_pool>;
@@ -661,26 +661,26 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
     : _channel(channel)
     , _ioManager(ioManager)
     , _threadPool(threadPool)
-    , rpcmethod_foo11_("/tests.Foo/foo11", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo12_("/tests.Foo/foo12", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo12_impl_("/tests.Foo/foo12_impl", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo13_("/tests.Foo/foo13", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo14_("/tests.Foo/foo14", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo15_("/tests.Foo/foo15", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo21_("/tests.Foo/foo21", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo22_("/tests.Foo/foo22", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo23_("/tests.Foo/foo23", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo24_("/tests.Foo/foo24", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod__rd_foo33_("/tests.Foo/_rd_foo33", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo34_("/tests.Foo/foo34", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo41_("/tests.Foo/foo41", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo42_("/tests.Foo/foo42", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo43_("/tests.Foo/foo43", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo44_("/tests.Foo/foo44", ::grpc::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_cq_("/tests.Foo/cq", ::grpc::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo11_("/tests.Foo/foo11", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo12_("/tests.Foo/foo12", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo12_impl_("/tests.Foo/foo12_impl", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo13_("/tests.Foo/foo13", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo14_("/tests.Foo/foo14", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo15_("/tests.Foo/foo15", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo21_("/tests.Foo/foo21", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo22_("/tests.Foo/foo22", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo23_("/tests.Foo/foo23", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo24_("/tests.Foo/foo24", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod__rd_foo33_("/tests.Foo/_rd_foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo34_("/tests.Foo/foo34", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo41_("/tests.Foo/foo41", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo42_("/tests.Foo/foo42", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo43_("/tests.Foo/foo43", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo44_("/tests.Foo/foo44", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_cq_("/tests.Foo/cq", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
     { }
 
 template <typename TThreadPool>

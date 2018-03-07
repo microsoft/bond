@@ -7,6 +7,7 @@
 
 #include "detail/inheritance.h"
 #include "detail/omit_default.h"
+#include "detail/parser_utils.h"
 #include "detail/typeid_value.h"
 #include "merge.h"
 #include "reflection.h"
@@ -38,20 +39,6 @@ protected:
     {
     }
 
-    template <typename T, typename Transform>
-    typename boost::disable_if<is_fast_path_field<T, Transform>, bool>::type
-    OmittedField(const T&, const Transform& transform)
-    {
-        return transform.OmittedField(T::id, T::metadata, get_type_id<typename T::field_type>::value);
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if<is_fast_path_field<T, Transform>, bool>::type
-    OmittedField(const T& field, const Transform& transform)
-    {
-        return transform.OmittedField(field);
-    }
 
     template <typename Transform>
     struct UnknownFieldBinder
@@ -132,9 +119,9 @@ private:
         typedef typename boost::mpl::deref<Fields>::type Head;
 
         if (detail::ReadFieldOmitted(_input))
-            OmittedField(Head(), transform);
+            detail::OmittedField(Head(), transform);
         else
-            if (bool done = NextField(Head(), transform))
+            if (bool done = detail::NonBasicTypeField(Head(), transform, _input))
                 return done;
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
@@ -147,54 +134,10 @@ private:
     {
         typedef typename boost::mpl::deref<Fields>::type Head;
 
-        if (bool done = NextField(Head(), transform))
+        if (bool done = detail::NonBasicTypeField(Head(), transform, _input))
             return done;
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && !is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && !is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return transform.Field(field, value<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_reader<Input>::value && is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return transform.Field(field, bonded<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::disable_if<is_reader<Input, T>, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, T::GetVariable(_input));
     }
 
 
@@ -208,24 +151,21 @@ private:
         for (const_enumerator<std::vector<FieldDef> > enumerator(schema.GetStruct().fields); enumerator.more() && !done;)
         {
             const FieldDef& field = enumerator.next();
+            const auto type = field.type.id;
 
             if (detail::ReadFieldOmitted(_input))
             {
-                transform.OmittedField(field.id, field.metadata, field.type.id);
+                transform.OmittedField(field.id, field.metadata, type);
                 continue;
             }
 
-            if (field.type.id == bond::BT_STRUCT)
+            if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
             {
-                done = transform.Field(field.id, field.metadata, bonded<void, Input>(_input, RuntimeSchema(schema, field)));
-            }
-            else if (field.type.id == bond::BT_LIST || field.type.id == bond::BT_SET || field.type.id == bond::BT_MAP)
-            {
-                done = transform.Field(field.id, field.metadata, value<void, Input>(_input, RuntimeSchema(schema, field)));
+                done = detail::NonBasicTypeField(field, schema, transform, _input);
             }
             else
             {
-                done = detail::BasicTypeField(field.id, field.metadata, field.type.id, transform, _input);
+                done = detail::BasicTypeField(field.id, field.metadata, type, transform, _input);
             }
         }
 
@@ -327,7 +267,7 @@ private:
             if (Head::id == id && get_type_id<typename Head::field_type>::value == type)
             {
                 // Exact match
-                NextField(Head(), transform);
+                detail::NonBasicTypeField(Head(), transform, _input);
             }
             else if (Head::id >= id && type != bond::BT_STOP && type != bond::BT_STOP_BASE)
             {
@@ -341,7 +281,7 @@ private:
             }
             else
             {
-                OmittedField(Head(), transform);
+                detail::OmittedField(Head(), transform);
                 goto NextSchemaField;
             }
 
@@ -363,42 +303,6 @@ private:
         {
             UnknownField(id, type, transform);
         }
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_nested_field<T>::value
-                            && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return transform.Field(field, bonded<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<!is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform)
-    {
-        return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(_input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<!is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform)
-    {
-        return transform.Field(field, value<typename T::field_type, Input>(_input));
     }
 
 
@@ -457,19 +361,11 @@ private:
             {
                 const FieldDef& field = *it++;
 
-                if (type == bond::BT_STRUCT)
+                if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
                 {
                     if (field.type.id == type)
                     {
-                        transform.Field(id, field.metadata, bonded<void, Input>(_input, RuntimeSchema(schema, field)));
-                        continue;
-                    }
-                }
-                else if (type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
-                {
-                    if (field.type.id == type)
-                    {
-                        transform.Field(id, field.metadata, value<void, Input>(_input, RuntimeSchema(schema, field)));
+                        detail::NonBasicTypeField(field, schema, transform, _input);
                         continue;
                     }
                 }
@@ -577,7 +473,7 @@ private:
                 std::is_enum<typename Head::field_type>::value))
         {
             Reader input(_input, *field);
-            NextField(Head(), transform, input);
+            detail::NonBasicTypeField(Head(), transform, input);
         }
 
         return ReadFields(typename boost::mpl::next<Fields>::type(), transform);
@@ -590,42 +486,6 @@ private:
     }
 
 
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_nested_field<T>::value
-                            && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform, Input input)
-    {
-        return transform.Field(T::id, T::metadata, bonded<typename T::field_type, Input>(input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform, Input input)
-    {
-        return transform.Field(field, bonded<typename T::field_type, Input>(input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<!is_nested_field<T>::value
-                             && !is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T&, const Transform& transform, Input input)
-    {
-        return transform.Field(T::id, T::metadata, value<typename T::field_type, Input>(input));
-    }
-
-
-    template <typename T, typename Transform>
-    typename boost::enable_if_c<!is_nested_field<T>::value
-                             && is_fast_path_field<T, Transform>::value, bool>::type
-    NextField(const T& field, const Transform& transform, Input input)
-    {
-        return transform.Field(field, value<typename T::field_type, Input>(input));
-    }
-
-
     // use runtime schema
     template <typename Transform>
     bool ReadFields(const RuntimeSchema& schema, const Transform& transform)
@@ -635,17 +495,20 @@ private:
         for (const_enumerator<std::vector<FieldDef> > enumerator(schema.GetStruct().fields); enumerator.more() && !done;)
         {
             const FieldDef& fieldDef = enumerator.next();
+            const auto type = fieldDef.type.id;
 
-            if (const typename Reader::Field* field = _input.FindField(fieldDef.id, fieldDef.metadata, fieldDef.type.id))
+            if (const typename Reader::Field* field = _input.FindField(fieldDef.id, fieldDef.metadata, type))
             {
                 Reader input(_input, *field);
 
-                if (fieldDef.type.id == BT_STRUCT)
-                    done = transform.Field(fieldDef.id, fieldDef.metadata, bonded<void, Input>(input, RuntimeSchema(schema, fieldDef)));
-                else if (fieldDef.type.id == BT_LIST || fieldDef.type.id == BT_SET || fieldDef.type.id == BT_MAP)
-                    done = transform.Field(fieldDef.id, fieldDef.metadata, value<void, Input>(input, RuntimeSchema(schema, fieldDef)));
+                if (type == bond::BT_STRUCT || type == bond::BT_LIST || type == bond::BT_SET || type == bond::BT_MAP)
+                {
+                    done = detail::NonBasicTypeField(fieldDef, schema, transform, input);
+                }
                 else
-                    done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, fieldDef.type.id, transform, input);
+                {
+                    done = detail::BasicTypeField(fieldDef.id, fieldDef.metadata, type, transform, input);
+                }
             }
         }
 
