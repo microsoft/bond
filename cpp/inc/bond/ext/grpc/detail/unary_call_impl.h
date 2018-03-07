@@ -19,10 +19,10 @@
     #pragma warning (disable: 4100 4291 4702)
 #endif
 
-#include <grpc++/grpc++.h>
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/server_context.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/server_context.h>
 
 #ifdef _MSC_VER
     #pragma warning (pop)

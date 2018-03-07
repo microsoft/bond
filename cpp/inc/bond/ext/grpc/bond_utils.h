@@ -10,15 +10,15 @@
 #include <bond/core/reflection.h>
 #include <bond/stream/output_buffer.h>
 
-#include <grpc++/impl/codegen/config.h>
-#include <grpc++/impl/codegen/core_codegen.h>
-#include <grpc++/impl/codegen/core_codegen_interface.h>
-#include <grpc++/impl/codegen/serialization_traits.h>
-#include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/status_code_enum.h>
-#include <grpc++/support/slice.h>
 #include <grpc/impl/codegen/byte_buffer_reader.h>
 #include <grpc/impl/codegen/slice.h>
+#include <grpcpp/impl/codegen/config.h>
+#include <grpcpp/impl/codegen/core_codegen.h>
+#include <grpcpp/impl/codegen/core_codegen_interface.h>
+#include <grpcpp/impl/codegen/serialization_traits.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/status_code_enum.h>
+#include <grpcpp/support/slice.h>
 
 #include <boost/assert.hpp>
 #include <boost/make_shared.hpp>
