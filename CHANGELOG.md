@@ -81,6 +81,8 @@ different versioning scheme, following the Haskell community's
 * Bond Attributes on service methods are now present on all the client
   overloads for the methods. Previously, just the "friendly" method had the
   attributes.
+* `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
+  Core projects.
 * Grpc.Core v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
