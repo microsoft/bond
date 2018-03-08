@@ -85,6 +85,9 @@ different versioning scheme, following the Haskell community's
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
   Core projects.
+* Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS
+  and Linux that prevented the C# compiler from finding the generated C#
+  files.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

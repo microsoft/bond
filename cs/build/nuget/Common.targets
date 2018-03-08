@@ -72,6 +72,18 @@
     <UpToDateCheckInput Include="$(_PreExistingBondExe)" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <!--Automatic directory separator translation doesn't work on
+         BondOutputDirectory, as sometimes it doesn't exist, so MSBuild
+         doesn't know it's a "path-like" thing. We unconditionally translate
+         to forward slashes, as they work Windows, macOS, and Linux. We also
+         ensure that this always has a trailing slash, which simplifies its
+         use later. -->
+    <_BondOutputDirectoryNormalized>$(BondOutputDirectory)</_BondOutputDirectoryNormalized>
+    <_BondOutputDirectoryNormalized Condition=" !HasTrailingSlash('$(_BondOutputDirectoryNormalized)') ">$(BondOutputDirectory)\</_BondOutputDirectoryNormalized>
+    <_BondOutputDirectoryNormalized>$(_BondOutputDirectoryNormalized.Replace('%5C', '%2F'))</_BondOutputDirectoryNormalized>
+  </PropertyGroup>
+
   <!-- Fail the build if there are duplicate items in @BondCodegen. This is
        unlikely in classic project files, but is likely to be encountered
        when migrating to .NET Core project files. Without a check like this,
@@ -119,14 +131,14 @@
        re-run. -->
   <Target Name="BondCodegenCs"
           Inputs="$(_PreExistingBondExe);@(BondCodegen)"
-          Outputs="$(BondOutputDirectory)\bondcodegen.done"
+          Outputs="$(_BondOutputDirectoryNormalized)bondcodegen.done"
           BeforeTargets="CoreCompile"
           Condition="'@(BondCodegen)' != ''">
 
     <Error Text="Neither Bond.CSharp.props nor Bond.Compiler.CSharp.props was imported. Check that your NuGet package references are working properly."
            Condition="'$(_bond_common_props_imported)' != 'true'" />
 
-    <MakeDir Directories="$(BondOutputDirectory)" />
+    <MakeDir Directories="$(_BondOutputDirectoryNormalized)" />
 
     <!-- just for a simpler commandline read -->
     <PropertyGroup>
@@ -134,7 +146,7 @@
       <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc.exe')">$(BOND_COMPILER_PATH)\gbc.exe</_BondExe>
       <_BondExe Condition="Exists('$(BOND_COMPILER_PATH)\gbc')">$(BOND_COMPILER_PATH)\gbc</_BondExe>
       <_BondImportDirs>--import-dir="$(BOND_INCLUDE_PATH)" @(BondImportDirectory -> '--import-dir=&quot;%(Identity)\.&quot;',' ')</_BondImportDirs>
-      <_BondCommand>&quot;$(_BondExe)&quot; $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(BondOutputDirectory)\."</_BondCommand>
+      <_BondCommand>&quot;$(_BondExe)&quot; $(BondCodegenMode) $(_BondImportDirs) --jobs=-2 --namespace=bond=Bond --output-dir="$(_BondOutputDirectoryNormalized)"</_BondCommand>
     </PropertyGroup>
 
     <!-- We'll optimize to generate in a single command where possible -->
@@ -143,11 +155,11 @@
       <_BondCodegenWithDefaultOptions Include="@(BondCodegen)" Condition="'%(BondCodegen.Options)' == ''" />
     </ItemGroup>
 
-    <WriteLinesToFile File="$(BondOutputDirectory)\bonddefaultcodegen.in"
+    <WriteLinesToFile File="$(_BondOutputDirectoryNormalized)bonddefaultcodegen.in"
                       Lines="@(_BondCodegenWithDefaultOptions)"
                       Overwrite="true" />
 
-    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(BondOutputDirectory)\bonddefaultcodegen.in&quot;"
+    <Exec Command="$(_BondCommand) $(BondOptions) @&quot;$(_BondOutputDirectoryNormalized)bonddefaultcodegen.in&quot;"
           Condition="'@(_BondCodegenWithDefaultOptions)' != ''" />
 
     <!-- And for any files needing custom options we'll have to generate one by one -->
@@ -155,7 +167,7 @@
           Condition="'%(BondCodegen.Options)' != ''" />
 
     <!-- Record all that we successfully ran codegen on all the files. -->
-    <WriteLinesToFile File="$(BondOutputDirectory)\bondcodegen.done"
+    <WriteLinesToFile File="$(_BondOutputDirectoryNormalized)bondcodegen.done"
                       Lines="#Ran codegen on the following files:;@(BondCodegen)"
                       Overwrite="true" />
   </Target>
@@ -170,7 +182,7 @@
 
     <ItemGroup>
       <_BondGen_Structs_BondOptions
-          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
+          Include="@(BondCodegen -> '$(_BondOutputDirectoryNormalized)%(FileName)_types.cs')"
           Condition="'%(BondCodegen.Options)' == ''
                      AND !$(BondOptions.Contains('--structs=false'))">
         <AutoGen>true</AutoGen>
@@ -178,7 +190,7 @@
       </_BondGen_Structs_BondOptions>
 
       <_BondGen_Structs_Options
-          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_types.cs')"
+          Include="@(BondCodegen -> '$(_BondOutputDirectoryNormalized)%(FileName)_types.cs')"
           Condition="'%(BondCodegen.Options)' != ''
                      AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--structs=false'))">
         <AutoGen>true</AutoGen>
@@ -186,7 +198,7 @@
       </_BondGen_Structs_Options>
 
       <_BondGen_Grpc_BondOptions
-          Include="@(_BondCodegenWithDefaultOptions -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+          Include="@(_BondCodegenWithDefaultOptions -> '$(_BondOutputDirectoryNormalized)%(FileName)_grpc.cs')"
           Condition="$(BondOptions.Contains('--grpc'))
                      AND !$(BondOptions.Contains('--grpc=false'))">
         <AutoGen>true</AutoGen>
@@ -194,7 +206,7 @@
       </_BondGen_Grpc_BondOptions>
 
       <_BondGen_Grpc_Options
-          Include="@(BondCodegen -> '$(BondOutputDirectory)\%(FileName)_grpc.cs')"
+          Include="@(BondCodegen -> '$(_BondOutputDirectoryNormalized)%(FileName)_grpc.cs')"
           Condition="$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc'))
                      AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc=false'))">
         <AutoGen>true</AutoGen>
@@ -212,8 +224,8 @@
         * MsBuild wants to keep track of all our outputs, to understand how to clean build.  It seems it
         * needs to know all of them regardless of what we actually produced THIS build, so adding always.
       -->
-      <FileWrites Include="$(BondOutputDirectory)\bondcodegen.done;
-                           $(BondOutputDirectory)\bonddefaultcodegen.in;
+      <FileWrites Include="$(_BondOutputDirectoryNormalized)bondcodegen.done;
+                           $(_BondOutputDirectoryNormalized)bonddefaultcodegen.in;
                            @(_BondGeneratedFileNames)" />
     </ItemGroup>
   </Target>
