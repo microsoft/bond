@@ -90,13 +90,8 @@
       <_DefaultItemsMessage> The Bond package includes BondCodegen items for all .bond files from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultCompileItems' property to 'false' if you want to explicitly include them in your project file. To set per-item metadata, use the item update syntax (https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).</_DefaultItemsMessage>
     </PropertyGroup>
 
-    <!-- This condition relies on the RemoveDuplicates task to preserve the
-         input order. It's not currently documented as having this behavior,
-         but it is currently implemented as such
-         (https://github.com/Microsoft/msbuild/blob/a9f64ebd108702c3fc65339c66cb124217854524/src/Tasks/ListOperators/RemoveDuplicates.cs).
-         There's an open issue
-         (https://github.com/MicrosoftDocs/visualstudio-docs/issues/622)
-         requesting clarification of the guarantees. -->
+    <!-- The RemoveDuplicates task preserves the input order, so this is an
+         OK way to check whether there were any duplicates. -->
     <Error Condition=" '@(BondCodegen)' != '@(_BondCodegenFiltered)' "
            Text="Duplicate BondCodegen items were included.$(_DefaultItemsMessage)" />
   </Target>
