@@ -87,6 +87,9 @@ different versioning scheme, following the Haskell community's
   Core projects.
 * The .NET Standard assemblies are fully strong-name signed. Previously,
   they were inadvertently only public strong-name signed.
+* Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS
+  and Linux that prevented the C# compiler from finding the generated C#
+  files.
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0
