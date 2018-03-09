@@ -1,6 +1,7 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -21,12 +22,17 @@
             var schemaDef = Deserialize<SchemaDef>.From(reader);
             var schema = new RuntimeSchema(schemaDef);
 
-            Debug.Assert(schema.IsStruct);
-            Debug.Assert(schema.StructDef.metadata.qualified_name == "Examples.Example");
-            Debug.Assert(schema.StructDef.metadata.attributes["StructAttribute"] == "Value of the attribute");
-            Debug.Assert(schema.StructDef.fields[0].metadata.attributes["FieldAttribute"] == "Value of the attribute");
-            Debug.Assert(schema.StructDef.fields[0].type.key.id == BondDataType.BT_UINT32);
-            Debug.Assert(schema.SchemaDef.structs[1].fields[0].metadata.default_value.string_value == "this is a string");
+            ThrowIfFalse(schema.IsStruct);
+            ThrowIfFalse(schema.StructDef.metadata.qualified_name == "Examples.Example");
+            ThrowIfFalse(schema.StructDef.metadata.attributes["StructAttribute"] == "Value of the attribute");
+            ThrowIfFalse(schema.StructDef.fields[0].metadata.attributes["FieldAttribute"] == "Value of the attribute");
+            ThrowIfFalse(schema.StructDef.fields[0].type.key.id == BondDataType.BT_UINT32);
+            ThrowIfFalse(schema.SchemaDef.structs[1].fields[0].metadata.default_value.string_value == "this is a string");
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

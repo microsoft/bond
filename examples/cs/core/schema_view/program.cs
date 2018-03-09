@@ -1,7 +1,7 @@
 ﻿namespace Examples
 {
     using System;
-    using System.Diagnostics;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -26,8 +26,13 @@
             var input = new InputBuffer(output.Data);
             ExampleView view = Unmarshal<ExampleView>.From(input);
 
-            Debug.Assert(example.num == view.num);
-            Debug.Assert(example.str.Equals(view.str, StringComparison.Ordinal));
+            ThrowIfFalse(example.num == view.num);
+            ThrowIfFalse(example.str.Equals(view.str, StringComparison.Ordinal));
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

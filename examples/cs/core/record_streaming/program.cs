@@ -1,7 +1,7 @@
 ﻿namespace Examples
 {
     using System;
-    using System.Diagnostics;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -68,11 +68,16 @@
                 var obj = Deserialize<Struct>.From(reader);
                 ++numObjectsSeen;
 
-                Debug.Assert(numObjectsSeen == obj.n);
-                Debug.Assert(obj.n == obj.str.Length);
+                ThrowIfFalse(numObjectsSeen == obj.n);
+                ThrowIfFalse(obj.n == obj.str.Length);
             }
 
-            Debug.Assert(numObjectsSeen == NumObjects);
+            ThrowIfFalse(numObjectsSeen == NumObjects);
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

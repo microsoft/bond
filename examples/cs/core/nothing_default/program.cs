@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -52,8 +52,8 @@
             // checking if the field is 'nothing' (== null) after
             // de-serialization we can detect if it was present in the
             // payload or not.
-            Debug.Assert(v2.bar == null);
-            Debug.Assert(v2.baz == null);
+            ThrowIfFalse(v2.bar == null);
+            ThrowIfFalse(v2.baz == null);
         }
 
         static ArraySegment<byte> Marshal<T>(T obj)
@@ -64,6 +64,11 @@
             Bond.Marshal.To(writer, obj);
 
             return buffer.Data;
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

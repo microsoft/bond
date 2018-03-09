@@ -1,6 +1,7 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -34,7 +35,7 @@
                 var reader = new CompactBinaryReader<InputBuffer>(input, version: 1);
 
                 var obj2 = Deserialize<Struct>.From(reader);
-                Debug.Assert(Comparer.Equal(obj, obj2));
+                ThrowIfFalse(Comparer.Equal(obj, obj2));
             }
 
             {
@@ -47,7 +48,7 @@
                 var reader = new CompactBinaryReader<InputBuffer>(input, version: 2);
 
                 var obj2 = Deserialize<Struct>.From(reader);
-                Debug.Assert(Comparer.Equal(obj, obj2));
+                ThrowIfFalse(Comparer.Equal(obj, obj2));
             }
 
             {
@@ -60,8 +61,13 @@
                 // The protocol and version are determined from the payload
                 // itself.
                 var obj2 = Unmarshal<Struct>.From(input);
-                Debug.Assert(Comparer.Equal(obj, obj2));
+                ThrowIfFalse(Comparer.Equal(obj, obj2));
             }
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -23,7 +24,12 @@
 
             var tree = Unmarshal<Node<string>>.From(output.Data);
 
-            Debug.Assert(Comparer.Equal(root, tree));
+           ThrowIfFalse(Comparer.Equal(root, tree));
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }
