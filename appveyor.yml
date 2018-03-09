@@ -73,13 +73,6 @@
               BOND_ARCH: 64
               BOND_BOOST: 63
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
-              # C++ Comm build and tests
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_VS_NUM: 14
-              BOND_ARCH: 64
-              BOND_BOOST: 63
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ gRPC build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
@@ -87,14 +80,6 @@
               BOND_ARCH: 64
               BOND_BOOST: 63
               BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-              # C++ Comm build and tests (Visual C++ 2013)
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_VS_NUM: 12
-              BOND_ARCH: 64
-              BOND_BOOST: 58
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_COMM=TRUE;-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
-
     install:
         - ps: >-
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
@@ -209,7 +194,7 @@
                 # on what part of C++ we're building--but they're pretty
                 # fast to build, so build them all.
 
-                $compatTests = ('Tests\CommCompatClient', 'Tests\CommCompatServer', 'Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
+                $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
 
                 msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
@@ -315,7 +300,7 @@
                 nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45-nonportable\${env:BOND_OUTPUT}\Bond.UnitTest.dll"
                 if (-not $?) { throw "tests failed" }
 
-                & cs\test\test-examples.ps1 -IgnorePatterns '*\comm\*','*\shared-types-assembly\*' -ErrorVariable exampleErrors
+                & cs\test\test-examples.ps1 -IgnorePatterns '*\shared-types-assembly\*' -ErrorVariable exampleErrors
                 if ($exampleErrors) { throw "One or more example failed. See above for details." }
             }
 

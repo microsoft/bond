@@ -41,18 +41,12 @@ module Language.Bond.Codegen.Templates
     , apply_h
     , apply_cpp
     ,  Protocol(..)
-      -- ** C++ Comm
-    , comm_h
-    , comm_cpp
     , grpc_h
     , grpc_cpp
       -- ** C#
     , FieldMapping(..)
     , StructMapping(..)
     , types_cs
-    , comm_interface_cs
-    , comm_proxy_cs
-    , comm_service_cs
     , grpc_cs
       -- ** Java
     , JavaFieldMapping(..)
@@ -68,12 +62,9 @@ import Language.Bond.Codegen.Cpp.Enum_h
 import Language.Bond.Codegen.Cpp.Reflection_h
 import Language.Bond.Codegen.Cpp.Types_cpp
 import Language.Bond.Codegen.Cpp.Types_h
-import Language.Bond.Codegen.Cpp.Comm_cpp
-import Language.Bond.Codegen.Cpp.Comm_h
 import Language.Bond.Codegen.Cpp.Grpc_cpp
 import Language.Bond.Codegen.Cpp.Grpc_h
 import Language.Bond.Codegen.Cs.Types_cs
-import Language.Bond.Codegen.Cs.Comm_cs
 import Language.Bond.Codegen.Cs.Grpc_cs
 import Language.Bond.Codegen.Java.Class_java
 import Language.Bond.Codegen.Java.Enum_java

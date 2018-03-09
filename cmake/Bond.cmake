@@ -4,7 +4,6 @@ include (Folders)
 #
 # add_bond_codegen (file.bond [file2.bond ...]
 #   [ENUM_HEADER]
-#   [COMM]
 #   [GRPC]
 #   [OUTPUT_DIR dir]
 #   [IMPORT_DIR dir [dir2, ...]]
@@ -12,7 +11,7 @@ include (Folders)
 #   [TARGET name]
 #
 function (add_bond_codegen)
-    set (flagArgs ENUM_HEADER COMM GRPC)
+    set (flagArgs ENUM_HEADER GRPC)
     set (oneValueArgs OUTPUT_DIR TARGET)
     set (multiValueArgs IMPORT_DIR OPTIONS)
     cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -32,9 +31,6 @@ function (add_bond_codegen)
     if (arg_ENUM_HEADER)
         list(APPEND options --enum-header)
     endif()
-    if (arg_COMM)
-        list(APPEND options --comm)
-    endif()
     if (arg_GRPC)
         list(APPEND options --grpc)
     endif()
@@ -51,10 +47,6 @@ function (add_bond_codegen)
         )
         if (arg_ENUM_HEADER)
             list(APPEND outputs "${outputDir}/${name}_enum.h")
-        endif()
-        if (arg_COMM)
-            list(APPEND outputs "${outputDir}/${name}_comm.cpp")
-            list(APPEND outputs "${outputDir}/${name}_comm.h")
         endif()
         if (arg_GRPC)
             list(APPEND outputs "${outputDir}/${name}_grpc.cpp")
@@ -84,13 +76,12 @@ endfunction()
 # add_bond_executable (name
 #   [schem.bond [schema2.bond]]
 #   source.cpp [source2.cpp]
-#   [COMM]
 #   [GRPC])
 #
 function (add_bond_executable target)
     set (schemas)
     set (sources)
-    set (flagArgs COMM GRPC)
+    set (flagArgs GRPC)
     cmake_parse_arguments (arg "${flagArgs}" "" "" ${ARGN})
     foreach (file ${ARGV})
         get_filename_component (ext ${file} EXT)
@@ -98,9 +89,6 @@ function (add_bond_executable target)
             get_filename_component (name ${file} NAME_WE)
             list (APPEND schemas "${file}")
             list (APPEND sources "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${name}_types.cpp")
-            if (arg_COMM)
-                list (APPEND sources "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${name}_comm.cpp")
-            endif()
             if (arg_GRPC)
                 list (APPEND sources "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${name}_grpc.cpp")
             endif()
@@ -108,15 +96,11 @@ function (add_bond_executable target)
     endforeach()
     if (schemas)
         set (options)
-        if (arg_COMM)
-            list (APPEND options COMM)
-        endif()
         if (arg_GRPC)
             list (APPEND options GRPC)
         endif()
         add_bond_codegen (${schemas} ${options})
     endif()
-    list (REMOVE_ITEM ARGV COMM)
     list (REMOVE_ITEM ARGV GRPC)
     add_executable (${ARGV} ${sources})
     add_target_to_folder(${target})
@@ -133,7 +117,6 @@ endfunction()
 #   [schem.bond [schema2.bond]]
 #   source.cpp [source2.cpp]
 #   [BUILD_ONLY]
-#   [COMM]
 #   [GRPC])
 #
 function (add_bond_test test)

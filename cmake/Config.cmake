@@ -75,20 +75,6 @@ if (WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/retail")
 
-    find_program (BOND_CSHARP_COMM_COMPAT_SERVER CommCompatServer.exe
-        PATH_SUFFIXES net45
-        NO_DEFAULT_PATH
-        PATHS
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/server/bin/retail")
-
-    find_program (BOND_CSHARP_COMM_COMPAT_CLIENT CommCompatClient.exe
-        PATH_SUFFIXES net45
-        NO_DEFAULT_PATH
-        PATHS
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/comm/client/bin/retail")
-
     find_program (BOND_CSHARP_GRPC_COMPAT_SERVER GrpcCompatServer.exe
         PATH_SUFFIXES net45
         NO_DEFAULT_PATH
@@ -205,10 +191,6 @@ set (BOND_LIBRARIES_INSTALL_CPP
     "FALSE"
     CACHE BOOL "If TRUE, the .cpp files for the Bond libraries will be installed under src/ as part of the INSTALL target.")
 
-set (BOND_ENABLE_COMM
-    "FALSE"
-    CACHE BOOL "If FALSE, then do not build Comm")
-
 set (BOND_ENABLE_JAVA
     "FALSE"
     CACHE BOOL "If TRUE, then build Java libraries")
@@ -229,6 +211,6 @@ set (BOND_STACK_OPTIONS
     ""
     CACHE STRING "Options to pass to Haskell Stack")
 
-if (((BOND_ENABLE_COMM) OR (BOND_ENABLE_GRPC)) AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
-    message(FATAL_ERROR "BOND_ENABLE_COMM and/or BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
+if (BOND_ENABLE_GRPC AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
+    message(FATAL_ERROR "BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
 endif()

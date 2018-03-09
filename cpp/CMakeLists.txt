@@ -5,10 +5,6 @@ set (core_schemas
 set (schemas)
 list (APPEND schemas ${core-schemas})
 
-if (BOND_ENABLE_COMM)
-    set(comm-flag COMM)
-endif()
-
 if (BOND_ENABLE_GRPC)
     set(grpc-flag GRPC)
 endif()
@@ -68,55 +64,6 @@ list (APPEND headers
     ${protocol_headers}
     ${protocol_detail_headers}
     ${stream_headers})
-
-if (BOND_ENABLE_COMM)
-    set (comm_schemas
-        ${BOND_IDL}/bond/comm/comm.bond
-        ${BOND_IDL}/bond/comm/transport/packet.bond
-        ${BOND_IDL}/bond/comm/transport/epoxy_transport.bond)
-
-    list (APPEND schemas ${comm-schemas})
-
-    add_bond_codegen (${comm_schemas}
-        ENUM_HEADER
-        OUTPUT_DIR ${BOND_GENERATED}/bond/comm)
-
-    add_bond_codegen (${comm_schemas}
-        ENUM_HEADER
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/comm)
-
-    file (GLOB comm_headers "inc/bond/comm/*.h")
-    source_group ("comm" FILES ${comm_headers})
-
-    file (GLOB comm_detail_headers "inc/bond/comm/detail/*.h")
-    source_group ("comm\\detail" FILES ${comm_detail_headers})
-
-    file (GLOB comm_layers_headers "inc/bond/comm/layers/*.h")
-    source_group ("comm\\layers" FILES ${comm_layers_headers})
-
-    file (GLOB comm_transport_headers "inc/bond/comm/transport/*.h")
-    source_group ("comm\\transport" FILES ${comm_transport_headers})
-
-    file (GLOB comm_transport_detail_headers "inc/bond/comm/transport/detail/*.h")
-    source_group ("comm\\transport\\detail" FILES ${comm_transport_detail_headers})
-
-    list (APPEND generated_files_types
-        ${BOND_GENERATED}/bond/comm/comm_types.cpp
-        ${BOND_GENERATED}/bond/comm/packet_types.cpp
-        ${BOND_GENERATED}/bond/comm/epoxy_transport_types.cpp)
-
-    list (APPEND generated_files_apply
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/comm/comm_apply.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/comm/packet_apply.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/comm/epoxy_transport_apply.cpp)
-
-    list (APPEND headers
-        ${comm_headers}
-        ${comm_detail_headers}
-        ${comm_layers_headers}
-        ${comm_transport_headers}
-        ${comm_transport_detail_headers})
-endif(BOND_ENABLE_COMM)
 
 # ext headers (currently, only used by gRPC stuff, but in its own block
 # because it doesn't depend on gRPC stuff)
@@ -178,10 +125,6 @@ install (TARGETS bond bond_apply
     INCLUDES DESTINATION include)
 
 install (DIRECTORY ${BOND_IDL}/bond/core DESTINATION include/bond)
-
-if (BOND_ENABLE_COMM)
-    install (DIRECTORY ${BOND_IDL}/bond/comm DESTINATION include/bond)
-endif()
 
 if (BOND_LIBRARIES_INSTALL_CPP)
   install (
