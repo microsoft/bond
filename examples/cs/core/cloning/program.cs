@@ -1,6 +1,6 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
     using Bond;
 
     static class Program
@@ -26,8 +26,13 @@
             // to normal Bond schema versioning rules.
             var outline = Clone<Outline>.From(document);
 
-            Debug.Assert(outline.Title == document.Title);
-            Debug.Assert(outline.Tags.First.Value == document.Tags[0]);
+            ThrowIfFalse(outline.Title == document.Title);
+            ThrowIfFalse(outline.Tags.First.Value == document.Tags[0]);
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

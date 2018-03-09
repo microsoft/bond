@@ -1,8 +1,8 @@
 ﻿namespace Examples
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -81,8 +81,13 @@
             var reader = new CompactBinaryReader<InputBuffer>(input);
 
             var dst = Deserialize<Example>.From(reader);
-            Debug.Assert(dst.id_str == src.id_str);
-            Debug.Assert(dst.id_bin == src.id_bin);
+            ThrowIfFalse(dst.id_str == src.id_str);
+            ThrowIfFalse(dst.id_bin == src.id_bin);
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

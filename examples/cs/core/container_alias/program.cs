@@ -3,7 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
+
     using Bond;
     using Bond.IO.Unsafe;
     using Bond.Protocols;
@@ -27,7 +27,12 @@
             var reader = new CompactBinaryReader<InputBuffer>(input);
 
             var dst = Deserialize<Example>.From(reader);
-            Debug.Assert(Bond.Comparer.Equal(src, dst));
+            ThrowIfFalse(Bond.Comparer.Equal(src, dst));
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 

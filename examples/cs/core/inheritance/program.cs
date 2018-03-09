@@ -4,7 +4,7 @@
 namespace Examples
 {
     using System;
-    using System.Diagnostics;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -22,7 +22,7 @@ namespace Examples
 
             // Deserialize Base from payload containing Derived
             Base obj = Deserialize<Base>.From(derivedPayload);
-            Debug.Assert(Comparer.Equal<Base>(obj, derivedObj));
+            ThrowIfFalse(Comparer.Equal<Base>(obj, derivedObj));
         }
 
         static ArraySegment<byte> Serialize<T>(T obj)
@@ -31,6 +31,11 @@ namespace Examples
             var writer = new CompactBinaryWriter<OutputBuffer>(output);
             Bond.Serialize.To(writer, obj);
             return output.Data;
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Text;
+
     using Bond;
     using Bond.Protocols;
 
@@ -25,7 +26,14 @@
             Console.WriteLine(jsonString);
 
             var reader = new SimpleJsonReader(new StringReader(jsonString.ToString()));
-            config = Deserialize<Config>.From(reader);
+            var readConfig = Deserialize<Config>.From(reader);
+
+            ThrowIfFalse(Comparer.Equal(config, readConfig));
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

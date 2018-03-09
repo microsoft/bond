@@ -1,7 +1,8 @@
 ﻿namespace Examples
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -58,27 +59,32 @@
                 
                 if (shape.GetType() == typeof(Circle))
                 {
-                    Debug.Assert(Comparer.Equal(circle, shape as Circle));
+                    ThrowIfFalse(Comparer.Equal(circle, shape as Circle));
                 }
 
                 if (shape.GetType() == typeof(Rectangle))
                 {
-                    Debug.Assert(Comparer.Equal(rectangle, shape as Rectangle));
+                    ThrowIfFalse(Comparer.Equal(rectangle, shape as Rectangle));
                 }
 
                 // Alternatively the generic method IBonded<T>.Deserialize<U> can be used
                 if (type == Type.Circle)
                 {
                     var c = item.Deserialize<Circle>();
-                    Debug.Assert(Comparer.Equal(circle, c));
+                    ThrowIfFalse(Comparer.Equal(circle, c));
                 }
 
                 if (type == Type.Rectangle)
                 {
                     var r = item.Deserialize<Rectangle>();
-                    Debug.Assert(Comparer.Equal(rectangle, r));
+                    ThrowIfFalse(Comparer.Equal(rectangle, r));
                 }
             }
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

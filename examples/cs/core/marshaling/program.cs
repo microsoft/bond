@@ -1,6 +1,7 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -25,7 +26,12 @@
             // We don't need to specify protocol for unmarshaling, 
             // it is determined from information stored in the payload.
             var dst = Unmarshal<Example>.From(input);
-            Debug.Assert(Comparer.Equal(src, dst));
+            ThrowIfFalse(Comparer.Equal(src, dst));
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

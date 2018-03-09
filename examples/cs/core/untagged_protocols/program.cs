@@ -1,7 +1,8 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
     using System.Collections.Generic;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -39,8 +40,13 @@
 
             // Use the precreated deserializer to deserialize an instance of Example2 schema for Example1
             var dst = deserializers["Example1"].Deserialize<Example2>(reader);
-            Debug.Assert(src.Enabled == dst.Enabled);
-            Debug.Assert(src.Name == dst.Name);
+            ThrowIfFalse(src.Enabled == dst.Enabled);
+            ThrowIfFalse(src.Name == dst.Name);
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }

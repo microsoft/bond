@@ -1,8 +1,9 @@
 ﻿namespace Examples
 {
-    using System.Diagnostics;
+    using System;
     using System.Text;
     using System.Xml;
+
     using Bond;
     using Bond.Protocols;
     using Bond.IO.Unsafe;
@@ -36,7 +37,7 @@
             Transcode<Example>.FromTo(reader, xmlWriter);
             xmlWriter.Flush();
 
-            Debug.Assert(xmlString.ToString() == 
+            ThrowIfFalse(xmlString.ToString() ==
 @"<Example>
   <Widgets>
     <Item>
@@ -47,6 +48,11 @@
     </Item>
   </Widgets>
 </Example>");
+        }
+
+        static void ThrowIfFalse(bool b)
+        {
+            if (!b) throw new Exception("Assertion failed");
         }
     }
 }
