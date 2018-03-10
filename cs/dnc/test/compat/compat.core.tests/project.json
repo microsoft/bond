@@ -21,15 +21,13 @@
         "debug": {
             "buildOptions": {
                 "keyFile": "../../../../build/internal/bond.snk",
-                "optimize": false,
-                "publicSign": true
+                "optimize": false
             }
         },
         "release": {
             "buildOptions": {
                 "keyFile": "../../../../build/internal/bond.snk",
-                "optimize": true,
-                "publicSign": true
+                "optimize": true
             }
         }
     },
