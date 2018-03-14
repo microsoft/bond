@@ -21,10 +21,8 @@ if (error)
     message (FATAL_ERROR ${setup_output})
 endif()
 
-set (buildGhcOptions "-O2")
-
 execute_process (
-    COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} build :${target} --no-run-tests ${stack_options} --ghc-options=${buildGhcOptions}
+    COMMAND ${STACK_EXECUTABLE} ${BOND_STACK_OPTIONS} build :${target} --no-run-tests ${stack_options}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE error)
 

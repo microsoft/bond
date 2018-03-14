@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -9,6 +9,24 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Compiler</RootNamespace>
     <AssemblyName>Compiler</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Set the CMake build type to use when building gbc. Options are Debug,
+         MinSizeRel, Release, and RelWithDebInfo.
+
+         The default mapping is:
+         * MSBuild Debug -> CMake Debug
+         * MSbuild Release -> CMake RelWithDebInfo
+
+         WARNING: the CMake MinSizeRel build will likely increase your build
+         time by over an hour and only works if you also delete you Stack
+         snapshots first.
+    -->
+    <BondCompilerCMakeBuildType
+        Condition=" ('$(BondCompilerCMakeBuildType)' == '') And ('$(Configuration)' == 'Release') ">RelWithDebInfo</BondCompilerCMakeBuildType>
+    <BondCompilerCMakeBuildType
+        Condition=" ('$(BondCompilerCMakeBuildType)' == '') And ('$(Configuration)' != 'Release') ">Debug</BondCompilerCMakeBuildType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -66,8 +84,8 @@
     <MakeDir Directories="$(IntermediateOutputPath)" />
 
     <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
-    <Exec Command="cmake --build . --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
-    
+    <Exec Command="cmake --build . --config $(BondCompilerCMakeBuildType) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
+
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>
 
