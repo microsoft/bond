@@ -11,6 +11,24 @@
     <AssemblyName>Compiler</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Set the CMake build type to use when building gbc. Options are Debug,
+         MinSizeRel, Release, and RelWithDebInfo.
+
+         The default mapping is:
+         * MSBuild Debug -> CMake Debug
+         * MSbuild Release -> CMake RelWithDebInfo
+
+         WARNING: the CMake MinSizeRel build will likely increase your build
+         time by over an hour and only works if you also delete you Stack
+         snapshots first.
+    -->
+    <BondCompilerCMakeBuildType
+        Condition=" ('$(BondCompilerCMakeBuildType)' == '') And ('$(Configuration)' == 'Release') ">RelWithDebInfo</BondCompilerCMakeBuildType>
+    <BondCompilerCMakeBuildType
+        Condition=" ('$(BondCompilerCMakeBuildType)' == '') And ('$(Configuration)' != 'Release') ">Debug</BondCompilerCMakeBuildType>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="$(ProjectDir)..\compiler\bond.cabal" />
     <None Include="$(ProjectDir)..\compiler\Main.hs" />
@@ -63,7 +81,7 @@
     <MakeDir Directories="$(IntermediateOutputPath)" />
 
     <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
-    <Exec Command="cmake --build . --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
+    <Exec Command="cmake --build . --config $(BondCompilerCMakeBuildType) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
 
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />
   </Target>

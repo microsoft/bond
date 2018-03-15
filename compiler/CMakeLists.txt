@@ -12,9 +12,33 @@ function (add_stack_build target)
     set (flagArgs ENABLE_TESTS)
     set (multiValueArgs SOURCES DEPENDS)
     cmake_parse_arguments (arg "${flagArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
     if (${arg_ENABLE_TESTS})
         set (options "--test")
     endif()
+
+    # If unspecified, turn off optimizations
+    list (APPEND options $<$<CONFIG:>:--fast>)
+
+    list (APPEND options $<$<CONFIG:Debug>:--fast>)
+    list (APPEND options $<$<CONFIG:Debug>:--no-executable-stripping>)
+    list (APPEND options $<$<CONFIG:Debug>:--no-library-stripping>)
+    list (APPEND options $<$<CONFIG:Debug>:--no-strip>)
+
+    list (APPEND options $<$<CONFIG:MinSizeRel>:--executable-stripping>)
+    list (APPEND options $<$<CONFIG:MinSizeRel>:--ghc-options=-O2>)
+    list (APPEND options $<$<CONFIG:MinSizeRel>:--library-stripping>)
+    list (APPEND options $<$<CONFIG:MinSizeRel>:--split-objs>)
+
+    list (APPEND options $<$<CONFIG:Release>:--executable-stripping>)
+    list (APPEND options $<$<CONFIG:Release>:--ghc-options=-O2>)
+    list (APPEND options $<$<CONFIG:Release>:--library-stripping>)
+
+    list (APPEND options $<$<CONFIG:RelWithDebInfo>:--ghc-options=-O2>)
+    list (APPEND options $<$<CONFIG:RelWithDebInfo>:--no-executable-stripping>)
+    list (APPEND options $<$<CONFIG:RelWithDebInfo>:--no-library-stripping>)
+    list (APPEND options $<$<CONFIG:RelWithDebInfo>:--no-strip>)
+
     add_custom_command (
         DEPENDS ${arg_SOURCES}
         COMMAND ${CMAKE_COMMAND}
@@ -22,7 +46,7 @@ function (add_stack_build target)
             -N
             -Dbuild_dir=${CMAKE_CURRENT_BINARY_DIR}
             -Dtarget=${target}
-            -Dstack_options=${options}
+            "\"-Dstack_options=${options}\""
             -P stack_build.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/build/${target}/${target}${CMAKE_EXECUTABLE_SUFFIX})
