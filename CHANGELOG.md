@@ -21,8 +21,8 @@ different versioning scheme, following the Haskell community's
 ### `gbc` and Bond compiler library ###
 
 * **Breaking change** The deprecated Bond Comm functionality has been
-  removed. This includes all gbc options realted to Comm and Comm types
-  exposed in the Haskell library. [Issue
+  removed. This includes all gbc options realted to Comm and the Comm
+  codegen templates in the Haskell library. [Issue
   #824](https://github.com/Microsoft/bond/issues/824)
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
