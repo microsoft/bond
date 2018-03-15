@@ -88,18 +88,6 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
-    add_pandoc_markdown(src/bond_comm.md src/bond_comm_roadmap.md
-        OPTIONS --self-contained --table-of-contents
-        OUTPUT_DIR manual)
-
-    add_pandoc_markdown(src/bond_comm_epoxy.md src/bond_comm_epoxy_wire.md
-        OPTIONS --self-contained --table-of-contents
-        OUTPUT_DIR manual)
-
-    add_pandoc_markdown(src/bond_comm_simpleinmem.md
-        OPTIONS --self-contained --table-of-contents
-        OUTPUT_DIR manual)
-
     add_pandoc_markdown(src/bond_over_grpc.md
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)

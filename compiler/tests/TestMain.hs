@@ -122,20 +122,6 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
-            , testGroup "Comm"
-                [ verifyCppCommCodegen
-                    [ "c++"
-                    ]
-                    "service"
-                , verifyCppCommCodegen
-                    [ "c++"
-                    ]
-                    "generic_service"
-                , verifyCppCommCodegen
-                    [ "c++"
-                    ]
-                    "service_attributes"
-                ]
             , testGroup "Grpc"
                 [ verifyCppGrpcCodegen
                     [ "c++"
@@ -172,20 +158,6 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
-            , testGroup "Comm"
-                [ verifyCsCommCodegen
-                    [ "c#"
-                    ]
-                    "service"
-                , verifyCsCommCodegen
-                    [ "c#"
-                    ]
-                    "generic_service"
-                , verifyCsCommCodegen
-                    [ "c#"
-                    ]
-                    "service_attributes"
-                ]
             ]
         , testGroup "Java"
             [ verifyJavaCodegen "attributes"

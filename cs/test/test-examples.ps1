@@ -14,9 +14,9 @@ A collection of -Like patterns specifying which examples to ignore.
 
 .EXAMPLE
 
-PS c:\src\bond\cs\test> .\test-examples.ps1 -IgnorePatterns '*comm*'
+PS c:\src\bond\cs\test> .\test-examples.ps1 -IgnorePatterns '*bar*'
 
-This will run all the examples except those with "comm" in their paths.
+This will run all the examples except those with "bar" in their paths.
 
 #>
 [CmdletBinding()]

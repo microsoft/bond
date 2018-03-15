@@ -7,12 +7,10 @@
 module Tests.Codegen
     ( verifyCodegen
     , verifyCppCodegen
-    , verifyCppCommCodegen
     , verifyCppGrpcCodegen
     , verifyApplyCodegen
     , verifyExportsCodegen
     , verifyCsCodegen
-    , verifyCsCommCodegen
     , verifyJavaCodegen
     ) where
 

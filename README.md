@@ -11,13 +11,6 @@ data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at
 Microsoft in high scale services.
 
-**IMPORTANT NOTE: The [Bond Communications framework](https://Microsoft.github.io/bond/manual/bond_comm.html)
--- known as Bond Comm -- is deprecated. We recommend using
-[Bond-over-gRPC](https://Microsoft.github.io/bond/manual/bond_over_grpc.html) for communication.
-The [Bond Comm C# manual](https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm)
-and the [Bond Comm C++ manual](https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm)
-are preserved for transition purposes.**
-
 Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
 For details, see the User's Manuals:
@@ -47,8 +40,7 @@ Bond C++ library requires some C++11 features (currently limited to those
 supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
-(1.5.1+) and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to
-some bugs in that version of the Boost ASIO library).
+(1.5.1+) and Boost (1.58+).
 
 Following are specific instructions for building on various platforms.
 
@@ -227,7 +219,7 @@ set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
-pre-built libraries are only needed for unit tests, Python, gRPC, and Comm
+pre-built libraries are only needed for unit tests, Python, and gRPC
 support. If Boost or Python libraries are not found on the system, then some
 tests and examples will not be built.
 

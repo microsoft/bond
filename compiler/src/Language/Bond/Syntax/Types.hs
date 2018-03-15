@@ -30,7 +30,7 @@ module Language.Bond.Syntax.Types
     , Type(..)
     , TypeParam(..)
     , Constraint(..)
-      -- ** Comm
+      -- ** Services
     , Method(..)
       -- ** Metadata
     , Attribute(..)

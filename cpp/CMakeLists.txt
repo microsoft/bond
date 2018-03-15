@@ -11,7 +11,7 @@ endif()
 
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
-    ${comm-flag} ${grpc-flag}
+    ${grpc-flag}
     OUTPUT_DIR ${BOND_GENERATED}/bond/core)
 
 # Generate again into intermediate dir so that we can build libraries
@@ -23,7 +23,7 @@ add_bond_codegen (${core_schemas}
 # in a clean build, leading to collisions in multi-processor build.
 add_bond_codegen (${core_schemas}
     ENUM_HEADER
-    ${comm-flag} ${grpc-flag}
+    ${grpc-flag}
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bond/core)
 
 file (GLOB core_headers "inc/bond/core/*.h")
