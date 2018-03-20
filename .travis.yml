@@ -23,7 +23,6 @@ env:
     - FLAVOR="cpp-core" BOOST="1.60.0" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.59.0" COMPILER="clang"
     - FLAVOR="cpp-core" BOOST="1.58.0" COMPILER="clang"
-    - FLAVOR="cpp-comm" BOOST="1.63.0" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.66.0" COMPILER="gcc"
     - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"

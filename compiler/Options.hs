@@ -39,7 +39,6 @@ data Options
         , jobs :: Maybe Int
         , no_banner :: Bool
         , core_enabled :: Bool
-        , comm_enabled :: Bool
         , grpc_enabled :: Bool
         , alloc_ctors_enabled :: Bool
         , type_aliases_enabled :: Bool
@@ -58,7 +57,6 @@ data Options
         , jobs :: Maybe Int
         , no_banner :: Bool
         , structs_enabled :: Bool
-        , comm_enabled :: Bool
         , grpc_enabled :: Bool
         , service_inheritance_enabled :: Bool
         }
@@ -96,7 +94,6 @@ cpp = Cpp
     , jobs = def &= opt "0" &= typ "NUM" &= name "j" &= help "Run NUM jobs simultaneously (or '$ncpus' if no NUM is not given)"
     , no_banner = def &= help "Omit the banner at the top of generated files"
     , core_enabled = True &= explicit &= name "core" &= help "Generate core serialization definitions (true by default, --core=false to disable)"
-    , comm_enabled = False &= explicit &= name "comm" &= help "Generate comm definitions"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate gRPC definitions"
     , alloc_ctors_enabled = False &= explicit &= name "alloc-ctors" &= help "Generate constructors with allocator argument"
     , type_aliases_enabled = False &= explicit &= name "type-aliases" &= help "Generate type aliases"
@@ -112,7 +109,6 @@ cs = Cs
     , readonly_properties = def &= name "r" &= help "Generate private property setters"
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
     , structs_enabled = True &= explicit &= name "structs" &= help "Generate C# types for Bond structs and enums (true by default, use \"--structs=false\" to disable)"
-    , comm_enabled = False &= explicit &= name "comm" &= help "Generate C# services and proxies for Bond Comm"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate C# services and proxies for gRPC"
     } &=
     name "c#" &=

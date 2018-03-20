@@ -49,8 +49,6 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\ApplyOverloads.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_cpp.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Comm_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Grpc_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Grpc_h.hs" />
@@ -58,7 +56,6 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Comm_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs" />

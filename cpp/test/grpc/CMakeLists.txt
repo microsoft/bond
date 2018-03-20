@@ -4,7 +4,7 @@
 function (add_unit_test)
     get_filename_component(name ${ARGV0} NAME_WE)
     set (files ${ARGV})
-    add_bond_test (${name} EXCLUDE_FROM_ALL ${files} COMM)
+    add_bond_test (${name} EXCLUDE_FROM_ALL ${files} GRPC)
     add_target_to_folder (${name})
     add_dependencies (${name}
         bond)

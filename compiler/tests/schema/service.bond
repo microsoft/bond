@@ -15,7 +15,7 @@ service Foo
 {
     nothing foo11();
     nothing foo12(void);
-    // test name conflict with _impl methods used by Bond Comm
+    // test name conflict with _impl methods
     nothing foo12_impl(void);
     nothing foo13(BasicTypes);
     nothing foo14(bar);

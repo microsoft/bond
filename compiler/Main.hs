@@ -95,7 +95,6 @@ cppCodegen options@Cpp {..} = do
         ]
     templates = concat $ map snd $ filter fst codegen_templates
     codegen_templates = [ (core_enabled, core_files)
-                        , (comm_enabled, [comm_h export_attribute, comm_cpp])
                         , (grpc_enabled, [grpc_h export_attribute, grpc_cpp])
                         ]
     core_files = [
@@ -122,7 +121,6 @@ csCodegen options@Cs {..} = do
                  else Properties
     templates = concat $ map snd $ filter fst codegen_templates
     codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping])
-                        , (comm_enabled, [comm_interface_cs, comm_proxy_cs, comm_service_cs])
                         , (grpc_enabled, [grpc_cs])
                         ]
 csCodegen _ = error "csCodegen: impossible happened."
@@ -141,10 +139,9 @@ codeGen options typeMapping templates file = do
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
-    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options, comm_enabled options) of
-        (True, False, _, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
-        (True, True, True, _) -> fail "Service inheritance is not supported in gRPC codegen."
-        (True, True, _, True) -> fail "Service inheritance is not supported in Comm codegen."
+    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options) of
+        (True, False, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
+        (True, True, True) -> fail "Service inheritance is not supported in gRPC codegen."
         _                     -> forM_ templates $ \template -> do
                                     let (suffix, code) = template mappingContext baseName imports declarations
                                     let fileName = baseName ++ suffix

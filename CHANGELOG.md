@@ -13,14 +13,17 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 * `gbc` & compiler library: (major bump already done in bond.cabal)
-* IDL core version: TBD
-* IDL comm version: TBD
+* IDL core version: (major bump needed)
+* IDL comm version: (major bump needed)
 * C++ version: (major bump needed)
 * C# NuGet version: (major bump needed)
-* C# Comm NuGet version: TBD
 
 ### `gbc` and Bond compiler library ###
 
+* **Breaking change** The deprecated Bond Comm functionality has been
+  removed. This includes all gbc options realted to Comm and the Comm
+  codegen templates in the Haskell library. [Issue
+  #824](https://github.com/Microsoft/bond/issues/824)
 * C++ codegen now properly generates move assignment operator which was broken
   for some cases.
 * C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
@@ -40,6 +43,10 @@ different versioning scheme, following the Haskell community's
 
 ### C++ ###
 
+* **Breaking change** The deprecated Bond Comm functionality has been
+  removed. This includes all gbc options related to Comm and all Comm APIs
+  and header files. [Issue
+  #824](https://github.com/Microsoft/bond/issues/824)
 * **Breaking change** Constructors accepting a `Comparer` have been removed from
   `bond::maybe` and `bond::nullable` types.
 * **Breaking change** The `bond::is_blob` and `bond::is_nullable` traits
@@ -65,6 +72,10 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* **Breaking change** The deprecated Bond Comm functionality has been
+  removed. This includes all gbc options related to Comm and all Comm APIs,
+  assemblies, and NuGet packages. [Issue
+  #824](https://github.com/Microsoft/bond/issues/824)
 * **Breaking change** The Bond.CSharp and Bond.Compiler.CSharp NuGet
   packages perform implicit codegen when the simplified .NET Core `.csproj`
   format is used. This breaking change *does not* affect projects using the

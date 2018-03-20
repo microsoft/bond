@@ -7,12 +7,10 @@
 module Tests.Codegen
     ( verifyCodegen
     , verifyCppCodegen
-    , verifyCppCommCodegen
     , verifyCppGrpcCodegen
     , verifyApplyCodegen
     , verifyExportsCodegen
     , verifyCsCodegen
-    , verifyCsCommCodegen
     , verifyJavaCodegen
     ) where
 
@@ -76,22 +74,7 @@ verifyExportsCodegen args baseName =
         map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "exports") templates
   where
     options = processOptions args
-    templates =
-        [ reflection_h (export_attribute options)
-        , comm_h (export_attribute options)
-        ]
-
-verifyCppCommCodegen :: [String] -> FilePath -> TestTree
-verifyCppCommCodegen args baseName =
-    testGroup baseName $
-        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "") templates
-  where
-    options = processOptions args
-    templates =
-        [ comm_h (export_attribute options)
-        , comm_cpp
-        , types_cpp
-        ]
+    templates = [ reflection_h (export_attribute options) ]
 
 verifyCppGrpcCodegen :: [String] -> FilePath -> TestTree
 verifyCppGrpcCodegen args baseName =
@@ -104,23 +87,6 @@ verifyCppGrpcCodegen args baseName =
         , grpc_cpp
         , types_cpp
         ]
-
-verifyCsCommCodegen :: [String] -> FilePath -> TestTree
-verifyCsCommCodegen args baseName =
-    testGroup baseName $
-        map (verifyFile (processOptions args) baseName csTypeMapping "")
-            [ comm_interface_cs
-            , comm_proxy_cs
-            , comm_service_cs
-            , grpc_cs
-            , types_cs Class (fieldMapping (processOptions args))
-            ]
-  where
-    fieldMapping Cs {..} = if readonly_properties
-        then ReadOnlyProperties
-        else if fields
-             then PublicFields
-             else Properties
 
 verifyFiles :: Options -> FilePath -> [TestTree]
 verifyFiles options baseName =
@@ -140,7 +106,6 @@ verifyFiles options baseName =
     templates Cpp {..} =
         [ (reflection_h export_attribute)
         , types_cpp
-        , comm_cpp
         , types_h header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
         ] <>
         [ enum_h | enum_header]
