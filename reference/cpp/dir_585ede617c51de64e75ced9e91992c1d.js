@@ -20,7 +20,7 @@ var dir_585ede617c51de64e75ced9e91992c1d =
     [ "maybe.h", "maybe_8h_source.html", null ],
     [ "merge.h", "merge_8h_source.html", null ],
     [ "multi_threaded_counter.h", "multi__threaded__counter_8h_source.html", null ],
-    [ "null.h", "core_2null_8h_source.html", null ],
+    [ "null.h", "null_8h_source.html", null ],
     [ "nullable.h", "nullable_8h_source.html", null ],
     [ "parser.h", "parser_8h_source.html", null ],
     [ "protocol.h", "protocol_8h_source.html", null ],

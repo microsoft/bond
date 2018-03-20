@@ -153,7 +153,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p><a href="https://travis-ci.org/Microsoft/bond"><img src="https://travis-ci.org/Microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#nuget-packages"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a></p>
 <h1 id="bond">Bond</h1>
 <p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
-<p><strong>IMPORTANT NOTE: The <a href="https://Microsoft.github.io/bond/manual/bond_comm.html">Bond Communications framework</a> – known as Bond Comm – is deprecated. We recommend using <a href="https://Microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a> for communication. The <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#bond-comm">Bond Comm C# manual</a> and the <a href="https://Microsoft.github.io/bond/manual/bond_cpp.html#bond-comm">Bond Comm C++ manual</a> are preserved for transition purposes.</strong></p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
 <p>For details, see the User’s Manuals:</p>
 <ul>
@@ -171,7 +170,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="dependencies">Dependencies</h2>
 <p>The Bond repository uses Git submodules and should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
-<p>Bond C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> (1.5.1+) and Boost (1.58+). (Note: Boost 1.59 may not work with Bond Comm due to some bugs in that version of the Boost ASIO library).</p>
+<p>Bond C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> (1.5.1+) and Boost (1.58+).</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond must be built with C++11 compiler. We test with Clang (3.8) and GNU C++ (5.4). We recommend Clang as it’s faster with template-heavy code like Bond.</p>
@@ -256,7 +255,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_58_0</span>
 <span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_58_0</span>\lib64-msvc-14.0</code></pre></div>
-<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests, Python, gRPC, and Comm support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
+<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests, Python, and gRPC support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
 <p>In order to generate a solution to build the Bond Core C++ and Python with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
