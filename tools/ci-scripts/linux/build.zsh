@@ -4,7 +4,7 @@ set -eux
 
 SYMLINKED_HOME=$1
 FLAVOR=$2
-BOOST=${3:-}
+BOOST=${3:-1.63.0}
 COMPILER=${4:-clang}
 
 BOND_ROOT=/root/bond
@@ -32,8 +32,9 @@ case "$COMPILER" in
 esac
 
 BOND_CMAKE_FLAGS="-DBOND_USE_CCACHE=TRUE"
-# Default boost root. C++ requires a specific boost and will override this.
-export BOOST_ROOT=/opt/boosts/boost_1_63_0
+# All of the CMake-based builds need BOOST_ROOT set, even if they don't
+# build any C++ code
+export BOOST_ROOT=/opt/boosts/boost_`echo $BOOST | tr . _`
 
 mkdir -p $SYMLINKED_HOME $BUILD_ROOT
 ln -s /root/.ccache $SYMLINKED_HOME/.ccache
