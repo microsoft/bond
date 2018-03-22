@@ -158,6 +158,20 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
+            , testGroup "Grpc"
+                [ verifyCsGrpcCodegen
+                    [ "c#"
+                    ]
+                    "service"
+                , verifyCsGrpcCodegen
+                    [ "c#"
+                    ]
+                    "generic_service"
+                , verifyCsGrpcCodegen
+                    [ "c#"
+                    ]
+                    "service_attributes"
+                ]
             ]
         , testGroup "Java"
             [ verifyJavaCodegen "attributes"
