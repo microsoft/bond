@@ -11,6 +11,7 @@ module Tests.Codegen
     , verifyApplyCodegen
     , verifyExportsCodegen
     , verifyCsCodegen
+    , verifyCsGrpcCodegen
     , verifyJavaCodegen
     ) where
 
@@ -87,6 +88,20 @@ verifyCppGrpcCodegen args baseName =
         , grpc_cpp
         , types_cpp
         ]
+
+verifyCsGrpcCodegen :: [String] -> FilePath -> TestTree
+verifyCsGrpcCodegen args baseName =
+    testGroup baseName $
+        map (verifyFile (processOptions args) baseName csTypeMapping "")
+            [ grpc_cs
+            , types_cs Class (fieldMapping (processOptions args))
+            ]
+  where
+    fieldMapping Cs {..} = if readonly_properties
+        then ReadOnlyProperties
+        else if fields
+             then PublicFields
+             else Properties
 
 verifyFiles :: Options -> FilePath -> [TestTree]
 verifyFiles options baseName =
