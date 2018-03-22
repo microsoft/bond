@@ -31,7 +31,7 @@ env:
     - FLAVOR="java"
 
 before_install:
-    - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-8695914
+    - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-10674409
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
     - time travis_retry docker pull $CI_BUILD_IMAGE
