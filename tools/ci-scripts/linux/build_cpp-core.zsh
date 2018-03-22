@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+set -eux
+BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
+source "$BUILD_SCRIPTS/build_cpp-common.zsh"
