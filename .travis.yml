@@ -27,17 +27,17 @@ env:
     - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
+    - FLAVOR="cpp-grpc-master" BOOST="1.66.0" COMPILER="clang" CRON_ONLY="true"
     - FLAVOR="hs"
     - FLAVOR="java"
 
-before_install:
+script:
+    - if [ "$CRON_ONLY" = "true" ] && [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then echo "Skipping cron-only job"; exit 0; fi
     - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-11401554
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
     - time travis_retry docker pull $CI_BUILD_IMAGE
     - docker images # Dump the image ID
-
-script:
     - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_IMAGE $HOME $FLAVOR $BOOST $COMPILER
     # docker runs as root and may leave files in the following directories that are not readable by the travis user
     - sudo chown -R travis:travis $HOME/.ccache $HOME/.stack `pwd`
