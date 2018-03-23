@@ -13,24 +13,38 @@ services:
     - docker
 env:
     - FLAVOR="cs"
-    - FLAVOR="cpp-core" BOOST="1.66.0" COMPILER="gcc"
     - FLAVOR="cpp-core" BOOST="1.66.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.61.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.60.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.59.0" COMPILER="clang"
-    - FLAVOR="cpp-core" BOOST="1.58.0" COMPILER="clang"
     - FLAVOR="cpp-grpc" BOOST="1.66.0" COMPILER="gcc"
-    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="clang"
-    - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang"
-    - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang"
-    - FLAVOR="cpp-grpc-master" BOOST="1.66.0" COMPILER="clang" CRON_ONLY="true"
     - FLAVOR="hs"
     - FLAVOR="java"
 
+    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.61.0" COMPILER="clang" CRON_ONLY="true"
+
+    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.62.0" COMPILER="clang" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.61.0" COMPILER="clang" CRON_ONLY="true"
+
+    - FLAVOR="cpp-core" BOOST="1.66.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.65.1" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.64.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.63.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.62.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-core" BOOST="1.61.0" COMPILER="gcc" CRON_ONLY="true"
+
+    - FLAVOR="cpp-grpc" BOOST="1.66.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.65.1" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.64.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.63.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.62.0" COMPILER="gcc" CRON_ONLY="true"
+    - FLAVOR="cpp-grpc" BOOST="1.61.0" COMPILER="gcc" CRON_ONLY="true"
+
+    - FLAVOR="cpp-grpc-master" BOOST="1.66.0" COMPILER="clang" CRON_ONLY="true"
 script:
     - if [ "$CRON_ONLY" = "true" ] && [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then echo "Skipping cron-only job"; exit 0; fi
     - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-11401554

@@ -40,7 +40,7 @@ Bond C++ library requires some C++11 features (currently limited to those
 supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
-(1.5.1+) and Boost (1.58+).
+(1.5.1+) and Boost (1.61+).
 
 Following are specific instructions for building on various platforms.
 
@@ -180,7 +180,7 @@ cmake .. \
 
 Install the following tools:
 
-- Visual Studio 2013 or 2015
+- Visual Studio 2013, 2015, or 2017
     - Visual Studio 2015 is required to build C# Bond from source
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
@@ -206,7 +206,7 @@ switch is used to run the unit tests as well.
 
 The C++ and Python versions of Bond additionally require:
 
-- Boost 1.58+ ([http://www.boost.org/users/download/](http://www.boost.org/users/download/))
+- Boost 1.61+ ([http://www.boost.org/users/download/](http://www.boost.org/users/download/))
 - Python 2.7 ([https://www.python.org/downloads/](https://www.python.org/downloads/))
 
 You may need to set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR`
@@ -214,8 +214,8 @@ to specify where Boost and its pre-built libraries for your environment (MSVC 12
 found, e.g.:
 
 ```bash
-set BOOST_ROOT=D:\boost_1_58_0
-set BOOST_LIBRARYDIR=D:\boost_1_58_0\lib64-msvc-14.0
+set BOOST_ROOT=D:\boost_1_61_0
+set BOOST_LIBRARYDIR=D:\boost_1_61_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
