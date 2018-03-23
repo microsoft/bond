@@ -31,6 +31,10 @@ env:
     - FLAVOR="hs"
     - FLAVOR="java"
 
+# We package all our dependencies in the Docker images, so we don't need Travis
+# to install anything more than docker.
+install: true
+
 script:
     - if [ "$CRON_ONLY" = "true" ] && [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then echo "Skipping cron-only job"; exit 0; fi
     - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-11401554
