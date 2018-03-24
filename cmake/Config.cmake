@@ -123,7 +123,7 @@ if (APPLE)
 endif()
 find_package (PythonLibs 2.7)
 
-find_package (Boost 1.58.0
+find_package (Boost 1.61.0
     OPTIONAL_COMPONENTS
         chrono
         date_time
