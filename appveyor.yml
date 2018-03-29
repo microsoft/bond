@@ -100,6 +100,14 @@
 
             $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_$($env:BOND_BOOST.Replace('.', '_'))/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
 
+            Write-Host "DEBUGGING-MARK-1"
+
+            Write-Host $env:BOND_BOOST
+
+            Write-Host $env:BOOST_ROOT
+
+            Write-Host $env:BOOST_LIBRARYDIR
+
             choco install haskell-stack -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
@@ -178,6 +186,8 @@
                 mkdir build
 
                 cd build
+
+                Write-Host "-DBoost_ADDITIONAL_VERSIONS=$env:BOND_BOOST"
 
                 cmake "-DBoost_ADDITIONAL_VERSIONS=$env:BOND_BOOST" $cmakeFlags -G $cmakeGenerator ..
 
