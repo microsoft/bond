@@ -25,14 +25,8 @@
 
 namespace bond { namespace ext { namespace gRPC { namespace detail
 {
-    template <typename T>
-    inline grpc::Status Serialize(const bonded<T>& msg, grpc::ByteBuffer& buffer, bool& own_buffer)
+    inline grpc::ByteBuffer to_byte_buffer(const OutputBuffer& output)
     {
-        OutputBuffer output;
-        CompactBinaryWriter<OutputBuffer> writer(output);
-
-        msg.Serialize(writer);
-
         struct Buffers
             : boost::intrusive_ref_counter<Buffers>,
               boost::container::small_vector<blob, 8>
@@ -57,8 +51,19 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             intrusive_ptr_add_ref(buffers.get());
         }
 
+        return grpc::ByteBuffer{ slices.data(), slices.size() };
+    }
+
+    template <typename T>
+    inline grpc::Status Serialize(const bonded<T>& msg, grpc::ByteBuffer& buffer, bool& own_buffer)
+    {
+        OutputBuffer output;
+        CompactBinaryWriter<OutputBuffer> writer(output);
+
+        msg.Serialize(writer);
+
+        buffer = to_byte_buffer(output);
         own_buffer = true;
-        buffer = grpc::ByteBuffer{ slices.data(), slices.size() };
 
         return grpc::Status::OK;
     }
