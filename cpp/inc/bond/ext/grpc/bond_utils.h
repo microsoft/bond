@@ -15,6 +15,8 @@
 #include <boost/assert.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/container/small_vector.hpp>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 #include <cstdint>
 #include <cstdlib>
@@ -31,23 +33,28 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         msg.Serialize(writer);
 
-        boost::container::small_vector<blob, 8> buffers;
-        output.GetBuffers(buffers);
+        struct Buffers
+            : boost::intrusive_ref_counter<Buffers>,
+              boost::container::small_vector<blob, 8>
+        {};
+
+        boost::intrusive_ptr<Buffers> buffers{ new Buffers };
+        output.GetBuffers(*buffers);
 
         boost::container::small_vector<grpc::Slice, 8> slices;
-        slices.reserve(buffers.size());
+        slices.reserve(buffers->size());
 
-        for (blob& data : buffers)
+        for (blob& data : *buffers)
         {
-            std::unique_ptr<blob> slice{ new blob{ blob_own(std::move(data)) } };
+            data = blob_own(std::move(data));
 
             slices.emplace_back(
-                const_cast<void*>(slice->data()),
-                slice->size(),
-                [](void* arg) { delete static_cast<blob*>(arg); },
-                slice.get());
+                const_cast<void*>(data.data()),
+                data.size(),
+                [](void* arg) { intrusive_ptr_release(static_cast<Buffers*>(arg)); },
+                buffers.get());
 
-            slice.release();
+            intrusive_ptr_add_ref(buffers.get());
         }
 
         own_buffer = true;
