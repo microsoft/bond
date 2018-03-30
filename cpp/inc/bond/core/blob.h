@@ -252,25 +252,8 @@ public:
     template <typename T>
     friend T blob_cast(const blob& from);
 
-    /// @brief Returns a blob with same data that owns the memory
-    friend blob blob_own(blob src)
-    {
-        return blob_own(std::move(src), std::allocator<char>());
-    }
-
-    /// @brief Returns a blob with same data that owns the memory
     template <typename A>
-    friend blob blob_own(blob src, const A& allocator)
-    {
-        if (src._buffer)
-        {
-            return std::move(src);
-        }
-
-        boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, src._length);
-        ::memcpy(buffer.get(), src._content, src._length);
-        return blob(buffer, src._length);
-    }
+    friend blob blob_own(blob src, const A& allocator);
 
 private:
     template <typename T>
@@ -415,6 +398,26 @@ inline T blob_cast(const blob& from)
     {
         return T(from._content, from._length);
     }
+}
+
+/// @brief Returns a blob with same data that owns the memory
+template <typename A>
+inline blob blob_own(blob src, const A& allocator)
+{
+    if (src._buffer)
+    {
+        return src;
+    }
+
+    boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, src.length());
+    ::memcpy(buffer.get(), src.content(), src.length());
+    return blob(buffer, src.length());
+}
+
+/// @brief Returns a blob with same data that owns the memory
+inline blob blob_own(blob src)
+{
+    return blob_own(std::move(src), std::allocator<char>());
 }
 
 
