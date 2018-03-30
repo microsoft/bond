@@ -38,7 +38,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         for (blob& data : buffers)
         {
-            std::unique_ptr<blob> slice{ new blob{ std::move(data).own() } };
+            std::unique_ptr<blob> slice{ new blob{ blob_own(std::move(data)) } };
 
             slices.emplace_back(
                 const_cast<void*>(slice->data()),

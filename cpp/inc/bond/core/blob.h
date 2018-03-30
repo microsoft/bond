@@ -248,44 +248,28 @@ public:
         return _content + _length;
     }
 
-    /// @brief Returns a blob with same data that owns the memory
-    blob own() const
-#ifndef BOND_NO_CXX11_REF_QUALIFIERS
-        &
-#endif // BOND_NO_CXX11_REF_QUALIFIERS
-    {
-        return own(std::allocator<char>());
-    }
-
-    /// @brief Returns a blob with same data that owns the memory
-    template <typename A>
-    blob own(const A& allocator) const
-#ifndef BOND_NO_CXX11_REF_QUALIFIERS
-        &
-#endif // BOND_NO_CXX11_REF_QUALIFIERS
-    {
-        return _buffer ? *this : copy(allocator);
-    }
-
-#ifndef BOND_NO_CXX11_REF_QUALIFIERS
-
-    /// @brief Returns a blob with same data that owns the memory
-    template <typename A>
-    blob own(const A& allocator) &&
-    {
-        return _buffer ? std::move(*this) : copy(allocator);
-    }
-
-    /// @brief Returns a blob with same data that owns the memory
-    blob own() &&
-    {
-        return std::move(*this).own(std::allocator<char>());
-    }
-
-#endif // BOND_NO_CXX11_REF_QUALIFIERS
-
     template <typename T>
     friend T blob_cast(const blob& from);
+
+    /// @brief Returns a blob with same data that owns the memory
+    friend blob blob_own(blob src)
+    {
+        return blob_own(std::move(src), std::allocator<char>());
+    }
+
+    /// @brief Returns a blob with same data that owns the memory
+    template <typename A>
+    friend blob blob_own(blob src, const A& allocator)
+    {
+        if (src._buffer)
+        {
+            return std::move(src);
+        }
+
+        boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, src._length);
+        ::memcpy(buffer.get(), src._content, src._length);
+        return blob(buffer, src._length);
+    }
 
 private:
     template <typename T>
