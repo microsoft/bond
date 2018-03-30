@@ -30,13 +30,27 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         msg.Serialize(writer);
 
-        // TODO: Optimize and create grpc::Slice-s that keep the bond::blob-s alive
-        // instead of merging and copying data.
-        blob data = output.GetBuffer();
-        grpc::Slice slice(data.data(), data.size());
+        std::vector<blob> buffers;
+        output.GetBuffers(buffers);
+
+        std::vector<grpc::Slice> slices;
+        slices.reserve(buffers.size());
+
+        for (blob& data : buffers)
+        {
+            std::unique_ptr<blob> slice{ new blob{ std::move(data).own() } };
+
+            slices.emplace_back(
+                const_cast<void*>(slice->data()),
+                slice->size(),
+                [](void* arg) { delete static_cast<blob*>(arg); },
+                slice.get());
+
+            slice.release();
+        }
 
         own_buffer = true;
-        buffer = grpc::ByteBuffer(&slice, 1);
+        buffer = grpc::ByteBuffer{ slices.data(), slices.size() };
 
         return grpc::Status::OK;
     }
