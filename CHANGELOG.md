@@ -69,6 +69,9 @@ different versioning scheme, following the Haskell community's
 * Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
 * Fixed the broken move constructor of `bond::bonded<T, Reader&>`.
 * Fixed the move constructor of `bond::value` to actually move the underlying reader.
+* Added `bond::blob_own` helper function that will return a `bond::blob` with
+  a copied data if the original one does own the memory.
+* The `bond::OutputBuffer::GetBuffers` now can accept arbitrary STL-like containers.
 
 ### C# ###
 

@@ -144,9 +144,9 @@ public:
     }
 
 
-    /// @brief Get content of the stream as a vector of memory blobs
+    /// @brief Get content of the stream as a collection of memory blobs
     template <typename T>
-    void GetBuffers(std::vector<blob, T>& buffers) const
+    void GetBuffers(T& buffers) const
     {
         buffers.reserve(bond::detail::checked_add(_blobs.size(), 1U));
 
@@ -161,7 +161,7 @@ public:
             // attach current array, if not empty,
             // as a last blob
             //
-            buffers.push_back(blob(_buffer, _rangeOffset, _rangeSize));
+            buffers.emplace_back(_buffer, _rangeOffset, _rangeSize);
         }
     }
 
@@ -248,7 +248,7 @@ public:
             //
             if (_rangeSize > 0)
             {
-                _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
+                _blobs.emplace_back(_buffer, _rangeOffset, _rangeSize);
             }
 
             // cap buffer to prevent overflow
@@ -297,7 +297,7 @@ public:
         //
         if (_rangeSize > 0)
         {
-            _blobs.push_back(blob(_buffer, _rangeOffset, _rangeSize));
+            _blobs.emplace_back(_buffer, _rangeOffset, _rangeSize);
 
             _rangeOffset += _rangeSize;
             _rangePtr += _rangeSize;

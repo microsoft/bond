@@ -14,6 +14,7 @@
 
 #include <boost/assert.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/container/small_vector.hpp>
 
 #include <cstdint>
 #include <cstdlib>
@@ -30,10 +31,10 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         msg.Serialize(writer);
 
-        std::vector<blob> buffers;
+        boost::container::small_vector<blob, 8> buffers;
         output.GetBuffers(buffers);
 
-        std::vector<grpc::Slice> slices;
+        boost::container::small_vector<grpc::Slice, 8> slices;
         slices.reserve(buffers.size());
 
         for (blob& data : buffers)
