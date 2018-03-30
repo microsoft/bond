@@ -248,6 +248,7 @@ public:
         return _content + _length;
     }
 
+
     template <typename T>
     friend T blob_cast(const blob& from);
 
@@ -293,14 +294,6 @@ private:
         boost::shared_ptr<const char[]> ptr(static_cast<const char*>(static_cast<const void*>(p.get())),
                                             deleter<SmartPtr<T> >(p));
         return ptr;
-    }
-
-    template <typename A>
-    blob copy(const A& allocator) const
-    {
-        boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, _length);
-        ::memcpy(buffer.get(), _content, _length);
-        return blob(buffer, _length);
     }
 
     boost::shared_ptr<const char[]> _buffer;
