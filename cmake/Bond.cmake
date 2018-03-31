@@ -73,6 +73,20 @@ function (add_bond_codegen)
 endfunction()
 
 #
+# add_protobuf_codegen_cpp file
+#
+function (add_protobuf_codegen_cpp file)
+    add_custom_command(
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.cc
+             ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${file}.pb.h
+      DEPENDS protoc ${file}.proto
+      COMMAND protoc ${file}.proto
+          --cpp_out=${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+          -I${CMAKE_CURRENT_SOURCE_DIR}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endfunction()
+
+#
 # add_bond_executable (name
 #   [schem.bond [schema2.bond]]
 #   source.cpp [source2.cpp]

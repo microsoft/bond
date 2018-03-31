@@ -84,7 +84,7 @@
         - ps: >-
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
 
-                git submodule update --init thirdparty\rapidjson
+                git submodule update --init thirdparty\rapidjson thirdparty\protobuf
 
                 # If gRPC is not disabled, init gRPC and its dependencies
 

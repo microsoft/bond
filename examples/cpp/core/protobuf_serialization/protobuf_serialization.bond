@@ -1,0 +1,25 @@
+namespace examples.protobuf.serialization
+
+struct Item
+{
+    1: uint32 ui32;
+
+    [ProtoEncode("Fixed")]
+    2: uint64 fu64;
+
+    3: string str;
+
+    [ProtoEncode("ZigZag")]
+    [ProtoPack("False")]
+    4: vector<int32> vsi32;
+
+    5: vector<double> vd;
+}
+
+struct Struct
+{
+    1: nullable<Item> item;
+
+    [ProtoEncodeKey("Fixed")]
+    2: map<int32, Item> items;
+}

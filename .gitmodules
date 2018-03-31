@@ -5,3 +5,7 @@
 [submodule "thirdparty/rapidjson"]
     path = thirdparty/rapidjson
     url = https://github.com/miloyip/rapidjson.git
+
+[submodule "thirdparty/protobuf"]
+    path = thirdparty/protobuf
+    url = https://github.com/google/protobuf.git

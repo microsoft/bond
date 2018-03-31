@@ -1,0 +1,22 @@
+syntax = "proto3";
+package examples.protobuf.proto.serialization;
+
+message Item
+{
+    uint32 ui32 = 1;
+
+    fixed64 fu64 = 2;
+
+    string str = 3;
+
+    repeated sint32 vsi32 = 4 [packed=false];
+
+    repeated double vd = 5;
+}
+
+message Struct
+{
+    Item item = 1;
+
+    map<sfixed32, Item> items = 2;
+}
