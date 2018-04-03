@@ -13,10 +13,10 @@
 #include <grpcpp/support/byte_buffer.h>
 
 #include <boost/assert.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/container/small_vector.hpp>
-#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <boost/intrusive_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 
 #include <cstdint>
 #include <cstdlib>
@@ -40,10 +40,10 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         for (blob& data : *buffers)
         {
-            data = blob_own(std::move(data));
+            data = blob_prolong(std::move(data));
 
             slices.emplace_back(
-                const_cast<void*>(data.data()),
+                const_cast<void*>(data.data()), // The buffer is not expected to be modified.
                 data.size(),
                 [](void* arg) { intrusive_ptr_release(static_cast<Buffers*>(arg)); },
                 buffers.get());

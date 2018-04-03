@@ -253,7 +253,7 @@ public:
     friend T blob_cast(const blob& from);
 
     template <typename A>
-    friend blob blob_own(blob src, const A& allocator);
+    friend blob blob_prolong(blob src, const A& allocator);
 
 private:
     template <typename T>
@@ -400,9 +400,10 @@ inline T blob_cast(const blob& from)
     }
 }
 
-/// @brief Returns a blob with same data that owns the memory
+/// @brief Returns a blob with a copied data if the original one does not own the memory
+/// (i.e. constructed using raw memory), and the same one otherwise.
 template <typename A>
-inline blob blob_own(blob src, const A& allocator)
+inline blob blob_prolong(blob src, const A& allocator)
 {
     if (src._buffer)
     {
@@ -414,10 +415,9 @@ inline blob blob_own(blob src, const A& allocator)
     return blob(buffer, src.length());
 }
 
-/// @brief Returns a blob with same data that owns the memory
-inline blob blob_own(blob src)
+inline blob blob_prolong(blob src)
 {
-    return blob_own(std::move(src), std::allocator<char>());
+    return blob_prolong(std::move(src), std::allocator<char>());
 }
 
 

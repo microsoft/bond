@@ -145,6 +145,7 @@ public:
 
 
     /// @brief Get content of the stream as a collection of memory blobs
+    /// @remarks The provided collection must have reserve, assign and emplace_back functions
     template <typename T>
     void GetBuffers(T& buffers) const
     {
