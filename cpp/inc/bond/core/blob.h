@@ -252,6 +252,9 @@ public:
     template <typename T>
     friend T blob_cast(const blob& from);
 
+    template <typename A>
+    friend blob blob_prolong(blob src, const A& allocator);
+
 private:
     template <typename T>
     struct deleter
@@ -395,6 +398,26 @@ inline T blob_cast(const blob& from)
     {
         return T(from._content, from._length);
     }
+}
+
+/// @brief Returns a blob with a copy of the data if the original one does not own the memory
+/// (i.e. constructed using raw memory), and the same blob otherwise.
+template <typename A>
+inline blob blob_prolong(blob src, const A& allocator)
+{
+    if (src._buffer)
+    {
+        return src;
+    }
+
+    boost::shared_ptr<char[]> buffer = boost::allocate_shared_noinit<char[]>(allocator, src.length());
+    ::memcpy(buffer.get(), src.content(), src.length());
+    return blob(buffer, src.length());
+}
+
+inline blob blob_prolong(blob src)
+{
+    return blob_prolong(std::move(src), std::allocator<char>());
 }
 
 
