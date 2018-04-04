@@ -27,6 +27,7 @@ import Control.Monad.State.Lazy
 import Data.Function
 import Data.Int
 import Data.List
+import Data.Maybe (fromMaybe)
 import Data.Ord
 import Data.Void (Void)
 import Data.Word
@@ -297,10 +298,9 @@ complexType =
     <|> keyword "nullable" *> angles (BT_Nullable <$> type_)
     <|> keyword "set" *> angles (BT_Set <$> keyType)
     <|> keyword "map" *> angles (BT_Map <$> keyType <* comma <*> type_)
-    <|> keyword "bonded" *> angles (BT_Bonded <$> userStruct)
+    <|> keyword "bonded" *> angles (BT_Bonded <$> userStructRef)
   where
     keyType = try (basicType <|> checkUserType isValidKeyType) <?> "scalar, string or enum"
-    userStruct = try (checkUserType isStruct) <?> "user defined struct"
     isValidKeyType t = isScalar t || isString t
 
 -- parser for user defined type (struct, enum, alias or type parameter)
@@ -346,6 +346,8 @@ userSymbol = do
     isParam [name] = (name ==) . paramName
     isParam _      = const False
 
+
+
 -- type parser
 type_ :: Parser Type
 type_ = (try basicType) <|> (try complexType) <|> (try userType)
@@ -366,32 +368,60 @@ service attr = do
   where
     base = optional (colon *> serviceType <?> "base service")
     with params e = e { currentParams = params }
-    methods = unique $ braces $ semiEnd (try event <|> try function)
-    unique p = do
+    methods = checkUniqueMethodNames $ braces $ semiEnd method
+    checkUniqueMethodNames p = do
         methods' <- p
         case findDuplicatesBy methodName methods' of
             [] -> return methods'
             Function {..}:_ -> fail $ "Duplicate definition of the function with name " ++ show methodName
             Event {..}:_ -> fail $ "Duplicate definition of the event with name " ++ show methodName
 
-function :: Parser Method
-function = Function <$> attributes <*> payload <*> identifier <*> input
+method :: Parser Method
+method = attributes >>= \a -> ((lookAhead (keyword "nothing") *> event a) <|> function a)
 
-event :: Parser Method
-event = Event <$> attributes <* keyword "nothing" <*> identifier <*> input
+function :: [Attribute] -> Parser Method
+function attr = Function attr <$> functionResultType <*> identifier <*> input
+  where functionResultType = methodTypeVoid  <|> methodResultTypeStreaming <|> methodTypeUnary
 
-input :: Parser (Maybe Type)
-input = do
-  pld <- parens $ optional payload
-  case pld of
-      Nothing -> pure Nothing
-      Just m -> return m
+event :: [Attribute] -> Parser Method
+event attr = do
+  _ <- keyword "nothing"
+  methodName <- identifier
+  methodInput <- input
+  case methodInput of
+    (Streaming _) -> fail $ "Incompatible nothing return and streaming input in method " ++ show methodName
+    _ -> return (Event attr methodName methodInput)
 
-payload :: Parser (Maybe Type)
-payload = void_ <|> liftM Just userStruct
-  where
-    void_ = keyword "void" *> pure Nothing
-    userStruct = try (checkUserType isStruct) <?> "user defined struct"
+input :: Parser MethodType
+input = parens methodInputType
+  where methodInputType = (fromMaybe Void) <$> optional (methodTypeVoid <|> methodInputTypeStreaming <|> methodTypeUnary)
+
+methodTypeVoid :: Parser MethodType
+methodTypeVoid = try (keyword "void" *> pure Void) <?> "void method type"
+
+-- Whether the method type is streaming or is unary can be determed based on
+-- context, but the context is different for result and input types.
+--
+-- For result types, the keyword stream followed by a struct name AND THEN
+-- an identifier indicates a streaming type. Two identifiers are required to
+-- distringuish between the unary method "stream stream()" and the streaming
+-- method "stream stream stream()".
+--
+-- For input types, simply the keyword stream followed by a struct name is
+-- enough to distinguish between the unary "foo(stream)" and the streaming
+-- "foo(stream stream)".
+methodResultTypeStreaming :: Parser MethodType
+methodResultTypeStreaming = try (do
+                                    _ <- keyword "stream"
+                                    resultType <- userStructRef
+                                    _ <- lookAhead identifier
+                                    return (Streaming resultType)) <?> "streaming method type"
+
+methodInputTypeStreaming :: Parser MethodType
+methodInputTypeStreaming = try (Streaming <$ keyword "stream" <*> userStructRef) <?> "streaming method type"
+
+methodTypeUnary :: Parser MethodType
+methodTypeUnary = (Unary <$> userStructRef) <?> "unary method type"
 
 -- helper methods
 
@@ -403,6 +433,9 @@ checkUserType check = do
     valid t = case t of
         BT_TypeParam _ -> True
         _ -> check t
+
+userStructRef :: Parser Type
+userStructRef = try (checkUserType isStruct) <?> "user defined struct reference"
 
 findDuplicatesBy :: (Eq b) => (a -> b) -> [a] -> [a]
 findDuplicatesBy accessor xs = deleteFirstsBy ((==) `on` accessor) xs (nubBy ((==) `on` accessor) xs)
@@ -436,4 +469,3 @@ validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defau
 -- The value of the second paramater is never used: only its type is used.
 isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
 isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
-

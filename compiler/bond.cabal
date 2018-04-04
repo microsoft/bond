@@ -45,7 +45,8 @@ library
                     megaparsec >= 6.2,
                     scientific >= 0.3.4.6,
                     shakespeare >= 2.0,
-                    text >= 0.11
+                    text >= 0.11,
+                    unordered-containers >= 0.2.3.0
   ghc-options:      -Wall
   exposed-modules:  Language.Bond.Parser
                     Language.Bond.Util
@@ -86,6 +87,7 @@ test-suite gbc-tests
                     Tests.Codegen
                     Tests.Codegen.Util
                     Tests.Syntax
+                    Tests.Syntax.JSON
   ghc-options:      -threaded -Wall
 
   if os(windows) && arch(i386)
@@ -112,6 +114,7 @@ test-suite gbc-tests
                     tasty-golden,
                     tasty-hunit,
                     tasty-quickcheck,
+                    shakespeare >= 2.0,
                     megaparsec >= 6.2
 
 executable gbc

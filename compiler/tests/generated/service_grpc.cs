@@ -246,8 +246,7 @@ namespace tests
 
             public virtual void foo11Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                foo11Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo11Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo11Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -257,8 +256,7 @@ namespace tests
 
             public virtual void foo12Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                foo12Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo12Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo12Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -268,8 +266,7 @@ namespace tests
 
             public virtual void foo12_implAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                foo12_implAsync(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo12_implAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo12_implAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -279,8 +276,7 @@ namespace tests
 
             public virtual void foo13Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                foo13Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo13Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo13Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -290,8 +286,7 @@ namespace tests
 
             public virtual void foo14Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                foo14Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo14Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo14Async(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.CallOptions options)
@@ -301,8 +296,7 @@ namespace tests
 
             public virtual void foo15Async(global::tests2.OtherBasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                foo15Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                foo15Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual void foo15Async(global::Bond.Grpc.IMessage<global::tests2.OtherBasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -312,8 +306,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo21Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo21Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo21Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo21Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -323,8 +316,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo22Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo22Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo22Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo22Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -334,8 +326,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo23Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo23Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo23Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo23Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -345,8 +336,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo24Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo24Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo24Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo24Async(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.CallOptions options)
@@ -356,8 +346,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo31Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo31Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo31Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo31Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -367,8 +356,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo32Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo32Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo32Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo32Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -378,8 +366,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo33Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo33Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo33Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo33Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -389,8 +376,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> _rd_foo33Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return _rd_foo33Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return _rd_foo33Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> _rd_foo33Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -400,8 +386,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo34Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo34Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo34Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> foo34Async(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.CallOptions options)
@@ -411,8 +396,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo41Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo41Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo41Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo41Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -422,8 +406,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo42Async(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return foo42Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo42Async(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo42Async(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
@@ -433,8 +416,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo43Async(BasicTypes request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo43Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo43Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo43Async(global::Bond.Grpc.IMessage<BasicTypes> request, global::Grpc.Core.CallOptions options)
@@ -444,8 +426,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo44Async(dummy request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return foo44Async(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return foo44Async(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<dummy>> foo44Async(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.CallOptions options)
@@ -455,8 +436,7 @@ namespace tests
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> cqAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.Void;
-                return cqAsync(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return cqAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<BasicTypes>> cqAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)

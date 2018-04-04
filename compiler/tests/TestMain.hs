@@ -5,6 +5,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck
 import Test.Tasty.HUnit (testCase)
 import Tests.Syntax
+import Tests.Syntax.JSON(methodParsingTests)
 import Tests.Codegen
 import Tests.Codegen.Util(utilTestGroup)
 
@@ -28,9 +29,11 @@ tests = testGroup "Compiler tests"
             , testCase "simple service syntax" $ compareAST "service"
             , testCase "service attributes" $ compareAST "service_attributes"
             , testCase "generic service" $ compareAST "generic_service"
+            , testCase "streaming service" $ compareAST "streaming"
             , testCase "documentation example" $ compareAST "example"
             , testCase "service inheritance" $ compareAST "service_inheritance"
             ]
+        , methodParsingTests
         ]
     , testGroup "SchemaDef"
         [ verifySchemaDef "attributes" "Foo"
@@ -171,6 +174,10 @@ tests = testGroup "Compiler tests"
                     [ "c#"
                     ]
                     "service_attributes"
+                , verifyCsGrpcCodegen
+                    [ "c#"
+                    ]
+                    "streaming"
                 ]
             ]
         , testGroup "Java"

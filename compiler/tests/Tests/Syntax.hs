@@ -43,10 +43,19 @@ derive makeArbitrary ''Modifier
 derive makeArbitrary ''Namespace
 derive makeArbitrary ''Type
 derive makeArbitrary ''TypeParam
-derive makeArbitrary ''Method
+derive makeArbitrary ''MethodType
 
-roundtripAST :: Bond -> Bool
-roundtripAST x = (decode . encode) x == Just x
+instance Arbitrary Method where
+  arbitrary = oneof
+    [ Function <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+    , Event <$> arbitrary <*> arbitrary <*> eventInput]
+    where
+      -- events cannot have streaming input, so we need to customize the
+      -- arbitrary input to omit Streaming
+      eventInput = oneof [return Void,  Unary <$> arbitrary]
+
+roundtripAST :: Bond -> Property
+roundtripAST x = (decode . encode) x === Just x
 
 assertException :: String -> IO a -> Assertion
 assertException errMsg action = do

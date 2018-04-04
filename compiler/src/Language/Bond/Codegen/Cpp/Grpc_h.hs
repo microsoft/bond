@@ -86,7 +86,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
       where usesBondVoid = any declUses declarations
             declUses Service {serviceMethods = methods} = any methodUses methods
             declUses _ = False
-            methodUses Function {methodInput = input} = isNothing input
+            methodUses Function {methodInput = input} = isNothing (methodTypeToMaybe input)
             methodUses Event {} = True
 
     grpc s@Service{..} = [lt|
@@ -209,13 +209,13 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
 
         methodTemplate m = [lt|typedef ::bond::ext::gRPC::reflection::MethodTemplate<
                 #{className},
-                #{bonded $ methodInput m},
+                #{bonded $ methodTypeToMaybe (methodInput m)},
                 #{result m},
                 &#{methodMetadataVar m}
             > #{methodName m};|]
           where
             result Event{} = "void"
-            result Function{..} = bonded methodResult
+            result Function{..} = bonded (methodTypeToMaybe methodResult)
 
         proxyName = "ClientCore" :: String
         serviceName = "ServiceCore" :: String
@@ -226,41 +226,41 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        publicProxyMethodDecl Function{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb);
-        void Async#{methodName}(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
+        publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb);
+        void Async#{methodName}(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), cb);
         }|]
-        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb);
-        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
+        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb);
+        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb)
         {
-            Async#{methodName}(context, #{bonded methodInput}{request}, cb);
+            Async#{methodName}(context, #{bonded (methodTypeToMaybe methodInput)}{request}, cb);
         }
-        void Async#{methodName}(const #{bonded methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
+        void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), request, cb);
         }
-        void Async#{methodName}(const #{payload methodInput}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
+        void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb)
         {
-            Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded methodInput}{request}, cb);
+            Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded (methodTypeToMaybe methodInput)}{request}, cb);
         }|]
-        publicProxyMethodDecl Event{methodInput = Nothing, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context);
+        publicProxyMethodDecl Event{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context);
         void Async#{methodName}()
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>());
         }|]
-        publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded methodInput}& request);
-        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload methodInput}& request)
+        publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{bonded (methodTypeToMaybe methodInput)}& request);
+        void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context, const #{payload (methodTypeToMaybe methodInput)}& request)
         {
-            Async#{methodName}(context, #{bonded methodInput}{request});
+            Async#{methodName}(context, #{bonded (methodTypeToMaybe methodInput)}{request});
         }
-        void Async#{methodName}(const #{bonded methodInput}& request)
+        void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request)
         {
             Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), request);
         }
-        void Async#{methodName}(const #{payload methodInput}& request)
+        void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request)
         {
-            Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded methodInput}{request});
+            Async#{methodName}(::std::make_shared< ::grpc::ClientContext>(), #{bonded (methodTypeToMaybe methodInput)}{request});
         }|]
 
         privateProxyMethodDecl Function{..} = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName}_;|]
@@ -272,11 +272,11 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         methodDecl Function{..} = [lt|#{template}template <typename TThreadPool>
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     ::std::shared_ptr< ::grpc::ClientContext> context,
-    #{voidParam methodInput}
-    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload methodResult}>>)>& cb)
+    #{voidParam (methodTypeToMaybe methodInput)}
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb)
 {
-    #{voidRequest methodInput}
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload methodInput}, #{payload methodResult}, TThreadPool>>(
+    #{voidRequest (methodTypeToMaybe methodInput)}
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -288,15 +288,15 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
             voidRequest Nothing = [lt|auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};|]
             voidRequest _ = mempty
             voidParam Nothing = mempty
-            voidParam _ = [lt|const #{bonded methodInput}& request,|]
+            voidParam _ = [lt|const #{bonded (methodTypeToMaybe methodInput)}& request,|]
 
         methodDecl Event{..} = [lt|#{template}template <typename TThreadPool>
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     ::std::shared_ptr< ::grpc::ClientContext> context
-    #{voidParam methodInput})
+    #{voidParam (methodTypeToMaybe methodInput)})
 {
-    #{voidRequest methodInput}
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload methodInput}, #{payload Nothing}, TThreadPool>>(
+    #{voidRequest (methodTypeToMaybe methodInput)}
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload (methodTypeToMaybe methodInput)}, #{payload Nothing}, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
@@ -307,7 +307,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
             voidRequest Nothing = [lt|auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};|]
             voidRequest _ = mempty
             voidParam Nothing = mempty
-            voidParam _ = [lt|, const #{bonded methodInput}& request|]
+            voidParam _ = [lt|, const #{bonded (methodTypeToMaybe methodInput)}& request|]
 
         serviceAddMethod Function{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
         serviceAddMethod Event{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
@@ -352,11 +352,11 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
                 #{cqParam},
                 &#{serviceRdMember methodName}.get());|]
 
-        serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded methodInput}, #{payload methodResult}, TThreadPool>> #{serviceRdMember methodName};|]
-        serviceMethodReceiveData Event{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded methodInput}, #{payload Nothing}, TThreadPool>> #{serviceRdMember methodName};|]
+        serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}, TThreadPool>> #{serviceRdMember methodName};|]
+        serviceMethodReceiveData Event{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}, TThreadPool>> #{serviceRdMember methodName};|]
 
-        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded methodInput}, #{payload methodResult}>) = 0;|]
-        serviceVirtualMethod Event{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded methodInput}, #{payload Nothing}>) = 0;|]
+        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}>) = 0;|]
+        serviceVirtualMethod Event{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}>) = 0;|]
 
         serviceRdMember methodName = uniqueName ("_rd_" ++ methodName) methodNames
 

@@ -56,8 +56,7 @@ namespace tests
             [global::Bond.Attribute("method", "")]
             public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<Result>> fooAsync(Param request, global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
             {
-                var message = global::Bond.Grpc.Message.From(request);
-                return fooAsync(message, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+                return fooAsync(global::Bond.Grpc.Message.From(request), new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
             }
 
             [global::Bond.Attribute("foo", "method")]
