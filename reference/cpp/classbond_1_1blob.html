@@ -91,6 +91,7 @@ $(document).ready(function(){initNavTree('classbond_1_1blob.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classbond_1_1blob-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::blob Class Reference</div>  </div>
@@ -175,6 +176,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a03ea0a5f6b65270fea9b888d38f6f8c0"><td class="memItemLeft" align="right" valign="top">const_iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1blob.html#a03ea0a5f6b65270fea9b888d38f6f8c0">end</a> () const</td></tr>
 <tr class="memdesc:a03ea0a5f6b65270fea9b888d38f6f8c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterator for the end of the blob.  <a href="#a03ea0a5f6b65270fea9b888d38f6f8c0">More...</a><br /></td></tr>
 <tr class="separator:a03ea0a5f6b65270fea9b888d38f6f8c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ad5645896b96c6d5eafb1983b9375c31b"><td class="memTemplParams" colspan="2">template&lt;typename A &gt; </td></tr>
+<tr class="memitem:ad5645896b96c6d5eafb1983b9375c31b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1blob.html">blob</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1blob.html#ad5645896b96c6d5eafb1983b9375c31b">blob_prolong</a> (<a class="el" href="classbond_1_1blob.html">blob</a> src, const A &amp;allocator)</td></tr>
+<tr class="memdesc:ad5645896b96c6d5eafb1983b9375c31b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a blob with a copy of the data if the original one does not own the memory (i.e. constructed using raw memory), and the same blob otherwise.  <a href="#ad5645896b96c6d5eafb1983b9375c31b">More...</a><br /></td></tr>
+<tr class="separator:ad5645896b96c6d5eafb1983b9375c31b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Memory blob. </p>
@@ -779,6 +787,47 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Swap with another blob. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="ad5645896b96c6d5eafb1983b9375c31b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5645896b96c6d5eafb1983b9375c31b">&#9670;&nbsp;</a></span>blob_prolong</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classbond_1_1blob.html">blob</a> blob_prolong </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classbond_1_1blob.html">blob</a>&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const A &amp;&#160;</td>
+          <td class="paramname"><em>allocator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a blob with a copy of the data if the original one does not own the memory (i.e. constructed using raw memory), and the same blob otherwise. </p>
 
 </div>
 </div>
