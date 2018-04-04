@@ -400,8 +400,8 @@ inline T blob_cast(const blob& from)
     }
 }
 
-/// @brief Returns a blob with a copied data if the original one does not own the memory
-/// (i.e. constructed using raw memory), and the same one otherwise.
+/// @brief Returns a blob with a copy of the data if the original one does not own the memory
+/// (i.e. constructed using raw memory), and the same blob otherwise.
 template <typename A>
 inline blob blob_prolong(blob src, const A& allocator)
 {

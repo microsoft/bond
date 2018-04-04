@@ -43,7 +43,9 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             data = blob_prolong(std::move(data));
 
             slices.emplace_back(
-                const_cast<void*>(data.data()), // The buffer is not expected to be modified.
+                const_cast<void*>(data.data()), // The buffer is not expected to be modified, but
+                                                // we have to const_cast because grpc::Slice ctor
+                                                // only takes void*.
                 data.size(),
                 [](void* arg) { intrusive_ptr_release(static_cast<Buffers*>(arg)); },
                 buffers.get());
