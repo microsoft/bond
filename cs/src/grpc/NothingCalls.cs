@@ -3,11 +3,11 @@
 
 namespace Bond.Grpc.Internal
 {
+    using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
 
     using global::Grpc.Core;
-    using System;
 
     /// <summary>
     /// Helper methods for client-side invocation of Bond's nothing methods.

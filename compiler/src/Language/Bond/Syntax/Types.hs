@@ -31,6 +31,8 @@ module Language.Bond.Syntax.Types
     , TypeParam(..)
     , Constraint(..)
       -- ** Services
+    , MethodType(..)
+    , methodTypeToMaybe
     , Method(..)
       -- ** Metadata
     , Attribute(..)
@@ -121,21 +123,38 @@ data TypeParam =
         }
     deriving (Eq, Show)
 
+data MethodType = Void | Unary Type | Streaming Type
+  deriving (Eq, Show)
+
 -- | Method of a service
 data Method =
     Function
         { methodAttributes :: [Attribute]   -- zero or more attributes
-        , methodResult :: Maybe Type        -- method result
+        , methodResult :: MethodType        -- method result
         , methodName :: String              -- method name
-        , methodInput :: Maybe Type         -- method parameter
+        , methodInput :: MethodType         -- method parameter
         }
     |
     Event
         { methodAttributes :: [Attribute]   -- zero or more attributes
         , methodName :: String              -- method name
-        , methodInput :: Maybe Type         -- method parameter
+        , methodInput :: MethodType         -- method parameter
         }
     deriving (Eq, Show)
+
+-- | Converts a MethodType into a Maybe Type to ease the transition from the
+-- current definition of Method (which uses MethodType for input/results)
+-- and the previous definition which used Maybe Type.
+--
+-- This is intended to be used by codegen that doesn't yet support streaming
+-- (e.g., C++ and Comm). Once that code has been updated to understand
+-- streaming, this function will be removed.
+--
+-- Raises an error if given a Streaming type.
+methodTypeToMaybe :: MethodType -> Maybe Type
+methodTypeToMaybe Void = Nothing
+methodTypeToMaybe (Unary t) = Just t
+methodTypeToMaybe (Streaming t) = error ("Unable to handle streaming " ++ (show t) ++ " in this codegen mode.")
 
 -- | Bond schema declaration
 data Declaration =

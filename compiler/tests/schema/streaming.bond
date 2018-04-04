@@ -1,0 +1,27 @@
+import "basic_types.bond";
+
+namespace tests;
+
+// A struct can be named stream and not conflict with the keyword
+struct stream { }
+
+// Service with permutations of streaming
+service Foo
+{
+    stream BasicTypes foo31();
+    stream BasicTypes foo32(void);
+    void foo33(stream BasicTypes);
+    BasicTypes foo34(stream BasicTypes);
+    stream BasicTypes foo35(stream BasicTypes);
+
+    // validate that the keyword stream can be determed contextually
+    stream shouldBeUnary(stream);
+    stream stream shouldBeStreaming(stream stream);
+}
+
+service Bar<T>
+{
+    BasicTypes ClientStreaming(stream T);
+    stream T ServerStreaming(BasicTypes);
+    stream T DuplexStreaming(stream T);
+}

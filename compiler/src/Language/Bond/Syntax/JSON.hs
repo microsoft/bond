@@ -1,7 +1,7 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes, RecordWildCards, ScopedTypeVariables, TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 {-|
@@ -18,12 +18,16 @@ module Language.Bond.Syntax.JSON
     )
     where
 
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Aeson.TH
 import Control.Applicative
+import Data.Aeson
+import Data.Aeson.TH
+import Data.Aeson.Types
+import Data.HashMap.Strict (member)
+import Data.Text.Lazy (unpack)
+import Language.Bond.Syntax.Types hiding (MethodType(..))
+import qualified Language.Bond.Syntax.Types as BST (MethodType(..))
 import Prelude
-import Language.Bond.Syntax.Types
+import Text.Shakespeare.Text (lt)
 
 -- $aeson
 --
@@ -137,7 +141,7 @@ instance ToJSON Type where
     toJSON (BT_IntTypeArg n) = object
         [ "type" .= String "constant"
         , "value" .= n
-        ]
+       ]
     toJSON (BT_TypeParam p) = object
         [ "type" .= String "parameter"
         , "value" .= p
@@ -211,7 +215,7 @@ instance ToJSON Field where
         [ "fieldAttributes" .= fieldAttributes f
         , "fieldOrdinal" .= fieldOrdinal f
         , "fieldModifier" .= fieldModifier f
-        , "fieldType" .= fieldType f 
+        , "fieldType" .= fieldType f
         , "fieldName" .= fieldName f
         , "fieldDefault" .= fieldDefault f
         ]
@@ -260,6 +264,100 @@ instance ToJSON Bond where
         , "declarations" .= bondDeclarations
         ]
 
+instance ToJSON BST.MethodType where
+    toJSON BST.Void = Null
+    toJSON (BST.Unary t) = toJSON t
+    toJSON (BST.Streaming t) = toJSON t
+
+data MethodStreamingTag = Unary | Client | Server | Duplex deriving Show
+$(deriveJSON defaultOptions ''MethodStreamingTag)
+
+methodStreamingTag :: BST.MethodType -> BST.MethodType -> MethodStreamingTag
+methodStreamingTag input result = case (input, result) of
+  (BST.Streaming _, BST.Streaming _) -> Duplex
+  (BST.Streaming _, _) -> Client
+  (_, BST.Streaming _) -> Server
+  _ -> Unary
+
+instance ToJSON Method where
+    toJSON Event {..} = object
+        [ "tag" .= String "Event"
+        , "methodName" .= methodName
+        , "methodAttributes" .= methodAttributes
+        , "methodInput" .= methodInput
+        ]
+    toJSON Function {..} = object
+        [ "tag" .= String "Function"
+        , "methodName" .= methodName
+        , "methodAttributes" .= methodAttributes
+        , "methodResult" .= methodResult
+        , "methodInput" .= methodInput
+        , "methodStreaming" .= (methodStreamingTag methodInput methodResult)
+        ]
+
+instance FromJSON Method where
+  parseJSON = withObject "Method" (\o -> do
+    tag <- o .: "tag"
+    methodName :: String <- o .:? "methodName" .!= "<unknown>"
+    case tag of
+      (String "Event") -> modifyFailure ((unpack [lt|Parsing event '#{show methodName}' failed: |]) ++) (parseEvent o)
+      (String "Function") -> modifyFailure ((unpack [lt|Parsing function '#{show methodName}' failed: |]) ++) (parseFunction o)
+      _ -> modifyFailure (const $ unpack [lt|Unexpected tag '#{show tag}' when parsing method '#{show methodName}'. Expecting "Event" or "Function".|]) empty)
+    where
+      parseEvent :: Object -> Parser Method
+      parseEvent o =
+        Event <$>
+          o .:? "methodAttributes" .!= [] <*>
+          o .: "methodName" <*>
+          methodInput
+        <* ensureNoMethodStreaming
+        where ensureNoMethodStreaming = if member "methodStreaming" o
+                                          then fail "Encountered Event with \"methodStreaming\" member. Events cannot have this member."
+                                          else pure ()
+              methodInput = maybe BST.Void BST.Unary <$> (o .:? "methodInput")
+
+      parseFunction :: Object -> Parser Method
+      parseFunction o =
+          Function <$>
+            o .:? "methodAttributes" .!= [] <*>
+            methodResult <*>
+            o .: "methodName" <*>
+            methodInput
+        where
+          streamingTag :: Parser MethodStreamingTag
+          streamingTag = o .:? "methodStreaming"  .!= Unary
+
+          methodInput :: Parser BST.MethodType
+          methodInput = do
+            i <- o .:? "methodInput"
+            st <- streamingTag
+            case (i, st) of
+              (Nothing, Unary) -> pure $ BST.Void
+              (Nothing, Client) -> fail $ invalidNothingComboMsg "input" Client
+              (Nothing, Server) -> pure $ BST.Void
+              (Nothing, Duplex) -> fail $ invalidNothingComboMsg "input" Duplex
+              (Just t, Unary) -> pure $ BST.Unary t
+              (Just t, Client) -> pure $ BST.Streaming t
+              (Just t, Server) -> pure $ BST.Unary t
+              (Just t, Duplex) -> pure $ BST.Streaming t
+
+          methodResult :: Parser BST.MethodType
+          methodResult = do
+            r <- o .:? "methodResult"
+            st <- streamingTag
+            case (r, st) of
+              (Nothing, Unary) -> pure $ BST.Void
+              (Nothing, Client) -> pure $ BST.Void
+              (Nothing, Server) -> fail $ invalidNothingComboMsg "result" Server
+              (Nothing, Duplex) -> fail $ invalidNothingComboMsg "result" Duplex
+              (Just t, Unary) -> pure $ BST.Unary t
+              (Just t, Client) -> pure $ BST.Unary t
+              (Just t, Server) -> pure $ BST.Streaming t
+              (Just t, Duplex) -> pure $ BST.Streaming t
+
+          invalidNothingComboMsg :: String -> MethodStreamingTag -> String
+          invalidNothingComboMsg dir streaming = unpack [lt|Method marked as #{show streaming}, but has void #{dir}|]
+
 $(deriveJSON defaultOptions ''Modifier)
 $(deriveJSON defaultOptions ''Attribute)
 $(deriveJSON defaultOptions ''Constant)
@@ -267,4 +365,3 @@ $(deriveJSON defaultOptions ''TypeParam)
 $(deriveJSON defaultOptions ''Declaration)
 $(deriveJSON defaultOptions ''Import)
 $(deriveJSON defaultOptions ''Language)
-$(deriveJSON defaultOptions ''Method)

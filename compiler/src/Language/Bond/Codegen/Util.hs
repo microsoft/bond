@@ -17,6 +17,7 @@ These functions often operate on 'Text' objects.
 
 module Language.Bond.Codegen.Util
     ( commonHeader
+    , commaSep
     , newlineSep
     , commaLineSep
     , newlineSepEnd
@@ -61,6 +62,10 @@ doubleLine :: Int64 -> Text
 doubleLine n = [lt|
 
 #{indent n}|]
+
+-- | Separates elements of a list with a comma.
+commaSep :: (a -> Text) -> [a] -> Text
+commaSep = sepBy ", "
 
 newlineSep, commaLineSep, newlineSepEnd, newlineBeginSep, doubleLineSep, doubleLineSepEnd
     :: Int64 -> (a -> Text) -> [a] -> Text
