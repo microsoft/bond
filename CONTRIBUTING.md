@@ -6,7 +6,7 @@ Bond welcomes contributions from the community.
 
 1. Make a proposal.
 1. Implement the proposal and its tests.
-1. Rebase commits to tell a compelling story.
+1. Squash commits and write a good commit message.
 1. Start a pull request & address comments.
 1. Merge.
 
@@ -105,7 +105,7 @@ to your topic branch, and we'll review the edits.
 
 ### Merge
 
-Once the comments in the pull request have been addresses, a project
+Once the comments in the pull request have been addressed, a project
 maintainer will merge your changes. Thank you for helping improve Bond!
 
 By default we'll perform a squash merge unless requested otherwise in the
