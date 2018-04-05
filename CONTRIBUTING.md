@@ -26,7 +26,11 @@ potential pitfalls before too much time is spent.
 * Start on a new topic branch off of master.
 * Instructions for getting Bond building and running the tests are in the
   [README](https://github.com/Microsoft/bond/blob/master/README.md).
-* Make small and atomic commits that include tests.
+* Aim for each pull request to have one commit. If the commit starts to get
+  too large, consider splitting it into multiple, independent pull requests.
+    * Some changes are more naturally authored in multiple commits. This is
+      fine, though we find this to be a rare occurrence. These sort of changes
+      are harder to review and interate on with GitHub's tooling.
 * Make sure that all the tests continue to pass.
     * The CMake `check` target will run the C++ tests for you.
     * The C# unit tests can be run from
@@ -34,11 +38,10 @@ potential pitfalls before too much time is spent.
       or from within Visual Studio.
 * Update the [changelog](https://github.com/Microsoft/bond/blob/master/CHANGELOG.md).
 
-### Rebase commits
+### Squash commits
 
-The commits in your pull request should tell a story about how the code got
-from point A to point B. Good stories are edited, so you'll want to rebase
-your commits so that they tell a good story. No "add missing semi-colon"
+Before submitting your pull request, you'll probably want to squash any
+intermediate commits you have into one commit. No "fix syntax error"
 commits, please. :-)
 
 Each commit should build and pass all of the tests. If you want to add new
@@ -57,6 +60,10 @@ disabled.
 Don't forget to run `git diff --check` to catch those annoying whitespace
 changes.
 
+In your commit message, explain the reasoning behind the commit. The code
+changes answer the question "What changed?", but the commit message answers
+the question "Why did it need to change?".
+
 Please follow the established Git
 [convention for commit messages](https://www.git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project#Commit-Guidelines).
 The first line is a summary in the imperative, about 50 characters or less,
@@ -64,7 +71,7 @@ and should *not* end with a period. An optional, longer description must be
 preceded by an empty line and should be wrapped at around 72 characters.
 This helps with various outputs from Git or other tools.
 
-You can update message of local commits you haven't pushed yet using `git
+You can update messages of local commits you haven't pushed yet using `git
 commit --amend` or `git rebase --interactive` with *reword* command.
 
 ### Pull request
@@ -81,16 +88,28 @@ If you haven't contributed to a Microsoft project before, you may be asked
 to sign a [contribution license agreement](https://cla.microsoft.com/). A
 comment in the PR will let you know if you do.
 
+When you submit a pull request, a suite of builds and tests will be run
+automatically, and the results will show up in the "Checks" section of the
+PR. If any of these fail, you'll need to figure out why and make the
+appropriate fixes. If you think the failures are due to infrastructure
+issues, please mention this in a comment, and one of the maintainers will
+help.
+
 The project maintainers will review your changes. We aim to review all
 changes within three business days.
 
-Address any review comments, force push to your topic branch, and post a
-comment letting us know that there's new stuff to review.
+Address any review comments by adding commits that address the comments.
+Don't worry about having fixup/tiny commits at this stage. They'll get
+squashed together when the change is finally merged. Push these new commits
+to your topic branch, and we'll review the edits.
 
 ### Merge
 
-If the pull request review goes well, a project maintainer will merge your
-changes. Thank you for helping improve Bond!
+Once the comments in the pull request have been addresses, a project
+maintainer will merge your changes. Thank you for helping improve Bond!
+
+By default we'll perform a squash merge unless requested otherwise in the
+PR.
 
 # Reporting Security Issues
 
