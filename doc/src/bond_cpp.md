@@ -16,10 +16,8 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
-Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond).
-
-**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
-[Bond-over-gRPC](bond_over_grpc.html) for communication.**
+Bond is published on GitHub at
+[https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond).
 
 Basic example
 =============
@@ -2000,66 +1998,6 @@ See example: `examples/cpp/core/static_library`.
 unpredictable runtime behaviour, the Bond implementation has a built-in
 assertion mechanism to detect it.
 
-Bond Comm
-=========
-
-**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
-[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
-is retained for transitional purposes.**
-
-The [Bond Communications framework](bond_comm.html) in C++ makes it easy and
-efficent to construct services and hook clients up to those services. Built
-on top of the Bond serialization framework, Bond Comm aims for the same
-principles of high-performance and extensibility.
-
-Today the framework supports two messaging patterns:
-
-- request-response: roundtrip messages supporting either payload or error responses
-- event: one-way, fire-and-forget messages with no responses
-
-Bond Comm is naturally asynchronous and sits on top of the Boost ASIO library, making it
-cross-platform. Only Windows 10 and Windows Server 2012 R2 have been tested to date.
-
-See the following examples:
-
-- `examples/cpp/comm/pingpong`
-- `examples/cs/comm/event`
-
-### Defining services ###
-
-Cross-language services are defined in the [Bond IDL](bond_comm.html#defining-services).
-
-The generated C++ service stub contains a service base class that the developer should subclass to
-provide the business logic of their service.
-
-The generated proxy stub provides a class with methods that the developer can call to
-exhange messages with the service.
-
-### Epoxy Transport ###
-
-Bond Comm provides a binary transport called
-[Epoxy](bond_comm_epoxy.html). This is the recommended default transport.
-
-TLS support for the Epoxy transport in C++ is forthcoming.
-
-### SimpleInMem Transport ###
-
-Bond Comm C++ does not provide an implementation of the SimpleInMem transport.
-
-### Logging Facade ###
-
-Bond Comm includes a facade for logging. By writing a simple handler for logging,
-developers can supply their own logging facility to gather log data from Bond
-Comm-based services.
-
-See the following example:
-
-- `examples/cpp/comm/logging`
-
-### Roadmap ###
-
-We have a [brief roadmap](bond_comm_roadmap.html) for Bond Comm.
-
 References
 ==========
 
@@ -2075,9 +2013,6 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[Bond Comm overview][bond_comm]
-----------------------------
-
 [Bond-over-gRPC overview][bond_over_grpc]
 ----------------------------
 
@@ -2090,8 +2025,6 @@ References
 [bond_cs]: bond_cs.html
 
 [bond_java]: bond_java.html
-
-[bond_comm]: bond_comm.html
 
 [bond_over_grpc]: bond_over_grpc.html
 

@@ -16,10 +16,8 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
-Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
-
-**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
-[Bond-over-gRPC](bond_over_grpc.html) for communication.**
+Bond is published on GitHub at
+[https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
 
 Basic example
 =============
@@ -1649,8 +1647,7 @@ namespace).
 
 This table lists which frameworks are targeted by the Bond assemblies.
 
-This table is accurate for Bond NuGet packages 6.0.0 and later and Bond Comm
-0.12.0 and later.
+This table is accurate for Bond NuGet packages 6.0.0 and later.
 
 | Assembly                 | .NET 4.0 | .NET 4.5 | Profile78 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
 |--------------------------|----------|----------|-----------|-------------------|-------------------|-------------------|
@@ -1659,105 +1656,9 @@ This table is accurate for Bond NuGet packages 6.0.0 and later and Bond Comm
 | Bond.dll                 | No       | Yes      | Yes       | Yes               | ←                 | Yes               |
 | Bond.JSON.dll            | No       | Yes      | No        | Yes               | ←                 | Yes               |
 | Bond.IO.dll              | No       | Win only | No        | No                | Win only          | Win only          |
-| Bond.Comm.Interfaces.dll | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
-| Bond.Comm.Layers.dll     | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
-| Bond.Comm.Services.dll   | No       | Yes      | Yes       | ←                 | ←                 | ←                 |
-| Bond.Comm.Epoxy.dll      | No       | Yes      | No        | No                | No                | No                |
 
 A left arrow (←) indicates that support for that framework is provided by
 the version of the assembly that targets a lower version of the framework.
-
-Bond Comm
-=========
-
-**IMPORTANT NOTE: Bond Comm is deprecated. We recommend using
-[Bond-over-gRPC](bond_over_grpc.html) for communication. This documentation
-is retained for transitional purposes.**
-
-The [Bond Communications framework](bond_comm.html) in C# makes it easy and
-efficent to construct services and hook clients up to those services. Built
-on top of the Bond serialization framework, Bond Comm aims for the same
-principles of high-performance and extensibility.
-
-Today the framework supports two messaging patterns:
-
-- request-response: roundtrip messages supporting either payload or error responses
-- event: one-way, fire-and-forget messages with no responses
-
-Bond Comm is naturally asynchronous, and the C# implementation takes advantage of the
-idiomatic Task and async/await facilities of .NET.
-
-Bond Comm is designed to run on NET&nbsp;4.5 or .NET&nbsp;Core. Mono
-support is forthcoming, as are Linux and Mac&nbsp;OS&nbsp;X -- only Windows 10 and Windows
-Server 2012 R2 have been tested to date.
-
-See the following examples:
-
-- the [C# calculator sample project](https://github.com/Microsoft/bond-comm-cs-example)
-- `examples/cs/comm/pingpong`
-- `examples/cs/comm/notifyevent`
-
-### Defining services ###
-
-Cross-language services are defined in the [Bond IDL](bond_comm.html#defining-services).
-
-The generated C# service stub contains a service base class that the developer should subclass to
-provide the business logic of their service.
-
-The generated proxy stub provides a class with methods that the developer can call to
-exhange messages with the service.
-
-### Epoxy Transport ###
-
-Bond Comm provides a binary transport called
-[Epoxy](bond_comm_epoxy.html). This is the recommended default Transport.
-The Epoxy transport is designed to be .NET&nbsp;Core compliant, which will
-allow for cross-platform support.
-
-Epoxy supports TLS as of version 0.6.0.
-
-### SimpleInMem Transport ###
-
-Bond Comm provides an in-memory, single process, binary transport called
-[SimpleInMem](bond_comm_simpleinmem.html). This is not a shared memory transport.
-
-This is an example Transport recommended only for test automation.
-
-### Logging and Metrics Facades ###
-
-Bond Comm includes facades for logging and metrics. By writing simple handlers
-for logging and metrics, developers can supply their own logging and metrics
-facilities to gather log and metric data from Bond Comm-based services.
-
-See the following examples:
-
-- `examples/cs/comm/logging`
-- `examples/cs/comm/metrics`
-
-### Comm NuGet Packages ###
-
-Bond Comm is split into a number of NuGet packages to allow for granular
-consumption. Some of these packages will have dependencies on core Bond
-packages as well.
-
-[![Bond.Comm.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.CSharp/)
-**Bond.Comm.CSharp** - An omnibus package that contains everything needed to
-use Bond Comm. If you're not sure which packages to use, use this one. (It
-will pull in the rest of them.)
-
-[![Bond.Comm.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Runtime.CSharp/)
-**Bond.Comm.Runtime.CSharp** The assemblies required to use Bond at runtime.
-Useful if some other assembly already contains the compiled types. If your
-project contains .bond files, you will need to use either Bond.Comm.CSharp
-or Bond.Compiler.CSharp to perform code generation at build time.
-
-[![Bond.Comm.Epoxy.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.Epoxy.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.Epoxy.CSharp/)
-**Bond.Comm.Epoxy.CSharp** The [Epoxy](bond_comm_epoxy.html) transport.
-You'll need at least one transport, and Epoxy is a good default choice.
-
-[![Bond.Comm.SimpleInMem.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Comm.SimpleInMem.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Comm.SimpleInMem.CSharp/)
-**Bond.Comm.SimpleInMem.CSharp** The [SimpleInMem](bond_comm_simpleinmem.html) transport.
-SimpleInMem is a good transport for unit tests, as it is lightweight and doesn't require or support cross-process communication.
 
 References
 ==========
@@ -1771,14 +1672,10 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[Bond Comm overview][bond_comm]
-----------------------------
-
 [Bond-over-gRPC overview][bond_over_grpc]
 ----------------------------
 
 [bond_over_grpc]: bond_over_grpc.html
-[bond_comm]: bond_comm.html
 [bond_cpp]: bond_cpp.html
 [bond_java]: bond_java.html
 [bond_py]: bond_py.html
