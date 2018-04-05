@@ -43,14 +43,14 @@
               BOND_VS: "Visual Studio 12 2013"
               BOND_VS_NUM: 12
               BOND_ARCH: 32
-              BOND_BOOST: 58
+              BOND_BOOST: 1.62.0
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ Core build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
-              BOND_BOOST: 60
+              BOND_BOOST: 1.62.0
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
@@ -65,20 +65,20 @@
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 32
-              BOND_BOOST: 60
+              BOND_BOOST: 1.62.0
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
-              BOND_BOOST: 63
+              BOND_BOOST: 1.63.0
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
               # C++ gRPC build and tests
             - BOND_BUILD: C++
               BOND_VS: "Visual Studio 14 2015"
               BOND_VS_NUM: 14
               BOND_ARCH: 64
-              BOND_BOOST: 63
+              BOND_BOOST: 1.63.0
               BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
     install:
         - ps: >-
@@ -94,16 +94,19 @@
 
             }
 
-            if ($env:BOND_BOOST -eq 56) {
-                # Hard-coded Boost path per https://www.appveyor.com/docs/installed-software#languages-libraries-frameworks
+            # Boost paths per https://www.appveyor.com/docs/build-environment/#boost
 
-                $env:BOOST_ROOT = "C:/Libraries/boost"
-                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-            }
-            else {
-                $env:BOOST_ROOT = "C:/Libraries/boost_1_${env:BOND_BOOST}_0"
-                $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_1_${env:BOND_BOOST}_0/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
-            }
+            $env:BOOST_ROOT = "C:/Libraries/boost_$($env:BOND_BOOST.Replace('.', '_'))"
+
+            $env:BOOST_LIBRARYDIR = "C:/Libraries/boost_$($env:BOND_BOOST.Replace('.', '_'))/lib${env:BOND_ARCH}-msvc-${env:BOND_VS_NUM}.0"
+
+            Write-Host "DEBUGGING-MARK-1"
+
+            Write-Host $env:BOND_BOOST
+
+            Write-Host $env:BOOST_ROOT
+
+            Write-Host $env:BOOST_LIBRARYDIR
 
             choco install haskell-stack -y
 
@@ -184,7 +187,9 @@
 
                 cd build
 
-                cmake "-DBoost_ADDITIONAL_VERSIONS=1.${env:BOND_BOOST}.0" $cmakeFlags -G $cmakeGenerator ..
+                Write-Host "-DBoost_ADDITIONAL_VERSIONS=$env:BOND_BOOST"
+
+                cmake "-DBoost_ADDITIONAL_VERSIONS=$env:BOND_BOOST" $cmakeFlags -G $cmakeGenerator ..
 
             }
 
