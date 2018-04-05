@@ -3,8 +3,7 @@
 # About #
 
 Bond-over-gRPC provides code generation from Bond IDL service definitions
-to send Bond objects via [gRPC](http://www.grpc.io/) The gRPC functionality
-supercedes the (now deprecated) Bond Comm framework.
+to send Bond objects via [gRPC](http://www.grpc.io/).
 
 # Features #
 
