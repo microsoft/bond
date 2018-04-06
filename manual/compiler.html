@@ -174,6 +174,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#basic-types">Basic types</a></li>
 <li><a href="#complex-types">Complex types</a></li>
 </ul></li>
+<li><a href="#service-method">Service method</a><ul>
+<li><a href="#message">Message</a></li>
+<li><a href="#service-type">Service type</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#runtime-schema">Runtime Schema</a><ul>
 <li><a href="#example-1">Example</a></li>
@@ -336,19 +340,30 @@ struct View view_of Example
     Result Calculate(Operation);
     void Configure(Settings);
     Stats GetStats();
+
+    Result RunningSum(stream Operation);
+    stream Result ComputePrimes(Limit);
+    stream Result StartRPNSession(stream Operation);
 }</code></pre>
-<p>Methods take one parameter and can return a result. A method can return:</p>
-<ul>
-<li>a <a href="#struct-definition">struct</a></li>
-<li><code>void</code></li>
-<li><code>nothing</code></li>
-</ul>
-<p>A method can take as input up to one struct. <code>void</code> may optionally be used in place of a struct name to indicate that the methods doesn’t take any input.</p>
-<p>Methods with the result of <code>nothing</code> are one-way, fire and forget methods: the service doesn’t send any response regardless of whether the service method execution resulted in success or failure. This is different from methods returning <code>void</code> which send back a response with an empty payload and may indicate failure using errors.</p>
+<p>Methods take as input and return as results Bond <a href="#struct-definition">structs</a>.</p>
+<p>There are five different kinds of service methods:</p>
+<ol style="list-style-type: decimal">
+<li>unary: take one parameter and return one result</li>
+<li>client streaming: take a sequence of parameters and return one result</li>
+<li>server streaming: take one parameter and return a sequence of results</li>
+<li>duplex streaming: take a sequence of parameters and return a sequence of results</li>
+<li>one-way events: take one parameter and do not return anything</li>
+</ol>
+<p>For both parameters and results, <code>void</code> can be used to indicate that there is no meaningful data to be passed/returned. An empty payload is sent for a <code>void</code> parameter or result. A method that omits its parameter has an implicit <code>void</code> parameter. (While both forms are legal, <code>GetStats()</code> is the preferred syntax over <code>GetStats(void)</code>.)</p>
+<p>Streaming parameters or results are indicate by using the <code>stream</code> keyword before the type name in either the parameter or result position: <code>stream Operation</code>. Note that <code>stream void</code> is not legal. If you need to send/return a stream of empty payloads, use a stream of some empty struct: e.g., <code>stream bond.Void</code>, which uses the pre-defined <code>bond.Void</code> struct in bond.bond.</p>
+<p>For duplex streaming methods, the parameters and results do not have to have a 1:1 correspondence. The server is free to return results at any time during the lifetime of the method invocation.</p>
+<p>NB: Streaming methods are currently only supported when generating C# and using Bond-over-gRPC.</p>
+<p>Methods with a result of <code>nothing</code> are one-way, fire and forget methods: the service doesn’t send any response regardless of whether the service method execution resulted in success or failure. Furthmore, the client will not report transport errors to the application. There is no way to tell whether an event ever left the application process, let alone was received and processed by the serivce. This is different from methods returning <code>void</code> which send back a response with an empty payload and may indicate failure using errors.</p>
 <pre><code>service Watchdog
 {
     nothing Heartbeat(Identifier);
 }</code></pre>
+<p>Streaming parameters cannot be used with a <code>nothing</code> result.</p>
 <h2 id="generic-service">Generic service</h2>
 <p>Generic services are parameterized with one or more type parameters which can be used within the service definition in any place where a concrete type could be used.</p>
 <pre><code>service Gateway&lt;Token&gt;
@@ -376,7 +391,7 @@ service Example
 <h2 id="comments">Comments</h2>
 <p>Bond IDL supports C++ style comments:</p>
 <pre><code>/*
-    Multi-line 
+    Multi-line
     comment
 */
 struct Example
@@ -743,6 +758,62 @@ struct SomeStruct
 <li><code>declaration</code> is a <a href="#declaration">declaration</a> of a user defined type.</li>
 <li><code>arguments</code> is an array of zero or more <a href="#type">types</a> representing type arguments for a generic user defined type. The property is optional and may be omitted for non-generic types.</li>
 </ul></li>
+</ul>
+<h2 id="service-method">Service method</h2>
+<p>A JSON object representing a <code>Method</code> has the following properties:</p>
+<pre><code>{
+  &quot;tag&quot;: &quot;Tag&quot;,
+  &quot;methodName&quot;: &quot;MethodName&quot;,
+  &quot;methodAttributes&quot;: [
+  ],
+  &quot;methodResult&quot;: {
+  },
+  &quot;methodInput&quot;: {
+  }
+}</code></pre>
+<p>where</p>
+<ul>
+<li><code>tag</code> is one of the following string values:
+<ul>
+<li><code>&quot;Sink&quot;</code> to represent a one-way method that doesn’t return any result.</li>
+<li><code>&quot;Function&quot;</code> to represent a method that returns a result.</li>
+</ul></li>
+<li><code>methodName</code> is a string.</li>
+<li><code>methodAttributes</code> is an array of zero or more <a href="#attribute">attributes</a>.</li>
+<li><code>methodResult</code> is an object representing <a href="#message">message</a> returned from the method as the result.</li>
+<li><code>methodInput</code> is an object representing <a href="#message">message</a> accepted by the method as the input.</li>
+</ul>
+<h3 id="message">Message</h3>
+<p>A JSON object representing a <code>Message</code> has the following properties:</p>
+<pre><code>{
+  &quot;messagePayload&quot;: {
+  },
+  &quot;messageService&quot;: {
+  }
+}</code></pre>
+<p>where</p>
+<ul>
+<li><code>messagePayload</code> is <code>null</code> or an object representing <a href="#type">type</a> of data payload carried by the message. The type must be a user defined struct.</li>
+<li><code>messageService</code> is <code>null</code> or an object representing <a href="#service-type">type of a service</a> that can be passed in the message, e.g. as a callback.</li>
+</ul>
+<h3 id="service-type">Service type</h3>
+<p>Service type can be specified using one of the following JSON objects:</p>
+<pre><code>{
+  &quot;typeParam&quot;: {
+  }
+}</code></pre>
+<p>or</p>
+<pre><code>{
+  &quot;declaration&quot;: {
+  },
+  &quot;arguments&quot;: {
+  }
+}</code></pre>
+<p>where</p>
+<ul>
+<li><code>typeParam</code> is an object representing <a href="#type-parameter">type parameter</a>.</li>
+<li><code>declaration</code> is a <a href="#service">service declaration</a>.</li>
+<li><code>arguments</code> is an array of zero or more <a href="#type">types</a> representing type arguments for a generic service. The property is optional and may be omitted for non-generic services.</li>
 </ul>
 <h1 id="runtime-schema">Runtime Schema</h1>
 <p>Bond defines <code>SchemaDef</code> structure to represent Bond schemas at runtime. <code>SchemaDef</code> is accepted as an argument by various Bond APIs. For example when transcoding binary payload into a text protocol like JSON, the <code>SchemaDef</code> of the payload is used to provide the necessary meta-data such as names of the fields.</p>
