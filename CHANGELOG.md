@@ -47,6 +47,11 @@ different versioning scheme, following the Haskell community's
   removed. This includes all gbc options related to Comm and all Comm APIs
   and header files. [Issue
   #824](https://github.com/Microsoft/bond/issues/824)
+* **Breaking change** Only versions of Boost released in the past two years
+  (1.61 and newer) are supported. Bond will *likely* continue to work with
+  older versions, but it is no longer tested with anything older than 1.61.
+  Test coverage for Boost versions 1.61&ndash;1.66 has been improved. [Issue
+  #771](https://github.com/Microsoft/bond/issues/771)
 * **Breaking change** Constructors accepting a `Comparer` have been removed from
   `bond::maybe` and `bond::nullable` types.
 * **Breaking change** The `bond::is_blob` and `bond::is_nullable` traits
