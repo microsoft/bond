@@ -184,19 +184,11 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li><a href="#integrating-bond-into-your-build">Integrating Bond into your build</a></li>
 <li><a href="#optimizing-build-time">Optimizing build time</a></li>
-<li><a href="#bond-comm">Bond Comm</a><ul>
-<li><a href="#defining-services">Defining services</a></li>
-<li><a href="#epoxy-transport">Epoxy Transport</a></li>
-<li><a href="#simpleinmem-transport">SimpleInMem Transport</a></li>
-<li><a href="#logging-facade">Logging Facade</a></li>
-<li><a href="#roadmap">Roadmap</a></li>
-</ul></li>
 <li><a href="#references">References</a><ul>
 <li><a href="#c-api-referenceapi_reference"><a href="../reference/cpp/index.html">C++ API reference</a></a></li>
 <li><a href="#bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></a></li>
 <li><a href="#c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></a></li>
 <li><a href="#python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></a></li>
-<li><a href="#bond-comm-overviewbond_comm"><a href="bond_comm.html">Bond Comm overview</a></a></li>
 <li><a href="#bond-over-grpc-overviewbond_over_grpc"><a href="bond_over_grpc.html">Bond-over-gRPC overview</a></a></li>
 </ul></li>
 </ul>
@@ -210,7 +202,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, Java, and Python on Linux, macOS, and Windows.</p>
 <p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond">https://github.com/Microsoft/bond/</a>.</p>
-<p><strong>IMPORTANT NOTE: Bond Comm is deprecated. We recommend using <a href="bond_over_grpc.html">Bond-over-gRPC</a> for communication.</strong></p>
 <h1 id="basic-example">Basic example</h1>
 <p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
 <pre><code>namespace example
@@ -1217,43 +1208,11 @@ enum Color
 <pre><code>set PreferredToolArchitecture=x64</code></pre>
 <p>Link-time code generation can also lead to egregiously long link times. It is strongly recommended to disable it for projects using Bond. Link-time code generation does not improve runtime performance for Bond APIs and in many cases it actually degrades it. If application code <em>must</em> be built with LTCG enabled, we recommend using a separate static schema library as described above, and disabling LTCG when building the library.</p>
 <p>See example: <code>examples/cpp/core/static_library</code>.</p>
-<h1 id="bond-comm">Bond Comm</h1>
-<p><strong>IMPORTANT NOTE: Bond Comm is deprecated. We recommend using <a href="bond_over_grpc.html">Bond-over-gRPC</a> for communication. This documentation is retained for transitional purposes.</strong></p>
-<p>The <a href="bond_comm.html">Bond Communications framework</a> in C++ makes it easy and efficent to construct services and hook clients up to those services. Built on top of the Bond serialization framework, Bond Comm aims for the same principles of high-performance and extensibility.</p>
-<p>Today the framework supports two messaging patterns:</p>
-<ul>
-<li>request-response: roundtrip messages supporting either payload or error responses</li>
-<li>event: one-way, fire-and-forget messages with no responses</li>
-</ul>
-<p>Bond Comm is naturally asynchronous and sits on top of the Boost ASIO library, making it cross-platform. Only Windows 10 and Windows Server 2012 R2 have been tested to date.</p>
-<p>See the following examples:</p>
-<ul>
-<li><code>examples/cpp/comm/pingpong</code></li>
-<li><code>examples/cs/comm/event</code></li>
-</ul>
-<h3 id="defining-services">Defining services</h3>
-<p>Cross-language services are defined in the <a href="bond_comm.html#defining-services">Bond IDL</a>.</p>
-<p>The generated C++ service stub contains a service base class that the developer should subclass to provide the business logic of their service.</p>
-<p>The generated proxy stub provides a class with methods that the developer can call to exhange messages with the service.</p>
-<h3 id="epoxy-transport">Epoxy Transport</h3>
-<p>Bond Comm provides a binary transport called <a href="bond_comm_epoxy.html">Epoxy</a>. This is the recommended default transport.</p>
-<p>TLS support for the Epoxy transport in C++ is forthcoming.</p>
-<h3 id="simpleinmem-transport">SimpleInMem Transport</h3>
-<p>Bond Comm C++ does not provide an implementation of the SimpleInMem transport.</p>
-<h3 id="logging-facade">Logging Facade</h3>
-<p>Bond Comm includes a facade for logging. By writing a simple handler for logging, developers can supply their own logging facility to gather log data from Bond Comm-based services.</p>
-<p>See the following example:</p>
-<ul>
-<li><code>examples/cpp/comm/logging</code></li>
-</ul>
-<h3 id="roadmap">Roadmap</h3>
-<p>We have a <a href="bond_comm_roadmap.html">brief roadmap</a> for Bond Comm.</p>
 <h1 id="references">References</h1>
 <h2 id="c-api-referenceapi_reference"><a href="../reference/cpp/index.html">C++ API reference</a></h2>
 <h2 id="bond-compiler-referencecompiler"><a href="compiler.html">Bond compiler reference</a></h2>
 <h2 id="c-users-manualbond_cs"><a href="bond_cs.html">C# User’s Manual</a></h2>
 <h2 id="python-users-manualbond_py"><a href="bond_py.html">Python User’s Manual</a></h2>
-<h2 id="bond-comm-overviewbond_comm"><a href="bond_comm.html">Bond Comm overview</a></h2>
 <h2 id="bond-over-grpc-overviewbond_over_grpc"><a href="bond_over_grpc.html">Bond-over-gRPC overview</a></h2>
 <div class="footnotes">
 <hr />
