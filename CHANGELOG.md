@@ -58,6 +58,9 @@ different versioning scheme, following the Haskell community's
   have been removed. The `blob` and `nullable` types are not customizable,
   so these where never needed or used. The related functionality provided by
   `bond::get_list_sub_type_id` remains.
+* **Breaking change*** Removed a dangerous implicit conversion operator from
+  `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use
+  one of the `bond::maybe<T>::value` functions.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.
@@ -74,6 +77,14 @@ different versioning scheme, following the Haskell community's
 * Added `bond::blob_prolong` helper function that will return a `bond::blob` with
   a copied data if the original one does not own the memory.
 * The `bond::OutputBuffer::GetBuffers` now can accept arbitrary STL-like containers.
+* `bond::maybe<T>` has been overhauled.
+    * Fixed a bug that default initialized an instance of `T` even when a maybe held nothing.
+    * Added `noexcept` variants of `bond::maybe<T>::value`.
+    * Added `bond::maybe<T>::emplace` to construct a maybe's value in place.
+    * Added various rvalue-reference and allocator-aware constructors and
+      assignment operators.
+    * Added `bond::maybe<T>::operator==(const T&)` to comapre directly to
+      instances of `T`.
 
 ### C# ###
 

@@ -1,8 +1,12 @@
 #include "precompiled.h"
+#include "allocators.h"
+
 #ifdef _MSC_VER
 #include "capped_allocator_tests_generated/allocator_test_reflection.h"
 #endif
+
 #include <bond/core/capped_allocator.h>
+
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
 #include <boost/range/irange.hpp>
@@ -33,40 +37,6 @@ using all_counter_types = boost::mpl::list<
 using thread_safe_counter_types = boost::mpl::list<
     bond::multi_threaded_counter<>,
     bond::shared_counter<bond::multi_threaded_counter<>>>;
-
-template <typename T = char>
-struct allocator_with_state : std::allocator<T>
-{
-    template <typename U>
-    struct rebind
-    {
-        using other = allocator_with_state<U>;
-    };
-
-    template <typename U>
-    allocator_with_state(std::shared_ptr<U> state)
-        : state{ std::move(state) }
-    {}
-
-    template <typename U>
-    allocator_with_state(const allocator_with_state<U>& other)
-        : state{ other.state }
-    {}
-
-    std::shared_ptr<void> state;
-};
-
-template <typename T>
-inline bool operator==(const allocator_with_state<T>& a1, const allocator_with_state<T>& a2)
-{
-    return a1.state == a2.state;
-}
-
-template <typename T>
-inline bool operator!=(const allocator_with_state<T>& a1, const allocator_with_state<T>& a2)
-{
-    return !(a1 == a2);
-}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CounterBasicTests, Counter, all_counter_types)
 {
