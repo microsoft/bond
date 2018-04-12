@@ -181,10 +181,11 @@ cmake .. \
 Install the following tools:
 
 - Visual Studio 2013, 2015, or 2017
-    - Visual Studio 2015 is required to build C# Bond from source
+    - Visual Studio 2017 is required to build C# Bond from source
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
 - .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
+    - Alternative to VS2017 for building C# Bond from source
 
 If you are building on a network behind a proxy, set the environment variable
 `HTTP_PROXY`, e.g.:
@@ -193,15 +194,14 @@ If you are building on a network behind a proxy, set the environment variable
 set HTTP_PROXY=http://your-proxy-name:80
 ```
 
-Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution
-file `cs\cs.sln` in Visual Studio and build as usual. The C# unit tests can
+Now you are ready to build the C# version of Bond. Open the solution file
+`cs\cs.sln` in Visual Studio and build as usual. The C# unit tests can
 also be run from within the solution.
 
-To build the .NET Core version of Bond, run the build script. The `-Test`
-switch is used to run the unit tests as well.
+To build using the .NET Core SDK:
 
 ```bash
-.\cs\dnc\build -Test
+dotnet build cs.sln
 ```
 
 The C++ and Python versions of Bond additionally require:
