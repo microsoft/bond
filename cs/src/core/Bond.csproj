@@ -1,101 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup Condition="'$(BuildNonportable)' == 'true'">
-    <BuildFramework>net45-nonportable</BuildFramework>
-    <DefineConstants>$(DefineConstants);SUPPORTS_XMLRESOLVER</DefineConstants>
-  </PropertyGroup>
-  <Import Condition="'$(BuildNonportable)' == 'true'" Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
-  <Import Condition="'$(BuildNonportable)' != 'true'" Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Portable.Internal.props" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
+
   <PropertyGroup>
     <ProjectGuid>{43CBBA9B-C4BC-4E64-8733-7B72562D2E91}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Bond</RootNamespace>
-    <AssemblyName>Bond</AssemblyName>
+    <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
     <BondRedistributable>true</BondRedistributable>
-    <DependentOutputPath>bin\$(BuildType)\net45</DependentOutputPath>
-    <HasNonportableVersion>true</HasNonportableVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+    <DefineConstants>$(DefineConstants);SUPPORTS_XMLRESOLVER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(MSBuildThisFileDirectory)..\..\..\idl</BOND_INCLUDE_PATH>
+  </PropertyGroup>
+
   <ItemGroup>
     <BondCodegen Include="$(BOND_INCLUDE_PATH)\bond\core\bond.bond" />
     <BondCodegen Include="$(BOND_INCLUDE_PATH)\bond\core\bond_const.bond" />
-    <Compile Include="Audit.cs" />
-    <Compile Include="Blob.cs" />
-    <Compile Include="Bond.cs" />
-    <Compile Include="Bonded.cs" />
-    <Compile Include="Clone.cs" />
-    <Compile Include="Comparer.cs" />
-    <Compile Include="Deserializer.cs" />
-    <Compile Include="expressions\ControlExpression.cs" />
-    <Compile Include="expressions\DataExpression.cs" />
-    <Compile Include="expressions\DeserializerTransform.cs" />
-    <Compile Include="expressions\IParser.cs" />
-    <Compile Include="expressions\ISerializerGenerator.cs" />
-    <Compile Include="expressions\ObjectParser.cs" />
-    <Compile Include="expressions\ParserFactory.cs" />
-    <Compile Include="expressions\ProtocolWriter.cs" />
-    <Compile Include="expressions\PrunedExpression.cs" />
-    <Compile Include="expressions\pull\FlatteningParser.cs" />
-    <Compile Include="expressions\pull\IStateMachine.cs" />
-    <Compile Include="expressions\pull\PullParser.cs" />
-    <Compile Include="expressions\pull\StateMachine.cs" />
-    <Compile Include="expressions\RequiredFields.cs" />
-    <Compile Include="expressions\SerializerGeneratorFactory.cs" />
-    <Compile Include="expressions\SerializerTransform.cs" />
-    <Compile Include="expressions\StringExpression.cs" />
-    <Compile Include="expressions\TaggedParser.cs" />
-    <Compile Include="expressions\TaggedReader.cs" />
-    <Compile Include="expressions\ThrowExpression.cs" />
-    <Compile Include="expressions\Transform.cs" />
-    <Compile Include="expressions\TypeAlias.cs" />
-    <Compile Include="expressions\UntaggedParser.cs" />
-    <Compile Include="expressions\UntaggedReader.cs" />
-    <Compile Include="expressions\xml\SimpleXmlParser.cs" />
-    <Compile Include="expressions\xml\XmlParser.cs" />
-    <Compile Include="expressions\xml\XmlReader.cs" />
-    <Compile Include="Field.cs" />
-    <Compile Include="GenericFactory.cs" />
-    <Compile Include="IFactory.cs" />
-    <Compile Include="io\ICloneable.cs" />
-    <Compile Include="io\IInputStream.cs" />
-    <Compile Include="io\IntegerHelper.cs" />
-    <Compile Include="io\IOutputStream.cs" />
-    <Compile Include="io\safe\InputBuffer.cs" />
-    <Compile Include="io\safe\OutputBuffer.cs" />
-    <Compile Include="ISchemaField.cs" />
-    <Compile Include="Marshaler.cs" />
-    <Compile Include="properties\AssemblyInfo.cs" />
-    <Compile Include="Property.cs" />
-    <Compile Include="protocols\CompactBinary.cs" />
-    <Compile Include="protocols\CompactBinaryCounter.cs" />
-    <Compile Include="protocols\Exceptions.cs" />
-    <Compile Include="protocols\FastBinary.cs" />
-    <Compile Include="protocols\IProtocolWriter.cs" />
-    <Compile Include="protocols\ITaggedReader.cs" />
-    <Compile Include="protocols\IUntaggedReader.cs" />
-    <Compile Include="protocols\IXmlReader.cs" />
-    <Compile Include="protocols\SimpleBinary.cs" />
-    <Compile Include="protocols\SimpleXmlReader.cs" />
-    <Compile Include="protocols\SimpleXmlWriter.cs" />
-    <Compile Include="protocols\XmlMetadata.cs" />
-    <Compile Include="Reflection.cs" />
-    <Compile Include="RuntimeSchema.cs" />
-    <Compile Include="Schema.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="Transcoder.cs" />
-    <!-- Resharper Workaround -->
-    <Compile Include="$(IntermediateOutputPath)\bond_types.cs" Condition="False" />
-    <Compile Include="$(IntermediateOutputPath)\bond_const_types.cs" Condition="False" />
-    <!-- End Resharper Workaround -->
+    <Compile Condition="False" Include="$(IntermediateOutputPath)\bond_types.cs" />
+    <Compile Condition="False" Include="$(IntermediateOutputPath)\bond_const_types.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Reflection">
-      <HintPath>..\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\reflection\reflection.csproj" />
   </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

@@ -57,8 +57,6 @@
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-            - BOND_BUILD: "C# .NET Core"
-              BOND_CONFIG: Debug
             - BOND_BUILD: Doc
             - BOND_BUILD: C#
               BOND_OUTPUT: Fields
@@ -138,6 +136,8 @@
 
             choco install haskell-stack -y
 
+            choco install dotnetcore-sdk -y
+
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
             $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
@@ -203,7 +203,7 @@
 
             if ($env:BOND_BUILD -eq "C#" -Or $env:BOND_BUILD -eq "C++") {
 
-                nuget restore cs\cs.sln
+                dotnet restore cs\cs.sln
 
             }
 
@@ -235,7 +235,7 @@
 
                 $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
 
-                msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                dotnet msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')"
 
                 if (-not $?) { throw "cs compat build failed" }
 
@@ -311,13 +311,7 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-            }
-
-            if ($env:BOND_BUILD -eq "C# .NET Core") {
-
-                & cs\dnc\build.ps1 -Configuration $env:BOND_CONFIG -Verbosity minimal -MSBuildLogger "C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                dotnet msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG}
 
             }
 
@@ -333,19 +327,20 @@
             }
 
             if ($env:BOND_BUILD -eq "C#") {
-                nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45\${env:BOND_OUTPUT}\Bond.UnitTest.dll" cs\test\internal\bin\debug\net45\Bond.InternalTest.dll
+                dotnet test cs\test\core\Core.csproj
                 if (-not $?) { throw "tests failed" }
 
-                nunit-console-x86 /framework:net-4.5 /labels "cs\test\core\bin\debug\net45-nonportable\${env:BOND_OUTPUT}\Bond.UnitTest.dll"
+                dotnet test cs\test\coreNS10\CoreNS10.csproj
+                if (-not $?) { throw "tests failed" }
+
+                dotnet test cs\test\internal\Internal.csproj
+                if (-not $?) { throw "tests failed" }
+
+                dotnet test cs\test\grpc\grpc.csproj
                 if (-not $?) { throw "tests failed" }
 
                 & cs\test\test-examples.ps1 -IgnorePatterns '*\shared-types-assembly\*' -ErrorVariable exampleErrors
                 if ($exampleErrors) { throw "One or more example failed. See above for details." }
-            }
-
-            if ($env:BOND_BUILD -eq "C# .NET Core") {
-                & cs\dnc\build.ps1 -Test -Configuration $env:BOND_CONFIG -Verbosity minimal -MSBuildLogger "C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-                if (-not $?) { throw "tests failed" }
             }
 
             if (-not $?) { throw "build failed" }

@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup Condition="'$(TargetFrameworkProfile)' != 'Profile78'">
+  <ItemGroup Condition="'$(UsingMicrosoftNETSdk)' != 'true' and '$(TargetFrameworkProfile)' != 'Profile78'">
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <Import Condition="'$(TargetFrameworkProfile)' == 'Profile78'" Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Condition="'$(TargetFrameworkProfile)' != 'Profile78'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Condition="'$(UsingMicrosoftNETSdk)' != 'true' and '$(TargetFrameworkProfile)' == 'Profile78'" Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Condition="'$(UsingMicrosoftNETSdk)' != 'true' and '$(TargetFrameworkProfile)' != 'Profile78'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\nuget\Common.targets"/>
   <Import Project="Versions.targets" />
   <PropertyGroup>
-    <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile>
+    <DocumentationFile Condition="'$(UsingMicrosoftNETSdk)' == 'true'">$(BaseOutputPath)\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <DocumentationFile Condition="'$(UsingMicrosoftNETSdk)' != 'true'">$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(MSBuildRuntimeType)' != 'Mono' or '$(_DebugFileExt)' == '.pdb'" />
-    <FileToCopy Include="$(TargetPath).mdb" Condition="'$(MSBuildRuntimeType)' == 'Mono' and '$(_DebugFileExt)' == '.mdb'" />
-    <FileToCopy Include="$(OutDir)\$(TargetName).xml" />
+    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(_DebugFileExt)' == '.pdb'" />
+    <FileToCopy Include="$(DocumentationFile)" />
   </ItemGroup>
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)" Condition="'$(BondRedistributable)' == 'true'" />
-    <MSBuild Condition="'$(BuildFramework)' == 'net45' and ('$(HasNonportableVersion)' == 'true')" Projects="$(MSBuildProjectFile)" Properties="BuildNonportable=true" RunEachTargetSeparately="true"  />
+  <Target Name="CopyAdditionalFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)\$(TargetFramework)" Condition="'$(BondRedistributable)' == 'true'" />
   </Target>
 </Project>

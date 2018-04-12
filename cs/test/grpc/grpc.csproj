@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{D5F087E7-1EE9-4AEB-83AF-5F234C69B867}</ProjectGuid>
+    <TargetFrameworks>net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>
     <AssemblyName>Bond.Grpc.UnitTest</AssemblyName>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <DependentOutputPath>$(OutputPath)</DependentOutputPath>
+    <DependentOutputPath>bin\$(BuildType)\$(TargetFramework)</DependentOutputPath>
     <BondOptions>--grpc</BondOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -24,29 +22,12 @@
     <BondOptions>--collection-interfaces --fields --grpc</BondOptions>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AttributesTests.cs" />
-    <Compile Include="MarshallerTests.cs" />
-    <Compile Include="MessageTests.cs" />
-    <Compile Include="NothingCallsTests.cs" />
-    <Compile Include="Schemas.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <BondCodegen Include="services.bond" />
     <Compile Include="$(IntermediateOutputPath)services_grpc.cs" Condition="false" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Grpc.Core">
-      <HintPath>..\..\packages\Grpc.Core.1.10.0\lib\net45\Grpc.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
-      <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Interactive.Async">
-      <HintPath>..\..\packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NUnit" Version="3.10.*" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
+    <PackageReference Include="Grpc.Core" Version="1.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond.Attributes">
@@ -66,15 +47,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\grpc\grpc.csproj">
-      <Project>{af03bae6-2470-4e1b-a683-3ebdcdc595fa}</Project>
-      <Name>grpc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\core\Core.csproj">
-      <Project>{ff056b62-225a-47bc-b177-550fadda4b41}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
+      <ProjectReference Include="..\..\src\grpc\grpc.csproj" />
+      <ProjectReference Include="..\core\Core.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
-  <Import Project="..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
 </Project>
