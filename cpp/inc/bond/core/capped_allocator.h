@@ -6,6 +6,7 @@
 #include <bond/core/config.h>
 
 #include "capped_allocator_fwd.h"
+#include "detail/alloc.h"
 #include "detail/value_or_reference.h"
 #include "multi_threaded_counter.h"
 #include "shared_counter.h"
@@ -13,66 +14,10 @@
 
 #include <boost/utility/enable_if.hpp>
 
-
 namespace bond
 {
     namespace detail
     {
-        /// @brief Helper type that holds an allocator.
-        ///
-        /// @remarks Applies empty-base-optimization when possible.
-        template <typename Alloc, typename Enable = void>
-        class allocator_holder : private Alloc
-        {
-        public:
-            allocator_holder() = default;
-
-            allocator_holder(const Alloc& alloc)
-                : Alloc{ alloc }
-            {}
-
-            const Alloc& get() const BOND_NOEXCEPT
-            {
-                return *this;
-            }
-
-            Alloc& get() BOND_NOEXCEPT
-            {
-                return *this;
-            }
-        };
-
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(push)
-#pragma warning(disable: 4510)
-#endif
-        template <typename Alloc>
-        class allocator_holder<Alloc, typename boost::disable_if<std::is_empty<Alloc>>::type>
-        {
-        public:
-            allocator_holder() = default;
-
-            allocator_holder(const Alloc& alloc)
-                : _alloc{ alloc }
-            {}
-
-            const Alloc& get() const BOND_NOEXCEPT
-            {
-                return _alloc;
-            }
-
-            Alloc& get() BOND_NOEXCEPT
-            {
-                return _alloc;
-            }
-
-        private:
-            Alloc _alloc;
-        };
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(pop)
-#endif
-
         /// @brief Helper type to deal with types that are not C++11 conformant.
         template <typename Alloc, typename Enable = void>
         struct allocator_reference_type_workaround;

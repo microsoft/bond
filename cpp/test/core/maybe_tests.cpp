@@ -342,23 +342,6 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!hasAlloc.value().copied_alloc);
         BOOST_CHECK(!hasAlloc.value().moved_alloc);
     }
-
-    {
-        UsesAllocator orig{ a1 };
-        bond::maybe<UsesAllocator> copyAlloc{ orig, a2 };
-        BOOST_REQUIRE(!copyAlloc.is_nothing());
-        BOOST_CHECK(!copyAlloc.value().constructed_alloc);
-        BOOST_CHECK(copyAlloc.value().copied_alloc == a2);
-        BOOST_CHECK(!copyAlloc.value().moved_alloc);
-    }
-
-    {
-        bond::maybe<UsesAllocator> moveAlloc{ UsesAllocator{ a1 }, a2 };
-        BOOST_REQUIRE(!moveAlloc.is_nothing());
-        BOOST_CHECK(!moveAlloc.value().constructed_alloc);
-        BOOST_CHECK(!moveAlloc.value().copied_alloc);
-        BOOST_CHECK(moveAlloc.value().moved_alloc == a2);
-    }
 }
 TEST_CASE_END
 

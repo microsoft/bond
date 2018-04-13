@@ -4,10 +4,13 @@
 #pragma once
 
 #include <bond/core/config.h>
-#include <bond/core/traits.h>
+
+#include "detail/alloc.h"
+#include "traits.h"
 
 #include <boost/none.hpp>
 #include <boost/optional/optional.hpp>
+#include <boost/utility/enable_if.hpp>
 
 #include <memory>
 #include <type_traits>
@@ -112,6 +115,37 @@ public:
         return *_value;
     }
 
+    #if defined(_MSC_VER) && _MSC_VER < 1900
+    // Using = default with MSVC 2013 on this function causes the compiler
+    // to make extra copies, which makes this type fail when it's holding a
+    // move-only type.
+    //
+    // Manually implementing this function works just fine, however.
+    maybe_common& operator=(const maybe_common& that)
+    {
+        _value = that._value;
+        return *this;
+    }
+
+    // MSVC 2013 cannot = default rvalue asignment operators
+    maybe_common& operator=(maybe_common&& that)
+                           BOND_NOEXCEPT_IF(std::is_nothrow_move_assignable<boost::optional<T>>::value)
+    {
+        _value = std::move(that._value);
+
+        // unlike std::optional/boost::optional, moved-from bond::maybe
+        // instances are guaranteed to be nothing.
+        //
+        // asigning boost::none is noexcept, but assigning { } is not
+        that._value = boost::none;
+
+        return *this;
+    }
+    #else
+    maybe_common& operator=(const maybe_common&) = default;
+    maybe_common& operator=(maybe_common&&) = default;
+    #endif
+
     /// @brief Compares two maybes for value equality.
     ///
     /// @return true if both maybes hold nothing; returns false if one maybe
@@ -197,7 +231,6 @@ protected:
 
     template <typename... Args>
     explicit maybe_common(const T& value, Args&&... args)
-        : _value()
     {
         _value.emplace(value, std::forward<Args>(args)...);
     }
@@ -218,36 +251,6 @@ protected:
         // asigning boost::none is noexcept, but assigning { } is not
         that._value = boost::none;
     }
-
-    #if defined(_MSC_VER) && _MSC_VER < 1900
-    // Using = default with MSVC 2013 on this function causes the compiler
-    // to make extra copies, which makes this type fail when it's holding a
-    // move-only type.
-    //
-    // Manually implementing this function works just fine, however.
-    maybe_common& operator=(const maybe_common& that)
-    {
-        _value = that._value;
-        return *this;
-    }
-
-    // MSVC 2013 cannot = default rvalue asignment operators
-    maybe_common& operator=(maybe_common&& that) BOND_NOEXCEPT_IF(BOND_NOEXCEPT_EXPR(_value = std::move(that._value)))
-    {
-        _value = std::move(that._value);
-
-        // unlike std::optional/boost::optional, moved-from bond::maybe
-        // instances are guaranteed to be nothing.
-        //
-        // asigning boost::none is noexcept, but assigning { } is not
-        that._value = boost::none;
-
-        return *this;
-    }
-    #else
-    maybe_common& operator=(const maybe_common&) = default;
-    maybe_common& operator=(maybe_common&&) = default;
-    #endif
 
     maybe_common& assign(const T& value)
     {
@@ -328,7 +331,7 @@ public:
     }
 
     // MSVC 2013 cannot = default rvalue asignment operators
-    maybe& operator=(maybe&& that) BOND_NOEXCEPT_IF(BOND_NOEXCEPT_EXPR(detail::maybe_common<T>::operator=(std::move(that))))
+    maybe& operator=(maybe&& that) BOND_NOEXCEPT_IF(std::is_nothrow_move_assignable<maybe_common<T>>::value)
     {
         detail::maybe_common<T>::operator=(std::move(that));
         return *this;
@@ -385,8 +388,10 @@ public:
 template <typename T>
 class maybe<T, typename boost::enable_if<detail::has_allocator<T>>::type>
     : public detail::maybe_common<T>,
-      private detail::allocator_type<T>::type
+      private detail::allocator_holder<typename detail::allocator_type<T>::type>
 {
+    using holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
+
 public:
     using allocator_type = typename detail::allocator_type<T>::type;
 
@@ -402,15 +407,15 @@ public:
     // Manually implementing this function works just fine, however.
     maybe(const maybe& that)
         : detail::maybe_common<T>(that),
-          allocator_type(that)
+          holder(that)
         { }
 
     // MSVC 2013 cannot = default rvalue ctors
     maybe(maybe&& that) BOND_NOEXCEPT_IF(
            std::is_nothrow_move_constructible<typename detail::maybe_common<T>>::value
-        && std::is_nothrow_move_constructible<allocator_type>::value)
-        : detail::maybe_common<T>(std::move(that.base())),
-          allocator_type(std::move(that.allocator()))
+        && std::is_nothrow_move_constructible<holder>::value)
+        : detail::maybe_common<T>(std::move(that.base_common())),
+          holder(std::move(that.base_holder()))
     { }
     #else
     /// @brief Create a  maybe that holds nothing.
@@ -421,7 +426,7 @@ public:
 
     maybe(const maybe& that, const allocator_type& alloc)
         : detail::maybe_common<T>(),
-          allocator_type(alloc)
+          holder(alloc)
     {
         if (!that.is_nothing())
         {
@@ -431,7 +436,7 @@ public:
 
     maybe(maybe&& that, const allocator_type& alloc)
         : detail::maybe_common<T>(),
-          allocator_type(alloc)
+          holder(alloc)
     {
         if (!that.is_nothing())
         {
@@ -451,38 +456,22 @@ public:
     /// @since 8.0.0
     explicit maybe(const allocator_type& alloc)
         : detail::maybe_common<T>(),
-          allocator_type(alloc)
+          holder(alloc)
     { }
 
     /// @brief Create a maybe that holds a copy of the value.
     explicit maybe(const T& value)
         : detail::maybe_common<T>(value),
-          allocator_type()
+          holder()
     { }
-
-    /// @since 8.0.0
-    maybe(const T& value, const allocator_type& alloc)
-        : detail::maybe_common<T>(),
-          allocator_type(alloc)
-    {
-        this->emplace(value, alloc);
-    }
 
     /// @brief Create a non-empty maybe by moving from the value.
     ///
     /// @since 8.0.0
     maybe(T&& value)
         : detail::maybe_common<T>(std::move(value)),
-          allocator_type()
+          holder()
     { }
-
-    /// @since 8.0.0
-    maybe(T&& value, const allocator_type& alloc)
-        : detail::maybe_common<T>(),
-          allocator_type(alloc)
-    {
-        this->emplace(std::move(value), alloc);
-    }
 
     #if defined(_MSC_VER) && _MSC_VER < 1900
     // Using = default with MSVC 2013 on this function causes the compiler
@@ -492,18 +481,18 @@ public:
     // Manually implementing this function works just fine, however.
     maybe& operator=(const maybe& that)
     {
-        detail::maybe_common<T>::operator=(that);
-        allocator_type::operator=(that);
+        base_common() = that.base_common();
+        holder::operator=(that);
         return *this;
     }
 
     // MSVC 2013 cannot = default rvalue ctors
     maybe& operator=(maybe&& that) BOND_NOEXCEPT_IF(
-           BOND_NOEXCEPT_EXPR(detail::maybe_common<T>::operator=(std::move(that.base())))
-        && BOND_NOEXCEPT_EXPR(allocator_type::operator=(std::move(that.allocator()))))
+           std::is_nothrow_move_assignable<detail::maybe_common<T>>::value
+        && std::is_nothrow_move_assignable<holder>::value)
     {
-        detail::maybe_common<T>::operator=(std::move(that.base()));
-        allocator_type::operator=(std::move(that.allocator()));
+        base_common() = std::move(that.base_common());
+        base_holder() = std::move(that.base_holder());
         return *this;
     }
     #else
@@ -526,10 +515,10 @@ public:
         return *this;
     }
 
-    // We need to get rid of any operator== that may come from the allocator
-    // so the friend free functions from maybe_common don't have any
-    // competition.
-    bool operator==(const allocator_type&) = delete;
+    // We need to get rid of any operator== that may come from the
+    // allocator_holder so the friend free functions from maybe_common don't
+    // have any competition.
+    bool operator==(const holder&) = delete;
 
     /// @brief Set to non-empty, if needed.
     ///
@@ -541,7 +530,7 @@ public:
     {
         if (this->is_nothing())
         {
-            this->emplace(allocator());
+            this->emplace(base_holder().get());
         }
 
         return *this->_value;
@@ -552,21 +541,21 @@ public:
     {
         using std::swap;
         swap(this->_value, that._value);
-        swap(allocator(), that.allocator());
+        swap(base_holder(), that.base_holder());
     }
 
     /// @brief Get the allocator that this maybe uses.
     /// @since 8.0.0
     allocator_type get_allocator() const BOND_NOEXCEPT
     {
-        return allocator();
+        return base_holder().get();
     }
 
 private:
-    detail::maybe_common<T>& base() BOND_NOEXCEPT { return *this; }
-    const detail::maybe_common<T>& base() const BOND_NOEXCEPT { return *this; }
-    allocator_type& allocator() BOND_NOEXCEPT { return *this; }
-    const allocator_type& allocator() const BOND_NOEXCEPT { return *this; }
+    detail::maybe_common<T>& base_common() BOND_NOEXCEPT { return *this; }
+    const detail::maybe_common<T>& base_common() const BOND_NOEXCEPT { return *this; }
+    holder& base_holder() BOND_NOEXCEPT { return *this; }
+    const holder& base_holder() const BOND_NOEXCEPT { return *this; }
 };
 
 template<typename T>
