@@ -125,29 +125,113 @@ TEST_CASE_BEGIN(MaybeInterface)
 }
 TEST_CASE_END
 
-TEST_CASE_BEGIN(MovedFromIsNothing)
+TEST_CASE_BEGIN(CopyAndMoveFromValues)
 {
-    {
-        bond::maybe<bool> m(false);
-        UT_AssertIsFalse(m.is_nothing());
+    { // simple type
+        int i = 100;
+        bond::maybe<int> copiedValue{ i };
+        BOOST_REQUIRE(copiedValue);
+        BOOST_CHECK(copiedValue.value() == 100);
 
-        bond::maybe<bool> sink(std::move(m));
-        UT_AssertIsTrue(m.is_nothing());
-
-        UT_AssertIsFalse(sink.is_nothing());
-        UT_AssertIsFalse(sink.value());
+        copiedValue = 200;
+        BOOST_REQUIRE(copiedValue);
+        BOOST_CHECK(copiedValue.value() == 200);
     }
 
-    {
-        bond::maybe<std::unique_ptr<int>> moveOnly{};
-        moveOnly.emplace(new int { 42 });
-        UT_AssertIsFalse(moveOnly.is_nothing());
+    { // move-only type
+        std::unique_ptr<int> up{ new int{ 100 } };
+        bond::maybe<std::unique_ptr<int>> movedFromValue{ std::move(up) };
+        BOOST_CHECK(!up);
+        BOOST_REQUIRE(movedFromValue);
+        BOOST_CHECK(*movedFromValue.value() == 100);
 
-        bond::maybe<std::unique_ptr<int>> moveOnlySink(std::move(moveOnly));
-        UT_AssertIsTrue(moveOnly.is_nothing());
+        up.reset(new int{ 200 });
+        movedFromValue = std::move(up);
+        BOOST_CHECK(!up);
+        BOOST_REQUIRE(movedFromValue);
+        BOOST_CHECK(*movedFromValue.value() == 200);
+    }
 
-        UT_AssertIsFalse(moveOnlySink.is_nothing());
-        UT_AssertIsTrue(*moveOnlySink.value() == 42);
+    { // type with allocator
+        auto numbers = { 1, 2, 3, 4, 5 };
+        auto primes = { 2, 3, 5 };
+        std::vector<int> vecNumbers{ std::begin(numbers), std::end(numbers) };
+        std::vector<int> vecPrimes{ std::begin(primes), std::end(primes) };
+
+        bond::maybe<std::vector<int>> copiedValue{ vecNumbers };
+        BOOST_REQUIRE(copiedValue);
+        BOOST_CHECK(copiedValue.value() == vecNumbers);
+
+        copiedValue = vecPrimes;
+        BOOST_REQUIRE(copiedValue);
+        BOOST_CHECK(copiedValue.value() == vecPrimes);
+
+        bond::maybe<std::vector<int>> movedValue{ std::move(vecNumbers) };
+        BOOST_CHECK(vecNumbers.empty());
+        BOOST_REQUIRE(movedValue);
+        BOOST_CHECK(movedValue.value().size() == 5);
+
+        movedValue = std::move(vecPrimes);
+        BOOST_CHECK(vecPrimes.empty());
+        BOOST_REQUIRE(movedValue);
+        BOOST_CHECK(movedValue.value().size() == 3);
+    }
+
+    { // move-only type with allocator
+        std::vector<std::unique_ptr<int>> source1;
+        source1.emplace_back(new int{ 1 });
+
+        bond::maybe<std::vector<std::unique_ptr<int>>> movedValue{ std::move(source1) };
+        BOOST_CHECK(source1.empty());
+        BOOST_REQUIRE(movedValue);
+        BOOST_CHECK(movedValue.value().size() == 1);
+
+        std::vector<std::unique_ptr<int>> source2;
+        source2.emplace_back(new int{ 2 });
+        source2.emplace_back(new int{ 2 });
+
+        movedValue = std::move(source2);
+        BOOST_CHECK(source2.empty());
+        BOOST_REQUIRE(movedValue);
+        BOOST_CHECK(movedValue.value().size() == 2);
+    }
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(MovedFromIsNothing)
+{
+    { // simple type
+        bond::maybe<bool> m{ false };
+        BOOST_REQUIRE(!m.is_nothing());
+
+        bond::maybe<bool> sink{ std::move(m) };
+        BOOST_REQUIRE(m.is_nothing());
+        BOOST_REQUIRE(!sink.is_nothing());
+        BOOST_CHECK(!sink.value());
+    }
+
+    { // move-only type
+        bond::maybe<std::unique_ptr<int>> moveOnly;
+        moveOnly.emplace(new int{ 42 });
+        BOOST_REQUIRE(!moveOnly.is_nothing());
+
+        bond::maybe<std::unique_ptr<int>> moveOnlySink{ std::move(moveOnly) };
+        BOOST_REQUIRE(moveOnly.is_nothing());
+        BOOST_REQUIRE(!moveOnlySink.is_nothing());
+        BOOST_CHECK(*moveOnlySink.value() == 42);
+    }
+
+    { // move-only type with allocator
+        bond::maybe<std::vector<std::unique_ptr<int>>> m;
+        m.emplace();
+        m.value().emplace_back(new int{ 1 });
+        m.value().emplace_back(new int{ 2 });
+        BOOST_REQUIRE(!m.is_nothing());
+
+        bond::maybe<std::vector<std::unique_ptr<int>>> sink{ std::move(m) };
+        BOOST_REQUIRE(m.is_nothing());
+        BOOST_REQUIRE(!sink.is_nothing());
+        BOOST_CHECK(sink.value().size() == 2);
     }
 }
 TEST_CASE_END
@@ -158,7 +242,17 @@ struct UsesAllocator
 
     UsesAllocator() = default;
     UsesAllocator(const UsesAllocator&) = default;
+
+    #if defined(_MSC_VER) && _MSC_VER < 1900
+    // MSVC 2013 cannot = default rvalue asignment operators
+    UsesAllocator(UsesAllocator&& that)
+        : constructed_alloc(std::move(that.constructed_alloc)),
+          copied_alloc(std::move(that.copied_alloc)),
+          moved_alloc(std::move(that.moved_alloc))
+    { }
+    #else
     UsesAllocator(UsesAllocator&&) = default;
+    #endif
 
     UsesAllocator(const allocator_type& alloc)
         : constructed_alloc(alloc)
@@ -174,17 +268,17 @@ struct UsesAllocator
 
     UsesAllocator& operator=(const UsesAllocator&) = default;
 
-    boost::optional<allocator_type> constructed_alloc{};
-    boost::optional<allocator_type> copied_alloc{};
-    boost::optional<allocator_type> moved_alloc{};
+    boost::optional<allocator_type> constructed_alloc;
+    boost::optional<allocator_type> copied_alloc;
+    boost::optional<allocator_type> moved_alloc;
 };
 
 TEST_CASE_BEGIN(AllocatorPropagated)
 {
-    allocator_with_state<> a1 { std::make_shared<int>() };
-    allocator_with_state<> a2 { std::make_shared<int>() };
+    allocator_with_state<> a1{ std::make_shared<int>() };
+    allocator_with_state<> a2{ std::make_shared<int>() };
 
-    bond::maybe<UsesAllocator> m { a1 };
+    bond::maybe<UsesAllocator> m{ a1 };
     m.set_value();
     BOOST_REQUIRE(!m.is_nothing());
     BOOST_CHECK(m.value().constructed_alloc == a1);
@@ -192,7 +286,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().moved_alloc);
 
     {
-        bond::maybe<UsesAllocator> mCopy { m };
+        bond::maybe<UsesAllocator> mCopy{ m };
         BOOST_REQUIRE(!mCopy.is_nothing());
         BOOST_CHECK(mCopy.value().constructed_alloc == a1);
         BOOST_CHECK(!mCopy.value().copied_alloc);
@@ -200,7 +294,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     }
 
     {
-        bond::maybe<UsesAllocator> mCopyAlloc { m, a2 };
+        bond::maybe<UsesAllocator> mCopyAlloc{ m, a2 };
         BOOST_REQUIRE(!mCopyAlloc.is_nothing());
         BOOST_CHECK(!mCopyAlloc.value().constructed_alloc);
         BOOST_CHECK(mCopyAlloc.value().copied_alloc == a2);
@@ -208,7 +302,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     }
 
     {
-        bond::maybe<UsesAllocator> mMove { std::move(m) };
+        bond::maybe<UsesAllocator> mMove{ std::move(m) };
         BOOST_REQUIRE(!mMove.is_nothing());
         BOOST_CHECK(mMove.value().constructed_alloc == a1);
         BOOST_CHECK(!mMove.value().copied_alloc);
@@ -216,7 +310,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     }
 
     // We just moved from m, so we need to re-create it for the next test.
-    m = bond::maybe<UsesAllocator> { a1 };
+    m = bond::maybe<UsesAllocator>{ a1 };
     m.set_value();
     BOOST_REQUIRE(!m.is_nothing());
     BOOST_CHECK(m.value().constructed_alloc == a1);
@@ -224,7 +318,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().moved_alloc);
 
     {
-        bond::maybe<UsesAllocator> mMoveAlloc { std::move(m), a2 };
+        bond::maybe<UsesAllocator> mMoveAlloc{ std::move(m), a2 };
         BOOST_REQUIRE(!mMoveAlloc.is_nothing());
         BOOST_CHECK(!mMoveAlloc.value().constructed_alloc);
         BOOST_CHECK(!mMoveAlloc.value().copied_alloc);
@@ -366,8 +460,9 @@ void MaybeTest::Initialize()
     UnitTestSuite suite("Protocol independent maybe tests");
 
     AddTestCase<TEST_ID(0x1a05), MaybeInterface>(suite, "APIs");
-    AddTestCase<TEST_ID(0x1a06), MovedFromIsNothing>(suite, "APIs");
-    AddTestCase<TEST_ID(0x1a07), AllocatorPropagated>(suite, "APIs");
+    AddTestCase<TEST_ID(0x1a06), CopyAndMoveFromValues>(suite, "APIs");
+    AddTestCase<TEST_ID(0x1a07), MovedFromIsNothing>(suite, "APIs");
+    AddTestCase<TEST_ID(0x1a08), AllocatorPropagated>(suite, "APIs");
 }
 
 
