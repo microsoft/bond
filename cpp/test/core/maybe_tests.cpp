@@ -160,26 +160,23 @@ struct UsesAllocator
     UsesAllocator(const UsesAllocator&) = default;
     UsesAllocator(UsesAllocator&&) = default;
 
-    UsesAllocator(const allocator_with_state<>& alloc)
-    {
-        constructed_alloc = alloc;
-    }
+    UsesAllocator(const allocator_type& alloc)
+        : constructed_alloc(alloc)
+    { }
 
-    UsesAllocator(const UsesAllocator&, const allocator_with_state<>& alloc)
-    {
-        copied_alloc = alloc;
-    }
+    UsesAllocator(const UsesAllocator&, const allocator_type& alloc)
+        : copied_alloc(alloc)
+    { }
 
-    UsesAllocator(UsesAllocator&&, const allocator_with_state<>& alloc)
-    {
-        moved_alloc = alloc;
-    }
+    UsesAllocator(UsesAllocator&&, const allocator_type& alloc)
+        : moved_alloc(alloc)
+    { }
 
     UsesAllocator& operator=(const UsesAllocator&) = default;
 
-    boost::optional<allocator_with_state<>> constructed_alloc{};
-    boost::optional<allocator_with_state<>> copied_alloc{};
-    boost::optional<allocator_with_state<>> moved_alloc{};
+    boost::optional<allocator_type> constructed_alloc{};
+    boost::optional<allocator_type> copied_alloc{};
+    boost::optional<allocator_type> moved_alloc{};
 };
 
 TEST_CASE_BEGIN(AllocatorPropagated)

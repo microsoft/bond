@@ -23,6 +23,9 @@ BOND_NORETURN void NothingException();
 namespace detail
 {
 
+/// Internal base class with shared implementation between the two maybe
+/// variants. Consult the documentation for bond::maybe<T> for its public
+/// interface.
 template <typename T>
 class maybe_common
 {
@@ -124,7 +127,7 @@ public:
 
     /// @brief Compares two maybes for value inequality.
     ///
-    /// See operator==(const maybe_common&, const maybe_common&) for details
+    /// See operator==(const maybe_common&,const maybe_common&) for details
     /// about how maybes holding nothing are handled.
     ///
     /// @since 8.0.0
@@ -146,7 +149,7 @@ public:
 
     /// @brief Compares a maybe and a value for inequality.
     ///
-    /// See operator==(const maybe_common&, const T&) for details about how
+    /// See operator==(const maybe_common&,const T&) for details about how
     /// maybes holding nothing are handled.
     ///
     /// @since 8.0.0
@@ -168,7 +171,7 @@ public:
 
     /// @brief Compares and a value and a maybe for inequality.
     ///
-    /// See operator==(const T&, const maybe_common&) for details about how
+    /// See operator==(const T&,const maybe_common&) for details about how
     /// maybes holding nothing are handled.
     ///
     /// @since 8.0.0
@@ -188,7 +191,7 @@ protected:
 
     template <typename... Args>
     explicit maybe_common(T&& value, Args&&... args)
-        : _value(boost::in_place<T>(value, std::forward<Args>(args)...))
+        : _value(boost::in_place<T>(std::move(value), std::forward<Args>(args)...))
     { }
 
     maybe_common(maybe_common&& that) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<boost::optional<T>>::value)
@@ -309,7 +312,7 @@ public:
         : detail::maybe_common<T>(),
           allocator_type(alloc)
     {
-        if (that._value)
+        if (!that.is_nothing())
         {
             this->emplace(*that._value, alloc);
         }
@@ -325,7 +328,7 @@ public:
         : detail::maybe_common<T>(),
           allocator_type(alloc)
     {
-        if (that._value)
+        if (!that.is_nothing())
         {
             this->emplace(std::move(*that._value), alloc);
         }
@@ -355,7 +358,7 @@ public:
     /// @since 8.0.0
     maybe(const T& value, const allocator_type& alloc)
         : detail::maybe_common<T>(value, alloc),
-        allocator_type(alloc)
+          allocator_type(alloc)
     { }
 
     /// @brief Create a non-empty maybe by moving from the value.
@@ -363,7 +366,7 @@ public:
     /// @since 8.0.0
     maybe(T&& value)
         : detail::maybe_common<T>(std::move(value)),
-        allocator_type()
+          allocator_type()
     { }
 
     /// @since 8.0.0
@@ -378,6 +381,9 @@ public:
     maybe& operator=(maybe&&) = default;
     using detail::maybe_common<T>::operator=;
 
+    // We need to get rid of any operator== that may come from the allocator
+    // so the friend free functions from maybe_common don't have any
+    // competition.
     bool operator==(const allocator_type&) = delete;
 
     /// @brief Set to non-empty, if needed.
@@ -412,25 +418,10 @@ public:
     }
 
 private:
-    detail::maybe_common<T>& base() BOND_NOEXCEPT
-    {
-        return static_cast<detail::maybe_common<T>&>(*this);
-    }
-
-    const detail::maybe_common<T>& base() const BOND_NOEXCEPT
-    {
-        return static_cast<const detail::maybe_common<T>&>(*this);
-    }
-
-    allocator_type& allocator() BOND_NOEXCEPT
-    {
-        return static_cast<allocator_type&>(*this);
-    }
-
-    const allocator_type& allocator() const BOND_NOEXCEPT
-    {
-        return static_cast<const allocator_type&>(*this);
-    }
+    detail::maybe_common<T>& base() BOND_NOEXCEPT { return *this; }
+    const detail::maybe_common<T>& base() const BOND_NOEXCEPT { return *this; }
+    allocator_type& allocator() BOND_NOEXCEPT { return *this; }
+    const allocator_type& allocator() const BOND_NOEXCEPT { return *this; }
 };
 
 template<typename T>
