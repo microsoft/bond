@@ -46,8 +46,9 @@ public:
     }
 
     /// @brief Set to nothing.
-    void set_nothing()
+    void set_nothing() BOND_NOEXCEPT
     {
+        // asigning boost::none is noexcept, but assigning { } is not
         _value = boost::none;
     }
 
@@ -109,17 +110,85 @@ public:
         return *_value;
     }
 
+    /// @brief Compares two maybes for value equality.
+    ///
+    /// @return true if both maybes hold nothing; returns false if one maybe
+    /// holds nothing and the other holds a values; otherwise, calls
+    /// operator== with the two values.
+    ///
+    /// @since 8.0.0
+    friend bool operator==(const maybe_common& lhs, const maybe_common& rhs)
+    {
+        return lhs._value == rhs._value;
+    }
+
+    /// @brief Compares two maybes for value inequality.
+    ///
+    /// See operator==(const maybe_common&, const maybe_common&) for details
+    /// about how maybes holding nothing are handled.
+    ///
+    /// @since 8.0.0
+    friend bool operator!=(const maybe_common& lhs, const maybe_common& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    /// @brief Compares a maybe and a value for equality.
+    ///
+    /// @return false if the maybe holds nothing; otherwise, calls
+    /// operator== with the maybe's value and the provided value.
+    ///
+    /// @since 8.0.0
+    friend bool operator==(const maybe_common& lhs, const T& rhs)
+    {
+        return lhs._value == rhs;
+    }
+
+    /// @brief Compares a maybe and a value for inequality.
+    ///
+    /// See operator==(const maybe_common&, const T&) for details about how
+    /// maybes holding nothing are handled.
+    ///
+    /// @since 8.0.0
+    friend bool operator!=(const maybe_common& lhs, const T& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    /// @brief Compares a value and a maybe for equality.
+    ///
+    /// @return false if the maybe holds nothing; otherwise, calls
+    /// operator== with the provided value and maybe's value.
+    ///
+    /// @since 8.0.0
+    friend bool operator==(const T& lhs, const maybe_common& rhs)
+    {
+        return lhs == rhs._value;
+    }
+
+    /// @brief Compares and a value and a maybe for inequality.
+    ///
+    /// See operator==(const T&, const maybe_common&) for details about how
+    /// maybes holding nothing are handled.
+    ///
+    /// @since 8.0.0
+    friend bool operator!=(const T& lhs, const maybe_common& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
 protected:
     maybe_common() = default;
     maybe_common(const maybe_common&) = default;
 
-    explicit maybe_common(const T& value)
-        : _value(value)
+    template <typename... Args>
+    explicit maybe_common(const T& value, Args&&... args)
+        : _value(boost::in_place<T>(value, std::forward<Args>(args)...))
     { }
 
-    template <typename Alloc>
-    maybe_common(const T& value, const Alloc& alloc)
-        : _value(boost::in_place<T>(value, alloc))
+    template <typename... Args>
+    explicit maybe_common(T&& value, Args&&... args)
+        : _value(boost::in_place<T>(value, std::forward<Args>(args)...))
     { }
 
     maybe_common(maybe_common&& that) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<boost::optional<T>>::value)
@@ -127,10 +196,13 @@ protected:
     {
         // unlike std::optional/boost::optional, moved-from bond::maybe
         // instances are guaranteed to be nothing.
-        that._value = { };
+        //
+        // asigning boost::none is noexcept, but assigning { } is not
+        that._value = boost::none;
     }
 
     maybe_common& operator=(const maybe_common&) = default;
+    maybe_common& operator=(maybe_common&&) = default;
 
     /// @brief Assign by copying the value.
     maybe_common& operator=(const T& value)
@@ -145,51 +217,6 @@ protected:
     {
         this->emplace(std::move(value));
         return *this;
-    }
-
-    /// @brief Compares two maybes for value equality.
-    ///
-    /// @return true if both maybes hold nothing; returns false if one maybe
-    /// holds nothing and the other holds a values; otherwise, calls
-    /// operator== with the two values.
-    ///
-    /// @since 8.0.0
-    bool operator==(const maybe_common& that) const
-    {
-        return this->_value == that._value;
-    }
-
-    /// @brief Compares two maybes for value inequality.
-    ///
-    /// See operator==(const maybe_common&) for details about how maybes holding
-    /// nothing are handled.
-    ///
-    /// @since 8.0.0
-    bool operator!=(const maybe_common& that) const
-    {
-        return !(*this == that);
-    }
-
-    /// @brief Compares a maybe and a value for equality.
-    ///
-    /// @return false if the maybe holds nothing; otherwise, calls
-    /// operator== with maybe's value and the provided value.
-    ///
-    /// @since 8.0.0
-    bool operator==(const T& that) const
-    {
-        return this->_value == that;
-    }
-
-    /// @brief Compares a maybe and a value for inequality.
-    ///
-    /// See operator==(const T&) for details about how maybes holding
-    /// nothing are handled.
-    ///
-    /// @since 8.0.0
-    bool operator!=(const T& that) const
-    {
-        return !(*this == that);
     }
 
     boost::optional<T> _value;
@@ -234,6 +261,7 @@ public:
     { }
 
     maybe& operator=(const maybe&) = default;
+    maybe& operator=(maybe&&) = default;
     using detail::maybe_common<T>::operator=;
 
     /// @brief Set the maybe to hold a value, if needed.
@@ -258,10 +286,6 @@ public:
         using std::swap;
         swap(this->_value, that._value);
     }
-
-    using detail::maybe_common<T>::operator==;
-    using detail::maybe_common<T>::operator!=;
-
 };
 
 /// @brief Type used for fields with default value of 'nothing'
@@ -308,7 +332,9 @@ public:
 
         // unlike std::optional/boost::optional, moved-from bond::maybe
         // instances are guaranteed to be nothing.
-        that._value = { };
+        //
+        // asigning boost::none is noexcept, but assigning { } is not
+        that._value = boost::none;
     }
 
     /// @brief Construct a maybe that holds nothing, but remember the
@@ -349,7 +375,10 @@ public:
     }
 
     maybe& operator=(const maybe&) = default;
+    maybe& operator=(maybe&&) = default;
     using detail::maybe_common<T>::operator=;
+
+    bool operator==(const allocator_type&) = delete;
 
     /// @brief Set to non-empty, if needed.
     ///
@@ -382,9 +411,6 @@ public:
         return allocator();
     }
 
-    using detail::maybe_common<T>::operator==;
-    using detail::maybe_common<T>::operator!=;
-
 private:
     detail::maybe_common<T>& base() BOND_NOEXCEPT
     {
@@ -408,7 +434,7 @@ private:
 };
 
 template<typename T>
-inline void swap(maybe<T, void>& x, maybe<T, void>& y)
+inline void swap(maybe<T>& x, maybe<T>& y)
 {
     x.swap(y);
 }

@@ -23,6 +23,7 @@ void ConstInterface(const bond::maybe<int8_t>& x)
     y = x.value();
 
     UT_AssertIsTrue(x == y);
+    UT_AssertIsTrue(y == x);
     UT_AssertIsFalse(z == x);
     UT_AssertIsTrue(z != x);
 
@@ -51,6 +52,7 @@ TEST_CASE_BEGIN(MaybeInterface)
 
     y = x.value();
     UT_AssertIsTrue(x == y);
+    UT_AssertIsTrue(y == x);
 
     x.set_nothing();
 
@@ -58,8 +60,8 @@ TEST_CASE_BEGIN(MaybeInterface)
     UT_AssertIsFalse(x);
 
     x = y;
-
     UT_AssertIsTrue(x == y);
+    UT_AssertIsTrue(y == x);
 
     bond::maybe<int8_t> z;
 
