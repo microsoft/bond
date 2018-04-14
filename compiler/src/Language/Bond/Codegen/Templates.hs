@@ -46,6 +46,7 @@ module Language.Bond.Codegen.Templates
       -- ** C#
     , FieldMapping(..)
     , StructMapping(..)
+    , ConstructorMapping(..)
     , types_cs
     , grpc_cs
       -- ** Java

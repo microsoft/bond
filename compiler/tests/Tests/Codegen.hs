@@ -97,7 +97,7 @@ verifyCsGrpcCodegen args baseName =
     testGroup baseName $
         map (verifyFile (processOptions args) baseName csTypeMapping "")
             [ grpc_cs
-            , types_cs Class (fieldMapping (processOptions args))
+            , types_cs Class (fieldMapping (processOptions args)) (constructorMapping (processOptions args))
             ]
   where
     fieldMapping Cs {..} = if readonly_properties
@@ -105,6 +105,9 @@ verifyCsGrpcCodegen args baseName =
         else if fields
              then PublicFields
              else Properties
+    constructorMapping Cs {..} = if constructor_parameters
+        then ConstructorParameters
+        else DefaultWithProtectedBase
 
 verifyFiles :: Options -> FilePath -> [TestTree]
 verifyFiles options baseName =
@@ -118,6 +121,9 @@ verifyFiles options baseName =
         else if fields
              then PublicFields
              else Properties
+    constructorMapping Cs {..} = if constructor_parameters
+        then ConstructorParameters
+        else DefaultWithProtectedBase
     typeMapping Cpp {..} = cppExpandAliases type_aliases_enabled $ maybe cppTypeMapping (cppCustomAllocTypeMapping scoped_alloc_enabled) allocator
     typeMapping Cs {} = csTypeMapping
     typeMapping Java {} = javaTypeMapping
@@ -128,7 +134,7 @@ verifyFiles options baseName =
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
-        [ types_cs Class $ fieldMapping options
+        [ types_cs Class (fieldMapping options) (constructorMapping options)
         ]
     templates Java {} =
         [ javaCatTemplate

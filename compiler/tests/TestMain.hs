@@ -166,6 +166,18 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
+            , verifyCodegen
+                [ "c#"
+                , "--readonly-properties"
+                , "--constructor-parameters"
+                ]
+                "constructor_parameters"
+            , verifyCodegen
+                [ "c#"
+                , "--fields"
+                , "--constructor-parameters"
+                ]
+                "constructor_parameters_fields"
             , testGroup "Grpc"
                 [ verifyCsGrpcCodegen
                     [ "c#"

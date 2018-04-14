@@ -119,8 +119,11 @@ csCodegen options@Cs {..} = do
             else if fields
                  then PublicFields
                  else Properties
+    constructorMapping = if constructor_parameters
+            then ConstructorParameters
+            else DefaultWithProtectedBase
     templates = concat $ map snd $ filter fst codegen_templates
-    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping])
+    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping constructorMapping])
                         , (grpc_enabled, [grpc_cs])
                         ]
 csCodegen _ = error "csCodegen: impossible happened."
