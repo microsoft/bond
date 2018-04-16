@@ -58,7 +58,7 @@ different versioning scheme, following the Haskell community's
   have been removed. The `blob` and `nullable` types are not customizable,
   so these where never needed or used. The related functionality provided by
   `bond::get_list_sub_type_id` remains.
-* **Breaking change*** Removed a dangerous implicit conversion operator from
+* **Breaking change** Removed a dangerous implicit conversion operator from
   `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use
   one of the `bond::maybe<T>::value` functions.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
@@ -83,8 +83,8 @@ different versioning scheme, following the Haskell community's
     * Added `bond::maybe<T>::emplace` to construct a maybe's value in place.
     * Added various rvalue-reference and allocator-aware constructors and
       assignment operators.
-    * Added `bond::maybe<T>::operator==(const T&)` to comapre directly to
-      instances of `T`.
+    * Added `operator==(const bond::maybe<T>&, const T&)` and `operator==(const
+      T&, const bond::maybe<T>&)` to compare directly to instances of `T`.
 
 ### C# ###
 
