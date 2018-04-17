@@ -392,6 +392,9 @@ class maybe<T, typename boost::enable_if<detail::has_allocator<T>>::type>
     using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
 
 public:
+    // allocator_holder may inherit from an allocator that has its own
+    // value_type. Add an using to explicitly "export" the one from
+    // maybe_common
     using typename detail::maybe_common<T>::value_type;
     using allocator_type = typename detail::allocator_type<T>::type;
 
@@ -441,13 +444,13 @@ public:
         if (!that.is_nothing())
         {
             this->emplace(std::move(*that._value), alloc);
-        }
 
-        // unlike std::optional/boost::optional, moved-from bond::maybe
-        // instances are guaranteed to be nothing.
-        //
-        // asigning boost::none is noexcept, but assigning { } is not
-        that._value = boost::none;
+            // unlike std::optional/boost::optional, moved-from bond::maybe
+            // instances are guaranteed to be nothing.
+            //
+            // asigning boost::none is noexcept, but assigning { } is not
+            that._value = boost::none;
+        }
     }
 
     /// @brief Construct a maybe that holds nothing, but remember the

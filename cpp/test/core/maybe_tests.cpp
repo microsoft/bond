@@ -14,7 +14,7 @@
 
 void ConstInterface(const bond::maybe<int8_t>& x)
 {
-    BOOST_TEST_CONTEXT("Const interface")
+    // BOOST_TEST_CONTEXT("Const interface")
     {
         bond::maybe<int8_t> z;
         int8_t y;
@@ -134,7 +134,7 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(CopyAndMoveFromValues)
 {
-    BOOST_TEST_CONTEXT("simple type")
+    // BOOST_TEST_CONTEXT("simple type")
     {
         int i = 100;
         bond::maybe<int> copiedValue{ i };
@@ -146,7 +146,7 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(copiedValue.value() == 200);
     }
 
-    BOOST_TEST_CONTEXT("move-only type")
+    // BOOST_TEST_CONTEXT("move-only type")
     {
         std::unique_ptr<int> up{ new int{ 100 } };
         bond::maybe<std::unique_ptr<int>> movedFromValue{ std::move(up) };
@@ -161,7 +161,7 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(*movedFromValue.value() == 200);
     }
 
-    BOOST_TEST_CONTEXT("type with allocator")
+    // BOOST_TEST_CONTEXT("type with allocator")
     {
         auto numbers = { 1, 2, 3, 4, 5 };
         auto primes = { 2, 3, 5 };
@@ -187,7 +187,7 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(movedValue.value().size() == 3);
     }
 
-    BOOST_TEST_CONTEXT("move-only type with allocator")
+    // BOOST_TEST_CONTEXT("move-only type with allocator")
     {
         std::vector<std::unique_ptr<int>> source1;
         source1.emplace_back(new int{ 1 });
@@ -211,7 +211,7 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(MovedFromIsNothing)
 {
-    BOOST_TEST_CONTEXT("simple type")
+    // BOOST_TEST_CONTEXT("simple type")
     {
         bond::maybe<bool> m{ false };
         BOOST_REQUIRE(!m.is_nothing());
@@ -222,7 +222,7 @@ TEST_CASE_BEGIN(MovedFromIsNothing)
         BOOST_CHECK(!sink.value());
     }
 
-    BOOST_TEST_CONTEXT("move-only type")
+    // BOOST_TEST_CONTEXT("move-only type")
     {
         bond::maybe<std::unique_ptr<int>> moveOnly;
         moveOnly.emplace(new int{ 42 });
@@ -234,7 +234,7 @@ TEST_CASE_BEGIN(MovedFromIsNothing)
         BOOST_CHECK(*moveOnlySink.value() == 42);
     }
 
-    BOOST_TEST_CONTEXT("move-only type with allocator")
+    // BOOST_TEST_CONTEXT("move-only type with allocator")
     {
         bond::maybe<std::vector<std::unique_ptr<int>>> m;
         m.emplace();
@@ -311,7 +311,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().copied_alloc);
     BOOST_CHECK(!m.value().moved_alloc);
 
-    BOOST_TEST_CONTEXT("Copy")
+    // BOOST_TEST_CONTEXT("Copy")
     {
         bond::maybe<UsesAllocator> mCopy{ m };
         BOOST_REQUIRE(!mCopy.is_nothing());
@@ -320,7 +320,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!mCopy.value().moved_alloc);
     }
 
-    BOOST_TEST_CONTEXT("Copy & change allocator")
+    // BOOST_TEST_CONTEXT("Copy & change allocator")
     {
         bond::maybe<UsesAllocator> mCopyAlloc{ m, a2 };
         BOOST_REQUIRE(!mCopyAlloc.is_nothing());
@@ -329,7 +329,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!mCopyAlloc.value().moved_alloc);
     }
 
-    BOOST_TEST_CONTEXT("Move")
+    // BOOST_TEST_CONTEXT("Move")
     {
         bond::maybe<UsesAllocator> mMove{ std::move(m) };
         BOOST_REQUIRE(!mMove.is_nothing());
@@ -346,7 +346,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().copied_alloc);
     BOOST_CHECK(!m.value().moved_alloc);
 
-    BOOST_TEST_CONTEXT("Move & change allocator")
+    // BOOST_TEST_CONTEXT("Move & change allocator")
     {
         bond::maybe<UsesAllocator> mMoveAlloc{ std::move(m), a2 };
         BOOST_REQUIRE(!mMoveAlloc.is_nothing());
@@ -355,7 +355,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(mMoveAlloc.value().moved_alloc == a2);
     }
 
-    BOOST_TEST_CONTEXT("implicitly create")
+    // BOOST_TEST_CONTEXT("implicitly create")
     {
         bond::maybe<UsesAllocator> hasAlloc{ a1 };
         hasAlloc.set_value();
@@ -365,7 +365,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!hasAlloc.value().moved_alloc);
     }
 
-    BOOST_TEST_CONTEXT("explicitly create with different allocator")
+    // BOOST_TEST_CONTEXT("explicitly create with different allocator")
     {
         bond::maybe<UsesAllocator> hasAlloc{ a1 };
         hasAlloc.emplace(a2);

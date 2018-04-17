@@ -23,12 +23,12 @@ class allocator_holder;
 
 template <typename Alloc>
 using empty_base_eligible = std::integral_constant<bool,
-       std::is_empty<Alloc>::value
-    && std::is_copy_constructible<Alloc>::value
-#if __cplusplus >= 201402L
+    true
+    #if __cplusplus >= 201402L
     && !std::is_final<Alloc>::value
-#endif
-    >;
+    #endif
+    && std::is_empty<Alloc>::value
+    && std::is_copy_constructible<Alloc>::value>;
 
 template <typename Alloc>
 class allocator_holder<Alloc, typename boost::enable_if<empty_base_eligible<Alloc>>::type>
@@ -37,7 +37,7 @@ class allocator_holder<Alloc, typename boost::enable_if<empty_base_eligible<Allo
 public:
     allocator_holder() = default;
 
-    allocator_holder(const Alloc& alloc)
+    explicit allocator_holder(const Alloc& alloc)
         : Alloc{ alloc }
     {}
 
@@ -62,7 +62,7 @@ class allocator_holder<Alloc, typename boost::disable_if<empty_base_eligible<All
 public:
     allocator_holder() = default;
 
-    allocator_holder(const Alloc& alloc)
+    explicit allocator_holder(const Alloc& alloc)
         : _alloc{ alloc }
     {}
 
