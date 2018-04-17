@@ -392,6 +392,7 @@ class maybe<T, typename boost::enable_if<detail::has_allocator<T>>::type>
     using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
 
 public:
+    using typename detail::maybe_common<T>::value_type;
     using allocator_type = typename detail::allocator_type<T>::type;
 
     #if defined(_MSC_VER) && _MSC_VER < 1900
