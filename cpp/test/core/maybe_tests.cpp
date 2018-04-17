@@ -14,24 +14,28 @@
 
 void ConstInterface(const bond::maybe<int8_t>& x)
 {
-    bond::maybe<int8_t> z;
-    int8_t y;
+    BOOST_TEST_CONTEXT("Const interface")
+    {
+        bond::maybe<int8_t> z;
+        int8_t y;
 
-    UT_AssertIsFalse(x.is_nothing());
-    UT_AssertIsTrue(x);
-    UT_AssertIsFalse(z == x);
+        UT_AssertIsFalse(x.is_nothing());
+        UT_AssertIsTrue(x);
+        UT_AssertIsFalse(!x);
+        UT_AssertIsFalse(z == x);
 
-    y = x.value();
+        y = x.value();
 
-    UT_AssertIsTrue(x == y);
-    UT_AssertIsTrue(y == x);
-    UT_AssertIsFalse(z == x);
-    UT_AssertIsTrue(z != x);
+        UT_AssertIsTrue(x == y);
+        UT_AssertIsTrue(y == x);
+        UT_AssertIsFalse(z == x);
+        UT_AssertIsTrue(z != x);
 
-    z = x;
+        z = x;
 
-    UT_AssertIsTrue(z == x);
-    UT_AssertIsFalse(z != x);
+        UT_AssertIsTrue(z == x);
+        UT_AssertIsFalse(z != x);
+    }
 }
 
 
@@ -42,6 +46,7 @@ TEST_CASE_BEGIN(MaybeInterface)
 
     UT_AssertIsTrue(x.is_nothing());
     UT_AssertIsFalse(x);
+    UT_AssertIsTrue(!x);
     UT_AssertThrows(x.value(), bond::CoreException);
 
     x.set_value() = 10;
@@ -50,6 +55,7 @@ TEST_CASE_BEGIN(MaybeInterface)
 
     UT_AssertIsFalse(x.is_nothing());
     UT_AssertIsTrue(x);
+    UT_AssertIsFalse(!x);
 
     y = x.value();
     UT_AssertIsTrue(x == y);
@@ -128,7 +134,8 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(CopyAndMoveFromValues)
 {
-    { // simple type
+    BOOST_TEST_CONTEXT("simple type")
+    {
         int i = 100;
         bond::maybe<int> copiedValue{ i };
         BOOST_REQUIRE(copiedValue);
@@ -139,7 +146,8 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(copiedValue.value() == 200);
     }
 
-    { // move-only type
+    BOOST_TEST_CONTEXT("move-only type")
+    {
         std::unique_ptr<int> up{ new int{ 100 } };
         bond::maybe<std::unique_ptr<int>> movedFromValue{ std::move(up) };
         BOOST_CHECK(!up);
@@ -153,7 +161,8 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(*movedFromValue.value() == 200);
     }
 
-    { // type with allocator
+    BOOST_TEST_CONTEXT("type with allocator")
+    {
         auto numbers = { 1, 2, 3, 4, 5 };
         auto primes = { 2, 3, 5 };
         std::vector<int> vecNumbers{ std::begin(numbers), std::end(numbers) };
@@ -178,7 +187,8 @@ TEST_CASE_BEGIN(CopyAndMoveFromValues)
         BOOST_CHECK(movedValue.value().size() == 3);
     }
 
-    { // move-only type with allocator
+    BOOST_TEST_CONTEXT("move-only type with allocator")
+    {
         std::vector<std::unique_ptr<int>> source1;
         source1.emplace_back(new int{ 1 });
 
@@ -201,7 +211,8 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(MovedFromIsNothing)
 {
-    { // simple type
+    BOOST_TEST_CONTEXT("simple type")
+    {
         bond::maybe<bool> m{ false };
         BOOST_REQUIRE(!m.is_nothing());
 
@@ -211,7 +222,8 @@ TEST_CASE_BEGIN(MovedFromIsNothing)
         BOOST_CHECK(!sink.value());
     }
 
-    { // move-only type
+    BOOST_TEST_CONTEXT("move-only type")
+    {
         bond::maybe<std::unique_ptr<int>> moveOnly;
         moveOnly.emplace(new int{ 42 });
         BOOST_REQUIRE(!moveOnly.is_nothing());
@@ -222,7 +234,8 @@ TEST_CASE_BEGIN(MovedFromIsNothing)
         BOOST_CHECK(*moveOnlySink.value() == 42);
     }
 
-    { // move-only type with allocator
+    BOOST_TEST_CONTEXT("move-only type with allocator")
+    {
         bond::maybe<std::vector<std::unique_ptr<int>>> m;
         m.emplace();
         m.value().emplace_back(new int{ 1 });
@@ -241,7 +254,6 @@ struct UsesAllocator
 {
     using allocator_type = allocator_with_state<>;
 
-    UsesAllocator() = default;
     UsesAllocator(const UsesAllocator&) = default;
 
     #if defined(_MSC_VER) && _MSC_VER < 1900
@@ -299,6 +311,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().copied_alloc);
     BOOST_CHECK(!m.value().moved_alloc);
 
+    BOOST_TEST_CONTEXT("Copy")
     {
         bond::maybe<UsesAllocator> mCopy{ m };
         BOOST_REQUIRE(!mCopy.is_nothing());
@@ -307,6 +320,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!mCopy.value().moved_alloc);
     }
 
+    BOOST_TEST_CONTEXT("Copy & change allocator")
     {
         bond::maybe<UsesAllocator> mCopyAlloc{ m, a2 };
         BOOST_REQUIRE(!mCopyAlloc.is_nothing());
@@ -315,6 +329,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(!mCopyAlloc.value().moved_alloc);
     }
 
+    BOOST_TEST_CONTEXT("Move")
     {
         bond::maybe<UsesAllocator> mMove{ std::move(m) };
         BOOST_REQUIRE(!mMove.is_nothing());
@@ -331,6 +346,7 @@ TEST_CASE_BEGIN(AllocatorPropagated)
     BOOST_CHECK(!m.value().copied_alloc);
     BOOST_CHECK(!m.value().moved_alloc);
 
+    BOOST_TEST_CONTEXT("Move & change allocator")
     {
         bond::maybe<UsesAllocator> mMoveAlloc{ std::move(m), a2 };
         BOOST_REQUIRE(!mMoveAlloc.is_nothing());
@@ -339,20 +355,22 @@ TEST_CASE_BEGIN(AllocatorPropagated)
         BOOST_CHECK(mMoveAlloc.value().moved_alloc == a2);
     }
 
+    BOOST_TEST_CONTEXT("implicitly create")
     {
         bond::maybe<UsesAllocator> hasAlloc{ a1 };
-        hasAlloc.emplace(); // explicitly create without an allocator
+        hasAlloc.set_value();
         BOOST_REQUIRE(!hasAlloc.is_nothing());
-        BOOST_CHECK(!hasAlloc.value().constructed_alloc);
+        BOOST_CHECK(hasAlloc.value().constructed_alloc == a1);
         BOOST_CHECK(!hasAlloc.value().copied_alloc);
         BOOST_CHECK(!hasAlloc.value().moved_alloc);
     }
 
+    BOOST_TEST_CONTEXT("explicitly create with different allocator")
     {
         bond::maybe<UsesAllocator> hasAlloc{ a1 };
-        hasAlloc = UsesAllocator{ }; // assign from instance without allocator
+        hasAlloc.emplace(a2);
         BOOST_REQUIRE(!hasAlloc.is_nothing());
-        BOOST_CHECK(!hasAlloc.value().constructed_alloc);
+        BOOST_CHECK(hasAlloc.value().constructed_alloc == a2);
         BOOST_CHECK(!hasAlloc.value().copied_alloc);
         BOOST_CHECK(!hasAlloc.value().moved_alloc);
     }
