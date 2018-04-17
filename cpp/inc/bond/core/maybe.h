@@ -80,7 +80,7 @@ public:
     }
 
     /// @brief Check if this object contains a value.
-    /// @return true if this object hold a value; otherwise false.
+    /// @return true if this object holds a value; otherwise false.
     /// @since 8.0.0
     explicit operator bool() const BOND_NOEXCEPT
     {
@@ -105,7 +105,7 @@ public:
     }
 
     /// @brief Get a reference to the value.
-    /// @throw NothingException if the object contains nothing
+    /// @throw CoreException if the object contains nothing
     T& value()
     {
         if (is_nothing())
@@ -117,7 +117,7 @@ public:
     }
 
     /// @brief Get a constant reference to the value.
-    /// @throw NothingException if the object contains nothing
+    /// @throw CoreException if the object contains nothing
     const T& value() const
     {
         if (is_nothing())
@@ -179,7 +179,9 @@ public:
         return *this;
     }
     #else
+    /// @brief Assign from another maybe.
     maybe_common& operator=(const maybe_common&) = default;
+    /// @brief Move assign from another maybe.
     maybe_common& operator=(maybe_common&&) = default;
     #endif
 
@@ -189,7 +191,7 @@ public:
     /// holds nothing and the other holds a values; otherwise, calls
     /// operator== with the two values.
     ///
-    /// @since 8.0.0
+    /// @since 8.0.0 (was a member function prior)
     friend bool operator==(const maybe_common& lhs, const maybe_common& rhs)
     {
         return lhs._value == rhs._value;
@@ -200,7 +202,7 @@ public:
     /// See operator==(const maybe_common&,const maybe_common&) for details
     /// about how maybes holding nothing are handled.
     ///
-    /// @since 8.0.0
+    /// @since 8.0.0 (was a member function prior)
     friend bool operator!=(const maybe_common& lhs, const maybe_common& rhs)
     {
         return !(lhs == rhs);
@@ -271,11 +273,21 @@ protected:
 template <typename T, typename Enabled = void>
 class maybe;
 
-/// @brief Type used for fields with default value of 'nothing'
+/// @brief Type used for fields with default values of \c nothing.
 ///
 /// This specialization is used for instance of T without allocators.
 ///
-/// See [User's Manual](../../manual/bond_cpp.html#default-value-of-nothing)
+/// See the [User's
+/// Manual](../../manual/bond_cpp.html#default-value-of-nothing) for more
+/// details about default values of \c nothing.
+///
+/// @see For details of %maybe's comparison operators, see
+/// \li operator==(const detail::maybe_common&,const detail::maybe_common&)
+/// \li operator!=(const detail::maybe_common&,const detail::maybe_common&)
+/// \li operator==(const detail::maybe_common&,const T&)
+/// \li operator==(const T&,const detail::maybe_common&)
+/// \li operator!=(const detail::maybe_common&,const T&)
+/// \li operator!=(const T&,const detail::maybe_common&)
 template <typename T>
 class maybe<T, typename boost::disable_if<detail::has_allocator<T>>::type>
     : public detail::maybe_common<T>
@@ -299,17 +311,22 @@ public:
         : detail::maybe_common<T>(std::move(that))
     { }
     #else
+    /// @brief Copy a maybe
     maybe(const maybe&) = default;
+    /// @brief Move a maybe.
+    ///
+    /// @note Unlike \c std::optional, a moved-from maybe holds nothing
+    /// (compared to a moved-from T).
     maybe(maybe&&) = default;
     #endif
 
-    /// @brief Create a maybe that holds a value by copying the value.
+    /// @brief Create a maybe that holds a value by copying \c value.
     explicit
     maybe(const T& value)
         : detail::maybe_common<T>(value)
     { }
 
-    /// @brief Create a maybe that holds a value by moving from the value.
+    /// @brief Create a maybe that holds a value by moving from \c value.
     ///
     /// @since 8.0.0
     explicit
@@ -340,14 +357,14 @@ public:
     maybe& operator=(maybe&&) = default;
     #endif
 
-    /// @brief Assign by copying the value.
+    /// @brief Assign by copying a value.
     maybe& operator=(const T& value)
     {
         this->assign(value);
         return *this;
     }
 
-    /// @brief Move-assign from value.
+    /// @brief Move-assign from a value.
     /// @since 8.0.0
     maybe& operator=(T&& value)
     {
@@ -371,7 +388,7 @@ public:
         return *this->_value;
     }
 
-    /// @brief Swap this object with that object
+    /// @brief Swap this object with \c that.
     void swap(maybe& that)
     {
         using std::swap;
@@ -379,11 +396,21 @@ public:
     }
 };
 
-/// @brief Type used for fields with default value of 'nothing'
+/// @brief Type used for fields with default values of \c nothing.
 ///
-/// This specialization is used for instance of T with allocators.
+/// This specialization is used for instances of T with allocators.
 ///
-/// See [User's Manual](../../manual/bond_cpp.html#default-value-of-nothing)
+/// See the [User's
+/// Manual](../../manual/bond_cpp.html#default-value-of-nothing) for more
+/// details about default values of \c nothing.
+///
+/// @see For details of %maybe's comparison operators, see
+/// \li operator==(const detail::maybe_common&,const detail::maybe_common&)
+/// \li operator!=(const detail::maybe_common&,const detail::maybe_common&)
+/// \li operator==(const detail::maybe_common&,const T&)
+/// \li operator==(const T&,const detail::maybe_common&)
+/// \li operator!=(const detail::maybe_common&,const T&)
+/// \li operator!=(const T&,const detail::maybe_common&)
 template <typename T>
 class maybe<T, typename boost::enable_if<detail::has_allocator<T>>::type>
     : public detail::maybe_common<T>,
@@ -396,6 +423,8 @@ public:
     // value_type. Add an using to explicitly "export" the one from
     // maybe_common
     using typename detail::maybe_common<T>::value_type;
+
+    /// @brief The type of the allocator in use.
     using allocator_type = typename detail::allocator_type<T>::type;
 
     #if defined(_MSC_VER) && _MSC_VER < 1900
@@ -423,10 +452,17 @@ public:
     #else
     /// @brief Create a  maybe that holds nothing.
     maybe() = default;
+    /// @brief Copy a maybe
     maybe(const maybe&) = default;
+    /// @brief Move a maybe.
+    ///
+    /// @note Unlike \c std::optional, a moved-from maybe holds nothing
+    /// (compared to a moved-from T).
     maybe(maybe&&) = default;
     #endif
 
+    /// @brief Allocator-extended copy constructor. Uses alloc as the new
+    /// allocator, makes a copy of \c that.
     maybe(const maybe& that, const allocator_type& alloc)
         : detail::maybe_common<T>(),
           alloc_holder(alloc)
@@ -437,6 +473,11 @@ public:
         }
     }
 
+    /// @brief Allocator-extended move constructor. Uses alloc as the new
+    /// allocator, makes moved from \c that.
+    ///
+    /// @note Unlike \c std::optional, a moved-from maybe holds nothing
+    /// (compared to a moved-from T).
     maybe(maybe&& that, const allocator_type& alloc)
         : detail::maybe_common<T>(),
           alloc_holder(alloc)
@@ -445,9 +486,6 @@ public:
         {
             this->emplace(std::move(*that._value), alloc);
 
-            // unlike std::optional/boost::optional, moved-from bond::maybe
-            // instances are guaranteed to be nothing.
-            //
             // asigning boost::none is noexcept, but assigning { } is not
             that._value = boost::none;
         }
@@ -462,13 +500,13 @@ public:
           alloc_holder(alloc)
     { }
 
-    /// @brief Create a maybe that holds a copy of the value.
+    /// @brief Create a maybe that holds a copy of \c value.
     explicit maybe(const T& value)
         : detail::maybe_common<T>(value),
           alloc_holder()
     { }
 
-    /// @brief Create a non-empty maybe by moving from the value.
+    /// @brief Create a maybe that holds a value by moving from \c value.
     ///
     /// @since 8.0.0
     maybe(T&& value)
@@ -503,14 +541,14 @@ public:
     maybe& operator=(maybe&&) = default;
     #endif
 
-    /// @brief Assign by copying the value.
+    /// @brief Assign by copying \c value.
     maybe& operator=(const T& value)
     {
         this->assign(value);
         return *this;
     }
 
-    /// @brief Move-assign from value.
+    /// @brief Move-assign from \c value.
     /// @since 8.0.0
     maybe& operator=(T&& value)
     {
@@ -539,7 +577,7 @@ public:
         return *this->_value;
     }
 
-    /// @brief Swap this object with that object
+    /// @brief Swap this object with \c that.
     void swap(maybe& that)
     {
         using std::swap;
@@ -561,6 +599,7 @@ private:
     const alloc_holder& base_alloc_holder() const BOND_NOEXCEPT { return *this; }
 };
 
+/// @brief Swap two maybes.
 template<typename T>
 inline void swap(maybe<T>& x, maybe<T>& y)
 {
