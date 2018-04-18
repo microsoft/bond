@@ -253,18 +253,6 @@ public:
     }
 
 protected:
-    maybe_common& assign(const T& value)
-    {
-        emplace(value);
-        return *this;
-    }
-
-    maybe_common& assign(T&& value)
-    {
-        emplace(std::move(value));
-        return *this;
-    }
-
     boost::optional<T> _value;
 };
 
@@ -360,7 +348,7 @@ public:
     /// @brief Assign by copying a value.
     maybe& operator=(const T& value)
     {
-        this->assign(value);
+        this->emplace(value);
         return *this;
     }
 
@@ -368,7 +356,7 @@ public:
     /// @since 8.0.0
     maybe& operator=(T&& value)
     {
-        this->assign(std::move(value));
+        this->emplace(std::move(value));
         return *this;
     }
 
@@ -544,7 +532,7 @@ public:
     /// @brief Assign by copying \c value.
     maybe& operator=(const T& value)
     {
-        this->assign(value);
+        this->emplace(value);
         return *this;
     }
 
@@ -552,7 +540,7 @@ public:
     /// @since 8.0.0
     maybe& operator=(T&& value)
     {
-        this->assign(std::move(value));
+        this->emplace(std::move(value));
         return *this;
     }
 
