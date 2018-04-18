@@ -9,8 +9,8 @@
 
 namespace bond { namespace ext { namespace gRPC {
 
-    /// @brief Exception thrown to indicate that a callback has been invoked
-    /// multiple times when only one invocation is expected.
+    /// @brief %Exception thrown to indicate that a callback has been
+    /// invoked multiple times when only one invocation is expected.
     class MultipleInvocationException : public Exception
     {
     public:

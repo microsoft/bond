@@ -17,9 +17,7 @@
 namespace bond
 {
 
-//
-// Base type for all bond exceptions.
-//
+/// @brief Base type for all Bond exceptions.
 class Exception
     : public std::exception,
       public SerializableExceptionBase
@@ -44,6 +42,8 @@ protected:
 };
 
 
+/// @brief %Exception used to indicate an error during serialization or
+/// deserialization.
 struct CoreException
     : Exception
 {

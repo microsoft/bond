@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+#include <type_traits>
+#include <utility>
+
 namespace detail
 {
 
@@ -100,3 +104,37 @@ public:
 }
 
 typedef detail::TestAllocator<> TestAllocator;
+
+template <typename T = char>
+struct allocator_with_state : std::allocator<T>
+{
+    template <typename U>
+    struct rebind
+    {
+        using other = allocator_with_state<U>;
+    };
+
+    template <typename U>
+    allocator_with_state(std::shared_ptr<U> state)
+        : state{ std::move(state) }
+    {}
+
+    template <typename U>
+    allocator_with_state(const allocator_with_state<U>& other)
+        : state{ other.state }
+    {}
+
+    std::shared_ptr<void> state;
+};
+
+template <typename T>
+inline bool operator==(const allocator_with_state<T>& a1, const allocator_with_state<T>& a2)
+{
+    return a1.state == a2.state;
+}
+
+template <typename T>
+inline bool operator!=(const allocator_with_state<T>& a1, const allocator_with_state<T>& a2)
+{
+    return !(a1 == a2);
+}

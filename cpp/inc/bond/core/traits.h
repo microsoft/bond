@@ -186,6 +186,26 @@ unique_buffer_magic_check;
 namespace detail
 {
 
+template<typename T, typename E = void> struct
+has_allocator
+    : std::false_type {};
+
+template<typename T> struct
+has_allocator<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
+    : std::true_type {};
+
+template<typename T, typename E = void> struct
+allocator_type
+{
+    typedef std::allocator<T> type;
+};
+
+template<typename T> struct
+allocator_type<T, typename boost::enable_if<has_allocator<T> >::type>
+{
+    typedef typename T::allocator_type type;
+};
+
 template<typename A>
 struct is_default_allocator
     : std::false_type { };
@@ -193,6 +213,20 @@ struct is_default_allocator
 template<typename T>
 struct is_default_allocator<std::allocator<T> >
     : std::true_type { };
+
+template<typename T>
+typename boost::enable_if<has_allocator<T>, typename allocator_type<T>::type>::type
+get_allocator(const T& value)
+{
+    return value.get_allocator();
+}
+
+template<typename T>
+typename boost::disable_if<has_allocator<T>, typename allocator_type<T>::type>::type
+get_allocator(const T&)
+{
+    return typename allocator_type<T>::type();
+}
 
 } // namespace detail
 

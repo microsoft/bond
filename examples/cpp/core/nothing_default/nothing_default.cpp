@@ -41,17 +41,17 @@ int main()
 
     // Initialize field by assigning a value to it...
     v1.foo = 10;
-    
+
     // ... or for complex fields using set_value() method
     v1.baz.set_value();
     v1.baz.value().push_back("test1");
     v1.baz.value().push_back("test2");
 
-    // We can also set a field to 'nothing' using set_nothing() method. 
+    // We can also set a field to 'nothing' using set_nothing() method.
     // Optional fields that are set to 'nothing' are omitted when object is
     // serialized.
     v1.baz.set_nothing();
-    
+
     bond::InputBuffer buffer = Marshal(v1);
 
     // Deserialize the payload into object of type Struct_v2
@@ -62,7 +62,7 @@ int main()
     // It is initialized to 'nothing' by default. By checking if the field is
     // 'nothing' after de-serialization we can detect if it was present in the
     // payload or not.
-    
+
     if (v2.baz.is_nothing())
     {
         printf("Field 'baz' was not present in the payload\n");
@@ -72,9 +72,9 @@ int main()
     try
     {
         double d;
-            
+
         printf("Using field bar... ");
-        d = v2.bar;
+        d = v2.bar.value();
         fprintf(stderr, "Accessing field bar should have thrown, but we got %g instead", d);
         exit(1); // should not have gotten here
     }
@@ -83,5 +83,5 @@ int main()
         printf("%s\n", e.what());
     }
 
-    return 0;    
+    return 0;
 }
