@@ -84,11 +84,10 @@
             if (-not $env:BOND_VS_VERSION)
             {
                 $env:BOND_VS_VERSION = $env:APPVEYOR_BUILD_WORKER_IMAGE
-            }
-
-            if (-not $env:BOND_VS_VERSION)
-            {
-                $env:BOND_VS_VERSION = 'Visual Studio 2015'
+                if (-not $env:BOND_VS_VERSION)
+                {
+                    $env:BOND_VS_VERSION = 'Visual Studio 2015'
+                }
             }
 
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {

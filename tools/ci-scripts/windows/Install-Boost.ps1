@@ -47,36 +47,6 @@ param
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function Get-TempFolder
-{
-    $base = [System.IO.Path]::GetTempPath()
-    $result = ''
-
-    do
-    {
-        $randomPart = ''
-        while ($randomPart.Length -lt 5)
-        {
-            $asciiBase = 97 # ASCII for 'a'
-
-            $r = Get-Random -Minimum 0 -Maximum 36
-            if ($r -ge 26) # We use [26-35] for numbers
-            {
-                $asciiBase = 48 # ASCII for '0'
-                $r -= 26 # adjust to be in [0-9] from [26-36].
-            }
-
-            $randomPart += [char]($r + $asciiBase)
-        }
-
-        $result = [System.IO.Path]::Combine($base, $randomPart)
-    } while (Test-Path -LiteralPath $result -PathType Container)
-
-    # There's a TOCTTOU race in this check, but it's very unlikely.
-    Write-Debug "Generated temp folder name: '$result'"
-    return $result
-}
-
 function ConvertVsNum-ToBoostPackageFormat([string]$vsNum)
 {
     return $vsNum.Replace('.', '')
@@ -103,7 +73,10 @@ function Install-NuGetPackage([string]$InstallDir, [string]$PackageId, [string]$
 
 if (-not $OutputDirectory)
 {
-    $OutputDirectory = Get-TempFolder
+    $OutputDirectory = [System.IO.Path]::Combine(
+        [System.IO.Path]::GetTempPath(),
+        [System.IO.Path]::GetRandomFileName())
+    Write-Debug "OutputDirectory not set. Generated temp folder name: '$OutputDirectory'"
 }
 
 if (-not (Test-Path -LiteralPath $OutputDirectory -PathType Container))
