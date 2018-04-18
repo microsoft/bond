@@ -111,17 +111,19 @@
                     $boostComponents += 'boost_python'
                 }
 
-                $vsNum = tools\ci-scripts\windows\ConvertTo-MsvcVersion.ps1 -ImageName $env:BOND_VS_VERSION -Format VsNum
+                $vcToolsetVer = tools\ci-scripts\windows\ConvertTo-MsvcVersion.ps1 `
+                    -ImageName $env:BOND_VS_VERSION `
+                    -Format VcToolSetVer
 
                 $boostLoc = tools\ci-scripts\windows\Get-BoostLocation.ps1 `
                     -Version $env:BOND_BOOST `
-                    -VsNum $vsNum
+                    -VcToolSetVer $vcToolSetVer
 
                 if (-not $boostLoc)
                 {
                     $boostLoc = tools\ci-scripts\windows\Install-Boost.ps1 `
                         -Version $env:BOND_BOOST `
-                        -VsNum $vsNum `
+                        -VcToolSetVer $vcToolSetVer `
                         -Components $boostComponents
                 }
 

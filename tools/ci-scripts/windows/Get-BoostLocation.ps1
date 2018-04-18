@@ -10,10 +10,10 @@ https://www.appveyor.com/docs/build-environment/#pre-installed-software
 
 The Boost version to find.
 
-.PARAMETER VsNum
+.PARAMETER VcToolsetVer
 
-Which MSVC compiler version to find libraries for, in Visual Studio version
-number format. (E.g., 12.0, 14.1).
+Which MSVC toolset version to find libraries for, in Visual Studio toolset
+version number format. (E.g., 12.0, 14.1).
 
 #>
 [CmdletBinding()]
@@ -24,15 +24,15 @@ param
 
     [ValidateSet('12.0', '14.0', '14.1')]
     [string]
-    $VsNum
+    $VcToolsetVer
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function FindBoostLibPath([string]$vsNum, [string]$boostRoot, [string]$platform)
+function FindBoostLibPath([string]$vcToolsetVer, [string]$boostRoot, [string]$platform)
 {
-    $boostLibPath = "$boostRoot\lib$platform-msvc-$vsNum"
+    $boostLibPath = "$boostRoot\lib$platform-msvc-$vcToolsetVer"
 
     Write-Debug "Checking for libs under '$boostLibPath'"
 
@@ -46,11 +46,11 @@ function FindBoostLibPath([string]$vsNum, [string]$boostRoot, [string]$platform)
     }
 }
 
-function FindBoostLibPaths([string]$vsNum, [string]$boostRoot)
+function FindBoostLibPaths([string]$vcToolsetVer, [string]$boostRoot)
 {
     $boostLibDirs = @{}
-    $lib32Dir = FindBoostLibPath $vsNum $boostRoot '32'
-    $lib64Dir = FindBoostLibPath $vsNum $boostRoot '64'
+    $lib32Dir = FindBoostLibPath $vcToolsetVer $boostRoot '32'
+    $lib64Dir = FindBoostLibPath $vcToolsetVer $boostRoot '64'
 
     if ((-not $lib32Dir) -and (-not $lib64Dir))
     {
@@ -82,7 +82,7 @@ if (-not (Test-Path -PathType Leaf $configHpp))
     return $null
 }
 
-$boostLibDirs = FindBoostLibPaths $VsNum $boostRoot
+$boostLibDirs = FindBoostLibPaths $VcToolsetVer $boostRoot
 if (-not $boostLibDirs)
 {
     return $null

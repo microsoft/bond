@@ -9,9 +9,9 @@ The AppVeyor build worker image name.
 
 .PARAMETER Format
 
-The output format. One of 'VsNum', 'Year', or 'CMakeGeneratorNum'.
+The output format. One of 'VcToolsetVer', 'Year', or 'CMakeGeneratorNum'.
 
-VsNum will produce something like '12.0' or '14.1'.
+VcToolsetVer will produce something like '12.0' or '14.1'.
 Year will produce something like '2013' or '2017'.
 CMakeGeneratorNum will produce something like '12' or '15'.
 
@@ -22,15 +22,15 @@ param
     [string]
     $ImageName,
 
-    [ValidateSet('VsNum','Year', 'CMakeGeneratorNum')]
+    [ValidateSet('VcToolsetVer','Year', 'CMakeGeneratorNum')]
     [string]
-    $Format = 'VsNum'
+    $Format = 'VcToolsetVer'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function ToVsNum([string]$imageName)
+function ToVcToolsetVer([string]$imageName)
 {
     switch ($imageName)
     {
@@ -41,32 +41,32 @@ function ToVsNum([string]$imageName)
     }
 }
 
-function ToYear([string]$vsNum)
+function ToYear([string]$vcToolsetVer)
 {
-    switch ($vsNum)
+    switch ($vcToolsetVer)
     {
         '12.0' { '2013' }
         '14.0' { '2015' }
         '14.1' { '2017' }
-        default { throw "Unknown VsNum '$vsNum'" }
+        default { throw "Unknown VcToolsetVer '$vcToolsetVer'" }
     }
 }
 
-function ToCMakeGeneratorNum([string]$vsNum)
+function ToCMakeGeneratorNum([string]$vcToolsetVer)
 {
-    switch ($vsNum)
+    switch ($vcToolsetVer)
     {
         '12.0' { '12' }
         '14.0' { '14' }
         '14.1' { '15' }
-        default { throw "Unknown VsNum '$vsNum'" }
+        default { throw "Unknown VcToolsetVer '$vcToolsetVer'" }
     }
 }
 
 switch ($Format)
 {
-    'VsNum' { return ToVsNum $ImageName }
-    'Year' { return ToYear (ToVsNum $ImageName) }
-    'CMakeGeneratorNum' { return ToCMakeGeneratorNum (ToVsNum $ImageName) }
+    'VcToolsetVer' { return ToVcToolsetVer $ImageName }
+    'Year' { return ToYear (ToVcToolsetVer $ImageName) }
+    'CMakeGeneratorNum' { return ToCMakeGeneratorNum (ToVcToolsetVer $ImageName) }
     default { throw "Unknown Format '$Format'" }
 }

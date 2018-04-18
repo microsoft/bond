@@ -12,10 +12,10 @@ The Boost version to install.
 
 The Boost binary components to install. The Boost headers are always installed.
 
-.PARAMETER VsNum
+.PARAMETER VcToolsetVer
 
-Which MSVC compiler version to find libraries for, in Visual Studio version
-number format. (E.g., 12.0, 14.1).
+Which MSVC toolset version to install libraries for, in Visual Studio toolset
+version number format. (E.g., 12.0, 14.1).
 
 .PARAMETER OutputDirectory
 
@@ -30,7 +30,7 @@ param
 
     [ValidateSet('12.0', '14.0', '14.1')]
     [string]
-    $VsNum,
+    $VcToolsetVer,
     
     [string[]]
     $Components = (
@@ -47,9 +47,9 @@ param
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function ConvertVsNum-ToBoostPackageFormat([string]$vsNum)
+function ConvertVcToolsetVer-ToBoostPackageFormat([string]$vcToolsetVer)
 {
-    return $vsNum.Replace('.', '')
+    return $vcToolsetVer.Replace('.', '')
 }
 
 function Install-NuGetPackage([string]$InstallDir, [string]$PackageId, [string]$PackageVersion)
@@ -112,7 +112,7 @@ function Install-BoostHeaders
 
 function Install-BoostComponent([string]$Component)
 {
-    $packageId = "$Component-vc$(ConvertVsNum-ToBoostPackageFormat $VsNum)"
+    $packageId = "$Component-vc$(ConvertVcToolsetVer-ToBoostPackageFormat $VcToolsetVer)"
 
     Write-Progress -Activity 'Installing Boost' -Status "Installing '$packageId'"
 
