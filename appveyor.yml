@@ -66,7 +66,7 @@
             - BOND_BUILD: Python
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
               BOND_ARCH: 32
-              BOND_BOOST: "1.61.0"
+              BOND_BOOST: "1.62.0"
               BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
