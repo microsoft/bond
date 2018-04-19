@@ -37,6 +37,7 @@ public:
         : rapidjson::Writer<detail::RapidJsonOutputStream<BufferT> >(_stream),
           _stream(output),
           _output(output),
+          _count(0),
           _level(0),
           _indent((std::min)(indent, 8)),
           _pretty(pretty),
