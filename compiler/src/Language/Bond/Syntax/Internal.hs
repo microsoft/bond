@@ -10,7 +10,7 @@ module Language.Bond.Syntax.Internal
     , takeNamespace
     , isBaseField
     , metaField
-    , getBaseFields
+    , baseFields
     ) where
 
 import Data.Monoid
@@ -53,12 +53,6 @@ isBaseField :: String -> Maybe Type -> Bool
 isBaseField name = getAny . optional (foldMapFields (Any.(name==).fieldName))
 
 -- If a Declaration is a Struct then return the Fields of its Parent
-getBaseFields :: Declaration -> [Field]
-getBaseFields Struct {..} = case structBase of
-    Just baseType -> case baseType of
-        BT_UserDefined decl _ -> case decl of
-            Struct {..} -> structFields
-            _ -> []
-        _ -> []
-    Nothing -> []
-getBaseFields _ = []
+baseFields :: Declaration -> Maybe [Field]
+baseFields Struct{..} = foldMapFields return <$> structBase
+baseFields _ = Nothing

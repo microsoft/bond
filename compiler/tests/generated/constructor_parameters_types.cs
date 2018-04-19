@@ -35,18 +35,22 @@ namespace Test
         [global::Bond.Id(1)]
         public int anotherInt { get; private set; }
 
+        [global::Bond.Id(2), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
+        public string someString { get; private set; }
+
         public Simple(
             int someInt,
-            int anotherInt
-        )
+            int anotherInt,
+            string someString)
         {
             this.someInt = someInt;
             this.anotherInt = anotherInt;
+            this.someString = someString;
         }
 
         public Simple()
         {
-            
+            someString = "";
         }
     }
 
@@ -58,8 +62,7 @@ namespace Test
         public string someText { get; private set; }
 
         public Foo(
-            string someText
-        )
+            string someText)
         {
             this.someText = someText;
         }
@@ -109,8 +112,7 @@ namespace Test
             Dictionary<string, double> someMap,
             HashSet<string> someSet
         ) : base(
-                someText
-            )
+                someText)
         {
             this.testEnum = testEnum;
             this.someText = someText0;
@@ -134,6 +136,52 @@ namespace Test
 
     [global::Bond.Schema]
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
+    public partial class Baz
+        : Bar
+    {
+        [global::Bond.Id(0), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
+        new public string someText { get; private set; }
+
+        [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
+        public string evenMoreText { get; private set; }
+
+        public Baz(
+            // Base class parameters
+            string someText,
+            TestEnum testEnum,
+            string someText0,
+            int someInt,
+            string moreText,
+            List<Simple> someList,
+            Dictionary<string, double> someMap,
+            HashSet<string> someSet,
+
+            // This class parameters
+            string someText1,
+            string evenMoreText
+        ) : base(
+                someText,
+                testEnum,
+                someText0,
+                someInt,
+                moreText,
+                someList,
+                someMap,
+                someSet)
+        {
+            this.someText = someText1;
+            this.evenMoreText = evenMoreText;
+        }
+
+        public Baz()
+        {
+            someText = "";
+            evenMoreText = "";
+        }
+    }
+
+    [global::Bond.Schema]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
     public partial class DerivedEmpty
         : Foo
     {
@@ -142,10 +190,8 @@ namespace Test
         public DerivedEmpty(
             // Base class parameters
             string someText
-            
         ) : base(
-                someText
-            )
+                someText)
         {
             
         }

@@ -7,13 +7,13 @@ module Language.Bond.Codegen.Cs.Types_cs
     ( types_cs
     , FieldMapping(..)
     , StructMapping(..)
-    , ConstructorMapping(..)
+    , ConstructorOptions(..)
     ) where
 
 import Data.Monoid
 import qualified Data.Foldable as F
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
@@ -35,8 +35,8 @@ data FieldMapping =
     ReadOnlyProperties      -- ^ auto-properties with private setter
     deriving Eq
 
--- | Representation of schema fields in the generated C# types
-data ConstructorMapping =
+-- | Options for how constructors should be generated.
+data ConstructorOptions =
     DefaultWithProtectedBase | -- ^ The original bond behavior.
     ConstructorParameters      -- ^ Generate a constructor that takes all the fields as parameters.
     deriving Eq
@@ -45,9 +45,9 @@ data ConstructorMapping =
 types_cs
     :: StructMapping        -- ^ Specifies how to represent schema structs
     -> FieldMapping         -- ^ Specifies how to represent schema fields
-    -> ConstructorMapping   -- ^ Specifies the constructors that should be generated
+    -> ConstructorOptions   -- ^ Specifies the constructors that should be generated
     -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-types_cs structMapping fieldMapping constructorMapping cs _ _ declarations = (fileSuffix, [lt|
+types_cs structMapping fieldMapping constructorOptions cs _ _ declarations = (fileSuffix, [lt|
 #{CS.disableCscWarnings}
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
@@ -124,11 +124,11 @@ namespace #{csNamespace}
         -- constructor: ConstructorParameters option
         constructorWithParameters = if not noMetaFields
             then error "bond_meta usage is incompatible with constructor_parameters"
-            else [lt|
+            else if (null baseFieldList)
+                then [lt|
 
         public #{declName}(
-#{baseParameterBlock}            #{commaLineSep 3 thisParam structFields}
-        )#{baseCtor}
+            #{commaLineSep 3 thisParam structFields})
         {
             #{newlineSep 3 paramBasedInitializer structFields}
         }
@@ -137,37 +137,39 @@ namespace #{csNamespace}
         {
             #{newlineSep 3 initializer structFields}
         }|]
-            where
-                baseFields = getBaseFields s;
+                else [lt|
 
-                baseParameterBlock = if null baseFields
-                    then mempty
-                    else [lt|            // Base class parameters
-            #{commaLineSep 3 baseParam baseFields}#{baseParameterBlockOpt}
-|]
+        public #{declName}(
+            // Base class parameters
+            #{commaLineSep 3 baseParam (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
+        ) : base(
+                #{commaLineSep 4 pack uniqueBaseFieldNames})
+        {
+            #{newlineSep 3 paramBasedInitializer structFields}
+        }
 
-                uniqueFieldName f alreadyUsedFields = uniqueName (fieldName f) [fieldName uf | uf <- alreadyUsedFields]
+        public #{declName}()
+        {
+            #{newlineSep 3 initializer structFields}
+        }|]
 
-                baseParam f = [lt|#{csType $ fieldType f} #{fieldName f}|]
-                thisParam f = [lt|#{csType $ fieldType f} #{uniqueFieldName f baseFields}|]
+        thisParamBlock = if null structFields
+            then mempty
+            else [lt|,
 
-                paramBasedInitializer f = [lt|this.#{fieldName f} = #{uniqueFieldName f baseFields};|]
+            // This class parameters
+            #{commaLineSep 3 thisParam structFields}|]
 
-                baseParameterBlockOpt = if null structFields
-                    then mempty
-                    else [lt|,
+        baseFieldList = concat $ baseFields s
 
-            // This class parameters|]
+        uniqueBaseFieldNames = uniqueNames [fieldName f | f <- baseFieldList]
 
-                ltFieldName f = [lt|#{fieldName f}|]
+        baseParam (f, n) = [lt|#{csType $ fieldType f} #{n}|]
+        thisParam f = [lt|#{csType $ fieldType f} #{uniqueName (fieldName f) uniqueBaseFieldNames}|]
 
-                baseCtor = if null baseFields
-                    then mempty
-                    else [lt| : base(
-                #{commaLineSep 4 ltFieldName baseFields}
-            )|]
+        paramBasedInitializer f = [lt|this.#{fieldName f} = #{uniqueName (fieldName f) uniqueBaseFieldNames};|]
 
-        constructors = case constructorMapping of
+        constructors = case constructorOptions of
             DefaultWithProtectedBase -> defaultWithProtectedBaseConstructor
             ConstructorParameters -> constructorWithParameters
 
