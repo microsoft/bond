@@ -62,73 +62,72 @@ class RapidJsonInputStream
 public:
     typedef char Ch;
 
-    explicit RapidJsonInputStream(const Buffer& buf)
-        : input(buf),
-          current(0),
-          count(0)
+    explicit RapidJsonInputStream(const Buffer& input)
+        : _input(input),
+          _current(0),
+          _count(0)
     {
-        input.Read(current);
+        _input.Read(_current);
     }
 
+    #if defined(_MSC_VER) && _MSC_VER < 1900
+    // since we explicitly implement a move ctor, we need to explicitly
+    // default these
     RapidJsonInputStream(const RapidJsonInputStream&) = default;
     RapidJsonInputStream& operator=(const RapidJsonInputStream&) = default;
 
-    #if defined(_MSC_VER) && _MSC_VER < 1900
     // MSVC cannot = default rvalue ctor or move-assign operators
     RapidJsonInputStream(RapidJsonInputStream&& other)
-        : input(std::move(other.input)),
-          current(std::move(other.current)),
-          count(std::move(other.count))
+        : _input(std::move(other._input)),
+          _current(std::move(other._current)),
+          _count(std::move(other._count))
     { }
 
     RapidJsonInputStream& operator=(RapidJsonInputStream&& other)
     {
-        input = std::move(other.input);
-        current = std::move(other.current);
-        count = std::move(other.count);
+        _input = std::move(other._input);
+        _current = std::move(other._current);
+        _count = std::move(other._count);
         return *this;
     }
-    #else
-    RapidJsonInputStream(RapidJsonInputStream&&) = default;
-    RapidJsonInputStream& operator=(RapidJsonInputStream&&) = default;
     #endif
 
     const Buffer& GetBuffer() const
     {
-        return input;
+        return _input;
     }
 
     Buffer& GetBuffer()
     {
-        return input;
+        return _input;
     }
 
     char Peek()
     {
-        if (!current)
+        if (!_current)
         {
-            input.Read(current);
+            _input.Read(_current);
         }
 
-        return current;
+        return _current;
     }
 
     size_t Tell() const
     {
-        return count;
+        return _count;
     }
 
     char Take()
     {
-        char c = current;
-        current = '\0';
+        char c = _current;
+        _current = '\0';
 
         if (!c)
         {
-            input.Read(c);
+            _input.Read(c);
         }
 
-        ++count;
+        ++_count;
         return c;
     }
 
@@ -138,9 +137,9 @@ public:
     size_t PutEnd(char*) { BOOST_ASSERT(false); return 0; }
 
 private:
-    Buffer input;
-    uint8_t current;
-    size_t count;
+    Buffer _input;
+    uint8_t _current;
+    size_t _count;
 };
 
 
@@ -149,8 +148,8 @@ template <typename Buffer>
 class RapidJsonOutputStream
 {
 public:
-    RapidJsonOutputStream(Buffer& output)
-        : output(output)
+    explicit RapidJsonOutputStream(Buffer& output)
+        : _output(output)
     {
     }
 
@@ -165,7 +164,7 @@ public:
 
     void Put(char c)
     {
-        output.Write(c);
+        _output.Write(c);
     }
 
     void Flush()
@@ -173,7 +172,7 @@ public:
     }
 
 private:
-    Buffer& output;
+    Buffer& _output;
 };
 
 
@@ -181,7 +180,7 @@ private:
 template <>
 struct RapidJsonInputStream<const rapidjson::UTF8<>::Ch*> : rapidjson::StringStream
 {
-    RapidJsonInputStream(const char* buffer)
+    explicit RapidJsonInputStream(const char* buffer)
         : rapidjson::StringStream(buffer)
     {}
 

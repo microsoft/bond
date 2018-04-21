@@ -227,7 +227,7 @@ private:
         // MSVC cannot = default rvalue ctor or move-assign operators
         StreamHolder(StreamHolder&& other)
             : _stream(std::move(other._stream)),
-             _parent(std::move(other._parent))
+              _parent(std::move(other._parent))
         { }
 
         StreamHolder& operator=(StreamHolder&& other)
