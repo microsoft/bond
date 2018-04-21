@@ -37,9 +37,9 @@ public:
 
     /// @brief Construct from input buffer/stream containing serialized data.
     SimpleJsonReader(const Buffer& input)
-        : _streamHolder(input),
+        : _value(nullptr),
           _document(boost::make_shared<rapidjson::Document>()),
-          _value(nullptr)
+          _streamHolder(input)
     { }
 
     /// @brief Create a "child" SimpleJsonReader to read \c value, which is
@@ -47,16 +47,13 @@ public:
     ///
     /// @warning \c parent must remain alive for the lifetime of this child.
     SimpleJsonReader(SimpleJsonReader& parent, const Field& value)
-        : _streamHolder(parent),
+        : _value(&value),
           _document(parent._document),
-          _value(&value)
+          _streamHolder(parent)
     {
         // Must have an already-parsed parent
         BOOST_ASSERT(parent._value);
     }
-
-    /// @brief Copy constructor
-    SimpleJsonReader(const SimpleJsonReader&) = default;
 
     bool ReadVersion()
     {
@@ -70,7 +67,7 @@ public:
         {
             const unsigned parseFlags = rapidjson::kParseIterativeFlag | rapidjson::kParseStopWhenDoneFlag;
 
-            _document->ParseStream<parseFlags>(_streamHolder.GetStream());
+            _document->ParseStream<parseFlags>(_streamHolder.Get());
 
             // If there were any parse errors, an exception should have been
             // thrown, as we define RAPIDJSON_PARSE_ERROR
@@ -126,13 +123,13 @@ public:
     /// @brief Access to underlying buffer
     const Buffer& GetBuffer() const
     {
-        return _streamHolder.GetStream().GetBuffer();
+        return _streamHolder.Get().GetBuffer();
     }
 
     /// @brief Access to underlying buffer
     Buffer& GetBuffer()
     {
-        return _streamHolder.GetStream().GetBuffer();
+        return _streamHolder.Get().GetBuffer();
     }
 
 private:
@@ -188,6 +185,9 @@ private:
     friend typename boost::enable_if<is_map_container<X> >::type
     DeserializeMap(X&, BondDataType, const T&, SimpleJsonReader<Buffer>&);
 
+    const rapidjson::Value* _value;
+    boost::shared_ptr<rapidjson::Document> _document;
+
     /// @brief Holds either an input stream XOR a pointer to some parent
     /// StreamHolder.
     class StreamHolder
@@ -205,10 +205,8 @@ private:
 
         explicit StreamHolder(SimpleJsonReader& parent)
             : _stream(),
-              // If we're creating a child of a child, use the "root" parent
-              // as our parent instead of having a bunch of intermediate
-              // children as parent.
-              _parent(parent._streamHolder.GetParent())
+              // Resolve the real parent
+              _parent(&parent._streamHolder.GetParent())
         {
             BOOST_ASSERT(_parent->IsParent());
             BOOST_ASSERT(!IsParent());
@@ -217,10 +215,19 @@ private:
         // Intentionaly deep copy. Copies of SimpleJsonReader are expected
         // to be deep copies, even if they're made from children.
         StreamHolder(const StreamHolder& other)
-            : _stream(other.GetStream()),
+            : _stream(other.Get()),
               _parent()
         {
             BOOST_ASSERT(IsParent());
+        }
+
+        StreamHolder& operator=(const StreamHolder& other)
+        {
+            _stream.emplace(other.Get());
+            _parent = nullptr;
+            BOOST_ASSERT(IsParent());
+
+            return *this;
         }
 
         #if defined(_MSC_VER) && _MSC_VER < 1900
@@ -238,19 +245,17 @@ private:
         }
         #else
         StreamHolder(StreamHolder&&) = default;
-        StreamHolder& operator=(StreamHolder&&) = default ;
+        StreamHolder& operator=(StreamHolder&&) = default;
         #endif
 
-        StreamHolder& operator=(const StreamHolder&) = default;
-
-        const detail::RapidJsonInputStream<Buffer>& GetStream() const
+        const detail::RapidJsonInputStream<Buffer>& Get() const
         {
-            return IsParent() ? _stream.value() : _parent->GetStream();
+            return IsParent() ? _stream.value() : _parent->Get();
         }
 
-        detail::RapidJsonInputStream<Buffer>& GetStream()
+        detail::RapidJsonInputStream<Buffer>& Get()
         {
-            return IsParent() ? _stream.value() : _parent->GetStream();
+            return IsParent() ? _stream.value() : _parent->Get();
         }
 
     private:
@@ -261,17 +266,14 @@ private:
             return isParent;
         }
 
-        StreamHolder* GetParent()
+        StreamHolder& GetParent()
         {
-            return IsParent() ? this : _parent;
+            return IsParent() ? *this : *_parent;
         }
 
         boost::optional<detail::RapidJsonInputStream<Buffer>> _stream;
         StreamHolder* _parent;
     } _streamHolder;
-
-    boost::shared_ptr<rapidjson::Document> _document;
-    const rapidjson::Value* _value;
 };
 
 
