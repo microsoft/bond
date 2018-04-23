@@ -2,8 +2,11 @@
 #include "json_tests.h"
 
 #include <boost/format.hpp>
+#include <boost/static_assert.hpp>
+
 #include <locale>
 #include <stdarg.h>
+#include <type_traits>
 
 using namespace bond;
 
@@ -191,6 +194,11 @@ TEST_CASE_END
 template <uint16_t N, typename Reader, typename Writer>
 void StringTests(UnitTestSuite& suite)
 {
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_copy_assignable<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_move_assignable<Reader>::value);
+
     AddTestCase<TEST_ID(N),
         StringRoundtripTest, Reader, Writer>(suite, "Roundtrip string/wstring");
 
@@ -198,6 +206,24 @@ void StringTests(UnitTestSuite& suite)
         StreamDeserializationTest, NestedStruct, Reader, Writer>(suite, "Stream deserialization test");
 }
 
+TEST_CASE_BEGIN(ReaderOverCStr)
+{
+    using Reader = bond::SimpleJsonReader<const char*>;
+
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_copy_assignable<Reader>::value);
+    BOOST_STATIC_ASSERT(std::is_move_assignable<Reader>::value);
+
+    const char* literalJson = "{ \"m_str\": \"specialized for const char*\" }";
+
+    Reader json_reader(literalJson);
+    SimpleStruct to;
+    bond::Deserialize(json_reader, to);
+
+    BOOST_CHECK_EQUAL("specialized for const char*", to.m_str);
+}
+TEST_CASE_END
 
 TEST_CASE_BEGIN(DeepNesting)
 {
@@ -231,6 +257,7 @@ void JSONTest::Initialize()
     );
 
     AddTestCase<TEST_ID(0x1c05), DeepNesting>(suite, "Deeply nested JSON struct");
+    AddTestCase<TEST_ID(0x1c06), ReaderOverCStr>(suite, "SimpleJsonReader<const char*> specialization");
 }
 
 bool init_unit_test()

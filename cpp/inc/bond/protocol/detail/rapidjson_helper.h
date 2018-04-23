@@ -45,7 +45,6 @@
 
 #include "rapidjson/writer.h"
 
-#include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
 
 #include <algorithm>
@@ -63,42 +62,72 @@ class RapidJsonInputStream
 public:
     typedef char Ch;
 
-    RapidJsonInputStream(typename boost::call_traits<Buffer>::reference input)
-        : input(&input),
-          current(0),
-          count(0)
+    explicit RapidJsonInputStream(const Buffer& input)
+        : _input(input),
+          _current(0),
+          _count(0)
     {
-        input.Read(current);
+        _input.Read(_current);
     }
 
-    RapidJsonInputStream(const RapidJsonInputStream& that, typename boost::call_traits<Buffer>::reference input)
-        : input(&input),
-          current(that.current),
-          count(that.count)
-    {}
+    #if defined(_MSC_VER) && _MSC_VER < 1900
+    // since we explicitly implement a move ctor, we need to explicitly
+    // default these
+    RapidJsonInputStream(const RapidJsonInputStream&) = default;
+    RapidJsonInputStream& operator=(const RapidJsonInputStream&) = default;
+
+    // MSVC cannot = default rvalue ctor or move-assign operators
+    RapidJsonInputStream(RapidJsonInputStream&& other)
+        : _input(std::move(other._input)),
+          _current(std::move(other._current)),
+          _count(std::move(other._count))
+    { }
+
+    RapidJsonInputStream& operator=(RapidJsonInputStream&& other)
+    {
+        _input = std::move(other._input);
+        _current = std::move(other._current);
+        _count = std::move(other._count);
+        return *this;
+    }
+    #endif
+
+    const Buffer& GetBuffer() const
+    {
+        return _input;
+    }
+
+    Buffer& GetBuffer()
+    {
+        return _input;
+    }
 
     char Peek()
     {
-        if (!current)
-            input->Read(current);
+        if (!_current)
+        {
+            _input.Read(_current);
+        }
 
-        return current;
+        return _current;
     }
 
     size_t Tell() const
     {
-        return count;
+        return _count;
     }
 
     char Take()
     {
-        char c = current;
-        current = '\0';
+        char c = _current;
+        _current = '\0';
 
         if (!c)
-            input->Read(c);
+        {
+            _input.Read(c);
+        }
 
-        ++count;
+        ++_count;
         return c;
     }
 
@@ -107,20 +136,10 @@ public:
     void Put(char) { BOOST_ASSERT(false); }
     size_t PutEnd(char*) { BOOST_ASSERT(false); return 0; }
 
-    RapidJsonInputStream& operator=(const RapidJsonInputStream& that)
-    {
-        // rapidjson reader makes a local copy of stream within some functions
-        // and assigns it back to its main stream variable before function exit.
-        BOOST_ASSERT(input == that.input);
-        current = that.current;
-        count = that.count;
-        return *this;
-    }
-
 private:
-    typename std::remove_reference<Buffer>::type* input;
-    uint8_t current;
-    size_t count;
+    Buffer _input;
+    uint8_t _current;
+    size_t _count;
 };
 
 
@@ -129,8 +148,8 @@ template <typename Buffer>
 class RapidJsonOutputStream
 {
 public:
-    RapidJsonOutputStream(typename boost::call_traits<Buffer>::reference output)
-        : output(output)
+    explicit RapidJsonOutputStream(Buffer& output)
+        : _output(output)
     {
     }
 
@@ -145,7 +164,7 @@ public:
 
     void Put(char c)
     {
-        output.Write(c);
+        _output.Write(c);
     }
 
     void Flush()
@@ -153,7 +172,7 @@ public:
     }
 
 private:
-    Buffer& output;
+    Buffer& _output;
 };
 
 
@@ -161,7 +180,7 @@ private:
 template <>
 struct RapidJsonInputStream<const rapidjson::UTF8<>::Ch*> : rapidjson::StringStream
 {
-    RapidJsonInputStream(const char* buffer)
+    explicit RapidJsonInputStream(const char* buffer)
         : rapidjson::StringStream(buffer)
     {}
 
