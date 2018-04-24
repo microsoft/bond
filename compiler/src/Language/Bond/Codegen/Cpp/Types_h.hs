@@ -26,14 +26,15 @@ import qualified Language.Bond.Codegen.Cpp.Util as CPP
 
 -- | Codegen template for generating /base_name/_type.h containing definitions
 -- of C++ types representing the schema.
-types_h :: [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
+types_h :: Maybe String -- ^ Optional attribute to decorate the enum conversion function declarations
+        -> [String]     -- ^ list of optional header files to be @#include@'ed by the generated code
         -> Bool         -- ^ 'True' to generate enum definitions into a separate file /base_name/_enum.h
         -> Maybe String -- ^ optional custom allocator to be used in the generated code
         -> Bool         -- ^ 'True' to generate constructors with allocator
         -> Bool         -- ^ 'True' to generate type aliases
         -> Bool         -- ^ 'True' to use std::scoped_allocator_adaptor for strings and containers
         -> MappingContext -> String -> [Import] -> [Declaration] -> (String, L.Text)
-types_h userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled cpp file imports declarations = ("_types.h", [lt|
+types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled cpp file imports declarations = ("_types.h", [lt|
 #pragma once
 #{newlineBeginSep 0 includeHeader userHeaders}
 #include <bond/core/bond_version.h>
@@ -431,13 +432,13 @@ namespace std
             return s_nameToValueMap;
         }
 #endif
-        const std::string& ToString(enum #{declName} value);
+        #{export_attr}const std::string& ToString(enum #{declName} value);
 
-        void FromString(const std::string& name, enum #{declName}& value);
+        #{export_attr}void FromString(const std::string& name, enum #{declName}& value);
 
-        bool ToEnum(enum #{declName}& value, const std::string& name);
+        #{export_attr}bool ToEnum(enum #{declName}& value, const std::string& name);
 
-        bool FromEnum(std::string& name, enum #{declName} value);
+        #{export_attr}bool FromEnum(std::string& name, enum #{declName} value);
 
     } // namespace #{declName}
     } // namespace _bond_enumerators
@@ -448,5 +449,6 @@ namespace std
         |]
         enumUsing = if enumHeader then mempty else [lt|using namespace _bond_enumerators::#{declName};
     |]
+        export_attr = optional (\a -> [lt|#{a} |]) export_attribute
 
     typeDeclaration _ = mempty

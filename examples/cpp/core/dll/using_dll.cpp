@@ -59,6 +59,9 @@ int main()
     bond::RuntimeSchema schema = bond::GetRuntimeSchema<MyStruct>();
 
     std::cout << schema.GetSchema().structs[schema.GetSchema().root.struct_def].fields[0].metadata.name << std::endl;
+
+    // Use enum
+    std::cout << static_cast<int>(Color::Red) << " = " << ToString(Color::Red) << std::endl;
     
     return 0;    
 }

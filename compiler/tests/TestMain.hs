@@ -119,6 +119,11 @@ tests = testGroup "Compiler tests"
                     , "--export-attribute=DllExport"
                     ]
                     "service"
+                , verifyExportsCodegen
+                    [ "c++"
+                    , "--export-attribute=DllExport"
+                    ]
+                    "with_enum_header"
                 ]
             , verifyCodegen
                 [ "c++"

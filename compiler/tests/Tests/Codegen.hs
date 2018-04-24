@@ -72,10 +72,13 @@ verifyApplyCodegen args baseName =
 verifyExportsCodegen :: [String] -> FilePath -> TestTree
 verifyExportsCodegen args baseName =
     testGroup baseName $
-        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "exports") templates
+        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "exports") (templates options)
   where
     options = processOptions args
-    templates = [ reflection_h (export_attribute options) ]
+    templates Cpp {..} =
+        [ reflection_h export_attribute
+        , types_h export_attribute header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
+        ]
 
 verifyCppGrpcCodegen :: [String] -> FilePath -> TestTree
 verifyCppGrpcCodegen args baseName =
@@ -121,7 +124,7 @@ verifyFiles options baseName =
     templates Cpp {..} =
         [ (reflection_h export_attribute)
         , types_cpp
-        , types_h header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
+        , types_h export_attribute header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
