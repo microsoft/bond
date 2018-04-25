@@ -28,6 +28,21 @@ class ManifestParseError(Exception):
 class ImageManifest: # pylint: disable=too-few-public-methods
     """Represents an ACR image manifest."""
 
+    @staticmethod
+    def _parse_manifest_timestamp(timestamp: str) -> datetime:
+        if not timestamp.endswith('Z'):
+            msg = 'Can only parse UTC timestamps (that end with Z), but go {}'.format(timestamp)
+            raise ValueError(msg)
+
+        # ACR timestamps sometimes have fractional seconds. There's no RFC
+        # 3339 or ISO 8601 parser built in to Python, but we don't need this
+        # much precision, so we just strip the fractional seconds.
+        dot_loc = timestamp.rfind('.')
+        if dot_loc != -1:
+            timestamp = timestamp[0:dot_loc] + 'Z'
+
+        return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
     def __init__(self, **kwargs: str) -> None:
         """Initalize an ImageManifest from a dictionary.
 
@@ -42,7 +57,7 @@ class ImageManifest: # pylint: disable=too-few-public-methods
                     "build-9867746",
                     "git-da33ddf6b9c24c14bb7d836adff8ac77f523d047"
                 ],
-                "timestamp": "2018-02-09T23:44:14Z"
+                "timestamp": "2018-03-22T17:32:05.3564254Z"
             }
         """
 
@@ -51,9 +66,7 @@ class ImageManifest: # pylint: disable=too-few-public-methods
 
             self.digest = kwargs['digest']
             self.tags = frozenset(kwargs['tags'])
-            self.timestamp = datetime.strptime(
-                kwargs['timestamp'],
-                '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+            self.timestamp = ImageManifest._parse_manifest_timestamp(kwargs['timestamp'])
         except:
             raise ManifestParseError(kwargs)
 
