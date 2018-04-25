@@ -1,9 +1,16 @@
 namespace examples.dll
 
+enum Color
+{
+    Red = 1;
+    Blue = 2;
+}
+
 struct Item<T>
 {
     0: string  str = "default string value";
     1: list<T> numbers;
+    3: Color color = Blue;
 }
 
 struct MyStruct

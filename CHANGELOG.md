@@ -39,6 +39,8 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now generates lazily constructed enum name-to-value and value-to-name maps.
   Additionally, a user-defined map type can now be provided to `GetNameToValueMap` and
   `GetValueToNameMap`.
+* C++ codegen now applies the `--export-attribute` to the `ToString`,
+  `FromString`, `ToEnum` and `FromEnum` functions.
 * `import` statements can now end with an optional semicolon.
 
 ### C++ ###
@@ -85,6 +87,9 @@ different versioning scheme, following the Haskell community's
       assignment operators.
     * Added `operator==(const bond::maybe<T>&, const T&)` and `operator==(const
       T&, const bond::maybe<T>&)` to compare directly to instances of `T`.
+* Fixed an issue with the `ToString`, `FromString`, `ToEnum` and `FromEnum` functions
+  that were previously not exported from a DLL when the `--export-attribute` option was
+  passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
 
 ### C# ###
 
