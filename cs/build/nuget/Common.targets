@@ -24,7 +24,7 @@
   <!-- Set sensible defaults. -->
   <PropertyGroup>
     <BondOptions Condition=" '$(BondOptions)' == '' "></BondOptions>
-    <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)</BondOutputDirectory>
+    <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)\gbc\</BondOutputDirectory>
     <BondCodegenMode Condition="'$(BondCodegenMode)' == ''">c#</BondCodegenMode>
   </PropertyGroup>
 
