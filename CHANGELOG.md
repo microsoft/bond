@@ -39,9 +39,9 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now generates lazily constructed enum name-to-value and value-to-name maps.
   Additionally, a user-defined map type can now be provided to `GetNameToValueMap` and
   `GetValueToNameMap`.
+* C++ codegen now applies the `--export-attribute` to the `ToString`,
+  `FromString`, `ToEnum` and `FromEnum` functions.
 * `import` statements can now end with an optional semicolon.
-* C++ codegen now applies the `--export-attribute` to `ToString`, `FromString`,
-  `ToEnum` and `FromEnum` functions.
 
 ### C++ ###
 
