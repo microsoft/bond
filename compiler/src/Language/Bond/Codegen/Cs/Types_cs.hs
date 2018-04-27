@@ -100,7 +100,9 @@ namespace #{csNamespace}
         -- default value
         csDefault = CS.defaultValue cs
 
-        noMetaFields = not $ getAny $ F.foldMap metaField structFields
+        metaFields = filter (isMetaName . fieldType) structFields
+
+        noMetaFields = null metaFields
 
         -- constructor: DefaultWithProtectedBase option
         defaultWithProtectedBaseConstructor = if noCtor then mempty else [lt|
@@ -123,12 +125,12 @@ namespace #{csNamespace}
 
         -- constructor: ConstructorParameters option
         constructorWithParameters = if not noMetaFields
-            then error "bond_meta usage is incompatible with constructor_parameters"
+            then error $ "bond_meta usage in Struct " ++ (show declName) ++ " Field " ++ (show $ fieldName $ head metaFields) ++ " is incompatible with --preview--constructor-parameters"
             else if (null baseFieldList)
                 then [lt|
 
         public #{declName}(
-            #{commaLineSep 3 thisParam structFields})
+            #{commaLineSep 3 paramDecl structFields})
         {
             #{newlineSep 3 paramBasedInitializer structFields}
         }
@@ -141,11 +143,11 @@ namespace #{csNamespace}
 
         public #{declName}(
             // Base class parameters
-            #{commaLineSep 3 baseParam (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
+            #{commaLineSep 3 paramDeclWithUniqueName (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
         ) : base(
                 #{commaLineSep 4 pack uniqueBaseFieldNames})
         {
-            #{newlineSep 3 paramBasedInitializer structFields}
+            #{newlineSep 3 paramBasedInitializerWithUniqueName (zip structFields uniqueThisFieldNames)}
         }
 
         public #{declName}()
@@ -158,16 +160,18 @@ namespace #{csNamespace}
             else [lt|,
 
             // This class parameters
-            #{commaLineSep 3 thisParam structFields}|]
+            #{commaLineSep 3 paramDeclWithUniqueName (zip structFields uniqueThisFieldNames)}|]
 
         baseFieldList = concat $ baseFields s
 
-        uniqueBaseFieldNames = uniqueNames [fieldName f | f <- baseFieldList]
+        uniqueBaseFieldNames = uniqueNames (map fieldName baseFieldList) []
+        uniqueThisFieldNames = uniqueNames (map fieldName structFields) uniqueBaseFieldNames
 
-        baseParam (f, n) = [lt|#{csType $ fieldType f} #{n}|]
-        thisParam f = [lt|#{csType $ fieldType f} #{uniqueName (fieldName f) uniqueBaseFieldNames}|]
+        paramDecl f = [lt|#{csType $ fieldType f} #{fieldName f}|]
+        paramDeclWithUniqueName (f, n) = [lt|#{csType $ fieldType f} #{n}|]
 
-        paramBasedInitializer f = [lt|this.#{fieldName f} = #{uniqueName (fieldName f) uniqueBaseFieldNames};|]
+        paramBasedInitializer f = [lt|this.#{fieldName f} = #{fieldName f};|]
+        paramBasedInitializerWithUniqueName (f, n) = [lt|this.#{fieldName f} = #{n};|]
 
         constructors = case constructorOptions of
             DefaultWithProtectedBase -> defaultWithProtectedBaseConstructor

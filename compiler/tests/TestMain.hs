@@ -156,6 +156,21 @@ tests = testGroup "Compiler tests"
             , verifyCsCodegen "generics"
             , verifyCsCodegen "inheritance"
             , verifyCsCodegen "aliases"
+            , verifyCsCodegen "complex_inheritance"
+            , verifyCodegenVariation
+                [ "c#"
+                , "--preview-constructor-parameters"
+                , "--readonly-properties"
+                ]
+                "complex_inheritance"
+                "constructor-parameters"
+            , verifyCodegenVariation
+                [ "c#"
+                , "--preview-constructor-parameters"
+                , "--fields"
+                ]
+                "complex_inheritance"
+                "constructor-parameters_fields"
             , verifyCodegen
                 [ "c#"
                 , "--using=time=System.DateTime"
@@ -166,18 +181,6 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
-            , verifyCodegen
-                [ "c#"
-                , "--readonly-properties"
-                , "--constructor-parameters"
-                ]
-                "constructor_parameters"
-            , verifyCodegen
-                [ "c#"
-                , "--fields"
-                , "--constructor-parameters"
-                ]
-                "constructor_parameters_fields"
             , testGroup "Grpc"
                 [ verifyCsGrpcCodegen
                     [ "c#"

@@ -90,14 +90,14 @@ namespace Test
         [global::Bond.Id(3), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
         public string moreText = "";
 
-        [global::Bond.Id(4)]
-        public List<Simple> someList = new List<Simple>();
+        [global::Bond.Id(4), global::Bond.Type(typeof(List<Simple>))]
+        public IList<Simple> someList = new List<Simple>();
 
         [global::Bond.Id(5), global::Bond.Type(typeof(Dictionary<global::Bond.Tag.wstring, double>))]
-        public Dictionary<string, double> someMap = new Dictionary<string, double>();
+        public IDictionary<string, double> someMap = new Dictionary<string, double>();
 
         [global::Bond.Id(6), global::Bond.Type(typeof(HashSet<global::Bond.Tag.wstring>))]
-        public HashSet<string> someSet = new HashSet<string>();
+        public ISet<string> someSet = new HashSet<string>();
 
         public Bar(
             // Base class parameters
@@ -108,9 +108,9 @@ namespace Test
             string someText0,
             int someInt,
             string moreText,
-            List<Simple> someList,
-            Dictionary<string, double> someMap,
-            HashSet<string> someSet
+            IList<Simple> someList,
+            IDictionary<string, double> someMap,
+            ISet<string> someSet
         ) : base(
                 someText)
         {
@@ -140,6 +140,9 @@ namespace Test
         [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
         public string evenMoreText = "";
 
+        [global::Bond.Id(2), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
+        public string someText1 = "";
+
         public Baz(
             // Base class parameters
             string someText,
@@ -147,13 +150,14 @@ namespace Test
             string someText0,
             int someInt,
             string moreText,
-            List<Simple> someList,
-            Dictionary<string, double> someMap,
-            HashSet<string> someSet,
+            IList<Simple> someList,
+            IDictionary<string, double> someMap,
+            ISet<string> someSet,
 
             // This class parameters
             string someText1,
-            string evenMoreText
+            string evenMoreText,
+            string someText10
         ) : base(
                 someText,
                 testEnum,
@@ -166,6 +170,7 @@ namespace Test
         {
             this.someText = someText1;
             this.evenMoreText = evenMoreText;
+            this.someText1 = someText10;
         }
 
         public Baz()

@@ -111,7 +111,7 @@ cs = Cs
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
     , structs_enabled = True &= explicit &= name "structs" &= help "Generate C# types for Bond structs and enums (true by default, use \"--structs=false\" to disable)"
     , grpc_enabled = False &= explicit &= name "grpc" &= help "Generate C# services and proxies for gRPC"
-    , constructor_parameters = def &= help "Generate a constructor that takes all the fields as parameters.  Typically used with readonly-properties."
+    , constructor_parameters = def &= explicit &= name "preview-constructor-parameters" &= help "PREVIEW FEATURE: Generate a constructor that takes all the fields as parameters. Typically used with readonly-properties."
     } &=
     name "c#" &=
     help "Generate C# code"

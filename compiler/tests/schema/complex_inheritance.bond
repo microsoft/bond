@@ -37,6 +37,7 @@ struct Baz: Bar
 {
     0: wstring someText;
     1: wstring evenMoreText;
+    2: wstring someText1;
 }
 
 struct DerivedEmpty: Foo
