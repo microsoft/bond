@@ -2,6 +2,7 @@
 
 set -eux
 
+nuget help | head -1
 nuget restore $BOND_ROOT/cs/cs.sln
 
 local BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
