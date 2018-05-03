@@ -12,7 +12,6 @@
     <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
-    <!-- <DocumentationFile>$(OutDir)\$(TargetName).xml</DocumentationFile> -->
     <DocumentationFile>$(BaseOutputPath)\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
@@ -21,7 +20,6 @@
     <FileToCopy Include="$(OutDir)\$(TargetName).xml" />
   </ItemGroup>
   <Target Condition="'$(UsingMicrosoftNETSdk)' == 'true'" Name="CopyAdditionalFiles" AfterTargets="AfterBuild">
-    <!-- <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)" Condition="'$(BondRedistributable)' == 'true'" /> -->
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)\$(TargetFramework)" Condition="'$(BondRedistributable)' == 'true'" />
   </Target>
 </Project>
