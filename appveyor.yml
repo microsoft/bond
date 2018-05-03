@@ -138,6 +138,8 @@
 
             choco install haskell-stack -y
 
+            choco install dotnetcore-sdk -y
+
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
             $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
@@ -235,7 +237,7 @@
 
                 $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
 
-                msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                dotnet msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 if (-not $?) { throw "cs compat build failed" }
 
@@ -311,7 +313,7 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+                dotnet msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
             }
 
