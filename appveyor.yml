@@ -237,7 +237,7 @@
 
                 $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
 
-                dotnet msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')"
+                dotnet msbuild cs\cs.sln /verbosity:detailed "/target:$($compatTests -join ';')"
 
                 if (-not $?) { throw "cs compat build failed" }
 
