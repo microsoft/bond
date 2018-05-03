@@ -205,7 +205,7 @@
 
             if ($env:BOND_BUILD -eq "C#" -Or $env:BOND_BUILD -eq "C++") {
 
-                nuget restore cs\cs.sln
+                dotnet restore cs\cs.sln
 
             }
 
