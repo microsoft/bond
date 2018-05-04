@@ -56,8 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="NUnitTestAdapter" Version="2.1.1" />
+    <PackageReference Include="NUnit" Version="3.10.*" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Bond.Attributes">
