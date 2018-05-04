@@ -14,6 +14,7 @@
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
+  <Import Project="..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.10.0" />
   </ItemGroup>
