@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
@@ -9,9 +9,14 @@
     <RootNamespace>GrpcCompatServer</RootNamespace>
     <AssemblyName>GrpcCompatServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.Core" Version="1.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -32,9 +37,6 @@
       <Project>{8FC5BF4E-6932-48FC-AA57-3D5F43130699}</Project>
       <Name>GrpcCompatShared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
 </Project>

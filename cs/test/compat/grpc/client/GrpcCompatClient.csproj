@@ -9,9 +9,13 @@
     <RootNamespace>GrpcCompatClient</RootNamespace>
     <AssemblyName>GrpcCompatClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.Core" Version="1.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -32,9 +36,6 @@
       <Project>{8FC5BF4E-6932-48FC-AA57-3D5F43130699}</Project>
       <Name>GrpcCompatShared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
 </Project>
