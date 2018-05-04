@@ -1,47 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
-    <ProjectGuid>{618420F1-6465-4DF4-BD1B-747765F481FF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>pingpong</RootNamespace>
     <AssemblyName>grpc-pingpong</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFrameworks>net45;</TargetFrameworks>
+    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Grpc.Core">
-      <HintPath>..\..\..\..\cs\packages\Grpc.Core.1.10.0\lib\net45\Grpc.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Interactive.Async">
-      <HintPath>..\..\..\..\cs\packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Grpc.Core" Version="1.10.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DoublePingService.cs" />
-    <Compile Include="GrpcPingPong.cs" />
-    <Compile Include="PingPongService.cs" />
-    <BondCodegen Include="pingpong.bond">
+    <BondCodegen Update="pingpong.bond">
       <Options>--grpc</Options>
     </BondCodegen>
     <!-- Resharper Workaround -->
@@ -61,15 +31,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\cs\src\grpc\grpc.csproj">
       <Project>{AF03BAE6-2470-4E1B-A683-3EBDCDC595FA}</Project>
       <Name>grpc</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
-  <Import Project="..\..\..\..\cs\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\..\..\cs\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
 </Project>

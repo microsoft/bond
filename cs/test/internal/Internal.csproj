@@ -1,24 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath32)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <ProjectGuid>{2994D2BC-2C4A-479E-AD23-051721470095}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>InternalTest</RootNamespace>
     <AssemblyName>Bond.InternalTest</AssemblyName>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworks>net45;</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ReflectionDefaultValueTests.cs" />
-    <Compile Include="ReflectionTests.cs" />
-    <Compile Include="properties\AssemblyInfo.cs" />
-    <Compile Include="SchemaTests.cs" />
-    <Compile Include="RequiredFieldsTest.cs" />
-    <BondCodegen Include="schemas.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\schemas_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
@@ -33,15 +24,8 @@
     <Reference Include="Bond">
       <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter" Condition="'$(OS)' != 'Unix'">
-      <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="NUnit" Version="2.6.4" />
+    <PackageReference Include="NUnitTestAdapter" Version="2.0.0" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>
