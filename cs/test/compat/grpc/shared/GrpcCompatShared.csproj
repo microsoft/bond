@@ -11,13 +11,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Grpc.Core">
-      <HintPath>..\..\..\..\packages\Grpc.Core.1.10.0\lib\net45\Grpc.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Interactive.Async">
-      <HintPath>..\..\..\..\packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -47,5 +41,4 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.targets" />
-  <Import Project="..\..\..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
 </Project>
