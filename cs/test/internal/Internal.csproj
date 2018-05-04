@@ -25,7 +25,10 @@
       <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
     </Reference>
     <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="NUnitTestAdapter" Version="2.0.0" />
+    <PackageReference Include="NUnitTestAdapter" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

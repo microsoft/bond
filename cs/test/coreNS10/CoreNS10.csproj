@@ -60,7 +60,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="NUnitTestAdapter" Version="2.0.0" />
+    <PackageReference Include="NUnitTestAdapter" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\attributes\Attributes.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
