@@ -184,7 +184,7 @@ verifyFile options baseName typeMapping subfolder template =
     codegen = do
         aliasMapping <- parseAliasMappings $ using options
         namespaceMapping <- parseNamespaceMappings $ namespace options
-        (Bond imports namespaces declarations) <- parseBondFile [] $ "tests" </> "schema" </> baseName <.> "bond"
+        (Bond imports namespaces declarations) <- parseBondFile (import_dir options) $ "tests" </> "schema" </> baseName <.> "bond"
         let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
         let (_, code) = template mappingContext baseName imports declarations
         return $ BS.pack $ unpack code

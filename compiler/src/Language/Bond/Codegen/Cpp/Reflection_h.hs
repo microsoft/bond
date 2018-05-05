@@ -37,7 +37,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
     cppType = getTypeName cpp
 
     -- template for generating #include statement from import
-    include (Import path) = [lt|#include "#{dropExtension path}_reflection.h"|]
+    include (Import path) = [lt|#include "#{dropExtension (slashForward path)}_reflection.h"|]
 
     -- template for generating struct schema
     schema s@Struct {..} = [lt|//

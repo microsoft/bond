@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>

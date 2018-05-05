@@ -44,6 +44,9 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
   `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
+* File and directory paths on the command line, in response files, or in
+  `import` statements can now use a mix of forward and backslashes. [Issue
+  #869](https://github.com/Microsoft/bond/issues/869)
 
 ### C++ ###
 
@@ -130,7 +133,7 @@ different versioning scheme, following the Haskell community's
   constructors with parameters for each field. This functionality will
   change in the future and may be removed. [Pull request
   #857](https://github.com/Microsoft/bond/pull/857)
-	
+
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0
