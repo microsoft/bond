@@ -13,6 +13,7 @@ set -eux
 # apt-get -y install dotnet-sdk-2.1.105
 
 nuget update -self
+nuget install NUnit.ConsoleRunner -outputdirectory /root -version 3.8.0 -NonInteractive
 nuget restore $BOND_ROOT/cs/cs.sln
 # dotnet restore $BOND_ROOT/cs/cs.sln
 
@@ -37,7 +38,7 @@ msbuild /p:Configuration=Fields /m $BOND_ROOT/cs/cs.sln
 # dotnet test cs/test/internal/Internal.csproj
 # dotnet test cs/test/grpc/grpc.csproj
 
-mono /root/NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels \
+mono /root/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe -framework=mono-4.5 -labels \
     $BOND_ROOT/cs/test/coreNS10/bin/debug/Properties/net45/Bond.UnitTestCoreNS10.dll \
     $BOND_ROOT/cs/test/coreNS10/bin/debug/Fields/net45/Bond.UnitTestCoreNS10.dll \
     $BOND_ROOT/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll
