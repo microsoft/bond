@@ -2,6 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
 
   <PropertyGroup>
+    <ProjectGuid>{40452223-3a34-4841-9a69-e0b6640b4108}</ProjectGuid>
     <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond.Reflection</RootNamespace>

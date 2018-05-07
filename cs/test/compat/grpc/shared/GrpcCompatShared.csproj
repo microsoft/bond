@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
+    <ProjectGuid>{8FC5BF4E-6932-48FC-AA57-3D5F43130699}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GrpcCompatShared</RootNamespace>

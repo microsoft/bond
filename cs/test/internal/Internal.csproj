@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
+    <ProjectGuid>{2994D2BC-2C4A-479E-AD23-051721470095}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>InternalTest</RootNamespace>
     <AssemblyName>Bond.InternalTest</AssemblyName>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <!-- Resharper Workaround -->
@@ -26,9 +27,6 @@
     </Reference>
     <PackageReference Include="NUnit" Version="3.10.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

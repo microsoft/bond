@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
+    <ProjectGuid>{A390B660-5F81-4CD3-B5EF-EB7C1C6B6AFE}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Examples.SharedTypes</RootNamespace>
     <AssemblyName>grpc_sta-service</AssemblyName>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <!-- We could also use BondCodegen.Options item metadata to configure
          this per-file. -->
     <BondOptions>--grpc --structs=false</BondOptions>

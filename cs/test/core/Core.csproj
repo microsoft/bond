@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>
+    <TargetFrameworks>net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>
     <AssemblyName>Bond.UnitTest</AssemblyName>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <HasNonportableVersion>true</HasNonportableVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OrigOutputPath>$(OutputPath)\$(TargetFramework)</OrigOutputPath>
@@ -77,9 +77,6 @@
       <!-- Intentionally not DependentOutputPath to match BuildFramework-->
       <HintPath>..\..\src\json\$(OrigOutputPath)\Bond.JSON.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

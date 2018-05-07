@@ -235,7 +235,7 @@
 
                 $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
 
-                dotnet msbuild cs\cs.sln /verbosity:detailed "/target:$($compatTests -join ';')"
+                dotnet msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
                 if (-not $?) { throw "cs compat build failed" }
 
@@ -311,7 +311,7 @@
 
             if ($env:BOND_BUILD -eq "C#") {
 
-                dotnet msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG}
+                dotnet msbuild cs\cs.sln /verbosity:minimal /p:Configuration=${env:BOND_CONFIG} /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
             }
 

@@ -181,11 +181,11 @@ cmake .. \
 Install the following tools:
 
 - Visual Studio 2013, 2015, or 2017
-    - Visual Studio 2017 is required to build C# Bond from source
-- CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
-- Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
+    - VS2017 is required to build C# Bond from source
 - .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
     - Alternative to VS2017 for building C# Bond from source
+- CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
+- Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
 
 If you are building on a network behind a proxy, set the environment variable
 `HTTP_PROXY`, e.g.:
@@ -201,7 +201,8 @@ also be run from within the solution.
 To build using the .NET Core SDK:
 
 ```bash
-dotnet build cs.sln
+dotnet restore cs\cs.sln
+dotnet msbuild cs\cs.sln
 ```
 
 The C++ and Python versions of Bond additionally require:

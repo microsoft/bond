@@ -2,12 +2,12 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
 
   <PropertyGroup>
+    <ProjectGuid>{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}</ProjectGuid>
     <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond</RootNamespace>
     <AssemblyName>Bond.JSON</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
-    <HasNonportableVersion>true</HasNonportableVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'netstandard1.6'">

@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
+    <ProjectGuid>{6887352A-4071-46D6-B095-2514985A3AB6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Examples.GrpcGenerics</RootNamespace>
     <AssemblyName>grpc-generics</AssemblyName>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <BondOptions>--grpc</BondOptions>
     <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>

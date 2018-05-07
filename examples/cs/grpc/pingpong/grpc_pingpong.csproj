@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
+    <ProjectGuid>{618420F1-6465-4DF4-BD1B-747765F481FF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>pingpong</RootNamespace>
     <AssemblyName>grpc-pingpong</AssemblyName>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>

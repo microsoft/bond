@@ -6,7 +6,11 @@ $ErrorActionPreference = 'Stop'
 
 Add-Type -AssemblyName 'System.IO.Compression.FileSystem'
 
-$stackInstaller = "$env:temp\stack-$(New-Guid).zip"
+$OutputDirectory = [System.IO.Path]::Combine(
+    [System.IO.Path]::GetTempPath(),
+    [System.IO.Path]::GetRandomFileName())
+
+$stackInstaller = [System.IO.Path]::Combine($OutputDirectory, 'stack.zip')
 Write-Debug "Downloading to $stackInstaller"
 
 [System.Net.ServicePointManager]::SecurityProtocol='TLS12'

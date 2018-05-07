@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
+    <ProjectGuid>{51F4135B-2CEF-436F-91CE-A6548B37E459}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>scalar</RootNamespace>
     <AssemblyName>grpc-scalar</AssemblyName>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <BondOptions>--grpc</BondOptions>
     <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>

@@ -82,7 +82,7 @@
 
     <!-- In some of the CI build systems we use, Stack isn't on the path.
          The MSBuild property/environment variable STACK_PATH can be used to
-         specify a location, and we'll forward that on the CMake. -->
+         specify a location, and we'll forward that on to CMake. -->
     <PropertyGroup>
       <_BondCmakeProgramPath></_BondCmakeProgramPath>
       <!-- We use the \. trick to avoid problems with quoting a quote mark

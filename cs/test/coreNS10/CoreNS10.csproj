@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>
     <AssemblyName>Bond.UnitTestCoreNS10</AssemblyName>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <HasNonportableVersion>true</HasNonportableVersion>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <!-- This project is used to test the netstandard1.0 implementation of Bond -->
     <BondTargetFramework>netstandard1.0</BondTargetFramework>
@@ -68,9 +67,6 @@
     <ProjectReference Include="..\..\src\reflection\reflection.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
     <ProjectReference Include="..\..\src\io\IO.csproj" AdditionalProperties="TargetFramework=$(BondIOTargetFramework)" />
     <ProjectReference Include="..\..\src\json\JSON.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

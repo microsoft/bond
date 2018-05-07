@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
   <PropertyGroup>
+    <ProjectGuid>{45E4032C-78E1-41dd-8E51-1CC5AD2AEE02}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>simple_json</RootNamespace>
     <AssemblyName>simple_json</AssemblyName>

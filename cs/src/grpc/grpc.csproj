@@ -2,14 +2,13 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
 
   <PropertyGroup>
+    <ProjectGuid>{AF03BAE6-2470-4E1B-A683-3EBDCDC595FA}</ProjectGuid>
     <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond.Grpc</RootNamespace>
     <AssemblyName>Bond.Grpc</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
   </PropertyGroup>
-
-  <Import Project="..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets" Condition="Exists('..\..\packages\Grpc.Core.1.10.0\build\net45\Grpc.Core.targets')" />
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.10.0" />
