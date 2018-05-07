@@ -29,14 +29,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\cs\src\grpc\grpc.csproj">
-      <Project>{AF03BAE6-2470-4E1B-A683-3EBDCDC595FA}</Project>
-      <Name>grpc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\types\grpc_sta-types.csproj">
-      <Project>{723BAA6B-B309-48CF-B2A9-ECDDC91909D1}</Project>
-      <Name>grpc_sta-types</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\cs\src\grpc\grpc.csproj" />
+    <ProjectReference Include="..\types\grpc_sta-types.csproj" />
   </ItemGroup>
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
 </Project>

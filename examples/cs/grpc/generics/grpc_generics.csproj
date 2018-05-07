@@ -30,10 +30,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\cs\src\grpc\grpc.csproj">
-      <Project>{AF03BAE6-2470-4E1B-A683-3EBDCDC595FA}</Project>
-      <Name>grpc</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\cs\src\grpc\grpc.csproj" />
   </ItemGroup>
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
 </Project>
