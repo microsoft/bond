@@ -15,7 +15,7 @@ if (-not (Test-Path -LiteralPath $OutputDirectory -PathType Container))
     mkdir $OutputDirectory | Out-Null
 }
 
-$stackInstaller = [System.IO.Path]::Combine($OutputDirectory, 'stack.zip')
+$stackInstaller = [System.IO.Path]::Combine($OutputDirectory, 'stack-x86_64.zip')
 Write-Debug "Downloading to $stackInstaller"
 
 [System.Net.ServicePointManager]::SecurityProtocol='TLS12'
@@ -23,11 +23,9 @@ Invoke-WebRequest `
     -Uri https://www.stackage.org/stack/windows-x86_64 `
     -OutFile $stackInstaller
 
-$stackInstallPath = "$env:temp\stack-$(New-Guid)\"
-Write-Debug "Extracting to $stackInstallPath"
-mkdir $stackInstallPath | Out-Null
+Write-Debug "Extracting to $OutputDirectory"
 
-[System.IO.Compression.ZipFile]::ExtractToDirectory($stackInstaller, $stackInstallPath)
+[System.IO.Compression.ZipFile]::ExtractToDirectory($stackInstaller, $OutputDirectory)
 
-Write-Host "Stack: $(& "$stackInstallPath\stack.exe" --version)"
-Write-Output $stackInstallPath
+Write-Host "Stack: $(& "$OutputDirectory\stack.exe" --version)"
+Write-Output $OutputDirectory
