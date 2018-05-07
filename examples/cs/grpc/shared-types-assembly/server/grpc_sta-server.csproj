@@ -9,7 +9,6 @@
     <!-- We could also use BondCodegen.Options item metadata to configure
          this per-file. -->
     <BondOptions>--grpc --structs=false</BondOptions>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.10.0" />

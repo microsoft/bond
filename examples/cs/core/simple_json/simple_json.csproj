@@ -6,7 +6,6 @@
     <RootNamespace>simple_json</RootNamespace>
     <AssemblyName>simple_json</AssemblyName>
     <TargetFrameworks>net45</TargetFrameworks>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <!-- Resharper Workaround -->

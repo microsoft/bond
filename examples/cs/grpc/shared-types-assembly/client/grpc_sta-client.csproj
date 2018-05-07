@@ -6,7 +6,6 @@
     <RootNamespace>Examples.SharedTypes</RootNamespace>
     <AssemblyName>grpc_sta-client</AssemblyName>
     <TargetFrameworks>net45</TargetFrameworks>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.10.0" />

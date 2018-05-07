@@ -7,7 +7,6 @@
     <AssemblyName>grpc-streaming</AssemblyName>
     <TargetFrameworks>net45</TargetFrameworks>
     <BondOptions>--grpc</BondOptions>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.10.0" />

@@ -16,10 +16,6 @@
     <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(MSBuildThisFileDirectory)..\..\..\idl</BOND_INCLUDE_PATH>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <BondCodegen Include="$(BOND_INCLUDE_PATH)\bond\core\bond.bond" />
     <BondCodegen Include="$(BOND_INCLUDE_PATH)\bond\core\bond_const.bond" />

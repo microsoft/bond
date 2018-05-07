@@ -12,8 +12,6 @@
     <!-- This project is used to test the netstandard1.0 implementation of Bond -->
     <BondTargetFramework>netstandard1.0</BondTargetFramework>
     <BondIOTargetFramework>netstandard1.3</BondIOTargetFramework>
-    <!-- We need to specify the output directory since the .bond files are on another subdirectory -->
-    <BondOutputDirectory>$(IntermediateOutputPath)</BondOutputDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
