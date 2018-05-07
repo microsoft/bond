@@ -10,6 +10,11 @@ $OutputDirectory = [System.IO.Path]::Combine(
     [System.IO.Path]::GetTempPath(),
     [System.IO.Path]::GetRandomFileName())
 
+if (-not (Test-Path -LiteralPath $OutputDirectory -PathType Container))
+{
+    mkdir $OutputDirectory | Out-Null
+}
+
 $stackInstaller = [System.IO.Path]::Combine($OutputDirectory, 'stack.zip')
 Write-Debug "Downloading to $stackInstaller"
 
