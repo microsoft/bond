@@ -24,7 +24,6 @@
   <!-- Set sensible defaults. -->
   <PropertyGroup>
     <BondOptions Condition=" '$(BondOptions)' == '' "></BondOptions>
-    <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)</BondOutputDirectory>
     <BondCodegenMode Condition="'$(BondCodegenMode)' == ''">c#</BondCodegenMode>
   </PropertyGroup>
 
@@ -72,17 +71,22 @@
     <UpToDateCheckInput Include="$(_PreExistingBondExe)" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <!--Automatic directory separator translation doesn't work on
-         BondOutputDirectory, as sometimes it doesn't exist, so MSBuild
-         doesn't know it's a "path-like" thing. We unconditionally translate
-         to forward slashes, as they work Windows, macOS, and Linux. We also
-         ensure that this always has a trailing slash, which simplifies its
-         use later. -->
-    <_BondOutputDirectoryNormalized>$(BondOutputDirectory)</_BondOutputDirectoryNormalized>
-    <_BondOutputDirectoryNormalized Condition=" !HasTrailingSlash('$(_BondOutputDirectoryNormalized)') ">$(BondOutputDirectory)\</_BondOutputDirectoryNormalized>
-    <_BondOutputDirectoryNormalized>$(_BondOutputDirectoryNormalized.Replace('%5C', '%2F'))</_BondOutputDirectoryNormalized>
-  </PropertyGroup>
+  <Target Name="SetBondOutputDirectory"
+          BeforeTargets="BondCodegenCs"
+          Condition="'@(BondCodegen)' != ''">
+    <PropertyGroup>
+      <BondOutputDirectory Condition=" '$(BondOutputDirectory)' == '' ">$(IntermediateOutputPath)</BondOutputDirectory>
+      <!--Automatic directory separator translation doesn't work on
+           BondOutputDirectory, as sometimes it doesn't exist, so MSBuild
+           doesn't know it's a "path-like" thing. We unconditionally translate
+           to forward slashes, as they work Windows, macOS, and Linux. We also
+           ensure that this always has a trailing slash, which simplifies its
+           use later. -->
+      <_BondOutputDirectoryNormalized>$(BondOutputDirectory)</_BondOutputDirectoryNormalized>
+      <_BondOutputDirectoryNormalized Condition=" !HasTrailingSlash('$(_BondOutputDirectoryNormalized)') ">$(BondOutputDirectory)\</_BondOutputDirectoryNormalized>
+      <_BondOutputDirectoryNormalized>$(_BondOutputDirectoryNormalized.Replace('%5C', '%2F'))</_BondOutputDirectoryNormalized>
+    </PropertyGroup>
+  </Target>
 
   <!-- Fail the build if there are duplicate items in @BondCodegen. This is
        unlikely in classic project files, but is likely to be encountered
