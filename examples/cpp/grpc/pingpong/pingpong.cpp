@@ -1,9 +1,6 @@
 #include "pingpong_grpc.h"
 #include "pingpong_types.h"
 
-// event.h needed for test purposes
-#include <bond/ext/detail/event.h>
-
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
@@ -12,10 +9,12 @@
 #include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
+#include <condition_variable>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 
 using grpc::Channel;
@@ -23,13 +22,44 @@ using grpc::ServerBuilder;
 using grpc::Status;
 using grpc::StatusCode;
 
-using bond::ext::detail::event;
 using bond::ext::gRPC::io_manager;
 using bond::ext::gRPC::wait_callback;
 
 using namespace pingpong;
 
 static const char* metadata_key = "metadata-key";
+
+class event
+{
+public:
+    event()
+        : _m(),
+          _cv(),
+          _isSet(false)
+    {}
+
+    void set()
+    {
+        {
+            std::lock_guard<std::mutex> lock(_m);
+            _isSet = true;
+        }
+
+        _cv.notify_all();
+    }
+
+    template <typename Rep, typename Period>
+    bool wait_for(const std::chrono::duration<Rep, Period>& timeout)
+    {
+        std::unique_lock<std::mutex> lock(_m);
+        return _cv.wait_for(lock, timeout, [&]{ return _isSet; });
+    }
+
+private:
+    std::mutex _m;
+    std::condition_variable _cv;
+    bool _isSet;
+};
 
 class DoublePingServiceImpl final : public DoublePing::Service
 {
