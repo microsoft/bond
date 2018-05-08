@@ -12,7 +12,7 @@
 #include <atomic>
 #include <chrono>
 
-namespace bond { namespace ext { namespace detail {
+namespace unit_test {
 
 /// @brief A synchronization primitive that is signaled when a certain
 /// number of threads are waiting on it at the same time.
@@ -90,4 +90,4 @@ private:
     barrier& operator=(barrier&&) = delete;
 };
 
-} } } // namespace bond::ext::detail
+} // namespace unit_test

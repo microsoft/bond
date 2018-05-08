@@ -20,12 +20,12 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/detail/io_manager_tag.h>
-#include <bond/ext/detail/countdown_event.h>
-#include <bond/ext/detail/barrier.h>
-#include <bond/ext/detail/event.h>
 
 // TODO: move unit_test_framework.h to cpp/test/inc
 #include "../core/unit_test_framework.h"
+#include "barrier.h"
+#include "countdown_event.h"
+#include "event.h"
 
 #include <boost/chrono.hpp>
 #include <boost/test/debug.hpp>
@@ -33,7 +33,6 @@
 #include <memory>
 #include <utility>
 
-using namespace bond::ext::detail;
 using namespace bond::ext::gRPC::detail;
 using namespace bond::ext::gRPC;
 
@@ -59,7 +58,7 @@ class io_managerTests
     {
         io_manager ioManager;
 
-        alarm_completion_tag<event> act;
+        alarm_completion_tag<unit_test::event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
         grpc::Alarm alarm(ioManager.cq(), deadline, static_cast<io_manager_tag*>(&act));
 
@@ -73,7 +72,7 @@ class io_managerTests
 
         const size_t numItems = 1000;
 
-        alarm_completion_tag<countdown_event> act(numItems);
+        alarm_completion_tag<unit_test::countdown_event> act(numItems);
 
         const gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
 
@@ -106,8 +105,8 @@ class io_managerTests
             std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
 
         const size_t numConcurrentShutdowns = 5;
-        barrier threadsStarted(numConcurrentShutdowns);
-        barrier threadsObservedShutdown(numConcurrentShutdowns);
+        unit_test::barrier threadsStarted(numConcurrentShutdowns);
+        unit_test::barrier threadsObservedShutdown(numConcurrentShutdowns);
 
         std::vector<std::thread> threads;
         threads.reserve(5);
@@ -144,7 +143,7 @@ class io_managerTests
             io_manager::USE_HARDWARE_CONC,
             io_manager::delay_start_tag{});
 
-        alarm_completion_tag<event> act;
+        alarm_completion_tag<unit_test::event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
         grpc::Alarm alarm(ioManager.cq(), deadline, static_cast<io_manager_tag*>(&act));
 

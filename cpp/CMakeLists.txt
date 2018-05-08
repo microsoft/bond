@@ -65,16 +65,6 @@ list (APPEND headers
     ${protocol_detail_headers}
     ${stream_headers})
 
-# ext headers (currently, only used by gRPC stuff, but in its own block
-# because it doesn't depend on gRPC stuff)
-if (BOND_ENABLE_GRPC)
-    file (GLOB ext_detail_headers "inc/bond/ext/detail/*.h")
-    source_group ("ext\\detail" FILES ${ext_detail_headers})
-
-    list (APPEND headers
-        ${ext_detail_headers})
-endif()
-
 # gRPC-specific headers
 if (BOND_ENABLE_GRPC)
     file (GLOB ext_grpc_headers "inc/bond/ext/grpc/*.h")
@@ -84,7 +74,6 @@ if (BOND_ENABLE_GRPC)
     source_group ("ext\\grpc\\detail" FILES ${ext_grpc_detail_headers})
 
     list (APPEND headers
-        ${ext_detail_headers}
         ${ext_grpc_headers}
         ${ext_grpc_detail_headers})
 endif()
