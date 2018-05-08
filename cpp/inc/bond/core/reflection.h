@@ -839,8 +839,8 @@ template <typename T, typename Enable = void> struct
 get_list_sub_type_id
     : std::integral_constant<ListSubType, NO_SUBTYPE> {};
 
-template <typename T, typename Allocator, bool useValue> struct
-get_list_sub_type_id<nullable<T, Allocator, useValue> >
+template <typename T, typename Allocator> struct
+get_list_sub_type_id<nullable<T, Allocator> >
     : std::integral_constant<ListSubType, NULLABLE_SUBTYPE> {};
 
 template <> struct

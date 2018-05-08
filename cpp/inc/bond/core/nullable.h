@@ -6,13 +6,13 @@
 #include <bond/core/config.h>
 
 #include "container_interface.h"
+#include "detail/alloc.h"
 
 #include <boost/assert.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/utility/addressof.hpp>
+#include <boost/optional.hpp>
 #include <boost/utility/enable_if.hpp>
 
+#include <memory>
 #include <stdint.h>
 
 namespace bond
@@ -37,308 +37,303 @@ use_value
 //
 // Nullable value
 //
-template<typename T,
-         typename Allocator = typename detail::allocator_type<T>::type,
-         bool useValue = detail::use_value<T>::value>
+template <
+    typename T,
+    typename Allocator = typename detail::allocator_type<T>::type,
+    typename Enable = void>
 class nullable;
 
-template<typename T, typename Allocator>
-class nullable<T, Allocator, true>
-    : Allocator
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#pragma warning(push)
+#pragma warning(disable: 4510)
+#endif
+template <typename T, typename Allocator>
+class nullable<T, Allocator, typename boost::enable_if<detail::use_value<T> >::type>
+    : private detail::allocator_holder<Allocator>
 {
-public:
-    typedef T           value_type;
-    typedef T*          pointer;
-    typedef const T*    const_pointer;
-    typedef T&          reference;
-    typedef const T&    const_reference;
-    typedef Allocator   allocator_type;
+    using alloc_holder = detail::allocator_holder<Allocator>;
 
-    bool hasvalue() const
+public:
+    using value_type = T;
+    using allocator_type = Allocator;
+
+    nullable() = default;
+
+    explicit
+    nullable(const allocator_type& alloc)
+        : alloc_holder(alloc)
+    {}
+
+    nullable(const nullable& other) = default;
+
+    nullable(const nullable& other, const allocator_type& alloc)
+        : alloc_holder(alloc)
     {
-        return _hasvalue;
+        if (other.hasvalue())
+        {
+            _value.emplace(*other._value, alloc);
+        }
     }
 
-    bool empty() const
+    nullable(nullable&& other) BOND_NOEXCEPT_IF(
+            std::is_nothrow_move_constructible<alloc_holder>::value
+            && std::is_nothrow_move_constructible<T>::value)
+        : alloc_holder(std::move(other)),
+          _value(std::move(other._value))
+    {
+        other._value = boost::none; // assigning boost::none is noexcept
+    }
+
+    nullable(nullable&& other, const allocator_type& alloc)
+        : alloc_holder(alloc),
+          _value(std::move(other._value), alloc)
+    {
+        other._value = boost::none; // assigning boost::none is noexcept
+    }
+
+    explicit
+    nullable(const T& value)
+        : alloc_holder(detail::get_allocator(value)),
+          _value(value)
+    {}
+
+    explicit
+    nullable(T&& value)
+        : alloc_holder(detail::get_allocator(value)),
+          _value(std::move(value))
+    {}
+
+    nullable& operator=(const nullable& src) = default;
+
+    nullable& operator=(nullable&& other) BOND_NOEXCEPT_IF(
+        std::is_nothrow_move_constructible<alloc_holder>::value
+        && std::is_nothrow_move_constructible<T>::value)
+    {
+        alloc_holder::operator=(std::move(other));
+        _value = std::move(other._value);
+        other._value = boost::none; // assigning boost::none is noexcept
+        return *this;
+    }
+
+    bool hasvalue() const BOND_NOEXCEPT
+    {
+        return static_cast<bool>(_value);
+    }
+
+    bool empty() const BOND_NOEXCEPT
     {
         return !hasvalue();
     }
 
-    void swap(nullable& src)
+    explicit operator bool() const BOND_NOEXCEPT
     {
-        std::swap(base(), src.base());
-        std::swap(_hasvalue, src._hasvalue);
-        std::swap(_value, src._value);
+        return !empty();
     }
 
-    nullable()
-        : _value(),
-          _hasvalue(false)
-    {}
-
-    explicit
-    nullable(const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(make_value<value_type>()),
-          _hasvalue(false)
-    {
-    }
-
-    explicit
-    nullable(const value_type& value)
-        : Allocator(detail::get_allocator(value)),
-          _value(value),
-          _hasvalue(true)
-    {}
-
-    nullable(const nullable& src)
-        : Allocator(src.base()),
-          _value(src._value),
-          _hasvalue(src._hasvalue)
-    {}
-
-    nullable(const nullable& src, const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(src._value, alloc),
-          _hasvalue(src._hasvalue)
-    {}
-
-    nullable& operator=(const nullable& src)
-    {
-        nullable(src).swap(*this);
-        return *this;
-    }
-
-    reference value()
+    T& value() BOND_NOEXCEPT
     {
         BOOST_ASSERT(hasvalue());
-        return _value;
+        return *_value;
     }
 
-    const_reference value() const
+    const T& value() const BOND_NOEXCEPT
     {
         BOOST_ASSERT(hasvalue());
-        return _value;
+        return *_value;
     }
 
-    reference operator*()
+    T& operator*() BOND_NOEXCEPT
     {
         return value();
     }
 
-    const_reference operator*() const
+    const T& operator*() const BOND_NOEXCEPT
     {
         return value();
     }
 
-    pointer operator->()
+    T* operator->() BOND_NOEXCEPT
     {
         return &value();
     }
 
-    const_pointer operator->() const
+    const T* operator->() const BOND_NOEXCEPT
     {
         return &value();
     }
 
-    bool operator!() const
+    T& set()
     {
-        return empty();
+        if (empty())
+            set_value();
+
+        return *_value;
     }
 
-    reference set()
-    {
-        _hasvalue = true;
-        return _value;
-    }
-
-    void set(const_reference value)
+    void set(const T& value) BOND_NOEXCEPT_IF(std::is_nothrow_copy_constructible<T>::value)
     {
         _value = value;
-        _hasvalue = true;
     }
 
-    void reset()
+    void set(T&& value) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value)
     {
-        _value = make_value<value_type>();
-        _hasvalue = false;
+        _value = std::move(value);
     }
 
-    void clear()
+    void reset() BOND_NOEXCEPT
+    {
+        _value = boost::none;
+    }
+
+    void clear() BOND_NOEXCEPT
     {
         reset();
     }
 
-    allocator_type get_allocator() const
+    void swap(nullable& other)
     {
-        return base();
+        using std::swap;
+        swap(static_cast<alloc_holder&>(*this), static_cast<alloc_holder&>(other));
+        swap(_value, other._value);
     }
 
-    explicit
-    nullable(value_type&& value) BOND_NOEXCEPT_IF(
-            std::is_nothrow_move_constructible<Allocator>::value
-            && std::is_nothrow_move_constructible<value_type>::value)
-        : Allocator(detail::get_allocator(value)),
-          _value(std::move(value)),
-          _hasvalue(true)
-    {}
-
-    nullable(nullable&& src) BOND_NOEXCEPT_IF(
-            std::is_nothrow_move_constructible<Allocator>::value
-            && std::is_nothrow_move_constructible<value_type>::value)
-        : Allocator(std::move(src.base())),
-          _value(std::move(src._value)),
-          _hasvalue(std::move(src._hasvalue))
+    allocator_type get_allocator() const BOND_NOEXCEPT
     {
-        src._hasvalue = false;
-    }
-
-    nullable(nullable&& src, const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(std::move(src._value), alloc),
-          _hasvalue(std::move(src._hasvalue))
-    {
-        src._hasvalue = false;
-    }
-
-    nullable& operator=(nullable&& src) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<Allocator>::value
-        && std::is_nothrow_move_constructible<value_type>::value)
-    {
-        if (this != &src)
-        {
-            base() = std::move(src.base());
-            _value = std::move(src._value);
-            _hasvalue = std::move(src._hasvalue);
-            src._hasvalue = false;
-        }
-        return *this;
-    }
-
-    void set(value_type&& value) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<value_type>::value)
-    {
-        _value = std::move(value);
-        _hasvalue = true;
+        return alloc_holder::get();
     }
 
 private:
-    Allocator& base()
+    template <typename U = T>
+    typename boost::enable_if<detail::has_allocator<U> >::type
+    set_value()
     {
-        return static_cast<allocator_type&>(*this);
+        _value.emplace(alloc_holder::get());
     }
 
-    const Allocator& base() const
+    template <typename U = T>
+    typename boost::disable_if<detail::has_allocator<U> >::type
+    set_value()
     {
-        return static_cast<const allocator_type&>(*this);
+        _value.emplace();
     }
 
-    template<typename ValueType>
-    typename boost::enable_if<detail::has_allocator<ValueType>, ValueType>::type
-    make_value()
-    {
-        return ValueType(base());
-    }
-
-    template<typename ValueType>
-    typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
-    make_value()
-    {
-        return ValueType();
-    }
-
-private:
-    value_type  _value;
-    bool        _hasvalue;
+    boost::optional<T> _value;
 };
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#pragma warning(pop)
+#endif
 
 
 /** @brief Nullable type */
 /** See [User's Manual](../../manual/bond_cpp.html#nullable-types) */
-template<typename T, typename Allocator>
-class nullable<T, Allocator, false>
-    : Allocator
+template <typename T, typename Allocator>
+class nullable<T, Allocator, typename boost::disable_if<detail::use_value<T> >::type>
+    : private detail::allocator_holder<Allocator>
 {
-    BOOST_STATIC_ASSERT(!detail::use_value<T>::value);
+    using alloc_holder = detail::allocator_holder<Allocator>;
+    using rebind_alloc = typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
+    using pointer = typename std::allocator_traits<rebind_alloc>::pointer;
 
 public:
-    typedef T           value_type;
-    typedef T*          pointer;
-    typedef const T*    const_pointer;
-    typedef T&          reference;
-    typedef const T&    const_reference;
-    typedef Allocator   allocator_type;
-
-private:
-    typedef typename std::allocator_traits<allocator_type>::template rebind_alloc<value_type> rebind_alloc;
-
-    typedef typename std::allocator_traits<rebind_alloc>::pointer real_pointer;
-
-public:
-    bool hasvalue() const
-    {
-        return !!_value;
-    }
-
-    /// @brief Checks if the object is null
-    bool empty() const
-    {
-        return !hasvalue();
-    }
-
-    void swap(nullable& src)
-    {
-        std::swap(base(), src.base());
-        std::swap(_value, src._value);
-    }
+    using value_type = T;
+    using allocator_type = Allocator;
 
     /// @brief Default constructor
-    nullable()
-        : _value()
+    nullable() BOND_NOEXCEPT_IF(
+        std::is_nothrow_default_constructible<alloc_holder>::value
+        && std::is_nothrow_default_constructible<pointer>::value)
+        : alloc_holder(),
+          _value()
     {}
 
     /// @brief Construct nullable using specified allocator instance
     explicit
     nullable(const allocator_type& alloc)
-        : Allocator(alloc),
+        : alloc_holder(alloc),
           _value()
     {}
 
+    /// @brief Copy constructor
+    nullable(const nullable& other)
+        : alloc_holder(other),
+          _value(other.hasvalue() ? new_value(other.value()) : pointer())
+    {}
+
+    nullable(const nullable& other, const allocator_type& alloc)
+        : alloc_holder(alloc),
+          _value(other.hasvalue() ? new_value(other.value(), alloc) : pointer())
+    {}
+
+    nullable(nullable&& other) BOND_NOEXCEPT_IF(
+            std::is_nothrow_move_constructible<alloc_holder>::value
+            && std::is_nothrow_move_constructible<pointer>::value
+            && BOND_NOEXCEPT(other._value = {}))
+        : alloc_holder(std::move(other)),
+          _value(std::move(other._value))
+    {
+        other._value = {};
+    }
+
+    nullable(nullable&& other, const allocator_type& alloc)
+        : alloc_holder(alloc),
+          _value(other.alloc_holder::get() == alloc
+              ? std::move(other._value)
+              : (other.hasvalue() ? new_value(std::move(*other._value), alloc) : pointer()))
+    {
+        other._value = {};
+    }
+
     /// @brief Construct from an instance T
     explicit
-    nullable(const value_type& value,
-             const allocator_type& alloc = allocator_type())
-        : Allocator(alloc),
+    nullable(const T& value, const allocator_type& alloc = {})
+        : alloc_holder(alloc),
           _value(new_value(value))
     {}
 
-    /// @brief Copy constructor
-    nullable(const nullable& src)
-        : Allocator(src.base()),
-          _value(src.hasvalue() ? new_value(src.value()) : real_pointer())
+    explicit
+    nullable(T&& value, const allocator_type& alloc = {})
+        : alloc_holder(alloc),
+          _value(new_value(std::move(value)))
     {}
 
-    nullable(const nullable& src, const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(src.hasvalue() ? new_value(src.value(), alloc) : real_pointer())
-    {}
+    /// @brief Assignment operator
+    nullable& operator=(const nullable& other)
+    {
+        nullable(other).swap(*this);
+        return *this;
+    }
+
+    nullable& operator=(nullable&& other)
+    {
+        nullable(std::move(other)).swap(*this);
+        return *this;
+    }
 
     ~nullable()
     {
         reset();
     }
 
-    /// @brief Assignment operator
-    nullable& operator=(const nullable& src)
+    bool hasvalue() const BOND_NOEXCEPT
     {
-        nullable(src).swap(*this);
-        return *this;
+        return !!_value;
+    }
+
+    /// @brief Checks if the object is null
+    bool empty() const BOND_NOEXCEPT
+    {
+        return !hasvalue();
+    }
+
+    explicit operator bool() const BOND_NOEXCEPT
+    {
+        return !empty();
     }
 
     /// @brief Return reference to contained value
     ///
     /// Undefined if the object is null
-    reference value()
+    T& value() BOND_NOEXCEPT
     {
         BOOST_ASSERT(hasvalue());
         return *_value;
@@ -347,7 +342,7 @@ public:
     /// @brief Return constant reference to contained value
     ///
     /// Undefined if the object is null
-    const_reference value() const
+    const T& value() const BOND_NOEXCEPT
     {
         BOOST_ASSERT(hasvalue());
         return *_value;
@@ -356,7 +351,7 @@ public:
     /// @brief Dereference operator
     ///
     /// Undefined if the object is null
-    reference operator*()
+    T& operator*() BOND_NOEXCEPT
     {
         return value();
     }
@@ -364,50 +359,48 @@ public:
     /// @brief Dereference operator
     ///
     /// Undefined if the object is null
-    const_reference operator*() const
+    const T& operator*() const BOND_NOEXCEPT
     {
         return value();
     }
 
-    pointer operator->()
+    T* operator->() BOND_NOEXCEPT
     {
         return &value();
     }
 
-    const_pointer operator->() const
+    const T* operator->() const BOND_NOEXCEPT
     {
         return &value();
-    }
-
-    bool operator!() const
-    {
-        return empty();
     }
 
     /// @brief Set to default instance of T and return reference to the value
-    reference set()
+    T& set()
     {
         if (empty())
-            _value = set_value(detail::has_allocator<T>());
+            _value = set_value();
+
         return *_value;
     }
 
     /// @brief Set to specified value
-    void set(const_reference value)
+    void set(const T& value)
     {
-        if (empty())
-            _value = new_value(value);
-        else
-            *_value = value;
+        set_value(value);
+    }
+
+    void set(T&& value)
+    {
+        set_value(std::move(value));
     }
 
     /// @brief Reset to null
     void reset()
     {
-        if (_value)
+        if (hasvalue())
         {
             delete_value();
-            _value = real_pointer();
+            _value = {};
         }
     }
 
@@ -417,79 +410,35 @@ public:
         reset();
     }
 
-    allocator_type get_allocator() const
+    void swap(nullable& other)
     {
-        return base();
+        using std::swap;
+        swap(static_cast<alloc_holder&>(*this), static_cast<alloc_holder&>(other));
+        swap(_value, other._value);
     }
 
-    explicit
-    nullable(value_type&& value,
-             const allocator_type& alloc = allocator_type())
-        : Allocator(alloc),
-          _value(new_value(std::move(value)))
-    {}
-
-    nullable(nullable&& src) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<Allocator>::value
-        && std::is_nothrow_move_constructible<real_pointer>::value
-        && BOND_NOEXCEPT(src._value = real_pointer()))
-        : Allocator(std::move(src.base())),
-          _value(std::move(src._value))
+    allocator_type get_allocator() const BOND_NOEXCEPT
     {
-        src._value = real_pointer();
-    }
-
-    nullable(nullable&& src, const allocator_type& alloc)
-        : Allocator(alloc),
-          _value(src.base() == alloc
-              ? std::move(src._value)
-              : (src.hasvalue() ? new_value(std::move(*src._value), alloc) : real_pointer()))
-    {
-        src._value = real_pointer();
-    }
-
-    nullable& operator=(nullable&& src)
-    {
-        nullable(std::move(src)).swap(*this);
-        return *this;
-    }
-
-    void set(value_type&& value)
-    {
-        if (empty())
-            _value = new_value(std::move(value));
-        else
-            *_value = std::move(value);
+        return alloc_holder::get();
     }
 
 private:
-    Allocator& base()
-    {
-        return static_cast<allocator_type&>(*this);
-    }
-
-    const Allocator& base() const
-    {
-        return static_cast<const allocator_type&>(*this);
-    }
-
     void delete_value()
     {
-        rebind_alloc alloc(base());
-        std::allocator_traits<rebind_alloc>::destroy(alloc, boost::addressof(*_value));
+        rebind_alloc alloc(alloc_holder::get());
+        std::allocator_traits<rebind_alloc>::destroy(alloc, std::addressof(*_value));
         alloc.deallocate(_value, 1);
     }
 
-    template<typename... Args>
-    real_pointer new_value(Args&&... args)
+    template <typename... Args>
+    pointer new_value(Args&&... args)
     {
-        rebind_alloc alloc(base());
-        real_pointer p(alloc.allocate(1));
+        rebind_alloc alloc(alloc_holder::get());
+        pointer p(alloc.allocate(1));
         try
         {
-            std::allocator_traits<rebind_alloc>::construct(alloc,
-                boost::addressof(*p),
-                std::forward<Args>(args)...);
+            std::allocator_traits<rebind_alloc>::construct(
+                alloc, std::addressof(*p), std::forward<Args>(args)...);
             return p;
         }
         catch (...)
@@ -499,58 +448,49 @@ private:
         }
     }
 
-    real_pointer new_value()
+    template <typename U = T>
+    typename boost::enable_if<detail::has_allocator<U>, pointer>::type
+    set_value()
     {
-        rebind_alloc alloc(base());
-        real_pointer p(alloc.allocate(1));
-        try
-        {
-            std::allocator_traits<rebind_alloc>::construct(alloc,
-                boost::addressof(*p));
-            return p;
-        }
-        catch (...)
-        {
-            alloc.deallocate(p, 1);
-            throw;
-        }
+        return new_value(alloc_holder::get());
     }
 
-    real_pointer set_value(std::true_type)
-    {
-        return new_value(base());
-    }
-
-    real_pointer set_value(std::false_type)
+    template <typename U = T>
+    typename boost::disable_if<detail::has_allocator<U>, pointer>::type
+    set_value()
     {
         return new_value();
     }
 
-private:
-    real_pointer _value;
+    template <typename U>
+    void set_value(U&& value)
+    {
+        if (empty())
+            _value = new_value(std::forward<U>(value));
+        else
+            *_value = std::forward<U>(value);
+    }
+
+    pointer _value;
 };
 
 
-template<typename T, typename Allocator, bool useValue>
-inline void swap(nullable<T, Allocator, useValue>& x,
-                 nullable<T, Allocator, useValue>& y)
+template <typename T, typename Allocator>
+inline void swap(nullable<T, Allocator>& x, nullable<T, Allocator>& y)
 {
     x.swap(y);
 }
 
 
-template<typename T, typename Allocator, bool useValue>
-inline bool operator==(const nullable<T, Allocator, useValue>& x,
-                       const nullable<T, Allocator, useValue>& y)
+template <typename T, typename Allocator>
+inline bool operator==(const nullable<T, Allocator>& x, const nullable<T, Allocator>& y)
 {
-    return (x.hasvalue() == y.hasvalue()
-        && (!x.hasvalue() || *x == *y));
+    return (x.hasvalue() == y.hasvalue() && (!x.hasvalue() || *x == *y));
 }
 
 
-template<typename T, typename Allocator, bool useValue>
-inline bool operator!= (const nullable<T, Allocator, useValue>& x,
-                        const nullable<T, Allocator, useValue>& y)
+template <typename T, typename Allocator>
+inline bool operator!=(const nullable<T, Allocator>& x, const nullable<T, Allocator>& y)
 {
     return !(x == y);
 }
@@ -559,16 +499,16 @@ inline bool operator!= (const nullable<T, Allocator, useValue>& x,
 // nullable<T> is internally treated as a list container with 0 or 1 element
 
 // container_size
-template <typename T, typename Allocator, bool useValue>
-uint32_t container_size(const nullable<T, Allocator, useValue>& value)
+template <typename T, typename Allocator>
+uint32_t container_size(const nullable<T, Allocator>& value)
 {
     return value.empty() ? 0 : 1;
 }
 
 
 // resize_list
-template <typename T, typename Allocator, bool useValue>
-void resize_list(nullable<T, Allocator, useValue>& value, uint32_t size)
+template <typename T, typename Allocator>
+void resize_list(nullable<T, Allocator>& value, uint32_t size)
 {
     if (size)
         value.set();
@@ -577,23 +517,25 @@ void resize_list(nullable<T, Allocator, useValue>& value, uint32_t size)
 }
 
 
-template <typename T, typename Allocator, bool useValue> struct
-element_type<nullable<T, Allocator, useValue> >
+template <typename T, typename Allocator> struct
+element_type<nullable<T, Allocator> >
 {
     typedef T type;
 };
 
 
 // enumerators
-template <typename T, typename Allocator, bool useValue>
-class const_enumerator<nullable<T, Allocator, useValue> >
-    : boost::noncopyable
+template <typename T, typename Allocator>
+class const_enumerator<nullable<T, Allocator> >
 {
 public:
-    const_enumerator(const nullable<T, Allocator, useValue>& value)
+    const_enumerator(const nullable<T, Allocator>& value)
         : _value(value),
           _more(value.hasvalue())
     {}
+
+    const_enumerator(const const_enumerator& other) = delete;
+    const_enumerator& operator=(const const_enumerator& other) = delete;
 
     bool more()
     {
@@ -607,20 +549,22 @@ public:
     }
 
 private:
-    const nullable<T, Allocator, useValue>& _value;
-    bool                         _more;
+    const nullable<T, Allocator>& _value;
+    bool _more;
 };
 
 
-template <typename T, typename Allocator, bool useValue>
-class enumerator<nullable<T, Allocator, useValue> >
-    : boost::noncopyable
+template <typename T, typename Allocator>
+class enumerator<nullable<T, Allocator> >
 {
 public:
-    enumerator(nullable<T, Allocator, useValue>& value)
+    enumerator(nullable<T, Allocator>& value)
         : _value(value),
           _more(value.hasvalue())
     {}
+
+    enumerator(const enumerator& other) = delete;
+    enumerator& operator=(const enumerator& other) = delete;
 
     bool more()
     {
@@ -634,13 +578,13 @@ public:
     }
 
 private:
-    nullable<T, Allocator, useValue>&  _value;
+    nullable<T, Allocator>& _value;
     bool _more;
 };
 
 
-template <typename T, typename Allocator, bool useValue> struct
-is_list_container<nullable<T, Allocator, useValue> >
+template <typename T, typename Allocator> struct
+is_list_container<nullable<T, Allocator> >
     : std::true_type {};
 
 
