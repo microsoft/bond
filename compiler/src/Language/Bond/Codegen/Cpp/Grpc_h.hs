@@ -117,7 +117,7 @@ public:
         std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
         std::shared_ptr<TThreadPool> _threadPool;
 
-        #{doubleLineSep 2 privateProxyMethodDecl serviceMethods}
+        #{newlineSep 2 privateProxyMethodDecl serviceMethods}
     };
 
     using Client = #{proxyName}< ::bond::ext::gRPC::thread_pool>;
@@ -131,7 +131,6 @@ public:
             #{newlineSep 3 serviceAddMethod serviceMethods}
         }
 
-        virtual ~#{serviceName}() { }
         #{serviceStartMethod}
 
         #{newlineSep 2 serviceVirtualMethod serviceMethods}
@@ -320,37 +319,17 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
             BOOST_ASSERT(#{tpParam});
 
             #{newlineSep 3 initMethodReceiveData serviceMethodsWithIndex}
-
-            #{newlineSep 3 queueReceive serviceMethodsWithIndex}
         }|]
             where cqParam = uniqueName "cq" methodNames
                   tpParam = uniqueName "tp" methodNames
-                  initMethodReceiveData (index,Function{..}) = [lt|#{serviceRdMember methodName}.emplace(
-                this,
+                  initMethodReceiveData (index,Function{..}) = initMethodReceiveDataContent index methodName
+                  initMethodReceiveData (index,Event{..}) = initMethodReceiveDataContent index methodName
+                  initMethodReceiveDataContent index methodName = [lt|#{serviceRdMember methodName}.emplace(
+                *this,
                 #{index},
                 #{cqParam},
                 #{tpParam},
                 std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
-                  initMethodReceiveData (index,Event{..}) = [lt|#{serviceRdMember methodName}.emplace(
-                this,
-                #{index},
-                #{cqParam},
-                #{tpParam},
-                std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
-                  queueReceive (index,Function{..}) = [lt|this->queue_receive(
-                #{index},
-                &#{serviceRdMember methodName}->_receivedCall->context(),
-                &#{serviceRdMember methodName}->_receivedCall->request(),
-                &#{serviceRdMember methodName}->_receivedCall->responder(),
-                #{cqParam},
-                &#{serviceRdMember methodName}.get());|]
-                  queueReceive (index,Event{..}) = [lt|this->queue_receive(
-                #{index},
-                &#{serviceRdMember methodName}->_receivedCall->context(),
-                &#{serviceRdMember methodName}->_receivedCall->request(),
-                &#{serviceRdMember methodName}->_receivedCall->responder(),
-                #{cqParam},
-                &#{serviceRdMember methodName}.get());|]
 
         serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}, TThreadPool>> #{serviceRdMember methodName};|]
         serviceMethodReceiveData Event{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}, TThreadPool>> #{serviceRdMember methodName};|]
