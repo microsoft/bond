@@ -7,10 +7,11 @@
 #include "pingpong_reflection.h"
 #include "pingpong_types.h"
 
-#include <bond/ext/detail/countdown_event.h>
 #include <bond/ext/grpc/server.h>
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/unary_call.h>
+
+#include "../../grpc/countdown_event.h"
 
 #include <chrono>
 #include <memory>
@@ -26,9 +27,8 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 
 using namespace PingPongNS;
-using namespace bond::ext::detail;
 
-static countdown_event Countdown(NumRequests + NumEvents + NumErrors);
+static unit_test::countdown_event Countdown(NumRequests + NumEvents + NumErrors);
 static std::atomic<uint32_t> NumRequestsReceived(0);
 static std::atomic<uint32_t> NumEventsReceived(0);
 static std::atomic<uint32_t> NumErrorsReceived(0);
