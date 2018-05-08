@@ -61,7 +61,7 @@ class io_managerTests
 
         alarm_completion_tag<event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
-        grpc::Alarm alarm(ioManager.cq(), deadline, static_cast<io_manager_tag*>(&act));
+        grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
 
         bool wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
@@ -81,7 +81,7 @@ class io_managerTests
         alarms.reserve(numItems);
         for (size_t i = 0; i < numItems; ++i)
         {
-            alarms.emplace_back(ioManager.cq(), deadline, static_cast<io_manager_tag*>(&act));
+            alarms.emplace_back(ioManager.cq(), deadline, act.tag());
         }
 
         bool wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
@@ -146,7 +146,7 @@ class io_managerTests
 
         alarm_completion_tag<event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
-        grpc::Alarm alarm(ioManager.cq(), deadline, static_cast<io_manager_tag*>(&act));
+        grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
 
         bool wasSet = act.completion_event.wait_for(std::chrono::milliseconds(1250));
         UT_AssertIsTrue(!wasSet);

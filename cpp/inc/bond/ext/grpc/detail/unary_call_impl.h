@@ -94,7 +94,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, status, static_cast<void*>(static_cast<io_manager_tag*>(this)));
+                _responder.Finish(msg, status, tag());
             }
         }
 
@@ -103,7 +103,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.FinishWithError(status, static_cast<void*>(static_cast<io_manager_tag*>(this)));
+                _responder.FinishWithError(status, tag());
             }
         }
 
@@ -179,8 +179,6 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
     template <typename TRequest, typename TResponse>
     class unary_call_base
     {
-        using impl_type = unary_call_impl<TRequest, TResponse>;
-
     public:
         void swap(unary_call_base& rhs) noexcept
         {
@@ -240,6 +238,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         }
 
     protected:
+        using impl_type = unary_call_impl<TRequest, TResponse>;
+
         unary_call_base() = default;
 
         explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
