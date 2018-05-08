@@ -13,11 +13,10 @@
     <DocumentationFile Condition="'$(UsingMicrosoftNETSdk)' != 'true'">$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(MSBuildRuntimeType)' != 'Mono' or '$(_DebugFileExt)' == '.pdb'" />
-    <FileToCopy Include="$(TargetPath).mdb" Condition="'$(MSBuildRuntimeType)' == 'Mono' and '$(_DebugFileExt)' == '.mdb'" />
+    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(_DebugFileExt)' == '.pdb'" />
     <FileToCopy Include="$(DocumentationFile)" />
   </ItemGroup>
-  <Target Name="CopyAdditionalFiles" AfterTargets="AfterBuild" >
+  <Target Name="CopyAdditionalFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)\$(TargetFramework)" Condition="'$(BondRedistributable)' == 'true'" />
   </Target>
 </Project>

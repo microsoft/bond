@@ -10,10 +10,6 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
-  <PropertyGroup>
-    <OrigOutputPath>$(OutputPath)\$(TargetFramework)</OrigOutputPath>
-    <DependentOutputPath>bin\$(BuildType)\$(TargetFramework)</DependentOutputPath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
     <DefineConstants>$(DefineConstants);SUPPORTS_BIGINTEGER;SUPPORTS_XMLRESOLVER</DefineConstants>
   </PropertyGroup>
@@ -60,23 +56,11 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <!-- Intentionally not DependentOutputPath to match BuildFramework-->
-      <HintPath>..\..\src\core\$(OrigOutputPath)\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Reflection">
-      <HintPath>..\..\src\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.JSON">
-      <!-- Intentionally not DependentOutputPath to match BuildFramework-->
-      <HintPath>..\..\src\json\$(OrigOutputPath)\Bond.JSON.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
+    <ProjectReference Include="..\..\src\io\IO.csproj" />
+    <ProjectReference Include="..\..\src\json\JSON.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

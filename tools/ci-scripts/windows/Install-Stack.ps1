@@ -23,9 +23,10 @@ Invoke-WebRequest `
     -Uri https://www.stackage.org/stack/windows-x86_64 `
     -OutFile $stackInstaller
 
-Write-Debug "Extracting to $OutputDirectory"
+$InstallDirectory = [System.IO.Path]::Combine($OutputDirectory, 'stack')
+Write-Debug "Extracting to $InstallDirectory"
 
-[System.IO.Compression.ZipFile]::ExtractToDirectory($stackInstaller, $OutputDirectory)
+[System.IO.Compression.ZipFile]::ExtractToDirectory($stackInstaller, $InstallDirectory)
 
-Write-Host "Stack: $(& "$OutputDirectory\stack.exe" --version)"
-Write-Output $OutputDirectory
+Write-Host "Stack: $(& "$InstallDirectory\stack.exe" --version)"
+Write-Output $InstallDirectory
