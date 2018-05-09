@@ -91,7 +91,6 @@ public:
             this->AddMethod("/tests.Foo/foo");
         }
 
-        virtual ~ServiceCore() { }
         virtual void start(
             ::grpc::ServerCompletionQueue* cq,
             std::shared_ptr<TThreadPool> tp) override
@@ -100,19 +99,11 @@ public:
             BOOST_ASSERT(tp);
 
             _rd_foo.emplace(
-                this,
+                *this,
                 0,
                 cq,
                 tp,
                 std::bind(&ServiceCore::foo, this, std::placeholders::_1));
-
-            this->queue_receive(
-                0,
-                &_rd_foo->_receivedCall->context(),
-                &_rd_foo->_receivedCall->request(),
-                &_rd_foo->_receivedCall->responder(),
-                cq,
-                &_rd_foo.get());
         }
 
         virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::tests::Result>) = 0;

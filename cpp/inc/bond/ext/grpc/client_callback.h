@@ -55,11 +55,6 @@ namespace bond { namespace ext { namespace gRPC {
               status(status),
               context(std::move(context))
         { }
-
-        unary_call_result(const unary_call_result&) = default;
-        unary_call_result(unary_call_result&&) = default;
-        unary_call_result& operator=(const unary_call_result&) = default;
-        unary_call_result& operator=(unary_call_result&&) = default;
     };
 
 } } } // namespace bond::ext::gRPC

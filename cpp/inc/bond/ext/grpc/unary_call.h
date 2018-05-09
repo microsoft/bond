@@ -16,7 +16,7 @@ namespace bond { namespace ext { namespace gRPC {
 namespace detail {
 
     template <typename TRequest, typename TResponse, typename TThreadPool>
-    struct service_unary_call_data;
+    class service_unary_call_data;
 
 } // namespace detail
 
@@ -41,7 +41,6 @@ class shared_unary_call;
 template <typename TRequest, typename TResponse>
 class unary_call final : public detail::unary_call_base<TRequest, TResponse>
 {
-    using impl_type = detail::unary_call_impl<TRequest, TResponse>;
     using base_type = detail::unary_call_base<TRequest, TResponse>;
 
 public:
@@ -83,8 +82,8 @@ public:
     }
 
 private:
-    template <typename SUCDRequest, typename SUCDResponse, typename SUCDThreadPool>
-    friend struct detail::service_unary_call_data;
+    template <typename OtherRequest, typename OtherResponse, typename OtherThreadPool>
+    friend class detail::service_unary_call_data;
 
     using base_type::base_type;
 };

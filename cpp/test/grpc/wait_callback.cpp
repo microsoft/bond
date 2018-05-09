@@ -14,12 +14,17 @@
 #include "event.h"
 
 #include <boost/optional.hpp>
+#include <boost/static_assert.hpp>
 
 #include <atomic>
 #include <thread>
+#include <type_traits>
 
 namespace wait_callback_tests
 {
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
+
     using wait_callbackBox = bond::ext::gRPC::wait_callback<bond::Box<int>>;
     using callback_arg = wait_callbackBox::arg_type;
 
