@@ -249,14 +249,8 @@ TEST_CASE_BEGIN(NullableAllocators)
         std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<bool> > > n1(a1);
     UT_AssertIsTrue(n1.empty());
 
-    // VS10SP1 is a joke and does not support swap on map/set with different allocators
-#if _MSC_VER<=1600
-    NullableSwappable ns1(a1);
-    NullableSwappable ns2(a2);
-#else
     NullableFields ns1(a1);
     NullableFields ns2(a2);
-#endif
 
     ns1.nullable_uint32.set();
     ns1.nullable_list.set();
