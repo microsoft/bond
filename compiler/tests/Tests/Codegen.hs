@@ -6,6 +6,7 @@
 
 module Tests.Codegen
     ( verifyCodegen
+    , verifyCodegenVariation
     , verifyCppCodegen
     , verifyCppGrpcCodegen
     , verifyApplyCodegen
@@ -47,7 +48,12 @@ verifyJavaCodegen = verifyCodegen ["java"]
 verifyCodegen :: [String] -> FilePath -> TestTree
 verifyCodegen args baseName =
     testGroup baseName $
-        verifyFiles (processOptions args) baseName
+        verifyFiles (processOptions args) baseName ""
+
+verifyCodegenVariation :: [String] -> FilePath -> FilePath -> TestTree
+verifyCodegenVariation args baseName variation =
+    testGroup baseName $
+        verifyFiles (processOptions args) baseName variation
 
 verifyApplyCodegen :: [String] -> FilePath -> TestTree
 verifyApplyCodegen args baseName =
@@ -97,7 +103,7 @@ verifyCsGrpcCodegen args baseName =
     testGroup baseName $
         map (verifyFile (processOptions args) baseName csTypeMapping "")
             [ grpc_cs
-            , types_cs Class (fieldMapping (processOptions args))
+            , types_cs Class (fieldMapping (processOptions args)) (constructorOptions (processOptions args))
             ]
   where
     fieldMapping Cs {..} = if readonly_properties
@@ -105,10 +111,13 @@ verifyCsGrpcCodegen args baseName =
         else if fields
              then PublicFields
              else Properties
+    constructorOptions Cs {..} = if constructor_parameters
+        then ConstructorParameters
+        else DefaultWithProtectedBase
 
-verifyFiles :: Options -> FilePath -> [TestTree]
-verifyFiles options baseName =
-    map (verify (typeMapping options) "") (templates options)
+verifyFiles :: Options -> FilePath -> FilePath -> [TestTree]
+verifyFiles options baseName variation =
+    map (verify (typeMapping options) variation) (templates options)
     <>
     extra options
   where
@@ -118,6 +127,9 @@ verifyFiles options baseName =
         else if fields
              then PublicFields
              else Properties
+    constructorOptions Cs {..} = if constructor_parameters
+        then ConstructorParameters
+        else DefaultWithProtectedBase
     typeMapping Cpp {..} = cppExpandAliases type_aliases_enabled $ maybe cppTypeMapping (cppCustomAllocTypeMapping scoped_alloc_enabled) allocator
     typeMapping Cs {} = csTypeMapping
     typeMapping Java {} = javaTypeMapping
@@ -128,32 +140,32 @@ verifyFiles options baseName =
         ] <>
         [ enum_h | enum_header]
     templates Cs {..} =
-        [ types_cs Class $ fieldMapping options
+        [ types_cs Class (fieldMapping options) (constructorOptions options)
         ]
     templates Java {} =
         [ javaCatTemplate
         ]
     extra Cs {} =
         [ testGroup "collection interfaces" $
-            map (verify csCollectionInterfacesTypeMapping "collection-interfaces") (templates options)
+            map (verify csCollectionInterfacesTypeMapping (variation </> "collection-interfaces")) (templates options)
         ]
     extra Cpp {..} =
         [ testGroup "custom allocator" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") "allocator")
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") (variation </> "allocator"))
                 (templates $ options { allocator = Just "arena" })
             | isNothing allocator
         ] ++
         [ testGroup "constructors with allocator argument" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") "alloc_ctors")
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") (variation </> "alloc_ctors"))
                 (templates $ options { allocator = Just "arena", alloc_ctors_enabled = True })
             | isNothing allocator
         ] ++
         [ testGroup "type aliases" $
-            map (verify (cppCustomAllocTypeMapping False "arena") "type_aliases")
+            map (verify (cppCustomAllocTypeMapping False "arena") (variation </> "type_aliases"))
                 (templates $ options { allocator = Just "arena", type_aliases_enabled = True })
         ] ++
         [ testGroup "scoped allocator" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping True "arena") "scoped_allocator")
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping True "arena") (variation </> "scoped_allocator"))
                 (templates $ options { allocator = Just "arena", scoped_alloc_enabled = True })
             | isNothing allocator
         ]

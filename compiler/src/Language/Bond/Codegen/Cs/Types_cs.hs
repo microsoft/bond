@@ -7,12 +7,13 @@ module Language.Bond.Codegen.Cs.Types_cs
     ( types_cs
     , FieldMapping(..)
     , StructMapping(..)
+    , ConstructorOptions(..)
     ) where
 
 import Data.Monoid
 import qualified Data.Foldable as F
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
 import Language.Bond.Syntax.Types
 import Language.Bond.Syntax.Util
@@ -34,12 +35,19 @@ data FieldMapping =
     ReadOnlyProperties      -- ^ auto-properties with private setter
     deriving Eq
 
+-- | Options for how constructors should be generated.
+data ConstructorOptions =
+    DefaultWithProtectedBase | -- ^ The original bond behavior.
+    ConstructorParameters      -- ^ Generate a constructor that takes all the fields as parameters.
+    deriving Eq
+
 -- | Codegen template for generating definitions of C# types representing the schema.
 types_cs
     :: StructMapping        -- ^ Specifies how to represent schema structs
     -> FieldMapping         -- ^ Specifies how to represent schema fields
+    -> ConstructorOptions   -- ^ Specifies the constructors that should be generated
     -> MappingContext -> String -> [Import] -> [Declaration] -> (String, Text)
-types_cs structMapping fieldMapping cs _ _ declarations = (fileSuffix, [lt|
+types_cs structMapping fieldMapping constructorOptions cs _ _ declarations = (fileSuffix, [lt|
 #{CS.disableCscWarnings}
 #{CS.disableReSharperWarnings}
 namespace #{csNamespace}
@@ -71,6 +79,9 @@ namespace #{csNamespace}
     propertyAttributes f = case structMapping of
         Class -> CS.propertyAttributes cs f
 
+    baseClass x = [lt|
+        : #{csType x}|]
+
     -- C# type definition for schema struct
     typeDefinition s@Struct {..} = [lt|#{typeAttributes s}#{struct}#{declName}#{params}#{maybe interface baseClass structBase}#{constraints}
     {
@@ -86,20 +97,15 @@ namespace #{csNamespace}
         -- constraints
         constraints = CS.paramConstraints declParams
 
-        -- base
-        callBaseCtor = getAny $ optional (foldMapFields metaField) structBase
-
-        baseClass x = [lt|
-        : #{csType x}|]
-
-        baseCtor = if not callBaseCtor then mempty else [lt|
-            : base(fullName, name)|]
-
         -- default value
         csDefault = CS.defaultValue cs
 
-        -- constructors
-        constructors = if noCtor then mempty else [lt|
+        metaFields = filter (isMetaName . fieldType) structFields
+
+        noMetaFields = null metaFields
+
+        -- constructor: DefaultWithProtectedBase option
+        defaultWithProtectedBaseConstructor = if noCtor then mempty else [lt|
 
         public #{declName}()
             : this("#{getDeclTypeName idl s}", "#{declName}")
@@ -111,7 +117,65 @@ namespace #{csNamespace}
         }|]
           where
             noCtor = not callBaseCtor && (fieldMapping == PublicFields && noMetaFields || null structFields)
-            noMetaFields = not $ getAny $ F.foldMap metaField structFields
+            callBaseCtor = getAny $ optional (foldMapFields metaField) structBase
+            baseCtor = if not callBaseCtor
+                then mempty
+                else [lt|
+            : base(fullName, name)|]
+
+        -- constructor: ConstructorParameters option
+        constructorWithParameters = if not noMetaFields
+            then error $ "bond_meta usage in Struct " ++ (show declName) ++ " Field " ++ (show $ fieldName $ head metaFields) ++ " is incompatible with --preview--constructor-parameters"
+            else if (null baseFieldList)
+                then [lt|
+
+        public #{declName}(
+            #{commaLineSep 3 paramDecl fieldNameList})
+        {
+            #{newlineSep 3 paramBasedInitializer fieldNameList}
+        }
+
+        public #{declName}()
+        {
+            #{newlineSep 3 initializer structFields}
+        }|]
+                else [lt|
+
+        public #{declName}(
+            // Base class parameters
+            #{commaLineSep 3 paramDecl (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
+        ) : base(
+                #{commaLineSep 4 pack uniqueBaseFieldNames})
+        {
+            #{newlineSep 3 paramBasedInitializer (zip structFields uniqueThisFieldNames)}
+        }
+
+        public #{declName}()
+        {
+            #{newlineSep 3 initializer structFields}
+        }|]
+
+        thisParamBlock = if null structFields
+            then mempty
+            else [lt|,
+
+            // This class parameters
+            #{commaLineSep 3 paramDecl (zip structFields uniqueThisFieldNames)}|]
+
+        baseFieldList = concat $ baseFields s
+
+        uniqueBaseFieldNames = uniqueNames (map fieldName baseFieldList) []
+        uniqueThisFieldNames = uniqueNames (map fieldName structFields) uniqueBaseFieldNames
+
+        paramDecl (f, n) = [lt|#{csType $ fieldType f} #{n}|]
+
+        paramBasedInitializer (f, n) = [lt|this.#{fieldName f} = #{n};|]
+
+        fieldNameList = map (\f -> (f, fieldName f)) structFields
+
+        constructors = case constructorOptions of
+            DefaultWithProtectedBase -> defaultWithProtectedBaseConstructor
+            ConstructorParameters -> constructorWithParameters
 
         -- property or field
         property f@Field {..} =

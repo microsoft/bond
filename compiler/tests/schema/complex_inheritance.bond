@@ -1,0 +1,45 @@
+namespace Test
+
+using CustomList<T> = vector<T>;
+using BaseText = wstring;
+
+enum TestEnum
+{
+    EnumVal1,
+    EnumVal2,
+    EnumVal3
+};
+
+struct Simple
+{
+    0: int32 someInt;
+    1: int32 anotherInt;
+    2: wstring someString;
+};
+
+struct Foo
+{
+    0: BaseText someText = "BaseText1";
+}
+
+struct Bar: Foo
+{
+    0: TestEnum testEnum = Val2;
+    1: wstring someText = "DerivedText1";
+    2: int32 someInt;
+    3: wstring moreText;
+    4: CustomList<Simple> someList;
+    5: map<wstring, double> someMap;
+    6: set<wstring> someSet;
+};
+
+struct Baz: Bar
+{
+    0: wstring someText;
+    1: wstring evenMoreText;
+    2: wstring someText1;
+}
+
+struct DerivedEmpty: Foo
+{
+}
