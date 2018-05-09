@@ -22,7 +22,7 @@ var namespacebond =
           [ "client_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data" ],
           [ "io_manager_tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag" ],
           [ "service", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service" ],
-          [ "service_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
+          [ "service_unary_call_data", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
           [ "unary_call_base", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base" ],
           [ "unary_call_impl", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", null ]
         ] ],
