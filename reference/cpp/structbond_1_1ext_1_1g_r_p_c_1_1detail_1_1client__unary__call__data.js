@@ -4,6 +4,7 @@ var structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data =
     [ "clean_up_after_receive", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9b486eb65ef3cdeea91bbd7cc09aad44", null ],
     [ "dispatch", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9ff71ea837f32ce8e8c48d3b483f16f1", null ],
     [ "invoke", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9fb798695b1249d495243e7d568942d4", null ],
+    [ "tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a0f2e5b825e479417f71ccf6e82e4e793", null ],
     [ "_callbackArgs", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a544921d4f932b12d79c38237459ec969", null ],
     [ "_cb", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#ac0f1b7caa67fca56a749cf6317b766ed", null ],
     [ "_channel", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a3250e65424c29e70879dc354930dcc07", null ],

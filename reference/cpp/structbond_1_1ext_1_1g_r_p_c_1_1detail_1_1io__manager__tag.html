@@ -116,6 +116,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6242ca809b26c2ae62479a766438e160"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html#a6242ca809b26c2ae62479a766438e160">invoke</a> (bool ok)=0</td></tr>
 <tr class="memdesc:a6242ca809b26c2ae62479a766438e160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when this instance is dequeued from a completion queue.  <a href="#a6242ca809b26c2ae62479a766438e160">More...</a><br /></td></tr>
 <tr class="separator:a6242ca809b26c2ae62479a766438e160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2e5b825e479417f71ccf6e82e4e793"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html#a0f2e5b825e479417f71ccf6e82e4e793">tag</a> ()</td></tr>
+<tr class="separator:a0f2e5b825e479417f71ccf6e82e4e793"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for completion queue tag types that <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html">io_manager</a> expects. </p>
@@ -154,6 +156,24 @@ Public Member Functions</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html#a9fb798695b1249d495243e7d568942d4">bond::ext::gRPC::detail::client_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>, and <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html#a8ec65a7b3d41afb7181a06ce4f015777">bond::ext::gRPC::detail::service_unary_call_data&lt; TRequest, TResponse, TThreadPool &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a0f2e5b825e479417f71ccf6e82e4e793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2e5b825e479417f71ccf6e82e4e793">&#9670;&nbsp;</a></span>tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a>* bond::ext::gRPC::detail::io_manager_tag::tag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Returns a tag value suitable for passing to completion queue routines. </dd></dl>
 
 </div>
 </div>
