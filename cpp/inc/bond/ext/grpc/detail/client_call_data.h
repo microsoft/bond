@@ -72,14 +72,14 @@ struct client_unary_call_data
           _ioManager(std::move(ioManager)),
           _threadPool(std::move(threadPool)),
           _responseReader(),
-          _callbackArgs(context),
-          _cb(cb),
+          _callbackArgs(std::move(context)),
+          _cb(std::move(cb)),
           _self()
     {
         BOOST_ASSERT(_channel);
         BOOST_ASSERT(_ioManager);
         BOOST_ASSERT(_threadPool);
-        BOOST_ASSERT(context);
+        BOOST_ASSERT(_callbackArgs.context);
     }
 
     /// @brief Initiates the client request and wires up completion
@@ -88,7 +88,7 @@ struct client_unary_call_data
         const grpc::internal::RpcMethod& method,
         const bond::bonded<TRequest>& request)
     {
-        _responseReader = std::unique_ptr<grpc::ClientAsyncResponseReader<bond::bonded<TResponse>>>(
+        _responseReader.reset(
             ::grpc::internal::ClientAsyncResponseReaderFactory<bond::bonded<TResponse>>::Create(
                 _channel.get(),
                 _ioManager->cq(),
@@ -102,7 +102,7 @@ struct client_unary_call_data
         _responseReader->Finish(
             &_callbackArgs.response,
             &_callbackArgs.status,
-            static_cast<void*>(static_cast<io_manager_tag*>(this)));
+            tag());
     }
 
     /// @brief Invoked after the response has been received.
@@ -110,7 +110,7 @@ struct client_unary_call_data
     {
         if (ok && _cb)
         {
-            _threadPool->schedule([this]()
+            _threadPool->schedule([this]
             {
                 // pass a shared_ptr to unary_call_result, but that
                 // participates in shared ownership of the containing
