@@ -52,7 +52,7 @@
       <Context>File;BrowseObject;</Context>
     </PropertyPageSchema>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)cps\BondImportDirectory.xaml">
-      <Context>Invisible</Context>
+      <Context>File;BrowseObject;</Context>
     </PropertyPageSchema>
   </ItemGroup>
 

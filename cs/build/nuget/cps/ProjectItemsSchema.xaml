@@ -10,7 +10,7 @@
     </ContentType>
 
     <ItemType Name="BondCodegen" DisplayName="Bond code generation"/>
-    <ItemType Name="BondImportDirectory" DisplayName="Bond import search directory"/>
+    <ItemType Name="BondImportDirectory" DisplayName="Bond import search directory" DefaultContentType="Folder"/>
 
     <FileExtension Name=".bond" ContentType="BondIDL"/>
 </ProjectSchemaDefinitions>
