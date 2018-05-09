@@ -122,6 +122,11 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS
   and Linux that prevented the C# compiler from finding the generated C#
   files.
+* *Preview*: Added preliminary support for generating types with
+  constructors with parameters for each field. This functionality will
+  change in the future and may be removed. [Pull request
+  #857](https://github.com/Microsoft/bond/pull/857)
+	
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

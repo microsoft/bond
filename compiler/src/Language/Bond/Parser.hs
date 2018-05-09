@@ -84,7 +84,7 @@ processImport (Import file) = do
 declaration :: Parser Declaration
 declaration = do
     -- When adding a new Declaration parser, order matters in the following command.
-    -- Parsers must fail to consume ANY token for the next parser to be able to succesfully work
+    -- Parsers must fail to consume ANY token for the next parser to be able to successfully work
     -- unless the parser is encapsulated in a try statement. For more info on try and <|> see:
     -- https://hackage.haskell.org/package/megaparsec-6.2.0/docs/Text-Megaparsec.html#v:try
     decl <- try forward
@@ -399,12 +399,12 @@ input = parens methodInputType
 methodTypeVoid :: Parser MethodType
 methodTypeVoid = try (keyword "void" *> pure Void) <?> "void method type"
 
--- Whether the method type is streaming or is unary can be determed based on
+-- Whether the method type is streaming or is unary can be determined based on
 -- context, but the context is different for result and input types.
 --
 -- For result types, the keyword stream followed by a struct name AND THEN
 -- an identifier indicates a streaming type. Two identifiers are required to
--- distringuish between the unary method "stream stream()" and the streaming
+-- distinguish between the unary method "stream stream()" and the streaming
 -- method "stream stream stream()".
 --
 -- For input types, simply the keyword stream followed by a struct name is
@@ -466,6 +466,6 @@ validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defau
         validDefaultType' _ _                           = False
 
 -- checks whether an Integer is within the bounds of some other Integral and Bounded type.
--- The value of the second paramater is never used: only its type is used.
+-- The value of the second parameter is never used: only its type is used.
 isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
 isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
