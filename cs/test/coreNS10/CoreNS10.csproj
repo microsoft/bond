@@ -24,7 +24,7 @@
     <BondOptions>--fields --collection-interfaces</BondOptions>
   </PropertyGroup>
   <ItemGroup>
-    <BondImportDirectory Include="..\core\import dir with spaces" />
+    <BondImportDirectory Include="..\core\import dir with spaces\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\core\*.cs" />
