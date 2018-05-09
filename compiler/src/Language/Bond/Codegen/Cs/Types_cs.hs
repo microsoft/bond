@@ -130,9 +130,9 @@ namespace #{csNamespace}
                 then [lt|
 
         public #{declName}(
-            #{commaLineSep 3 paramDecl structFields})
+            #{commaLineSep 3 paramDecl fieldNameList})
         {
-            #{newlineSep 3 paramBasedInitializer structFields}
+            #{newlineSep 3 paramBasedInitializer fieldNameList}
         }
 
         public #{declName}()
@@ -143,11 +143,11 @@ namespace #{csNamespace}
 
         public #{declName}(
             // Base class parameters
-            #{commaLineSep 3 paramDeclWithUniqueName (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
+            #{commaLineSep 3 paramDecl (zip baseFieldList uniqueBaseFieldNames)}#{thisParamBlock}
         ) : base(
                 #{commaLineSep 4 pack uniqueBaseFieldNames})
         {
-            #{newlineSep 3 paramBasedInitializerWithUniqueName (zip structFields uniqueThisFieldNames)}
+            #{newlineSep 3 paramBasedInitializer (zip structFields uniqueThisFieldNames)}
         }
 
         public #{declName}()
@@ -160,18 +160,18 @@ namespace #{csNamespace}
             else [lt|,
 
             // This class parameters
-            #{commaLineSep 3 paramDeclWithUniqueName (zip structFields uniqueThisFieldNames)}|]
+            #{commaLineSep 3 paramDecl (zip structFields uniqueThisFieldNames)}|]
 
         baseFieldList = concat $ baseFields s
 
         uniqueBaseFieldNames = uniqueNames (map fieldName baseFieldList) []
         uniqueThisFieldNames = uniqueNames (map fieldName structFields) uniqueBaseFieldNames
 
-        paramDecl f = [lt|#{csType $ fieldType f} #{fieldName f}|]
-        paramDeclWithUniqueName (f, n) = [lt|#{csType $ fieldType f} #{n}|]
+        paramDecl (f, n) = [lt|#{csType $ fieldType f} #{n}|]
 
-        paramBasedInitializer f = [lt|this.#{fieldName f} = #{fieldName f};|]
-        paramBasedInitializerWithUniqueName (f, n) = [lt|this.#{fieldName f} = #{n};|]
+        paramBasedInitializer (f, n) = [lt|this.#{fieldName f} = #{n};|]
+
+        fieldNameList = map (\f -> (f, fieldName f)) structFields
 
         constructors = case constructorOptions of
             DefaultWithProtectedBase -> defaultWithProtectedBaseConstructor

@@ -161,7 +161,7 @@ verifyFiles options baseName variation =
             | isNothing allocator
         ] ++
         [ testGroup "type aliases" $
-            map (verify (cppCustomAllocTypeMapping False "arena") ("type_aliases" </> variation))
+            map (verify (cppCustomAllocTypeMapping False "arena") (variation </> "type_aliases"))
                 (templates $ options { allocator = Just "arena", type_aliases_enabled = True })
         ] ++
         [ testGroup "scoped allocator" $
