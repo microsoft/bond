@@ -12,7 +12,7 @@
 #include <atomic>
 #include <chrono>
 
-namespace bond { namespace ext { namespace detail {
+namespace unit_test {
 
 /// @ A synchronization primitive that is signaled when its count reaches
 /// zero.
@@ -77,4 +77,4 @@ private:
     countdown_event& operator=(countdown_event&&) = delete;
 };
 
-} } } // namespace bond::ext::detail
+} // namespace unit_test

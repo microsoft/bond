@@ -11,7 +11,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace bond { namespace ext { namespace detail {
+namespace unit_test {
 
     /// @brief A synchronization primitive that is signaled manually.
     ///
@@ -72,4 +72,4 @@ namespace bond { namespace ext { namespace detail {
         event& operator=(event&&) = delete;
     };
 
-} } } // namespace bond::ext::detail
+} // namespace unit_test
