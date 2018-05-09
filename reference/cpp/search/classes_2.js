@@ -5,6 +5,5 @@ var searchData=
   ['compactbinaryreader',['CompactBinaryReader',['../classbond_1_1_compact_binary_reader.html',1,'bond']]],
   ['compactbinarywriter',['CompactBinaryWriter',['../classbond_1_1_compact_binary_writer.html',1,'bond']]],
   ['coreexception',['CoreException',['../structbond_1_1_core_exception.html',1,'bond']]],
-  ['countdown_5fevent',['countdown_event',['../classbond_1_1ext_1_1detail_1_1countdown__event.html',1,'bond::ext::detail']]],
   ['counter_5fbase',['counter_base',['../classbond_1_1detail_1_1counter__base.html',1,'bond::detail']]]
 ];

@@ -17,11 +17,6 @@ var namespacebond =
       [ "value_or_reference", "classbond_1_1detail_1_1value__or__reference.html", null ]
     ] ],
     [ "ext", null, [
-      [ "detail", null, [
-        [ "barrier", "classbond_1_1ext_1_1detail_1_1barrier.html", "classbond_1_1ext_1_1detail_1_1barrier" ],
-        [ "countdown_event", "classbond_1_1ext_1_1detail_1_1countdown__event.html", "classbond_1_1ext_1_1detail_1_1countdown__event" ],
-        [ "event", "classbond_1_1ext_1_1detail_1_1event.html", "classbond_1_1ext_1_1detail_1_1event" ]
-      ] ],
       [ "gRPC", null, [
         [ "detail", null, [
           [ "client_unary_call_data", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data" ],
