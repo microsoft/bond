@@ -13,6 +13,7 @@
 #include <bond/stream/output_buffer.h>
 
 #include <boost/optional.hpp>
+#include <boost/static_assert.hpp>
 
 #include <atomic>
 #include <thread>

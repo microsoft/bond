@@ -4,13 +4,17 @@
 #include "services_grpc.h"
 
 #include <boost/test/unit_test.hpp>
+#include <boost/static_assert.hpp>
 
 #include <algorithm>
 #include <iterator>
 #include <map>
 #include <string>
+#include <type_traits>
 
 using unit_test::SimpleService;
+
+BOOST_STATIC_ASSERT(std::has_virtual_destructor<SimpleService::Service>::value);
 
 static bool AttributeMapsEqual(
     const std::map<std::string, std::string>& lhs,
