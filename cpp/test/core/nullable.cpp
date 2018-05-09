@@ -1,5 +1,5 @@
 #include "precompiled.h"
-#include "allocator_test_types.h"
+#include "capped_allocator_tests_generated/allocator_test_types.h"
 #include "serialization_test.h"
 
 using namespace std;
@@ -227,29 +227,35 @@ TEST_CASE_END
 
 TEST_CASE_BEGIN(NullableAllocators)
 {
-    TestAllocator a1, a2;
+    using capped_allocator_tests::NullableFields;
+    using capped_allocator_tests::SimpleType;
 
-    allocator_test::NullableFields x(a1);
-    allocator_test::NullableFields y(a1);
+    bond::capped_allocator<> a1{ (std::numeric_limits<std::uint32_t>::max)() };
+    bond::capped_allocator<> a2{ (std::numeric_limits<std::uint32_t>::max)() };
 
-    list<float, detail::TestAllocator<float> > l(a2);
-    allocator_test::SimpleType s(a2);
+    NullableFields x(a1);
+    NullableFields y(a1);
 
-    bond::nullable<list<float, detail::TestAllocator<float> > > l1(l);
-    bond::nullable<allocator_test::SimpleType, TestAllocator> s1(s, a2);
+    list<float, std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<float> > l(a2);
+    SimpleType s(a2);
+
+    bond::nullable<list<float,
+        std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<float> > > l1(l);
+    bond::nullable<SimpleType, bond::capped_allocator<> > s1(s, a2);
 
     NullableTests(x, y, s1, l1);
 
-    bond::nullable<std::set<bool, std::less<bool>, detail::TestAllocator<bool> > > n1(a1);
+    bond::nullable<std::set<bool, std::less<bool>,
+        std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<bool> > > n1(a1);
     UT_AssertIsTrue(n1.empty());
 
     // VS10SP1 is a joke and does not support swap on map/set with different allocators
 #if _MSC_VER<=1600
-    allocator_test::NullableSwappable ns1(a1);
-    allocator_test::NullableSwappable ns2(a2);
+    NullableSwappable ns1(a1);
+    NullableSwappable ns2(a2);
 #else
-    allocator_test::NullableFields ns1(a1);
-    allocator_test::NullableFields ns2(a2);
+    NullableFields ns1(a1);
+    NullableFields ns2(a2);
 #endif
 
     ns1.nullable_uint32.set();
