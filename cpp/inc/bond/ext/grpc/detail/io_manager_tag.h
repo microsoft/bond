@@ -23,6 +23,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         /// @param ok whether or not the initial operation succeeded
         virtual void invoke(bool ok) = 0;
 
+        /// @return Returns a %tag value suitable for passing to completion queue routines.
         io_manager_tag* tag()
         {
             return this;
