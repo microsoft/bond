@@ -3,6 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{D5F087E7-1EE9-4AEB-83AF-5F234C69B867}</ProjectGuid>
     <TargetFrameworks>net45</TargetFrameworks>
+    <Configurations>Debug;Release;Fields</Configurations>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>

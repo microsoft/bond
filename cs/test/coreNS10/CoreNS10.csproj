@@ -2,6 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
+    <Configurations>Debug;Release;Fields</Configurations>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>
