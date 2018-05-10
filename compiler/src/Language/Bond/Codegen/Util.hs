@@ -125,9 +125,9 @@ uniqueName baseName taken = go baseName (0::Integer)
 -- | Given a list of names with duplicates and a list of reserved names,
 -- create a list of unique names using the uniqueName function.
 uniqueNames :: [String] -> [String] -> [String]
-uniqueNames names reserved = reverse $ go names [] reserved
+uniqueNames names reservedInit = reverse $ go names [] reservedInit
   where
-    go [] uniqueNames _ = uniqueNames
-    go (name:remaining) uniqueNames reserved = go remaining (newName:uniqueNames) (newName:reserved)
+    go [] acc _ = acc
+    go (name:remaining) acc reservedAcc = go remaining (newName:acc) (newName:reservedAcc)
       where
-        newName = uniqueName name reserved
+        newName = uniqueName name reservedAcc
