@@ -230,12 +230,9 @@ use_map_allocator_for_keys
 
 
 template <typename T> struct
-use_map_allocator_for_keys
-<T, typename boost::enable_if<
-    std::is_same<typename std::allocator_traits<typename T::allocator_type>::template rebind_alloc<int>,
-    typename std::allocator_traits<typename element_type<T>::type::first_type::allocator_type>::template rebind_alloc<int> > >::type>
-    : std::integral_constant<bool,
-        !detail::is_default_allocator<typename T::allocator_type>::value> {};
+use_map_allocator_for_keys<T, typename boost::enable_if<
+    std::uses_allocator<typename element_type<T>::type::first_type, typename T::allocator_type> >::type>
+    : std::true_type {};
 
 
 // make_key
@@ -264,9 +261,8 @@ use_map_allocator_for_values
 
 
 template <typename T> struct
-use_map_allocator_for_values<T, typename boost::enable_if_c<
-    std::uses_allocator<typename element_type<T>::type::second_type,
-    typename T::allocator_type>::value>::type>
+use_map_allocator_for_values<T, typename boost::enable_if<
+    std::uses_allocator<typename element_type<T>::type::second_type, typename T::allocator_type> >::type>
     : std::true_type {};
 
 

@@ -21,6 +21,19 @@ namespace bond
 namespace detail
 {
 
+template<typename T, typename Enable = void> struct
+allocator_type
+{
+    using type = std::allocator<T>;
+};
+
+template<typename T> struct
+allocator_type<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
+{
+    using type = typename T::allocator_type;
+};
+
+
 template <typename T> struct
 use_value
     : std::integral_constant<bool,
@@ -79,14 +92,14 @@ public:
     explicit
     nullable(const allocator_type& alloc)
         : Allocator(alloc),
-          _value(make_value<value_type>()),
+          _value(make_value()),
           _hasvalue(false)
     {
     }
 
     explicit
     nullable(const value_type& value)
-        : Allocator(detail::get_allocator(value)),
+        : Allocator(get_allocator(value)),
           _value(value),
           _hasvalue(true)
     {}
@@ -160,7 +173,7 @@ public:
 
     void reset()
     {
-        _value = make_value<value_type>();
+        _value = make_value();
         _hasvalue = false;
     }
 
@@ -178,7 +191,7 @@ public:
     nullable(value_type&& value) BOND_NOEXCEPT_IF(
             std::is_nothrow_move_constructible<Allocator>::value
             && std::is_nothrow_move_constructible<value_type>::value)
-        : Allocator(detail::get_allocator(value)),
+        : Allocator(get_allocator(value)),
           _value(std::move(value)),
           _hasvalue(true)
     {}
@@ -233,18 +246,32 @@ private:
         return static_cast<const allocator_type&>(*this);
     }
 
-    template<typename ValueType>
-    typename boost::enable_if<std::uses_allocator<ValueType, Allocator>, ValueType>::type
+    template <typename U = T>
+    typename boost::enable_if<std::uses_allocator<U, Allocator>, U>::type
     make_value()
     {
-        return ValueType(base());
+        return U(base());
     }
 
-    template<typename ValueType>
-    typename boost::disable_if<std::uses_allocator<ValueType, Allocator>, ValueType>::type
+    template <typename U = T>
+    typename boost::disable_if<std::uses_allocator<U, Allocator>, U>::type
     make_value()
     {
-        return ValueType();
+        return U();
+    }
+
+    template <typename U = T>
+    typename boost::enable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    static get_allocator(const T& value)
+    {
+        return value.get_allocator();
+    }
+
+    template <typename U = T>
+    typename boost::disable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    static get_allocator(const T& /*value*/)
+    {
+        return Allocator();
     }
 
 private:
