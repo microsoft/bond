@@ -268,6 +268,8 @@ struct Record
 <p>Schema fields are represented by public fields with initializers and no constructor is generated.</p>
 <p><code>--readonly-properties</code></p>
 <p>Schema fields are represented by properties with public getter and private setter and initialized to the default values in the default constructor. Classes with read-only properties are fully supported by all Bond APIs.</p>
+<p><code>--preview-constructor-parameters</code></p>
+<p>A constructor is generated with a parameter to initialize each of the schema fields. This option is typically used in conjunction with <code>--readonly-properties</code>. This functionailty is in preview and may change.</p>
 <p><code>--collection-interfaces</code></p>
 <p>Collection types <code>vector&lt;T&gt;</code>, <code>map&lt;K, V&gt;</code>, <code>list&lt;T&gt;</code> and <code>set&lt;T&gt;</code> are represented by respective generic collection interfaces: <code>IList&lt;T&gt;</code>, <code>IDictionary&lt;K, V&gt;</code>, <code>ICollection&lt;T&gt;</code> and <code>ISet&lt;T&gt;</code>.</p>
 <h1 id="serializer">Serializer</h1>
