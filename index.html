@@ -236,17 +236,21 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>Visual Studio 2013, 2015, or 2017
 <ul>
-<li>Visual Studio 2015 is required to build C# Bond from source</li>
+<li>VS2017 is required to build C# Bond from source</li>
+</ul></li>
+<li>.NET Core SDK (<a href="https://www.microsoft.com/net/core#windows">https://www.microsoft.com/net/core</a>)
+<ul>
+<li>Alternative to VS2017 for building C# Bond from source</li>
 </ul></li>
 <li>CMake (<a href="http://www.cmake.org/download/" class="uri">http://www.cmake.org/download/</a>)</li>
 <li>Haskell Stack (<a href="https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows" class="uri">https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows</a>)</li>
-<li>.NET Core SDK (<a href="https://www.microsoft.com/net/core#windows">https://www.microsoft.com/net/core</a>)</li>
 </ul>
 <p>If you are building on a network behind a proxy, set the environment variable <code>HTTP_PROXY</code>, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">HTTP_PROXY=</span>http://your-proxy-name:80</code></pre></div>
-<p>Now you are ready to build the C# 4.0/4.5 version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio and build as usual. The C# unit tests can also be run from within the solution.</p>
-<p>To build the .NET Core version of Bond, run the build script. The <code>-Test</code> switch is used to run the unit tests as well.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">.</span>\cs\dnc\build -Test</code></pre></div>
+<p>Now you are ready to build the C# version of Bond. Open the solution file <code>cs\cs.sln</code> in Visual Studio and build as usual. The C# unit tests can also be run from within the solution.</p>
+<p>To build using the .NET Core SDK:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">dotnet</span> restore cs\cs.sln
+<span class="ex">dotnet</span> msbuild cs\cs.sln</code></pre></div>
 <p>The C++ and Python versions of Bond additionally require:</p>
 <ul>
 <li>Boost 1.61+ (<a href="http://www.boost.org/users/download/" class="uri">http://www.boost.org/users/download/</a>)</li>
