@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup Condition="'$(Configuration)' == ''">
     <Configuration Condition="'$(BuildType)' == 'debug'">Debug</Configuration>
     <Configuration Condition="'$(BuildType)' == 'retail'">Release</Configuration>
@@ -9,20 +9,23 @@
     <BOND_INCLUDE_PATH Condition="'$(BOND_INCLUDE_PATH)' == ''">$(MSBuildThisFileDirectory)..\..\..\idl</BOND_INCLUDE_PATH>
   </PropertyGroup>
   <Import Project="..\nuget\Common.props" />
-  <PropertyGroup Condition="'$(BuildFramework)' == ''">
+  <PropertyGroup Condition="'$(BuildFramework)' == '' and '$(UsingMicrosoftNETSdk)' != 'true'">
     <BuildFramework>net45</BuildFramework>
   </PropertyGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' != 'true'">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>
     <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
     <FileAlignment>512</FileAlignment>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
+    <!-- We need to disable automatic AssemblyInfo generation to avoid duplication with our AssemblyInfo file -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
     <!--Set the version number for auto-generation from the environment

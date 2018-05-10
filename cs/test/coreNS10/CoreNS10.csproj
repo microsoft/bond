@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
   <PropertyGroup>
-    <ProjectGuid>{FF056B62-225A-47BC-B177-550FADDA4B41}</ProjectGuid>
     <TargetFrameworks>net45</TargetFrameworks>
     <Configurations>Debug;Release;Fields</Configurations>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTest</RootNamespace>
-    <AssemblyName>Bond.UnitTest</AssemblyName>
+    <AssemblyName>Bond.UnitTestCoreNS10</AssemblyName>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BIGINTEGER;SUPPORTS_XMLRESOLVER</DefineConstants>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- This project is used to test the netstandard1.0 implementation of Bond -->
+    <BondTargetFramework>netstandard1.0</BondTargetFramework>
+    <BondIOTargetFramework>netstandard1.3</BondIOTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>$(IntermediateOutputPath)\Properties\</IntermediateOutputPath>
@@ -24,23 +24,27 @@
     <BondOptions>--fields --collection-interfaces</BondOptions>
   </PropertyGroup>
   <ItemGroup>
-    <BondImportDirectory Include="import dir with spaces\" />
+    <BondImportDirectory Include="..\core\import dir with spaces\" />
   </ItemGroup>
   <ItemGroup>
-    <BondCodegen Update="Aliases.bond">
+    <Compile Include="..\core\*.cs" />
+    <BondCodegen Include="..\core\Aliases.bond">
       <Options>$(BondOptions) --using="Lazy=Lazy&lt;{0}&gt;" --using="OrderedSet=SortedSet&lt;{0}&gt;" --using="Decimal=decimal" --using="EnumString=Alias.EnumString&lt;{0}&gt;" --using="Array={0}[]" --using=ArrayBlob=byte[] --using="CustomList=UnitTest.Aliases.SomeCustomList&lt;{0}&gt;"</Options>
     </BondCodegen>
-    <BondCodegen Update="ReadOnly.bond">
+    <BondCodegen Include="..\core\NamespaceConflict.bond" />
+    <BondCodegen Include="..\core\NamespaceConflictBond.bond" />
+    <BondCodegen Include="..\core\ReadOnly.bond">
       <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --readonly-properties</Options>
       <Options Condition=" '$(Configuration)' == 'Fields' ">--readonly-properties --collection-interfaces</Options>
     </BondCodegen>
-    <BondCodegen Update="Containers.bond">
+    <BondCodegen Include="..\core\Containers.bond">
       <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --collection-interfaces</Options>
       <Options Condition=" '$(Configuration)' == 'Fields' ">--fields</Options>
     </BondCodegen>
-    <BondCodegen Update="UnitTest.bond">
+    <BondCodegen Include="..\core\UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
+    <BondCodegen Include="..\core\import dir with spaces\Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Bond File With Spaces_types.cs" Condition="False" />
@@ -57,11 +61,12 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
-    <ProjectReference Include="..\..\src\core\Bond.csproj" />
-    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
-    <ProjectReference Include="..\..\src\io\IO.csproj" />
-    <ProjectReference Include="..\..\src\json\JSON.csproj" />
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
+    <ProjectReference Include="..\..\src\io\IO.csproj" AdditionalProperties="TargetFramework=$(BondIOTargetFramework)" />
+    <ProjectReference Include="..\..\src\json\JSON.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>
+

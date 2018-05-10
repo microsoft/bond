@@ -40,7 +40,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
     mono-devel \
     nuget \
     referenceassemblies-pcl
-RUN nuget install NUnit.Runners -OutputDirectory /root -version 2.6.4
+RUN nuget install NUnit.ConsoleRunner -OutputDirectory /root -Version 3.8.0 -NonInteractive -ExcludeVersion
 
 # Components for Java
 RUN add-apt-repository ppa:cwchien/gradle && \

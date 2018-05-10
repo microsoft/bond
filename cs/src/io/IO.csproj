@@ -1,40 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.props" />
+
   <PropertyGroup>
     <ProjectGuid>{2E6E238C-9017-445C-9611-66DA780609BE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net45;netstandard1.3;netstandard1.6</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond.IO</RootNamespace>
     <AssemblyName>Bond.IO</AssemblyName>
     <BondRedistributable>true</BondRedistributable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\core\Bond.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="properties\AssemblyInfo.cs" />
-    <Compile Include="unsafe\InputBuffer.cs" />
-    <Compile Include="unsafe\InputPointer.cs" />
-    <Compile Include="unsafe\InputStream.cs" />
-    <Compile Include="unsafe\IntegerHelper.cs" />
-    <Compile Include="unsafe\OutputBuffer.cs" />
-    <Compile Include="unsafe\OutputPointer.cs" />
-    <Compile Include="unsafe\OutputStream.cs" />
-    <Compile Include="unsafe\StreamCloning.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Bond">
-      <HintPath>..\core\$(OutputPath)\Bond.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>
