@@ -11,7 +11,6 @@ module Language.Bond.Codegen.Cs.Types_cs
     ) where
 
 import Data.Monoid
-import qualified Data.Foldable as F
 import Prelude
 import Data.Text.Lazy (Text, pack)
 import Text.Shakespeare.Text
