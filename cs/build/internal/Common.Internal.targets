@@ -13,7 +13,7 @@
     <DocumentationFile Condition="'$(UsingMicrosoftNETSdk)' != 'true'">$(OutDir)\$(TargetName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" Condition="'$(_DebugFileExt)' == '.pdb'" />
+    <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" />
     <FileToCopy Include="$(DocumentationFile)" />
   </ItemGroup>
   <Target Name="CopyAdditionalFiles" AfterTargets="AfterBuild">
