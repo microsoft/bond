@@ -87,4 +87,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-

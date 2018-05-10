@@ -6,19 +6,25 @@
 
 #include <bond/core/bond.h>
 #include <bond/core/bond_reflection.h>
-#include <bond/ext/detail/event.h>
 #include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/wait_callback.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>
 
+#include "event.h"
+
 #include <boost/optional.hpp>
+#include <boost/static_assert.hpp>
 
 #include <atomic>
 #include <thread>
+#include <type_traits>
 
 namespace wait_callback_tests
 {
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
+
     using wait_callbackBox = bond::ext::gRPC::wait_callback<bond::Box<int>>;
     using callback_arg = wait_callbackBox::arg_type;
 
@@ -146,7 +152,7 @@ namespace wait_callback_tests
     static void WaitingThreadGetsNotified()
     {
         wait_callbackBox cb;
-        bond::ext::detail::event threadStarted;
+        unit_test::event threadStarted;
         std::atomic<bool> wasInvoked(false);
 
 

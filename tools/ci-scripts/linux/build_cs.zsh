@@ -2,6 +2,7 @@
 
 set -eux
 
+nuget update -self
 nuget restore $BOND_ROOT/cs/cs.sln
 
 local BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_GBC_TESTS=TRUE -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
@@ -17,7 +18,9 @@ make install
 msbuild /p:Configuration=Debug /m $BOND_ROOT/cs/cs.sln
 msbuild /p:Configuration=Fields /m $BOND_ROOT/cs/cs.sln
 
-mono /root/NUnit.Runners.2.6.4/tools/nunit-console.exe -framework=mono-4.5 -labels \
-    $BOND_ROOT/cs/test/core/bin/debug/net45/Properties/Bond.UnitTest.dll \
-    $BOND_ROOT/cs/test/core/bin/debug/net45/Fields/Bond.UnitTest.dll \
+mono /root/NUnit.ConsoleRunner/tools/nunit3-console.exe -framework=mono -labels=All \
+    $BOND_ROOT/cs/test/core/bin/debug/Properties/net45/Bond.UnitTest.dll \
+    $BOND_ROOT/cs/test/core/bin/debug/Fields/net45/Bond.UnitTest.dll \
+    $BOND_ROOT/cs/test/coreNS10/bin/debug/Properties/net45/Bond.UnitTestCoreNS10.dll \
+    $BOND_ROOT/cs/test/coreNS10/bin/debug/Fields/net45/Bond.UnitTestCoreNS10.dll \
     $BOND_ROOT/cs/test/internal/bin/debug/net45/Bond.InternalTest.dll

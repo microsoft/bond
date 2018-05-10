@@ -80,7 +80,17 @@
 
     <MakeDir Directories="$(IntermediateOutputPath)" />
 
-    <Exec Command="cmake $(ProjectDir)\..\compiler -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
+    <!-- In some of the CI build systems we use, Stack isn't on the path.
+         The MSBuild property/environment variable STACK_PATH can be used to
+         specify a location, and we'll forward that on to CMake. -->
+    <PropertyGroup>
+      <_BondCmakeProgramPath></_BondCmakeProgramPath>
+      <!-- We use the \. trick to avoid problems with quoting a quote mark
+           if STACK_PATH ends with a trailing slash. -->
+      <_BondCmakeProgramPath Condition=" '$(STACK_PATH)' != '' ">"-DCMAKE_PROGRAM_PATH=$(STACK_PATH)\."</_BondCmakeProgramPath>
+    </PropertyGroup>
+
+    <Exec Command="cmake $(ProjectDir)\..\compiler $(_BondCmakeProgramPath) -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
     <Exec Command="cmake --build . --config $(BondCompilerCMakeBuildType) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
 
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />

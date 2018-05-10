@@ -90,6 +90,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > f;
         
         struct _bond_vc12_ctor_workaround_ {};
@@ -160,12 +162,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

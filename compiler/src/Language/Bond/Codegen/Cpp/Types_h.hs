@@ -55,7 +55,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 id $ catMaybes $ aliasDeclarations}#{doubleLineSep 1 typeDeclaration declarations}
 #{CPP.closeNamespace cpp}
-#{optional usesAllocatorSpecialization allocator}
 |])
   where
     aliasDeclarations = if type_aliases_enabled then map aliasDeclName declarations else []
@@ -106,22 +105,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         (have anyBlob, "<bond/core/blob.h>"),
         (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>")]
 
-    usesAllocatorSpecialization alloc = [lt|
-namespace std
-{
-    #{doubleLineSep 1 usesAllocator declarations}
-}
-|]
-      where
-        usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>
-    struct uses_allocator<#{typename} #{getDeclTypeName cpp s}#{CPP.classParams s}, _Alloc>
-        : is_convertible<_Alloc, #{allocParam}>
-    {};|]
-          where
-            typename = if null declParams then mempty else [lt|typename|]
-            allocParam = if last alloc == '>' then alloc ++ " " else alloc
-        usesAllocator _ = mempty
-
     -- forward declaration
     typeDeclaration f@Forward {..} = [lt|#{CPP.template f}struct #{declName};|]
 
@@ -129,7 +112,7 @@ namespace std
     typeDeclaration s@Struct {..} = [lt|
     #{template}struct #{declName}#{optional base structBase}
     {
-        #{newlineSepEnd 2 field structFields}#{defaultCtor}
+        #{optional allocatorType allocator}#{newlineSepEnd 2 field structFields}#{defaultCtor}
 
         #{copyCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorCopyCtor allocator) mempty}
         #{moveCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorMoveCtor allocator) mempty}
@@ -240,6 +223,10 @@ namespace std
                 $ commaLineSep 3 fieldInit structFields
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
                 $ initValue fieldType fieldDefault
+
+        allocatorType alloc = [lt|using allocator_type = #{alloc};
+
+        |]
 
         allocatorCtor alloc = [lt|
         explicit

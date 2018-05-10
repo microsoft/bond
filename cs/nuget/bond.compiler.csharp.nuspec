@@ -50,12 +50,6 @@
     <file target="build\netstandard1.6" src="cs\build\nuget\Common.targets" />
     <file target="build\netstandard1.6\cps" src="cs\build\nuget\cps\*.xaml" />
 
-    <file target="build\portable-net45+wp80+win8+wpa81+dnxcore50" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\portable-net45+wp80+win8+wpa81+dnxcore50" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\portable-net45+wp80+win8+wpa81+dnxcore50" src="cs\build\nuget\Common.props" />
-    <file target="build\portable-net45+wp80+win8+wpa81+dnxcore50" src="cs\build\nuget\Common.targets" />
-    <file target="build\portable-net45+wp80+win8+wpa81+dnxcore50\cps" src="cs\build\nuget\cps\*.xaml" />
-
     <file target="readme.txt" src="cs\nuget\readme.txt" />
 
     <file target="tools" src="cs\tools\gbc.exe" />

@@ -25,6 +25,7 @@ module Language.Bond.Codegen.Util
     , doubleLineSep
     , doubleLineSepEnd
     , uniqueName
+    , uniqueNames
     , indent
     , newLine
     ) where
@@ -112,7 +113,7 @@ commonHeader c input output = [lt|
 |]
 
 -- | Given an intended name and a list of already taken names, returns a
--- unique name. Assumes that it's legal to appen digits to the end of the
+-- unique name. Assumes that it's legal to append digits to the end of the
 -- intended name.
 uniqueName :: String -> [String] -> String
 uniqueName baseName taken = go baseName (0::Integer)
@@ -120,3 +121,13 @@ uniqueName baseName taken = go baseName (0::Integer)
           | not (name `elem` taken) = name
           | otherwise = go newName (counter + 1)
                         where newName = baseName ++ (show counter)
+
+-- | Given a list of names with duplicates and a list of reserved names,
+-- create a list of unique names using the uniqueName function.
+uniqueNames :: [String] -> [String] -> [String]
+uniqueNames names reservedInit = reverse $ go names [] reservedInit
+  where
+    go [] acc _ = acc
+    go (name:remaining) acc reservedAcc = go remaining (newName:acc) (newName:reservedAcc)
+      where
+        newName = uniqueName name reservedAcc

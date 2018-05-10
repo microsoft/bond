@@ -6,10 +6,10 @@
 #endif
 
 #include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/detail/event.h>
 
 // TODO: move unit_test_framework.h to cpp/test/inc
 #include "../core/unit_test_framework.h"
+#include "event.h"
 
 #include <atomic>
 #include <chrono>
@@ -17,11 +17,9 @@
 #include <memory>
 #include <thread>
 
-using namespace bond::ext::detail;
-
 class BasicThreadPoolTests
 {
-    static void addOne(int* i, event* sum_event)
+    static void addOne(int* i, unit_test::event* sum_event)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         (*i)++;
@@ -32,9 +30,9 @@ class BasicThreadPoolTests
     {
         bond::ext::gRPC::thread_pool threads(1);
         int sum = 0;
-        event sum_event;
+        unit_test::event sum_event;
 
-        std::function<void(int*, event*)> f_addOne = addOne;
+        std::function<void(int*, unit_test::event*)> f_addOne = addOne;
 
         threads.schedule(std::bind(f_addOne, &sum, &sum_event));
 
@@ -48,7 +46,7 @@ class BasicThreadPoolTests
     {
         bond::ext::gRPC::thread_pool threads(1);
         int sum = 0;
-        event sum_event;
+        unit_test::event sum_event;
 
         threads.schedule([&sum, &sum_event]()
         {

@@ -21,6 +21,19 @@ namespace bond
 namespace detail
 {
 
+template<typename T, typename Enable = void> struct
+allocator_type
+{
+    using type = std::allocator<T>;
+};
+
+template<typename T> struct
+allocator_type<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
+{
+    using type = typename T::allocator_type;
+};
+
+
 template <typename T> struct
 use_value
     : std::integral_constant<bool,
@@ -93,13 +106,13 @@ public:
 
     explicit
     nullable(const T& value)
-        : alloc_holder(detail::get_allocator(value)),
+        : alloc_holder(get_allocator(value)),
           _value(value)
     {}
 
     explicit
     nullable(T&& value)
-        : alloc_holder(detail::get_allocator(value)),
+        : alloc_holder(get_allocator(value)),
           _value(std::move(value))
     {}
 
@@ -204,17 +217,31 @@ public:
 
 private:
     template <typename U = T>
-    typename boost::enable_if<detail::has_allocator<U> >::type
+    typename boost::enable_if<std::uses_allocator<U, Allocator> >::type
     set_value()
     {
         _value.emplace(alloc_holder::get());
     }
 
     template <typename U = T>
-    typename boost::disable_if<detail::has_allocator<U> >::type
+    typename boost::disable_if<std::uses_allocator<U, Allocator> >::type
     set_value()
     {
         _value.emplace();
+    }
+
+    template <typename U = T>
+    typename boost::enable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    static get_allocator(const T& value)
+    {
+        return value.get_allocator();
+    }
+
+    template <typename U = T>
+    typename boost::disable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    static get_allocator(const T& /*value*/)
+    {
+        return Allocator();
     }
 
     boost::optional<T> _value;
@@ -449,14 +476,14 @@ private:
     }
 
     template <typename U = T>
-    typename boost::enable_if<detail::has_allocator<U>, pointer>::type
+    typename boost::enable_if<std::uses_allocator<U, Allocator>, pointer>::type
     set_value()
     {
         return new_value(alloc_holder::get());
     }
 
     template <typename U = T>
-    typename boost::disable_if<detail::has_allocator<U>, pointer>::type
+    typename boost::disable_if<std::uses_allocator<U, Allocator>, pointer>::type
     set_value()
     {
         return new_value();

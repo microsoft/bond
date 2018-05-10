@@ -41,6 +41,8 @@ different versioning scheme, following the Haskell community's
   `GetValueToNameMap`.
 * C++ codegen now applies the `--export-attribute` to the `ToString`,
   `FromString`, `ToEnum` and `FromEnum` functions.
+* C++ codegen now generates an `allocator_type` typedef for a struct when the
+  `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
 
 ### C++ ###
@@ -90,6 +92,8 @@ different versioning scheme, following the Haskell community's
 * Fixed an issue with the `ToString`, `FromString`, `ToEnum` and `FromEnum` functions
   that were previously not exported from a DLL when the `--export-attribute` option was
   passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
+* Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
+  to `T` when `allocator_type` was not explicitly defined.
 
 ### C# ###
 
@@ -122,6 +126,11 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS
   and Linux that prevented the C# compiler from finding the generated C#
   files.
+* *Preview*: Added preliminary support for generating types with
+  constructors with parameters for each field. This functionality will
+  change in the future and may be removed. [Pull request
+  #857](https://github.com/Microsoft/bond/pull/857)
+	
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

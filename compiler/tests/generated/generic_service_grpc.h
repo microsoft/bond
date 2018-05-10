@@ -127,13 +127,9 @@ public:
         std::shared_ptr<TThreadPool> _threadPool;
 
         const ::grpc::internal::RpcMethod rpcmethod_foo31_;
-
         const ::grpc::internal::RpcMethod rpcmethod_foo32_;
-
         const ::grpc::internal::RpcMethod rpcmethod_foo33_;
-
         const ::grpc::internal::RpcMethod rpcmethod_ConsumesGeneric1_;
-
         const ::grpc::internal::RpcMethod rpcmethod_ConsumesGeneric2_;
     };
 
@@ -152,7 +148,6 @@ public:
             this->AddMethod("/tests.Foo/ConsumesGeneric2");
         }
 
-        virtual ~ServiceCore() { }
         virtual void start(
             ::grpc::ServerCompletionQueue* cq,
             std::shared_ptr<TThreadPool> tp) override
@@ -161,71 +156,35 @@ public:
             BOOST_ASSERT(tp);
 
             _rd_foo31.emplace(
-                this,
+                *this,
                 0,
                 cq,
                 tp,
                 std::bind(&ServiceCore::foo31, this, std::placeholders::_1));
             _rd_foo32.emplace(
-                this,
+                *this,
                 1,
                 cq,
                 tp,
                 std::bind(&ServiceCore::foo32, this, std::placeholders::_1));
             _rd_foo33.emplace(
-                this,
+                *this,
                 2,
                 cq,
                 tp,
                 std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
             _rd_ConsumesGeneric1.emplace(
-                this,
+                *this,
                 3,
                 cq,
                 tp,
                 std::bind(&ServiceCore::ConsumesGeneric1, this, std::placeholders::_1));
             _rd_ConsumesGeneric2.emplace(
-                this,
+                *this,
                 4,
                 cq,
                 tp,
                 std::bind(&ServiceCore::ConsumesGeneric2, this, std::placeholders::_1));
-
-            this->queue_receive(
-                0,
-                &_rd_foo31->_receivedCall->context(),
-                &_rd_foo31->_receivedCall->request(),
-                &_rd_foo31->_receivedCall->responder(),
-                cq,
-                &_rd_foo31.get());
-            this->queue_receive(
-                1,
-                &_rd_foo32->_receivedCall->context(),
-                &_rd_foo32->_receivedCall->request(),
-                &_rd_foo32->_receivedCall->responder(),
-                cq,
-                &_rd_foo32.get());
-            this->queue_receive(
-                2,
-                &_rd_foo33->_receivedCall->context(),
-                &_rd_foo33->_receivedCall->request(),
-                &_rd_foo33->_receivedCall->responder(),
-                cq,
-                &_rd_foo33.get());
-            this->queue_receive(
-                3,
-                &_rd_ConsumesGeneric1->_receivedCall->context(),
-                &_rd_ConsumesGeneric1->_receivedCall->request(),
-                &_rd_ConsumesGeneric1->_receivedCall->responder(),
-                cq,
-                &_rd_ConsumesGeneric1.get());
-            this->queue_receive(
-                4,
-                &_rd_ConsumesGeneric2->_receivedCall->context(),
-                &_rd_ConsumesGeneric2->_receivedCall->request(),
-                &_rd_ConsumesGeneric2->_receivedCall->responder(),
-                cq,
-                &_rd_ConsumesGeneric2.get());
         }
 
         virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, ::bond::Void>) = 0;

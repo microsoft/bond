@@ -35,7 +35,8 @@ template <typename TThreadPool>
 class service : private grpc::Service
 {
 public:
-    virtual ~service() { }
+    service(const service& other) = delete;
+    service& operator=(const service& other) = delete;
 
     /// @brief Starts the service.
     ///
@@ -95,6 +96,8 @@ public:
     }
 
 protected:
+    service() = default;
+
     /// @brief Registers a method name for dispatch to this service.
     ///
     /// @note This method is for use by generated and helper code only.
@@ -106,15 +109,12 @@ protected:
         BOOST_ASSERT(methodName);
 
         // ownership of the service method is transfered to grpc::Service
-        AddMethod(
+        grpc::Service::AddMethod(
             new grpc::internal::RpcServiceMethod(
                 methodName,
                 grpc::internal::RpcMethod::NORMAL_RPC,
                 nullptr)); // nullptr indicates async handler
     }
-
-private:
-    using grpc::Service::AddMethod;
 };
 
 } } } } //namespace bond::ext::gRPC::detail

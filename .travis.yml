@@ -47,7 +47,7 @@ env:
     - FLAVOR="cpp-grpc-master" BOOST="1.66.0" COMPILER="clang" CRON_ONLY="true"
 script:
     - if [ "$CRON_ONLY" = "true" ] && [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then echo "Skipping cron-only job"; exit 0; fi
-    - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-12021456
+    - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-13234037
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
     - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" bondciimages.azurecr.io
     - time travis_retry docker pull $CI_BUILD_IMAGE
