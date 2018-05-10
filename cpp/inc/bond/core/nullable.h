@@ -50,25 +50,22 @@ use_value
 //
 // Nullable value
 //
-template <
-    typename T,
-    typename Allocator = typename detail::allocator_type<T>::type,
-    typename Enable = void>
+template <typename T, typename Enable = void>
 class nullable;
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #pragma warning(push)
 #pragma warning(disable: 4510) // default constructor could not be generated
 #endif
-template <typename T, typename Allocator>
-class nullable<T, Allocator, typename boost::enable_if<detail::use_value<T> >::type>
-    : private detail::allocator_holder<Allocator>
+template <typename T>
+class nullable<T, typename boost::enable_if<detail::use_value<T> >::type>
+    : private detail::allocator_holder<typename detail::allocator_type<T>::type>
 {
-    using alloc_holder = detail::allocator_holder<Allocator>;
+    using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
 
 public:
     using value_type = T;
-    using allocator_type = Allocator;
+    using allocator_type = typename detail::allocator_type<T>::type;
 
     nullable() = default;
 
@@ -219,31 +216,31 @@ public:
 
 private:
     template <typename U = T>
-    typename boost::enable_if<std::uses_allocator<U, Allocator> >::type
+    typename boost::enable_if<std::uses_allocator<U, allocator_type> >::type
     set_value()
     {
         _value.emplace(alloc_holder::get());
     }
 
     template <typename U = T>
-    typename boost::disable_if<std::uses_allocator<U, Allocator> >::type
+    typename boost::disable_if<std::uses_allocator<U, allocator_type> >::type
     set_value()
     {
         _value.emplace();
     }
 
     template <typename U = T>
-    typename boost::enable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    typename boost::enable_if<std::uses_allocator<U, allocator_type>, allocator_type>::type
     static get_allocator(const T& value)
     {
         return value.get_allocator();
     }
 
     template <typename U = T>
-    typename boost::disable_if<std::uses_allocator<U, Allocator>, Allocator>::type
+    typename boost::disable_if<std::uses_allocator<U, allocator_type>, allocator_type>::type
     static get_allocator(const T& /*value*/)
     {
-        return Allocator();
+        return allocator_type();
     }
 
     boost::optional<T> _value;
@@ -255,17 +252,17 @@ private:
 
 /** @brief Nullable type */
 /** See [User's Manual](../../manual/bond_cpp.html#nullable-types) */
-template <typename T, typename Allocator>
-class nullable<T, Allocator, typename boost::disable_if<detail::use_value<T> >::type>
-    : private detail::allocator_holder<Allocator>
+template <typename T>
+class nullable<T, typename boost::disable_if<detail::use_value<T> >::type>
+    : private detail::allocator_holder<typename detail::allocator_type<T>::type>
 {
-    using alloc_holder = detail::allocator_holder<Allocator>;
-    using rebind_alloc = typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
+    using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
+    using rebind_alloc = typename std::allocator_traits<typename detail::allocator_type<T>::type>::template rebind_alloc<T>;
     using pointer = typename std::allocator_traits<rebind_alloc>::pointer;
 
 public:
     using value_type = T;
-    using allocator_type = Allocator;
+    using allocator_type = typename detail::allocator_type<T>::type;
 
     /// @brief Default constructor
     nullable() BOND_NOEXCEPT_IF(
@@ -478,14 +475,14 @@ private:
     }
 
     template <typename U = T>
-    typename boost::enable_if<std::uses_allocator<U, Allocator>, pointer>::type
+    typename boost::enable_if<std::uses_allocator<U, allocator_type>, pointer>::type
     set_value()
     {
         return new_value(alloc_holder::get());
     }
 
     template <typename U = T>
-    typename boost::disable_if<std::uses_allocator<U, Allocator>, pointer>::type
+    typename boost::disable_if<std::uses_allocator<U, allocator_type>, pointer>::type
     set_value()
     {
         return new_value();
@@ -504,22 +501,22 @@ private:
 };
 
 
-template <typename T, typename Allocator>
-inline void swap(nullable<T, Allocator>& x, nullable<T, Allocator>& y)
+template <typename T>
+inline void swap(nullable<T>& x, nullable<T>& y)
 {
     x.swap(y);
 }
 
 
-template <typename T, typename Allocator>
-inline bool operator==(const nullable<T, Allocator>& x, const nullable<T, Allocator>& y)
+template <typename T>
+inline bool operator==(const nullable<T>& x, const nullable<T>& y)
 {
     return (x.hasvalue() == y.hasvalue() && (!x.hasvalue() || *x == *y));
 }
 
 
-template <typename T, typename Allocator>
-inline bool operator!=(const nullable<T, Allocator>& x, const nullable<T, Allocator>& y)
+template <typename T>
+inline bool operator!=(const nullable<T>& x, const nullable<T>& y)
 {
     return !(x == y);
 }
@@ -528,16 +525,16 @@ inline bool operator!=(const nullable<T, Allocator>& x, const nullable<T, Alloca
 // nullable<T> is internally treated as a list container with 0 or 1 element
 
 // container_size
-template <typename T, typename Allocator>
-uint32_t container_size(const nullable<T, Allocator>& value)
+template <typename T>
+uint32_t container_size(const nullable<T>& value)
 {
     return value.empty() ? 0 : 1;
 }
 
 
 // resize_list
-template <typename T, typename Allocator>
-void resize_list(nullable<T, Allocator>& value, uint32_t size)
+template <typename T>
+void resize_list(nullable<T>& value, uint32_t size)
 {
     if (size)
         value.set();
@@ -546,19 +543,19 @@ void resize_list(nullable<T, Allocator>& value, uint32_t size)
 }
 
 
-template <typename T, typename Allocator> struct
-element_type<nullable<T, Allocator> >
+template <typename T> struct
+element_type<nullable<T> >
 {
     typedef T type;
 };
 
 
 // enumerators
-template <typename T, typename Allocator>
-class const_enumerator<nullable<T, Allocator> >
+template <typename T>
+class const_enumerator<nullable<T> >
 {
 public:
-    const_enumerator(const nullable<T, Allocator>& value)
+    const_enumerator(const nullable<T>& value)
         : _value(value),
           _more(value.hasvalue())
     {}
@@ -578,16 +575,16 @@ public:
     }
 
 private:
-    const nullable<T, Allocator>& _value;
+    const nullable<T>& _value;
     bool _more;
 };
 
 
-template <typename T, typename Allocator>
-class enumerator<nullable<T, Allocator> >
+template <typename T>
+class enumerator<nullable<T> >
 {
 public:
-    enumerator(nullable<T, Allocator>& value)
+    enumerator(nullable<T>& value)
         : _value(value),
           _more(value.hasvalue())
     {}
@@ -607,13 +604,13 @@ public:
     }
 
 private:
-    nullable<T, Allocator>& _value;
+    nullable<T>& _value;
     bool _more;
 };
 
 
-template <typename T, typename Allocator> struct
-is_list_container<nullable<T, Allocator> >
+template <typename T> struct
+is_list_container<nullable<T> >
     : std::true_type {};
 
 

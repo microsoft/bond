@@ -36,7 +36,7 @@ namespace tests
                 1,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
-                ::bond::nullable< ::tests::Foo<T1, bool>, arena>,
+                ::bond::nullable< ::tests::Foo<T1, bool> >,
                 &Foo<T1, T2>::n,
                 &s_n_metadata
             > {}  n;

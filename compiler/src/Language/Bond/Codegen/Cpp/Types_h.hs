@@ -203,6 +203,8 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         }|]
 
         needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
+
+        allocParameterized alloc (BT_Nullable t) = allocParameterized alloc t
         allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) $ toLazyText $ cppTypeExpandAliases t)
 
         -- default constructor

@@ -24,9 +24,9 @@ typename boost::enable_if_c<is_list_container<X>::value
                          && is_element_matching<T, X>::value>::type
 inline DeserializeElements(X& var, const T& element, uint32_t size);
 
-template <typename Protocols, typename X, typename Allocator, typename T>
+template <typename Protocols, typename X, typename T>
 typename boost::enable_if<is_matching<T, X> >::type
-inline DeserializeElements(nullable<X, Allocator>& var, const T& element, uint32_t size);
+inline DeserializeElements(nullable<X>& var, const T& element, uint32_t size);
 
 template <typename Protocols, typename Reader>
 inline void DeserializeElements(blob& var, const value<blob::value_type, Reader&>& element, uint32_t size);
