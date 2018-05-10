@@ -84,4 +84,3 @@ namespace import_test
         left.swap(right);
     }
 } // namespace import_test
-

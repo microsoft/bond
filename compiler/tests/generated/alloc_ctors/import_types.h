@@ -22,6 +22,8 @@ namespace import_test
     
     struct HasEmpty
     {
+        using allocator_type = arena;
+
         ::empty::Empty e;
         
         struct _bond_vc12_ctor_workaround_ {};
@@ -102,12 +104,3 @@ namespace import_test
         left.swap(right);
     }
 } // namespace import_test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::import_test::HasEmpty, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-
