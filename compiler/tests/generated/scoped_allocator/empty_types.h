@@ -20,9 +20,3 @@ namespace tests
 {
     
 } // namespace tests
-
-namespace std
-{
-    
-}
-

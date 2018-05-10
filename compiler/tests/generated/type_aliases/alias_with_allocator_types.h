@@ -19,18 +19,18 @@
 namespace test
 {
     template <typename T>
-    using List = std::list<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using List = std::list<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename T>
-    using Vector = std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using Vector = std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename T>
-    using Set = std::set<T, std::less<T>, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using Set = std::set<T, std::less<T>, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename K, typename T>
-    using Map = std::map<K, T, std::less<K>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const K, T> > >;
+    using Map = std::map<K, T, std::less<K>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const K, T> > >;
 
-    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >;
+    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >;
 
     using NestedAliases = ::test::Set< ::test::List< ::test::Map<int32_t, ::test::String> > >;
 
@@ -39,6 +39,8 @@ namespace test
     
     struct foo
     {
+        using allocator_type = arena;
+
         ::test::List<bool> l;
         ::test::Vector<bool> v;
         ::test::Set<bool> s;
@@ -84,7 +86,7 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
+        foo(const allocator_type& allocator)
           : l(allocator),
             v(allocator),
             s(allocator),
@@ -168,6 +170,8 @@ namespace test
     
     struct withFoo
     {
+        using allocator_type = arena;
+
         ::test::TheFoo f;
         ::test::foo f1;
         
@@ -192,7 +196,7 @@ namespace test
 #endif
         
         explicit
-        withFoo(const arena& allocator)
+        withFoo(const allocator_type& allocator)
           : f(allocator),
             f1(allocator)
         {
@@ -243,17 +247,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::test::withFoo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

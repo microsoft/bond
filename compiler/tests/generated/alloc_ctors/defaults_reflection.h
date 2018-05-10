@@ -91,7 +91,7 @@ namespace tests
                 3,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
-                std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
+                std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >,
                 &Foo::m_str_1,
                 &s_m_str_1_metadata
             > {}  m_str_1;
@@ -101,7 +101,7 @@ namespace tests
                 4,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
-                ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >,
+                ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >,
                 &Foo::m_str_2,
                 &s_m_str_2_metadata
             > {}  m_str_2;
@@ -401,7 +401,7 @@ namespace tests
                 34,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
-                std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> >,
+                std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> >,
                 &Foo::m_wstr_1,
                 &s_m_wstr_1_metadata
             > {}  m_wstr_1;
@@ -411,7 +411,7 @@ namespace tests
                 35,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
-                ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > >,
+                ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > >,
                 &Foo::m_wstr_2,
                 &s_m_wstr_2_metadata
             > {}  m_wstr_2;

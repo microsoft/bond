@@ -146,4 +146,3 @@ namespace nsmapped
         left.swap(right);
     }
 } // namespace nsmapped
-

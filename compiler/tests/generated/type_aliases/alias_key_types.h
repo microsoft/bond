@@ -18,15 +18,17 @@
 
 namespace test
 {
-    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >;
+    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >;
 
     using Int = int32_t;
 
     
     struct foo
     {
-        std::map< ::test::String, ::test::Int, std::less< ::test::String>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const ::test::String, ::test::Int> > > m;
-        std::set< ::test::Int, std::less< ::test::Int>, typename std::allocator_traits<arena>::template rebind_alloc< ::test::Int> > s;
+        using allocator_type = arena;
+
+        std::map< ::test::String, ::test::Int, std::less< ::test::String>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const ::test::String, ::test::Int> > > m;
+        std::set< ::test::Int, std::less< ::test::Int>, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::test::Int> > s;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -49,7 +51,7 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
+        foo(const allocator_type& allocator)
           : m(allocator),
             s(allocator)
         {
@@ -100,12 +102,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

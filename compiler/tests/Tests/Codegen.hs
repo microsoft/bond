@@ -130,7 +130,7 @@ verifyFiles options baseName variation =
     constructorOptions Cs {..} = if constructor_parameters
         then ConstructorParameters
         else DefaultWithProtectedBase
-    typeMapping Cpp {..} = cppExpandAliases type_aliases_enabled $ maybe cppTypeMapping (cppCustomAllocTypeMapping scoped_alloc_enabled) allocator
+    typeMapping Cpp {..} = cppExpandAliases type_aliases_enabled $ if isNothing allocator then cppTypeMapping else cppCustomAllocTypeMapping scoped_alloc_enabled
     typeMapping Cs {} = csTypeMapping
     typeMapping Java {} = javaTypeMapping
     templates Cpp {..} =
@@ -151,21 +151,21 @@ verifyFiles options baseName variation =
         ]
     extra Cpp {..} =
         [ testGroup "custom allocator" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") (variation </> "allocator"))
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False) (variation </> "allocator"))
                 (templates $ options { allocator = Just "arena" })
             | isNothing allocator
         ] ++
         [ testGroup "constructors with allocator argument" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False "arena") (variation </> "alloc_ctors"))
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping False) (variation </> "alloc_ctors"))
                 (templates $ options { allocator = Just "arena", alloc_ctors_enabled = True })
             | isNothing allocator
         ] ++
         [ testGroup "type aliases" $
-            map (verify (cppCustomAllocTypeMapping False "arena") (variation </> "type_aliases"))
+            map (verify (cppCustomAllocTypeMapping False) (variation </> "type_aliases"))
                 (templates $ options { allocator = Just "arena", type_aliases_enabled = True })
         ] ++
         [ testGroup "scoped allocator" $
-            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping True "arena") (variation </> "scoped_allocator"))
+            map (verify (cppExpandAliasesTypeMapping $ cppCustomAllocTypeMapping True) (variation </> "scoped_allocator"))
                 (templates $ options { allocator = Just "arena", scoped_alloc_enabled = True })
             | isNothing allocator
         ]

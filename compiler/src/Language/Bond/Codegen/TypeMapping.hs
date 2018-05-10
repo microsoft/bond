@@ -176,16 +176,16 @@ cppTypeMapping = TypeMapping
     cppTypeMapping
 
 -- | C++ type name mapping using a custom allocator.
-cppCustomAllocTypeMapping :: ToText a => Bool -> a -> TypeMapping
-cppCustomAllocTypeMapping scoped alloc = TypeMapping
+cppCustomAllocTypeMapping :: Bool -> TypeMapping
+cppCustomAllocTypeMapping scoped = TypeMapping
     (Just Cpp)
     "::"
     "::"
-    (cppTypeCustomAlloc scoped $ toText alloc)
+    (cppTypeCustomAlloc scoped)
     cppSyntaxFix
-    (cppCustomAllocTypeMapping scoped alloc)
-    (cppCustomAllocTypeMapping scoped alloc)
-    (cppCustomAllocTypeMapping scoped alloc)
+    (cppCustomAllocTypeMapping scoped)
+    (cppCustomAllocTypeMapping scoped)
+    (cppCustomAllocTypeMapping scoped)
 
 cppExpandAliasesTypeMapping :: TypeMapping -> TypeMapping
 cppExpandAliasesTypeMapping m = m
@@ -431,19 +431,19 @@ cppType (BT_TypeParam param) = pureText $ paramName param
 cppType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping with custom allocator
-cppTypeCustomAlloc :: Bool -> Builder -> Type -> TypeNameBuilder
-cppTypeCustomAlloc scoped alloc BT_String = "std::basic_string<char, std::char_traits<char>, " <>> rebindAllocator scoped alloc (pure "char") <<> " >"
-cppTypeCustomAlloc scoped alloc BT_WString = "std::basic_string<wchar_t, std::char_traits<wchar_t>, " <>> rebindAllocator scoped alloc (pure "wchar_t") <<> " >"
-cppTypeCustomAlloc scoped alloc BT_MetaName = cppTypeCustomAlloc scoped alloc BT_String
-cppTypeCustomAlloc scoped alloc BT_MetaFullName = cppTypeCustomAlloc scoped alloc BT_String
-cppTypeCustomAlloc scoped alloc (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator scoped alloc element <<> ">"
-cppTypeCustomAlloc _ alloc (BT_Nullable element)
-    | isStruct element = "::bond::nullable<" <>> elementTypeName element <<> ", " <> alloc <> ">"
+cppTypeCustomAlloc :: Bool -> Type -> TypeNameBuilder
+cppTypeCustomAlloc scoped BT_String = "std::basic_string<char, std::char_traits<char>, " <>> rebindAllocator scoped (pure "char") <<> " >"
+cppTypeCustomAlloc scoped BT_WString = "std::basic_string<wchar_t, std::char_traits<wchar_t>, " <>> rebindAllocator scoped (pure "wchar_t") <<> " >"
+cppTypeCustomAlloc scoped BT_MetaName = cppTypeCustomAlloc scoped BT_String
+cppTypeCustomAlloc scoped BT_MetaFullName = cppTypeCustomAlloc scoped BT_String
+cppTypeCustomAlloc scoped (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator scoped element <<> ">"
+cppTypeCustomAlloc _ (BT_Nullable element)
+    | isStruct element = "::bond::nullable<" <>> elementTypeName element <<> ", allocator_type>"
     | otherwise = "::bond::nullable<" <>> elementTypeName element <<> ">"
-cppTypeCustomAlloc scoped alloc (BT_Vector element) = "std::vector<" <>> elementTypeName element <<>> ", " <>> allocator scoped alloc element <<> ">"
-cppTypeCustomAlloc scoped alloc (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator scoped alloc element <<> ">"
-cppTypeCustomAlloc scoped alloc (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator scoped alloc key value <<> ">"
-cppTypeCustomAlloc _ _ t = cppType t
+cppTypeCustomAlloc scoped (BT_Vector element) = "std::vector<" <>> elementTypeName element <<>> ", " <>> allocator scoped element <<> ">"
+cppTypeCustomAlloc scoped (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator scoped element <<> ">"
+cppTypeCustomAlloc scoped (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator scoped key value <<> ">"
+cppTypeCustomAlloc _ t = cppType t
 
 cppTypeExpandAliases :: (Type -> TypeNameBuilder) -> Type -> TypeNameBuilder
 cppTypeExpandAliases _ (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
@@ -452,15 +452,15 @@ cppTypeExpandAliases m t = m t
 comparer :: Type -> TypeNameBuilder
 comparer t = ", std::less<" <>> elementTypeName t <<> ">, "
 
-rebindAllocator :: Bool -> Builder -> TypeNameBuilder -> TypeNameBuilder
-rebindAllocator False alloc element = "typename std::allocator_traits<" <>> alloc <>> ">::template rebind_alloc<" <>> element <<> ">"
-rebindAllocator True alloc element = "std::scoped_allocator_adaptor<" <>> rebindAllocator False alloc element <<> " >"
+rebindAllocator :: Bool -> TypeNameBuilder -> TypeNameBuilder
+rebindAllocator False element = "typename std::allocator_traits<allocator_type>::template rebind_alloc<" <>> element <<> ">"
+rebindAllocator True element = "std::scoped_allocator_adaptor<" <>> rebindAllocator False element <<> " >"
 
-allocator :: Bool -> Builder -> Type -> TypeNameBuilder
-allocator scoped alloc element = rebindAllocator scoped alloc $ elementTypeName element
+allocator :: Bool -> Type -> TypeNameBuilder
+allocator scoped element = rebindAllocator scoped $ elementTypeName element
 
-pairAllocator :: Bool -> Builder -> Type -> Type -> TypeNameBuilder
-pairAllocator scoped alloc key value = rebindAllocator scoped alloc $ "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> "
+pairAllocator :: Bool -> Type -> Type -> TypeNameBuilder
+pairAllocator scoped key value = rebindAllocator scoped $ "std::pair<const " <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> "> "
 
 cppSyntaxFix :: Builder -> Builder
 cppSyntaxFix = fromLazyText . snd . L.foldr fixInvalid (' ', mempty) . toLazyText

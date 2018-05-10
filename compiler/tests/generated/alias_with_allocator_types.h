@@ -21,18 +21,20 @@ namespace test
     
     struct foo
     {
-        std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > l;
-        std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > v;
-        std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > s;
-        std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > > m;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > st;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > d;
-        ::bond::maybe<std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > l1;
-        ::bond::maybe<std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > v1;
-        ::bond::maybe<std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > > s1;
-        ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, bool> > > > m1;
-        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > st1;
-        std::set<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > >, std::less<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > > > > na;
+        using allocator_type = arena;
+
+        std::list<bool, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > l;
+        std::vector<bool, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > v;
+        std::set<bool, std::less<bool>, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > s;
+        std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, bool> > > m;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > st;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > d;
+        ::bond::maybe<std::list<bool, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > > l1;
+        ::bond::maybe<std::vector<bool, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > > v1;
+        ::bond::maybe<std::set<bool, std::less<bool>, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > > s1;
+        ::bond::maybe<std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, bool, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, bool> > > > m1;
+        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > st1;
+        std::set<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > > > >, std::less<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > > > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > > > > > > > na;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -66,7 +68,7 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
+        foo(const allocator_type& allocator)
           : l(allocator),
             v(allocator),
             s(allocator),
@@ -150,6 +152,8 @@ namespace test
     
     struct withFoo
     {
+        using allocator_type = arena;
+
         ::test::foo f;
         ::test::foo f1;
         
@@ -174,7 +178,7 @@ namespace test
 #endif
         
         explicit
-        withFoo(const arena& allocator)
+        withFoo(const allocator_type& allocator)
           : f(allocator),
             f1(allocator)
         {
@@ -225,17 +229,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::test::withFoo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

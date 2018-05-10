@@ -22,7 +22,9 @@ namespace tests
     template <typename T>
     struct Foo
     {
-        std::vector<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> > > > aa;
+        using allocator_type = arena;
+
+        std::vector<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> > > > aa;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -44,7 +46,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : aa(allocator)
         {
         }
@@ -165,6 +167,8 @@ namespace tests
     
     struct WrappingAnEnum
     {
+        using allocator_type = arena;
+
         ::tests::EnumToWrap aWrappedEnum;
         
         WrappingAnEnum()
@@ -186,7 +190,7 @@ namespace tests
 #endif
         
         explicit
-        WrappingAnEnum(const arena&)
+        WrappingAnEnum(const allocator_type&)
           : aWrappedEnum(::tests::_bond_enumerators::EnumToWrap::anEnumValue)
         {
         }
@@ -234,17 +238,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc, typename T>
-    struct uses_allocator<typename ::tests::Foo<T>, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::WrappingAnEnum, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

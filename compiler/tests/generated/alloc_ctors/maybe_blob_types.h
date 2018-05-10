@@ -21,6 +21,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         ::bond::maybe< ::bond::blob> b;
         
         Foo()
@@ -31,7 +33,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
 
-        Foo(const Foo& other, const arena&)
+        Foo(const Foo& other, const allocator_type&)
           : b(other.b)
         {
         }
@@ -45,13 +47,13 @@ namespace tests
         Foo(Foo&&) = default;
 #endif
 
-        Foo(Foo&& other, const arena&)
+        Foo(Foo&& other, const allocator_type&)
           : b(std::move(other.b))
         {
         }
         
         explicit
-        Foo(const arena&)
+        Foo(const allocator_type&)
         {
         }
         
@@ -98,12 +100,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

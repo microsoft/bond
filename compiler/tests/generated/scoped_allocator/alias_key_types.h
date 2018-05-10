@@ -21,8 +21,10 @@ namespace test
     
     struct foo
     {
-        std::map<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >, int32_t, std::less<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >, int32_t> > > > m;
-        std::set<int32_t, std::less<int32_t>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<int32_t> > > s;
+        using allocator_type = arena;
+
+        std::map<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, int32_t, std::less<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > >, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, int32_t> > > > m;
+        std::set<int32_t, std::less<int32_t>, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<int32_t> > > s;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -45,7 +47,7 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
+        foo(const allocator_type& allocator)
           : m(allocator),
             s(allocator)
         {
@@ -96,12 +98,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

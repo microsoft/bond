@@ -90,7 +90,9 @@ namespace tests
     {
         int32_t x;
         
-        Foo()
+        struct _bond_vc12_ctor_workaround_ {};
+        template <int = 0> // Workaround to avoid compilation if not used
+        Foo(_bond_vc12_ctor_workaround_ = {})
           : x()
         {
         }
@@ -155,4 +157,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-

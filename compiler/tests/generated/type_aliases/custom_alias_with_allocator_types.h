@@ -37,6 +37,8 @@ namespace test
     
     struct foo
     {
+        using allocator_type = arena;
+
         ::test::List<bool> l;
         ::test::Vector<bool> v;
         ::test::Set<bool> s;
@@ -50,9 +52,7 @@ namespace test
         ::bond::maybe< ::test::String> st1;
         ::test::NestedAliases na;
         
-        struct _bond_vc12_ctor_workaround_ {};
-        template <int = 0> // Workaround to avoid compilation if not used
-        foo(_bond_vc12_ctor_workaround_ = {})
+        foo()
           : l(),
             v(),
             s(),
@@ -88,19 +88,19 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
-          : l(allocator),
-            v(allocator),
-            s(allocator),
-            m(allocator),
-            st(allocator),
-            d("foo", allocator),
-            l1(allocator),
-            v1(allocator),
-            s1(allocator),
-            m1(allocator),
-            st1(allocator),
-            na(allocator)
+        foo(const allocator_type&)
+          : l(),
+            v(),
+            s(),
+            m(),
+            st(),
+            d("foo"),
+            l1(),
+            v1(),
+            s1(),
+            m1(),
+            st1(),
+            na()
         {
         }
         
@@ -169,12 +169,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

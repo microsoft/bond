@@ -21,6 +21,8 @@ namespace tests
     
     struct Base
     {
+        using allocator_type = arena;
+
         int32_t x;
         
         Base()
@@ -32,7 +34,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Base(const Base&) = default;
 
-        Base(const Base& other, const arena&)
+        Base(const Base& other, const allocator_type&)
           : x(other.x)
         {
         }
@@ -46,13 +48,13 @@ namespace tests
         Base(Base&&) = default;
 #endif
 
-        Base(Base&& other, const arena&)
+        Base(Base&& other, const allocator_type&)
           : x(std::move(other.x))
         {
         }
         
         explicit
-        Base(const arena&)
+        Base(const allocator_type&)
           : x()
         {
         }
@@ -104,6 +106,8 @@ namespace tests
     struct Foo
       : ::tests::Base
     {
+        using allocator_type = arena;
+
         int32_t x;
         
         struct _bond_vc12_ctor_workaround_ {};
@@ -117,7 +121,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
 
-        Foo(const Foo& other, const arena& allocator)
+        Foo(const Foo& other, const allocator_type& allocator)
           : ::tests::Base(other, allocator),
             x(other.x)
         {
@@ -133,14 +137,14 @@ namespace tests
         Foo(Foo&&) = default;
 #endif
 
-        Foo(Foo&& other, const arena& allocator)
+        Foo(Foo&& other, const allocator_type& allocator)
           : ::tests::Base(std::move(other), allocator),
             x(std::move(other.x))
         {
         }
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : ::tests::Base(allocator),
             x()
         {
@@ -192,17 +196,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Base, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

@@ -21,6 +21,8 @@ namespace tests
     
     struct Base
     {
+        using allocator_type = arena;
+
         int32_t x;
         
         Base()
@@ -42,7 +44,7 @@ namespace tests
 #endif
         
         explicit
-        Base(const arena&)
+        Base(const allocator_type&)
           : x()
         {
         }
@@ -94,6 +96,8 @@ namespace tests
     struct Foo
       : ::tests::Base
     {
+        using allocator_type = arena;
+
         int32_t x;
         
         struct _bond_vc12_ctor_workaround_ {};
@@ -118,7 +122,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : ::tests::Base(allocator),
             x()
         {
@@ -170,17 +174,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Base, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

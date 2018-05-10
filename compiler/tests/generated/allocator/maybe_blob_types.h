@@ -21,6 +21,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         ::bond::maybe< ::bond::blob> b;
         
         Foo()
@@ -41,7 +43,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena&)
+        Foo(const allocator_type&)
         {
         }
         
@@ -88,12 +90,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

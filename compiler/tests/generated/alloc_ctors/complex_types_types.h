@@ -23,6 +23,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         
         Foo()
         {
@@ -32,7 +34,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
 
-        Foo(const Foo&, const arena&)
+        Foo(const Foo&, const allocator_type&)
         {
         }
         
@@ -44,12 +46,12 @@ namespace tests
         Foo(Foo&&) = default;
 #endif
 
-        Foo(Foo&&, const arena&)
+        Foo(Foo&&, const allocator_type&)
         {
         }
         
         explicit
-        Foo(const arena&)
+        Foo(const allocator_type&)
         {
         }
         
@@ -99,13 +101,15 @@ namespace tests
     
     struct ComplexTypes
     {
-        std::list<int8_t, typename std::allocator_traits<arena>::template rebind_alloc<int8_t> > li8;
-        std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > sb;
-        std::vector< ::bond::blob, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::blob> > vb;
+        using allocator_type = arena;
+
+        std::list<int8_t, typename std::allocator_traits<allocator_type>::template rebind_alloc<int8_t> > li8;
+        std::set<bool, std::less<bool>, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> > sb;
+        std::vector< ::bond::blob, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::blob> > vb;
         ::bond::nullable<float> nf;
-        std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> >, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > > > > msws;
+        std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> >, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > > > > msws;
         ::bond::bonded< ::tests::Foo> bfoo;
-        std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > >, std::less<double>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > > m;
+        std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > >, std::less<double>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > > m;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -117,7 +121,7 @@ namespace tests
         // Compiler generated copy ctor OK
         ComplexTypes(const ComplexTypes&) = default;
 
-        ComplexTypes(const ComplexTypes& other, const arena& allocator)
+        ComplexTypes(const ComplexTypes& other, const allocator_type& allocator)
           : li8(other.li8, allocator),
             sb(other.sb, allocator),
             vb(other.vb, allocator),
@@ -143,7 +147,7 @@ namespace tests
         ComplexTypes(ComplexTypes&&) = default;
 #endif
 
-        ComplexTypes(ComplexTypes&& other, const arena& allocator)
+        ComplexTypes(ComplexTypes&& other, const allocator_type& allocator)
           : li8(std::move(other.li8), allocator),
             sb(std::move(other.sb), allocator),
             vb(std::move(other.vb), allocator),
@@ -155,7 +159,7 @@ namespace tests
         }
         
         explicit
-        ComplexTypes(const arena& allocator)
+        ComplexTypes(const allocator_type& allocator)
           : li8(allocator),
             sb(allocator),
             vb(allocator),
@@ -220,17 +224,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::ComplexTypes, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

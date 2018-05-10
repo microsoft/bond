@@ -55,7 +55,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
 #{CPP.openNamespace cpp}
     #{doubleLineSepEnd 1 id $ catMaybes $ aliasDeclarations}#{doubleLineSep 1 typeDeclaration declarations}
 #{CPP.closeNamespace cpp}
-#{optional usesAllocatorSpecialization allocator}
 |])
   where
     aliasDeclarations = if type_aliases_enabled then map aliasDeclName declarations else []
@@ -106,22 +105,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         (have anyBlob, "<bond/core/blob.h>"),
         (scoped_alloc_enabled && have anyStringOrContainer, "<scoped_allocator>")]
 
-    usesAllocatorSpecialization alloc = [lt|
-namespace std
-{
-    #{doubleLineSep 1 usesAllocator declarations}
-}
-|]
-      where
-        usesAllocator s@Struct {..} = [lt|template <typename _Alloc#{sepBeginBy ", typename " paramName declParams}>
-    struct uses_allocator<#{typename} #{getDeclTypeName cpp s}#{CPP.classParams s}, _Alloc>
-        : is_convertible<_Alloc, #{allocParam}>
-    {};|]
-          where
-            typename = if null declParams then mempty else [lt|typename|]
-            allocParam = if last alloc == '>' then alloc ++ " " else alloc
-        usesAllocator _ = mempty
-
     -- forward declaration
     typeDeclaration f@Forward {..} = [lt|#{CPP.template f}struct #{declName};|]
 
@@ -129,11 +112,11 @@ namespace std
     typeDeclaration s@Struct {..} = [lt|
     #{template}struct #{declName}#{optional base structBase}
     {
-        #{newlineSepEnd 2 field structFields}#{defaultCtor}
+        #{optional allocatorType allocator}#{newlineSepEnd 2 field structFields}#{defaultCtor}
 
-        #{copyCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorCopyCtor allocator) mempty}
-        #{moveCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorMoveCtor allocator) mempty}
-        #{optional allocatorCtor allocator}
+        #{copyCtor}#{ifThenElse alloc_ctors_enabled (ifThenElse (isNothing allocator) mempty allocatorCopyCtor) mempty}
+        #{moveCtor}#{ifThenElse alloc_ctors_enabled (ifThenElse (isNothing allocator) mempty allocatorMoveCtor) mempty}
+        #{ifThenElse (isNothing allocator) mempty allocatorCtor}
         #{assignmentOp}
 
         bool operator==(const #{declName}&#{otherParam}) const
@@ -219,18 +202,18 @@ namespace std
         {
         }|]
 
-        needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
-        allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) $ toLazyText $ cppTypeExpandAliases t)
+        needAlloc = isJust structBase || any (allocParameterized . fieldType) structFields
+        allocParameterized t = (isStruct t) || (L.isInfixOf "allocator_type" $ toLazyText $ cppTypeExpandAliases t)
+
+        allocParam = if needAlloc then [lt| allocator|] else mempty
 
         -- default constructor
         defaultCtor = [lt|
         #{dummyTemplateTag}#{declName}(#{vc12WorkaroundParam})#{initList}#{ctorBody}|]
           where
-            needAllocParam = maybe False needAlloc allocator
+            vc12WorkaroundParam = if needAlloc then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
 
-            vc12WorkaroundParam = if needAllocParam then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
-
-            dummyTemplateTag = if needAllocParam
+            dummyTemplateTag = if needAlloc
                 then [lt|struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
         |]
@@ -241,12 +224,15 @@ namespace std
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
                 $ initValue fieldType fieldDefault
 
-        allocatorCtor alloc = [lt|
+        allocatorType alloc = [lt|using allocator_type = #{alloc};
+
+        |]
+
+        allocatorCtor = [lt|
         explicit
-        #{declName}(const #{alloc}&#{allocParam})#{initList}#{ctorBody}
+        #{declName}(const allocator_type&#{allocParam})#{initList}#{ctorBody}
         |]
           where
-            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
@@ -254,7 +240,7 @@ namespace std
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
                 $ allocInitValue fieldType fieldDefault
             allocInitValue t@(BT_UserDefined a@Alias {} args) d
-                | allocParameterized alloc t = allocInitValue (resolveAlias a args) d
+                | allocParameterized t = allocInitValue (resolveAlias a args) d
                 | otherwise = initValue t d
             allocInitValue (BT_Nullable t) _ = allocInitValue t Nothing
             allocInitValue (BT_Maybe t) _ = allocInitValue t Nothing
@@ -285,12 +271,10 @@ namespace std
                 getAllocator _ = mempty
 
         -- copy/move constructor with allocator
-        allocatorCopyOrMoveCtor otherParamDecl otherParamValue alloc = [lt|
+        allocatorCopyOrMoveCtor otherParamDecl otherParamValue = [lt|
 
-        #{declName}(#{otherParamDecl declName}#{otherParam}, const #{alloc}&#{allocParam})#{initList}#{ctorBody}|]
+        #{declName}(#{otherParamDecl declName}#{otherParam}, const allocator_type&#{allocParam})#{initList}#{ctorBody}|]
           where
-            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
-
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
@@ -302,7 +286,7 @@ namespace std
             allocInitValueText fieldType = optional (\x -> [lt|, #{x}|])
                 $ allocInitValue fieldType
             allocInitValue t@(BT_UserDefined a@Alias {} args)
-                | allocParameterized alloc t = allocInitValue (resolveAlias a args)
+                | allocParameterized t = allocInitValue (resolveAlias a args)
                 | otherwise = Nothing
             allocInitValue (BT_Nullable t) = allocInitValue t
             allocInitValue (BT_Maybe t) = allocInitValue t
@@ -311,7 +295,7 @@ namespace std
                 | otherwise = Nothing
 
         -- copy constructor with allocator
-        allocatorCopyCtor alloc = allocatorCopyOrMoveCtor (\f -> [lt|const #{f}&|]) id alloc
+        allocatorCopyCtor = allocatorCopyOrMoveCtor (\f -> [lt|const #{f}&|]) id
 
         -- move constructor
         moveCtor = if hasMetaFields then [lt|
@@ -339,7 +323,7 @@ namespace std
             param = if initList == mempty then mempty else ' ':otherParamName
 
         -- move constructor with allocator
-        allocatorMoveCtor alloc = (allocatorCopyOrMoveCtor (\f -> [lt|#{f}&&|]) (\f -> [lt|std::move(#{f})|]) alloc)
+        allocatorMoveCtor = allocatorCopyOrMoveCtor (\f -> [lt|#{f}&&|]) (\f -> [lt|std::move(#{f})|])
 
         -- operator=
         assignmentOp = if hasMetaFields then define else implicitlyDeclared
