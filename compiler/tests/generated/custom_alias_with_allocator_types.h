@@ -21,6 +21,8 @@ namespace test
     
     struct foo
     {
+        using allocator_type = arena;
+
         my::list<bool, arena> l;
         my::vector<bool, arena> v;
         my::set<bool, arena> s;
@@ -153,12 +155,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

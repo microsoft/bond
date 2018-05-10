@@ -22,6 +22,8 @@ namespace tests
     template <typename T1, typename T2>
     struct Foo
     {
+        using allocator_type = arena;
+
         T2 t2;
         ::bond::nullable< ::tests::Foo<T1, bool>, arena> n;
         
@@ -111,12 +113,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc, typename T1, typename T2>
-    struct uses_allocator<typename ::tests::Foo<T1, T2>, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

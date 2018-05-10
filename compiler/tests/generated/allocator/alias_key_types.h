@@ -21,6 +21,8 @@ namespace test
     
     struct foo
     {
+        using allocator_type = arena;
+
         std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t> > > m;
         std::set<int32_t, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<int32_t> > s;
         
@@ -96,12 +98,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

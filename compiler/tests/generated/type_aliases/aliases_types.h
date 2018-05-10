@@ -31,6 +31,8 @@ namespace tests
     template <typename T>
     struct Foo
     {
+        using allocator_type = arena;
+
         ::tests::array10< ::tests::array<20, T> > aa;
         
         struct _bond_vc12_ctor_workaround_ {};
@@ -174,6 +176,8 @@ namespace tests
     
     struct WrappingAnEnum
     {
+        using allocator_type = arena;
+
         ::tests::Wrapper< ::tests::EnumToWrap> aWrappedEnum;
         
         WrappingAnEnum()
@@ -243,17 +247,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc, typename T>
-    struct uses_allocator<typename ::tests::Foo<T>, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::WrappingAnEnum, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

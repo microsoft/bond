@@ -24,6 +24,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         
         Foo()
         {
@@ -92,6 +94,8 @@ namespace tests
     
     struct ComplexTypes
     {
+        using allocator_type = arena;
+
         std::list<int8_t, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<int8_t> > > li8;
         std::set<bool, std::less<bool>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<bool> > > sb;
         std::vector< ::bond::blob, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::blob> > > vb;
@@ -191,17 +195,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::ComplexTypes, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-
