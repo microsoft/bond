@@ -22,6 +22,8 @@ namespace nsmapped
     
     struct BasicTypes
     {
+        using allocator_type = arena;
+
         bool _bool;
         std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > _str;
         std::basic_string<wchar_t, std::char_traits<wchar_t>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > > _wstr;
@@ -167,12 +169,3 @@ namespace nsmapped
         left.swap(right);
     }
 } // namespace nsmapped
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::nsmapped::BasicTypes, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

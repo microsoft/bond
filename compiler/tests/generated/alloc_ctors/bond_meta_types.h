@@ -23,6 +23,8 @@ namespace bondmeta
     
     struct HasMetaFields
     {
+        using allocator_type = arena;
+
         std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > full_name;
         std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > name;
         
@@ -110,12 +112,3 @@ namespace bondmeta
     }
 } // namespace bondmeta
 } // namespace deprecated
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::deprecated::bondmeta::HasMetaFields, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

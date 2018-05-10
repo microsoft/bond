@@ -105,6 +105,8 @@ namespace tests
     
     struct Foo
     {
+        using allocator_type = arena;
+
         bool m_bool_1;
         bool m_bool_2;
         ::bond::maybe<bool> m_bool_3;
@@ -372,12 +374,3 @@ namespace tests
         left.swap(right);
     }
 } // namespace tests
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::tests::Foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-

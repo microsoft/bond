@@ -21,6 +21,8 @@ namespace test
     
     struct foo
     {
+        using allocator_type = arena;
+
         std::list<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > l;
         std::vector<bool, typename std::allocator_traits<arena>::template rebind_alloc<bool> > v;
         std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> > s;
@@ -150,6 +152,8 @@ namespace test
     
     struct withFoo
     {
+        using allocator_type = arena;
+
         ::test::foo f;
         ::test::foo f1;
         
@@ -225,17 +229,3 @@ namespace test
         left.swap(right);
     }
 } // namespace test
-
-namespace std
-{
-    template <typename _Alloc>
-    struct uses_allocator< ::test::foo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-
-    template <typename _Alloc>
-    struct uses_allocator< ::test::withFoo, _Alloc>
-        : is_convertible<_Alloc, arena>
-    {};
-}
-
