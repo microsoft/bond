@@ -65,6 +65,8 @@ different versioning scheme, following the Haskell community's
 * **Breaking change** Removed a dangerous implicit conversion operator from
   `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use
   one of the `bond::maybe<T>::value` functions.
+* **Breaking change** The nested `pointer`, `const_pointer`, `reference` and
+  `const_reference` typedefs have been removed from `bond::nullable<T>`.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

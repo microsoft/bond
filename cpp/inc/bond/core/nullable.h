@@ -58,7 +58,7 @@ class nullable;
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #pragma warning(push)
-#pragma warning(disable: 4510)
+#pragma warning(disable: 4510) // default constructor could not be generated
 #endif
 template <typename T, typename Allocator>
 class nullable<T, Allocator, typename boost::enable_if<detail::use_value<T> >::type>
@@ -140,7 +140,7 @@ public:
 
     explicit operator bool() const BOND_NOEXCEPT
     {
-        return !empty();
+        return hasvalue();
     }
 
     T& value() BOND_NOEXCEPT
@@ -183,12 +183,14 @@ public:
         return *_value;
     }
 
-    void set(const T& value) BOND_NOEXCEPT_IF(std::is_nothrow_copy_constructible<T>::value)
+    void set(const T& value) BOND_NOEXCEPT_IF(std::is_nothrow_copy_constructible<T>::value
+        && std::is_nothrow_copy_assignable<T>::value)
     {
         _value = value;
     }
 
-    void set(T&& value) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value)
+    void set(T&& value) BOND_NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value
+        && std::is_nothrow_move_assignable<T>::value)
     {
         _value = std::move(value);
     }
@@ -343,7 +345,7 @@ public:
 
     bool hasvalue() const BOND_NOEXCEPT
     {
-        return !!_value;
+        return _value != pointer();
     }
 
     /// @brief Checks if the object is null
@@ -354,7 +356,7 @@ public:
 
     explicit operator bool() const BOND_NOEXCEPT
     {
-        return !empty();
+        return hasvalue();
     }
 
     /// @brief Return reference to contained value
