@@ -36,9 +36,7 @@ namespace test
         ::bond::maybe<my::string<arena> > st1;
         my::set<my::list<my::map<int32_t, my::string<arena>, arena>, arena>, arena> na;
         
-        struct _bond_vc12_ctor_workaround_ {};
-        template <int = 0> // Workaround to avoid compilation if not used
-        foo(_bond_vc12_ctor_workaround_ = {})
+        foo()
           : l(),
             v(),
             s(),
@@ -74,19 +72,19 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
-          : l(allocator),
-            v(allocator),
-            s(allocator),
-            m(allocator),
-            st(allocator),
-            d("foo", allocator),
-            l1(allocator),
-            v1(allocator),
-            s1(allocator),
-            m1(allocator),
-            st1(allocator),
-            na(allocator)
+        foo(const allocator_type&)
+          : l(),
+            v(),
+            s(),
+            m(),
+            st(),
+            d("foo"),
+            l1(),
+            v1(),
+            s1(),
+            m1(),
+            st1(),
+            na()
         {
         }
         

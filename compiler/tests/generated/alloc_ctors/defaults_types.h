@@ -131,8 +131,8 @@ namespace tests
         bool m_bool_1;
         bool m_bool_2;
         ::bond::maybe<bool> m_bool_3;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > m_str_1;
-        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > m_str_2;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > m_str_1;
+        ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > > m_str_2;
         int8_t m_int8_4;
         ::bond::maybe<int8_t> m_int8_5;
         int16_t m_int16_4;
@@ -162,8 +162,8 @@ namespace tests
         ::tests::EnumType1 m_enum_int32max;
         ::tests::EnumType1 m_enum_uint32_min;
         ::tests::EnumType1 m_enum_uint32_max;
-        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > m_wstr_1;
-        ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > > m_wstr_2;
+        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > m_wstr_1;
+        ::bond::maybe<std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > > m_wstr_2;
         int64_t m_int64_neg_hex;
         int64_t m_int64_neg_oct;
         
@@ -201,7 +201,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
 
-        Foo(const Foo& other, const arena& allocator)
+        Foo(const Foo& other, const allocator_type& allocator)
           : m_bool_1(other.m_bool_1),
             m_bool_2(other.m_bool_2),
             m_bool_3(other.m_bool_3),
@@ -289,7 +289,7 @@ namespace tests
         Foo(Foo&&) = default;
 #endif
 
-        Foo(Foo&& other, const arena& allocator)
+        Foo(Foo&& other, const allocator_type& allocator)
           : m_bool_1(std::move(other.m_bool_1)),
             m_bool_2(std::move(other.m_bool_2)),
             m_bool_3(std::move(other.m_bool_3)),
@@ -332,7 +332,7 @@ namespace tests
         }
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : m_bool_1(true),
             m_bool_2(false),
             m_bool_3(),

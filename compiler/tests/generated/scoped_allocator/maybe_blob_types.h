@@ -43,7 +43,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena&)
+        Foo(const allocator_type&)
         {
         }
         

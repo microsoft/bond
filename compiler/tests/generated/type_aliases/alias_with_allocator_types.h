@@ -19,18 +19,18 @@
 namespace test
 {
     template <typename T>
-    using List = std::list<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using List = std::list<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename T>
-    using Vector = std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using Vector = std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename T>
-    using Set = std::set<T, std::less<T>, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using Set = std::set<T, std::less<T>, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename K, typename T>
-    using Map = std::map<K, T, std::less<K>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const K, T> > >;
+    using Map = std::map<K, T, std::less<K>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const K, T> > >;
 
-    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >;
+    using String = std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >;
 
     using NestedAliases = ::test::Set< ::test::List< ::test::Map<int32_t, ::test::String> > >;
 
@@ -86,7 +86,7 @@ namespace test
 #endif
         
         explicit
-        foo(const arena& allocator)
+        foo(const allocator_type& allocator)
           : l(allocator),
             v(allocator),
             s(allocator),
@@ -196,7 +196,7 @@ namespace test
 #endif
         
         explicit
-        withFoo(const arena& allocator)
+        withFoo(const allocator_type& allocator)
           : f(allocator),
             f1(allocator)
         {

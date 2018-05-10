@@ -19,7 +19,7 @@
 namespace tests
 {
     template <typename N, typename T>
-    using array = std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >;
+    using array = std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >;
 
     template <typename T>
     using array10 = ::tests::array<10, T>;
@@ -55,7 +55,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : aa(allocator)
         {
         }
@@ -199,7 +199,7 @@ namespace tests
 #endif
         
         explicit
-        WrappingAnEnum(const arena&)
+        WrappingAnEnum(const allocator_type&)
           : aWrappedEnum(::tests::_bond_enumerators::EnumToWrap::anEnumValue)
         {
         }

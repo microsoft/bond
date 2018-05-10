@@ -25,7 +25,7 @@ namespace tests
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T>,
-                std::vector<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> > > >,
+                std::vector<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> > > >,
                 &Foo<T>::aa,
                 &s_aa_metadata
             > {}  aa;

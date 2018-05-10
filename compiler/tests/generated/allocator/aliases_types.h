@@ -24,7 +24,7 @@ namespace tests
     {
         using allocator_type = arena;
 
-        std::vector<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> > > > aa;
+        std::vector<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> > > > aa;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -46,7 +46,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : aa(allocator)
         {
         }
@@ -190,7 +190,7 @@ namespace tests
 #endif
         
         explicit
-        WrappingAnEnum(const arena&)
+        WrappingAnEnum(const allocator_type&)
           : aWrappedEnum(::tests::_bond_enumerators::EnumToWrap::anEnumValue)
         {
         }

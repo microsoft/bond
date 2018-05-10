@@ -24,8 +24,8 @@ namespace tests
         using allocator_type = arena;
 
         bool _bool;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > _str;
-        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > _wstr;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > _str;
+        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > _wstr;
         uint64_t _uint64;
         uint16_t _uint16;
         uint32_t _uint32;
@@ -82,7 +82,7 @@ namespace tests
 #endif
         
         explicit
-        BasicTypes(const arena& allocator)
+        BasicTypes(const allocator_type& allocator)
           : _bool(),
             _str(allocator),
             _wstr(allocator),

@@ -114,9 +114,9 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
     {
         #{optional allocatorType allocator}#{newlineSepEnd 2 field structFields}#{defaultCtor}
 
-        #{copyCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorCopyCtor allocator) mempty}
-        #{moveCtor}#{ifThenElse alloc_ctors_enabled (optional allocatorMoveCtor allocator) mempty}
-        #{optional allocatorCtor allocator}
+        #{copyCtor}#{ifThenElse alloc_ctors_enabled (ifThenElse (isNothing allocator) mempty allocatorCopyCtor) mempty}
+        #{moveCtor}#{ifThenElse alloc_ctors_enabled (ifThenElse (isNothing allocator) mempty allocatorMoveCtor) mempty}
+        #{ifThenElse (isNothing allocator) mempty allocatorCtor}
         #{assignmentOp}
 
         bool operator==(const #{declName}&#{otherParam}) const
@@ -202,18 +202,18 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         {
         }|]
 
-        needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
-        allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) $ toLazyText $ cppTypeExpandAliases t)
+        needAlloc = isJust structBase || any (allocParameterized . fieldType) structFields
+        allocParameterized t = (isStruct t) || (L.isInfixOf "allocator_type" $ toLazyText $ cppTypeExpandAliases t)
+
+        allocParam = if needAlloc then [lt| allocator|] else mempty
 
         -- default constructor
         defaultCtor = [lt|
         #{dummyTemplateTag}#{declName}(#{vc12WorkaroundParam})#{initList}#{ctorBody}|]
           where
-            needAllocParam = maybe False needAlloc allocator
+            vc12WorkaroundParam = if needAlloc then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
 
-            vc12WorkaroundParam = if needAllocParam then [lt|_bond_vc12_ctor_workaround_ = {}|] else mempty
-
-            dummyTemplateTag = if needAllocParam
+            dummyTemplateTag = if needAlloc
                 then [lt|struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
         |]
@@ -228,12 +228,11 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
 
         |]
 
-        allocatorCtor alloc = [lt|
+        allocatorCtor = [lt|
         explicit
-        #{declName}(const #{alloc}&#{allocParam})#{initList}#{ctorBody}
+        #{declName}(const allocator_type&#{allocParam})#{initList}#{ctorBody}
         |]
           where
-            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
@@ -241,7 +240,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
             fieldInit Field {..} = optional (\x -> [lt|#{fieldName}(#{x})|])
                 $ allocInitValue fieldType fieldDefault
             allocInitValue t@(BT_UserDefined a@Alias {} args) d
-                | allocParameterized alloc t = allocInitValue (resolveAlias a args) d
+                | allocParameterized t = allocInitValue (resolveAlias a args) d
                 | otherwise = initValue t d
             allocInitValue (BT_Nullable t) _ = allocInitValue t Nothing
             allocInitValue (BT_Maybe t) _ = allocInitValue t Nothing
@@ -272,12 +271,10 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
                 getAllocator _ = mempty
 
         -- copy/move constructor with allocator
-        allocatorCopyOrMoveCtor otherParamDecl otherParamValue alloc = [lt|
+        allocatorCopyOrMoveCtor otherParamDecl otherParamValue = [lt|
 
-        #{declName}(#{otherParamDecl declName}#{otherParam}, const #{alloc}&#{allocParam})#{initList}#{ctorBody}|]
+        #{declName}(#{otherParamDecl declName}#{otherParam}, const allocator_type&#{allocParam})#{initList}#{ctorBody}|]
           where
-            allocParam = if needAlloc alloc then [lt| allocator|] else mempty
-
             initList = initializeList
                 (optional baseInit structBase)
                 (commaLineSep 3 fieldInit structFields)
@@ -289,7 +286,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
             allocInitValueText fieldType = optional (\x -> [lt|, #{x}|])
                 $ allocInitValue fieldType
             allocInitValue t@(BT_UserDefined a@Alias {} args)
-                | allocParameterized alloc t = allocInitValue (resolveAlias a args)
+                | allocParameterized t = allocInitValue (resolveAlias a args)
                 | otherwise = Nothing
             allocInitValue (BT_Nullable t) = allocInitValue t
             allocInitValue (BT_Maybe t) = allocInitValue t
@@ -298,7 +295,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
                 | otherwise = Nothing
 
         -- copy constructor with allocator
-        allocatorCopyCtor alloc = allocatorCopyOrMoveCtor (\f -> [lt|const #{f}&|]) id alloc
+        allocatorCopyCtor = allocatorCopyOrMoveCtor (\f -> [lt|const #{f}&|]) id
 
         -- move constructor
         moveCtor = if hasMetaFields then [lt|
@@ -326,7 +323,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
             param = if initList == mempty then mempty else ' ':otherParamName
 
         -- move constructor with allocator
-        allocatorMoveCtor alloc = (allocatorCopyOrMoveCtor (\f -> [lt|#{f}&&|]) (\f -> [lt|std::move(#{f})|]) alloc)
+        allocatorMoveCtor = allocatorCopyOrMoveCtor (\f -> [lt|#{f}&&|]) (\f -> [lt|std::move(#{f})|])
 
         -- operator=
         assignmentOp = if hasMetaFields then define else implicitlyDeclared

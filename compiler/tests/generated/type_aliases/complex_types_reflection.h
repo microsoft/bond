@@ -58,7 +58,7 @@ namespace tests
                 0,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
-                std::list<int8_t, typename std::allocator_traits<arena>::template rebind_alloc<int8_t> >,
+                std::list<int8_t, typename std::allocator_traits<allocator_type>::template rebind_alloc<int8_t> >,
                 &ComplexTypes::li8,
                 &s_li8_metadata
             > {}  li8;
@@ -68,7 +68,7 @@ namespace tests
                 1,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
-                std::set<bool, std::less<bool>, typename std::allocator_traits<arena>::template rebind_alloc<bool> >,
+                std::set<bool, std::less<bool>, typename std::allocator_traits<allocator_type>::template rebind_alloc<bool> >,
                 &ComplexTypes::sb,
                 &s_sb_metadata
             > {}  sb;
@@ -78,7 +78,7 @@ namespace tests
                 2,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
-                std::vector< ::bond::blob, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::blob> >,
+                std::vector< ::bond::blob, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::blob> >,
                 &ComplexTypes::vb,
                 &s_vb_metadata
             > {}  vb;
@@ -98,7 +98,7 @@ namespace tests
                 4,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
-                std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> >, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > > > >,
+                std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> >, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> >, std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > > > >,
                 &ComplexTypes::msws,
                 &s_msws_metadata
             > {}  msws;
@@ -118,7 +118,7 @@ namespace tests
                 6,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
-                std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > >, std::less<double>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > >,
+                std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > >, std::less<double>, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<allocator_type>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > >,
                 &ComplexTypes::m,
                 &s_m_metadata
             > {}  m;

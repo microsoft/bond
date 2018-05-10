@@ -24,7 +24,7 @@ namespace tests
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
-                std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >,
+                std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > >,
                 &Foo::f,
                 &s_f_metadata
             > {}  f;

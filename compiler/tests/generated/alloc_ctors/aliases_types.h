@@ -24,7 +24,7 @@ namespace tests
     {
         using allocator_type = arena;
 
-        std::vector<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, typename std::allocator_traits<arena>::template rebind_alloc<T> > > > aa;
+        std::vector<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> >, typename std::allocator_traits<allocator_type>::template rebind_alloc<std::vector<T, typename std::allocator_traits<allocator_type>::template rebind_alloc<T> > > > aa;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -36,7 +36,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
 
-        Foo(const Foo& other, const arena& allocator)
+        Foo(const Foo& other, const allocator_type& allocator)
           : aa(other.aa, allocator)
         {
         }
@@ -50,13 +50,13 @@ namespace tests
         Foo(Foo&&) = default;
 #endif
 
-        Foo(Foo&& other, const arena& allocator)
+        Foo(Foo&& other, const allocator_type& allocator)
           : aa(std::move(other.aa), allocator)
         {
         }
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : aa(allocator)
         {
         }
@@ -190,7 +190,7 @@ namespace tests
         // Compiler generated copy ctor OK
         WrappingAnEnum(const WrappingAnEnum&) = default;
 
-        WrappingAnEnum(const WrappingAnEnum& other, const arena&)
+        WrappingAnEnum(const WrappingAnEnum& other, const allocator_type&)
           : aWrappedEnum(other.aWrappedEnum)
         {
         }
@@ -204,13 +204,13 @@ namespace tests
         WrappingAnEnum(WrappingAnEnum&&) = default;
 #endif
 
-        WrappingAnEnum(WrappingAnEnum&& other, const arena&)
+        WrappingAnEnum(WrappingAnEnum&& other, const allocator_type&)
           : aWrappedEnum(std::move(other.aWrappedEnum))
         {
         }
         
         explicit
-        WrappingAnEnum(const arena&)
+        WrappingAnEnum(const allocator_type&)
           : aWrappedEnum(::tests::_bond_enumerators::EnumToWrap::anEnumValue)
         {
         }

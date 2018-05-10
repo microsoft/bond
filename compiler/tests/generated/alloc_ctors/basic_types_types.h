@@ -24,8 +24,8 @@ namespace tests
         using allocator_type = arena;
 
         bool _bool;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > _str;
-        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > _wstr;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > _str;
+        std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<allocator_type>::template rebind_alloc<wchar_t> > _wstr;
         uint64_t _uint64;
         uint16_t _uint16;
         uint32_t _uint32;
@@ -59,7 +59,7 @@ namespace tests
         // Compiler generated copy ctor OK
         BasicTypes(const BasicTypes&) = default;
 
-        BasicTypes(const BasicTypes& other, const arena& allocator)
+        BasicTypes(const BasicTypes& other, const allocator_type& allocator)
           : _bool(other._bool),
             _str(other._str, allocator),
             _wstr(other._wstr, allocator),
@@ -99,7 +99,7 @@ namespace tests
         BasicTypes(BasicTypes&&) = default;
 #endif
 
-        BasicTypes(BasicTypes&& other, const arena& allocator)
+        BasicTypes(BasicTypes&& other, const allocator_type& allocator)
           : _bool(std::move(other._bool)),
             _str(std::move(other._str), allocator),
             _wstr(std::move(other._wstr), allocator),
@@ -118,7 +118,7 @@ namespace tests
         }
         
         explicit
-        BasicTypes(const arena& allocator)
+        BasicTypes(const allocator_type& allocator)
           : _bool(),
             _str(allocator),
             _wstr(allocator),

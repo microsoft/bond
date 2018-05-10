@@ -25,7 +25,7 @@ namespace tests
         using allocator_type = arena;
 
         T2 t2;
-        ::bond::nullable< ::tests::Foo<T1, bool>, arena> n;
+        ::bond::nullable< ::tests::Foo<T1, bool>, allocator_type> n;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -49,7 +49,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : t2(),
             n(allocator)
         {

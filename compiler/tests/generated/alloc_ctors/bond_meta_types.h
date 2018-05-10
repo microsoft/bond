@@ -25,8 +25,8 @@ namespace bondmeta
     {
         using allocator_type = arena;
 
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > full_name;
-        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > name;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > full_name;
+        std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<allocator_type>::template rebind_alloc<char> > name;
         
         struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
@@ -42,7 +42,7 @@ namespace bondmeta
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
 
-        HasMetaFields(const HasMetaFields&, const arena& allocator)
+        HasMetaFields(const HasMetaFields&, const allocator_type& allocator)
           : full_name(other.full_name, allocator),
             name(other.name, allocator)
         {
@@ -56,7 +56,7 @@ namespace bondmeta
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }
 
-        HasMetaFields(HasMetaFields&&, const arena& allocator)
+        HasMetaFields(HasMetaFields&&, const allocator_type& allocator)
           : full_name(std::move(other.full_name), allocator),
             name(std::move(other.name), allocator)
         {
@@ -64,7 +64,7 @@ namespace bondmeta
         }
         
         explicit
-        HasMetaFields(const arena& allocator)
+        HasMetaFields(const allocator_type& allocator)
           : full_name(allocator),
             name(allocator)
         {

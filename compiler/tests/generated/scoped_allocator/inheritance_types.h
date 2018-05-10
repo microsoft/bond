@@ -44,7 +44,7 @@ namespace tests
 #endif
         
         explicit
-        Base(const arena&)
+        Base(const allocator_type&)
           : x()
         {
         }
@@ -122,7 +122,7 @@ namespace tests
 #endif
         
         explicit
-        Foo(const arena& allocator)
+        Foo(const allocator_type& allocator)
           : ::tests::Base(allocator),
             x()
         {
