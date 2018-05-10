@@ -234,14 +234,14 @@ private:
     }
 
     template<typename ValueType>
-    typename boost::enable_if<detail::has_allocator<ValueType>, ValueType>::type
+    typename boost::enable_if<std::uses_allocator<ValueType, Allocator>, ValueType>::type
     make_value()
     {
         return ValueType(base());
     }
 
     template<typename ValueType>
-    typename boost::disable_if<detail::has_allocator<ValueType>, ValueType>::type
+    typename boost::disable_if<std::uses_allocator<ValueType, Allocator>, ValueType>::type
     make_value()
     {
         return ValueType();
@@ -388,7 +388,7 @@ public:
     reference set()
     {
         if (empty())
-            _value = set_value(detail::has_allocator<T>());
+            _value = set_value(std::uses_allocator<T, Allocator>());
         return *_value;
     }
 

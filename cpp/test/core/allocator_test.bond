@@ -84,18 +84,6 @@ struct NullableFields
     50: required_optional nullable<nullable<map<int8, int8>>>   nullable_nullable_map;
 };
 
-struct NullableSwappable
-{
-    1: required_optional nullable<uint32>            nullable_uint32;
-    2: required_optional nullable<string>            nullable_string;
-    3: required_optional nullable<list<float>>       nullable_list;
-    4: required_optional nullable<SimpleType>       nullable_struct;
-    10: required_optional nullable<nullable<uint32>>            nullable_nullable_uint32;
-    20: required_optional nullable<nullable<string>>            nullable_nullable_string;
-    30: required_optional nullable<nullable<list<float>>>       nullable_nullable_list;
-    40: required_optional nullable<nullable<SimpleType>>       nullable_nullable_struct;
-};
-
 struct StructField
 {
     0: Struct field;
