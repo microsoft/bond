@@ -2,6 +2,7 @@ var searchData=
 [
   ['allocator_5fholder',['allocator_holder',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20alloc_20_3e',['allocator_holder&lt; Alloc &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
+  ['allocator_5fholder_3c_20detail_3a_3aallocator_5ftype_3c_20t_20_3e_3a_3atype_20_3e',['allocator_holder&lt; detail::allocator_type&lt; T &gt;::type &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20t_3a_3aallocator_5ftype_20_3e',['allocator_holder&lt; T::allocator_type &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5freference_5ftype_5fworkaround',['allocator_reference_type_workaround',['../structbond_1_1detail_1_1allocator__reference__type__workaround.html',1,'bond::detail']]],
   ['allocator_5freference_5ftype_5fworkaround_3c_20alloc_2c_20typename_20boost_3a_3aenable_5fif_3c_20std_3a_3ais_5fvoid_3c_20typename_20alloc_3a_3avalue_5ftype_20_3e_20_3e_3a_3atype_20_3e',['allocator_reference_type_workaround&lt; Alloc, typename boost::enable_if&lt; std::is_void&lt; typename Alloc::value_type &gt; &gt;::type &gt;',['../structbond_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_01boost_1c8907f5e813ec3e3067fb497cd9e8e6.html',1,'bond::detail']]],

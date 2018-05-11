@@ -57,7 +57,7 @@ var namespacebond =
     [ "maybe< T, typename boost::enable_if< detail::has_allocator< T > >::type >", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4" ],
     [ "ModifyingTransform", "structbond_1_1_modifying_transform.html", null ],
     [ "multi_threaded_counter", "classbond_1_1multi__threaded__counter.html", "classbond_1_1multi__threaded__counter" ],
-    [ "nullable< T, Allocator, false >", "classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4.html", "classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4" ],
+    [ "nullable< T, typename boost::disable_if< detail::use_value< T > >::type >", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4" ],
     [ "OutputMemoryStream", "classbond_1_1_output_memory_stream.html", "classbond_1_1_output_memory_stream" ],
     [ "RuntimeSchema", "classbond_1_1_runtime_schema.html", "classbond_1_1_runtime_schema" ],
     [ "SerializingTransform", "structbond_1_1_serializing_transform.html", null ],
