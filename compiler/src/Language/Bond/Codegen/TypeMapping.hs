@@ -437,9 +437,6 @@ cppTypeCustomAlloc scoped alloc BT_WString = "std::basic_string<wchar_t, std::ch
 cppTypeCustomAlloc scoped alloc BT_MetaName = cppTypeCustomAlloc scoped alloc BT_String
 cppTypeCustomAlloc scoped alloc BT_MetaFullName = cppTypeCustomAlloc scoped alloc BT_String
 cppTypeCustomAlloc scoped alloc (BT_List element) = "std::list<" <>> elementTypeName element <<>> ", " <>> allocator scoped alloc element <<> ">"
-cppTypeCustomAlloc _ alloc (BT_Nullable element)
-    | isStruct element = "::bond::nullable<" <>> elementTypeName element <<> ", " <> alloc <> ">"
-    | otherwise = "::bond::nullable<" <>> elementTypeName element <<> ">"
 cppTypeCustomAlloc scoped alloc (BT_Vector element) = "std::vector<" <>> elementTypeName element <<>> ", " <>> allocator scoped alloc element <<> ">"
 cppTypeCustomAlloc scoped alloc (BT_Set element) = "std::set<" <>> elementTypeName element <<>> comparer element <<>> allocator scoped alloc element <<> ">"
 cppTypeCustomAlloc scoped alloc (BT_Map key value) = "std::map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<>> comparer key <<>> pairAllocator scoped alloc key value <<> ">"

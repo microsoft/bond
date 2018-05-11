@@ -4,7 +4,7 @@
 ///
 
 import "import_test1.bond"
-import "import_test2.bond"
+import "dir1/dir2/import_test2.bond"
 
 namespace unittest.apply;
 

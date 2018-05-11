@@ -72,7 +72,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
 
     cppDefaultValue = CPP.defaultValue cpp
 
-    includeImport (Import path) = [lt|#include "#{dropExtension path}_types.h"|]
+    includeImport (Import path) = [lt|#include "#{dropExtension (slashForward path)}_types.h"|]
 
     optionalHeader (False, _) = mempty
     optionalHeader (True, header) = includeHeader header
@@ -203,6 +203,8 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         }|]
 
         needAlloc alloc = isJust structBase || any (allocParameterized alloc . fieldType) structFields
+
+        allocParameterized alloc (BT_Nullable t) = allocParameterized alloc t
         allocParameterized alloc t = (isStruct t) || (L.isInfixOf (L.pack alloc) $ toLazyText $ cppTypeExpandAliases t)
 
         -- default constructor

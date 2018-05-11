@@ -1,6 +1,7 @@
 import "bond/core/bond.bond"
 import "Aliases.bond"
-import "Bond File With Spaces.bond"
+// Uses mixed slashes to test gbc can deal with that
+import "dir1\dir2/Bond File With Spaces.bond"
 
 namespace UnitTest
 

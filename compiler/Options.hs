@@ -1,7 +1,7 @@
 -- Copyright (c) Microsoft. All rights reserved.
 -- Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 {-# OPTIONS_GHC -fno-cse #-}
 
@@ -16,6 +16,7 @@ import Paths_bond (version)
 import Data.Version (showVersion)
 import System.Console.CmdArgs
 import System.Console.CmdArgs.Explicit (processValue)
+import IO (slashNormalize)
 
 data ApplyOptions =
     Compact |
@@ -130,6 +131,22 @@ schema = Schema
     name "schema" &=
     help "Output the JSON representation of the schema"
 
+slashNormalizeOption :: Options -> Options
+slashNormalizeOption Options = Options
+slashNormalizeOption o@Cpp{..}    = o { files = map slashNormalize files,
+                                        import_dir = map slashNormalize import_dir,
+                                        output_dir = slashNormalize output_dir }
+slashNormalizeOption o@Cs{..}     = o { files = map slashNormalize files,
+                                        import_dir = map slashNormalize import_dir,
+                                        output_dir = slashNormalize output_dir }
+slashNormalizeOption o@Java{..}   = o { files = map slashNormalize files,
+                                        import_dir = map slashNormalize import_dir,
+                                        output_dir = slashNormalize output_dir }
+slashNormalizeOption o@Schema{..} = o { files = map slashNormalize files,
+                                        import_dir = map slashNormalize import_dir,
+                                        output_dir = slashNormalize output_dir }
+                                   
+
 mode :: Mode (CmdArgs Options)
 mode = cmdArgsMode $ modes [cpp, cs, java, schema] &=
     program "gbc" &=
@@ -137,7 +154,7 @@ mode = cmdArgsMode $ modes [cpp, cs, java, schema] &=
     summary ("Bond Compiler " ++ showVersion version ++ ", (C) Microsoft")
 
 getOptions :: IO Options
-getOptions = cmdArgsRun mode
+getOptions = slashNormalizeOption <$> cmdArgsRun mode
 
 processOptions :: [String] -> Options
 processOptions = cmdArgsValue . processValue mode

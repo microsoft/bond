@@ -1,0 +1,9 @@
+// Uses mixed slashes to test gbc can deal with that
+import "dir1/dir2\empty.bond"
+
+namespace import_test;
+
+struct HasEmpty
+{
+    0: empty.Empty e;
+}

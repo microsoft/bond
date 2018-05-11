@@ -6,7 +6,7 @@
 module Language.Bond.Codegen.Cpp.Grpc_h (grpc_h) where
 
 import System.FilePath
-import Data.Maybe(isNothing)
+import Data.Maybe (isNothing)
 import Data.Monoid
 import Prelude
 import qualified Data.Text.Lazy as L
@@ -66,7 +66,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
 |])
   where
-    includeImport (Import path) = [lt|#include "#{dropExtension path}_grpc.h"|]
+    includeImport (Import path) = [lt|#include "#{dropExtension (slashForward path)}_grpc.h"|]
 
     idl = MappingContext idlTypeMapping [] [] []
 

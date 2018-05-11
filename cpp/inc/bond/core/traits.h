@@ -10,22 +10,13 @@
 #include "scalar_interface.h"
 
 #include <boost/static_assert.hpp>
-#include <boost/type_traits/has_nothrow_copy.hpp>
 #include <boost/utility/enable_if.hpp>
 
-#include <memory>
 #include <type_traits>
-#include <utility>
+
 
 namespace bond
 {
-
-// version of is_nothrow_copy_constructible/has_nothrow_copy_constructor
-// that works across C++03 and C++11 and later: we just delegate to Boost,
-// but use the modern name and put it in the bond namespace
-template <typename T>
-struct is_nothrow_copy_constructible : boost::has_nothrow_copy_constructor<T> {};
-
 
 // is_signed_int
 template <typename T> struct
@@ -182,52 +173,5 @@ unique_buffer_magic_check;
     template <> struct unique_buffer_magic_check<Id> {}; \
     template <> struct buffer_magic<Buffer> : std::integral_constant<uint16_t, Id> {}
 
-
-namespace detail
-{
-
-template<typename T, typename E = void> struct
-has_allocator
-    : std::false_type {};
-
-template<typename T> struct
-has_allocator<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
-    : std::true_type {};
-
-template<typename T, typename E = void> struct
-allocator_type
-{
-    typedef std::allocator<T> type;
-};
-
-template<typename T> struct
-allocator_type<T, typename boost::enable_if<has_allocator<T> >::type>
-{
-    typedef typename T::allocator_type type;
-};
-
-template<typename A>
-struct is_default_allocator
-    : std::false_type { };
-
-template<typename T>
-struct is_default_allocator<std::allocator<T> >
-    : std::true_type { };
-
-template<typename T>
-typename boost::enable_if<has_allocator<T>, typename allocator_type<T>::type>::type
-get_allocator(const T& value)
-{
-    return value.get_allocator();
-}
-
-template<typename T>
-typename boost::disable_if<has_allocator<T>, typename allocator_type<T>::type>::type
-get_allocator(const T&)
-{
-    return typename allocator_type<T>::type();
-}
-
-} // namespace detail
 
 } // namespace bond

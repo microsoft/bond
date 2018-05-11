@@ -28,6 +28,7 @@ module Language.Bond.Codegen.Util
     , uniqueNames
     , indent
     , newLine
+    , slashForward
     ) where
 
 import Data.Int (Int64)
@@ -131,3 +132,9 @@ uniqueNames names reservedInit = reverse $ go names [] reservedInit
     go (name:remaining) acc reservedAcc = go remaining (newName:acc) (newName:reservedAcc)
       where
         newName = uniqueName name reservedAcc
+
+-- | Converts all file path slashes to forward slashes.
+slashForward :: String -> String
+slashForward path = map replace path
+  where replace '\\' = '/'
+        replace c    = c

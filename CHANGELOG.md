@@ -14,8 +14,9 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 * `gbc` & compiler library: (major bump already done in bond.cabal)
 * IDL core version: (major bump needed)
-* IDL comm version: (major bump needed)
 * C++ version: (major bump needed)
+  - BOND_VERSION: (major bump needed)
+  - BOND_MIN_CODEGEN_VERSION: (major bump needed)
 * C# NuGet version: (major bump needed)
 
 ### `gbc` and Bond compiler library ###
@@ -44,6 +45,9 @@ different versioning scheme, following the Haskell community's
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
   `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
+* File and directory paths on the command line, in response files, or in
+  `import` statements can now use a mix of forward and backslashes. [Issue
+  #869](https://github.com/Microsoft/bond/issues/869)
 
 ### C++ ###
 
@@ -65,6 +69,10 @@ different versioning scheme, following the Haskell community's
 * **Breaking change** Removed a dangerous implicit conversion operator from
   `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use
   one of the `bond::maybe<T>::value` functions.
+* **Breaking change** The nested `pointer`, `const_pointer`, `reference` and
+  `const_reference` typedefs have been removed from `bond::nullable<T>`.
+* **Breaking change** The `Allocator` (second) type parameter has be removed from
+  `bond::nullable<T>` and now it is always deduced from `T`.
 * **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
   functions are now accepting the `std::shared_ptr<grpc::ClientContext>`
   as the last parameter.
@@ -133,7 +141,7 @@ different versioning scheme, following the Haskell community's
   constructors with parameters for each field. This functionality will
   change in the future and may be removed. [Pull request
   #857](https://github.com/Microsoft/bond/pull/857)
-	
+
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0

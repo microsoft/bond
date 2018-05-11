@@ -256,7 +256,17 @@ protected:
     boost::optional<T> _value;
 };
 
+
+template <typename T, typename Enable = void> struct
+has_allocator
+    : std::false_type {};
+
+template <typename T> struct
+has_allocator<T, typename boost::enable_if<std::is_class<typename T::allocator_type> >::type>
+    : std::true_type {};
+
 } // namespace detail
+
 
 template <typename T, typename Enabled = void>
 class maybe;
@@ -277,7 +287,7 @@ class maybe;
 /// \li operator!=(const detail::maybe_common&,const T&)
 /// \li operator!=(const T&,const detail::maybe_common&)
 template <typename T>
-class maybe<T, typename boost::disable_if<detail::has_allocator<T>>::type>
+class maybe<T, typename boost::disable_if<detail::has_allocator<T> >::type>
     : public detail::maybe_common<T>
 {
 public:
@@ -400,11 +410,11 @@ public:
 /// \li operator!=(const detail::maybe_common&,const T&)
 /// \li operator!=(const T&,const detail::maybe_common&)
 template <typename T>
-class maybe<T, typename boost::enable_if<detail::has_allocator<T>>::type>
+class maybe<T, typename boost::enable_if<detail::has_allocator<T> >::type>
     : public detail::maybe_common<T>,
-      private detail::allocator_holder<typename detail::allocator_type<T>::type>
+      private detail::allocator_holder<typename T::allocator_type>
 {
-    using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
+    using alloc_holder = detail::allocator_holder<typename T::allocator_type>;
 
 public:
     // allocator_holder may inherit from an allocator that has its own
@@ -413,7 +423,7 @@ public:
     using typename detail::maybe_common<T>::value_type;
 
     /// @brief The type of the allocator in use.
-    using allocator_type = typename detail::allocator_type<T>::type;
+    using allocator_type = typename T::allocator_type;
 
     #if defined(_MSC_VER) && _MSC_VER < 1900
     // = default fails on MSVC 2013 when the allocator is not default

@@ -1,4 +1,4 @@
-import "common.bond"
+import "dir1/dir2/common.bond"
 
 namespace org.bondlib.test
 
