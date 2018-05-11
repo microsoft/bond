@@ -1,6 +1,6 @@
 #include <bond/core/bond_version.h>
-#include <bond/stream/output_counter.h>
 #include <bond/core/box.h>
+#include <bond/stream/output_counter.h>
 
 #include "precompiled.h"
 #include "basic_tests.h"
