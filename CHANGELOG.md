@@ -76,6 +76,8 @@ different versioning scheme, following the Haskell community's
 * **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
   functions are now accepting the `std::shared_ptr<grpc::ClientContext>`
   as the last parameter.
+* **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts
+  `bond::ext::gRPC::unary_call_result<Response>` (drops the `std::shared_ptr`).
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

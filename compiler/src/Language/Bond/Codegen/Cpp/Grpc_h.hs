@@ -225,9 +225,9 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
 
-        publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});|]
-        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
-        void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});|]
+        publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, cb, ::std::move(context));
         }|]
@@ -247,7 +247,7 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         methodDecl Function{..} = [lt|#{template}template <typename TThreadPool>
 inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
     #{voidParam (methodTypeToMaybe methodInput)}
-    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>>)>& cb,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb,
     ::std::shared_ptr< ::grpc::ClientContext> context)
 {
     #{voidRequest (methodTypeToMaybe methodInput)}
