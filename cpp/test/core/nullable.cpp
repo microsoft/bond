@@ -241,7 +241,7 @@ TEST_CASE_BEGIN(NullableAllocators)
 
     bond::nullable<list<float,
         std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<float> > > l1(l);
-    bond::nullable<SimpleType, bond::capped_allocator<> > s1(s, a2);
+    bond::nullable<SimpleType> s1(s, a2);
 
     NullableTests(x, y, s1, l1);
 

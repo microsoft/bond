@@ -648,13 +648,13 @@ inline DeserializeElements(X& var, const T& element, uint32_t size)
 }
 
 
-template <typename Protocols, typename X, typename Allocator, bool useValue, typename T>
+template <typename Protocols, typename X, typename T>
 typename boost::enable_if<is_matching<T, X> >::type
-inline DeserializeElements(nullable<X, Allocator, useValue>& var, const T& element, uint32_t size)
+inline DeserializeElements(nullable<X>& var, const T& element, uint32_t size)
 {
     resize_list(var, size);
 
-    for (enumerator<nullable<X, Allocator, useValue> > items(var); items.more(); --size)
+    for (enumerator<nullable<X> > items(var); items.more(); --size)
         element.template Deserialize<Protocols>(items.next());
 
     // Wire representation and interface for nullable is the same as for list.

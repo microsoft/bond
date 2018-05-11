@@ -37,7 +37,8 @@ class allocator_holder<Alloc, typename boost::enable_if<empty_base_eligible<Allo
 public:
     allocator_holder() = default;
 
-    explicit allocator_holder(const Alloc& alloc)
+    explicit allocator_holder(const Alloc& alloc) BOND_NOEXCEPT_IF(
+        std::is_nothrow_copy_constructible<Alloc>::value)
         : Alloc{ alloc }
     {}
 
@@ -62,7 +63,8 @@ class allocator_holder<Alloc, typename boost::disable_if<empty_base_eligible<All
 public:
     allocator_holder() = default;
 
-    explicit allocator_holder(const Alloc& alloc)
+    explicit allocator_holder(const Alloc& alloc) BOND_NOEXCEPT_IF(
+        std::is_nothrow_copy_constructible<Alloc>::value)
         : _alloc{ alloc }
     {}
 
