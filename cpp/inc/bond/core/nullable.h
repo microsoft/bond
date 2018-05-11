@@ -61,7 +61,7 @@ template <typename T>
 class nullable<T, typename boost::enable_if<detail::use_value<T> >::type>
     : private detail::allocator_holder<typename detail::allocator_type<T>::type>
 {
-    using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
+    using allocator_holder = typename nullable::allocator_holder;
 
 public:
     using value_type = T;
@@ -71,13 +71,13 @@ public:
 
     explicit
     nullable(const allocator_type& alloc)
-        : alloc_holder(alloc)
+        : allocator_holder(alloc)
     {}
 
     nullable(const nullable& other) = default;
 
     nullable(const nullable& other, const allocator_type& alloc)
-        : alloc_holder(alloc)
+        : allocator_holder(alloc)
     {
         if (other.hasvalue())
         {
@@ -86,16 +86,16 @@ public:
     }
 
     nullable(nullable&& other) BOND_NOEXCEPT_IF(
-            std::is_nothrow_move_constructible<alloc_holder>::value
+            std::is_nothrow_move_constructible<allocator_holder>::value
             && std::is_nothrow_move_constructible<T>::value)
-        : alloc_holder(std::move(other)),
+        : allocator_holder(std::move(other)),
           _value(std::move(other._value))
     {
         other._value = boost::none; // assigning boost::none is noexcept
     }
 
     nullable(nullable&& other, const allocator_type& alloc)
-        : alloc_holder(alloc),
+        : allocator_holder(alloc),
           _value(std::move(other._value), alloc)
     {
         other._value = boost::none; // assigning boost::none is noexcept
@@ -103,23 +103,23 @@ public:
 
     explicit
     nullable(const T& value)
-        : alloc_holder(get_allocator(value)),
+        : allocator_holder(get_allocator(value)),
           _value(value)
     {}
 
     explicit
     nullable(T&& value)
-        : alloc_holder(get_allocator(value)),
+        : allocator_holder(get_allocator(value)),
           _value(std::move(value))
     {}
 
     nullable& operator=(const nullable& src) = default;
 
     nullable& operator=(nullable&& other) BOND_NOEXCEPT_IF(
-        std::is_nothrow_move_constructible<alloc_holder>::value
+        std::is_nothrow_move_constructible<allocator_holder>::value
         && std::is_nothrow_move_constructible<T>::value)
     {
-        alloc_holder::operator=(std::move(other));
+        allocator_holder::operator=(std::move(other));
         _value = std::move(other._value);
         other._value = boost::none; // assigning boost::none is noexcept
         return *this;
@@ -175,7 +175,9 @@ public:
     T& set()
     {
         if (empty())
+        {
             set_value();
+        }
 
         return *_value;
     }
@@ -205,13 +207,13 @@ public:
     void swap(nullable& other)
     {
         using std::swap;
-        swap(static_cast<alloc_holder&>(*this), static_cast<alloc_holder&>(other));
+        swap(static_cast<allocator_holder&>(*this), static_cast<allocator_holder&>(other));
         swap(_value, other._value);
     }
 
     allocator_type get_allocator() const BOND_NOEXCEPT
     {
-        return alloc_holder::get();
+        return allocator_holder::get();
     }
 
 private:
@@ -219,7 +221,7 @@ private:
     typename boost::enable_if<std::uses_allocator<U, allocator_type> >::type
     set_value()
     {
-        _value.emplace(alloc_holder::get());
+        _value.emplace(allocator_holder::get());
     }
 
     template <typename U = T>
@@ -256,53 +258,55 @@ template <typename T>
 class nullable<T, typename boost::disable_if<detail::use_value<T> >::type>
     : private detail::allocator_holder<typename detail::allocator_type<T>::type>
 {
-    using alloc_holder = detail::allocator_holder<typename detail::allocator_type<T>::type>;
-    using rebind_alloc = typename std::allocator_traits<typename detail::allocator_type<T>::type>::template rebind_alloc<T>;
-    using pointer = typename std::allocator_traits<rebind_alloc>::pointer;
-
 public:
     using value_type = T;
     using allocator_type = typename detail::allocator_type<T>::type;
 
+private:
+    using allocator_holder = typename nullable::allocator_holder;
+    using rebind_alloc = typename std::allocator_traits<allocator_type>::template rebind_alloc<T>;
+    using pointer = typename std::allocator_traits<rebind_alloc>::pointer;
+
+public:
     /// @brief Default constructor
     nullable() BOND_NOEXCEPT_IF(
-        std::is_nothrow_default_constructible<alloc_holder>::value
+        std::is_nothrow_default_constructible<allocator_holder>::value
         && std::is_nothrow_default_constructible<pointer>::value)
-        : alloc_holder(),
+        : allocator_holder(),
           _value()
     {}
 
     /// @brief Construct nullable using specified allocator instance
     explicit
     nullable(const allocator_type& alloc)
-        : alloc_holder(alloc),
+        : allocator_holder(alloc),
           _value()
     {}
 
     /// @brief Copy constructor
     nullable(const nullable& other)
-        : alloc_holder(other),
+        : allocator_holder(other),
           _value(other.hasvalue() ? new_value(other.value()) : pointer())
     {}
 
     nullable(const nullable& other, const allocator_type& alloc)
-        : alloc_holder(alloc),
+        : allocator_holder(alloc),
           _value(other.hasvalue() ? new_value(other.value(), alloc) : pointer())
     {}
 
     nullable(nullable&& other) BOND_NOEXCEPT_IF(
-            std::is_nothrow_move_constructible<alloc_holder>::value
+            std::is_nothrow_move_constructible<allocator_holder>::value
             && std::is_nothrow_move_constructible<pointer>::value
             && BOND_NOEXCEPT(other._value = {}))
-        : alloc_holder(std::move(other)),
+        : allocator_holder(std::move(other)),
           _value(std::move(other._value))
     {
         other._value = {};
     }
 
     nullable(nullable&& other, const allocator_type& alloc)
-        : alloc_holder(alloc),
-          _value(other.alloc_holder::get() == alloc
+        : allocator_holder(alloc),
+          _value(other.allocator_holder::get() == alloc
               ? std::move(other._value)
               : (other.hasvalue() ? new_value(std::move(*other._value), alloc) : pointer()))
     {
@@ -312,13 +316,13 @@ public:
     /// @brief Construct from an instance T
     explicit
     nullable(const T& value, const allocator_type& alloc = {})
-        : alloc_holder(alloc),
+        : allocator_holder(alloc),
           _value(new_value(value))
     {}
 
     explicit
     nullable(T&& value, const allocator_type& alloc = {})
-        : alloc_holder(alloc),
+        : allocator_holder(alloc),
           _value(new_value(std::move(value)))
     {}
 
@@ -404,7 +408,9 @@ public:
     T& set()
     {
         if (empty())
+        {
             _value = set_value();
+        }
 
         return *_value;
     }
@@ -439,19 +445,19 @@ public:
     void swap(nullable& other)
     {
         using std::swap;
-        swap(static_cast<alloc_holder&>(*this), static_cast<alloc_holder&>(other));
+        swap(static_cast<allocator_holder&>(*this), static_cast<allocator_holder&>(other));
         swap(_value, other._value);
     }
 
     allocator_type get_allocator() const BOND_NOEXCEPT
     {
-        return alloc_holder::get();
+        return allocator_holder::get();
     }
 
 private:
     void delete_value()
     {
-        rebind_alloc alloc(alloc_holder::get());
+        rebind_alloc alloc(allocator_holder::get());
         std::allocator_traits<rebind_alloc>::destroy(alloc, std::addressof(*_value));
         alloc.deallocate(_value, 1);
     }
@@ -459,7 +465,7 @@ private:
     template <typename... Args>
     pointer new_value(Args&&... args)
     {
-        rebind_alloc alloc(alloc_holder::get());
+        rebind_alloc alloc(allocator_holder::get());
         pointer p(alloc.allocate(1));
         try
         {
@@ -478,7 +484,7 @@ private:
     typename boost::enable_if<std::uses_allocator<U, allocator_type>, pointer>::type
     set_value()
     {
-        return new_value(alloc_holder::get());
+        return new_value(allocator_holder::get());
     }
 
     template <typename U = T>
@@ -492,9 +498,13 @@ private:
     void set_value(U&& value)
     {
         if (empty())
+        {
             _value = new_value(std::forward<U>(value));
+        }
         else
+        {
             *_value = std::forward<U>(value);
+        }
     }
 
     pointer _value;
@@ -537,9 +547,13 @@ template <typename T>
 void resize_list(nullable<T>& value, uint32_t size)
 {
     if (size)
+    {
         value.set();
+    }
     else
+    {
         value.reset();
+    }
 }
 
 
