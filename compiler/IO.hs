@@ -7,6 +7,7 @@ module IO
     , parseASTFile
     , parseNamespaceMappings
     , parseAliasMappings
+    , slashNormalize
     )
     where
 
@@ -54,9 +55,10 @@ parseBondFile importDirs file = do
             Just path' -> do
                 content <- readFileUtf8 path'
                 return (path', content)
-            Nothing -> fail $ "Can't find import file " ++ importFile
+            Nothing -> fail $ "Can't find import file " ++ importFile'
       where
-        findFilePath dirs = fmap (</> importFile) <$> firstM (doesFileExist . (</> importFile)) dirs
+        importFile' = slashNormalize importFile
+        findFilePath dirs = fmap (</> importFile') <$> firstM (doesFileExist . (</> importFile')) dirs
 
     readFileUtf8 name = do
         h <- openFile name ReadMode
@@ -102,3 +104,15 @@ combinedMessage err = id $ T.unpack $ T.intercalate (T.pack ", ") messages
         -- parseErrorPretty returns a multi-line String.
         -- We need to break it up to make a useful one-line message.
         messages = T.splitOn (T.pack "\n") $ T.strip $ T.pack $ parseErrorTextPretty err
+
+-- | Normalizes a file path to only use the current platform's preferred
+-- directory separator.
+--
+-- Bond doesn't support files or directories with backslashes in their
+-- names, so backslashes are always converted to the platform's preferred
+-- separator.
+slashNormalize :: FilePath -> FilePath
+slashNormalize path = map replace path
+  where replace '/'  = pathSeparator
+        replace '\\' = pathSeparator
+        replace c    = c

@@ -191,9 +191,8 @@ javaCodegen Java {..} = do
                                   -- code. This breaks compilation of generated
                                   -- code if either path has components that
                                   -- start with u.
-                                  backToForward s = map (\c -> if c == '\\' then '/' else c) s
-                                  safeBondFile = backToForward bondFile
-                                  safeJavaFile = backToForward javaFile
+                                  safeBondFile = slashForward bondFile
+                                  safeJavaFile = slashForward javaFile
 
                     createDir packageDir
                     LTIO.writeFile (packageDir </> javaFile) content

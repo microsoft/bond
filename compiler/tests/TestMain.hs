@@ -82,6 +82,11 @@ tests = testGroup "Compiler tests"
                 ]
                 "with_enum_header"
             , verifyCodegen
+                 [ "c++"
+                 , "--import-dir=tests/schema/imports"
+                 ]
+                 "import"
+            , verifyCodegen
                 [ "c++"
                 , "--allocator=arena"
                 ]
@@ -181,6 +186,11 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
+            , verifyCodegen
+                 [ "c#"
+                 , "--import-dir=tests/schema/imports"
+                 ]
+                 "import"
             , testGroup "Grpc"
                 [ verifyCsGrpcCodegen
                     [ "c#"
@@ -216,6 +226,11 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
+            , verifyCodegen
+                 [ "java"
+                 , "--import-dir=tests/schema/imports"
+                 ]
+                 "import"
             ]
         ]
     ]

@@ -72,7 +72,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
 
     cppDefaultValue = CPP.defaultValue cpp
 
-    includeImport (Import path) = [lt|#include "#{dropExtension path}_types.h"|]
+    includeImport (Import path) = [lt|#include "#{dropExtension (slashForward path)}_types.h"|]
 
     optionalHeader (False, _) = mempty
     optionalHeader (True, header) = includeHeader header

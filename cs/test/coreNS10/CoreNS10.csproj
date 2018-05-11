@@ -44,7 +44,8 @@
     <BondCodegen Include="..\core\UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
-    <BondCodegen Include="..\core\import dir with spaces\Bond File With Spaces.bond" />
+    <!-- uses mixed slashes to test the targets can deal with that -->
+    <BondCodegen Include="..\core\import dir with spaces\dir1/dir2/Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
     <Compile Include="$(IntermediateOutputPath)\Aliases_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\Bond File With Spaces_types.cs" Condition="False" />
@@ -69,4 +70,3 @@
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>
-

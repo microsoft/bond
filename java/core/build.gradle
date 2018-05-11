@@ -63,3 +63,7 @@ compileBond {
               '../../idl/bond/core/bond_const.bond'
     options '-n', 'bond=org.bondlib'
 }
+
+compileTestBond {
+    options '--import-dir', 'src/test/bond/imports/'
+}
