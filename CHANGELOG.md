@@ -102,6 +102,7 @@ different versioning scheme, following the Haskell community's
   passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
 * Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
   to `T` when `allocator_type` was not explicitly defined.
+* Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
 
 ### C# ###
 
