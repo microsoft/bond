@@ -57,6 +57,8 @@
 
 #include <memory>
 #include <thread>
+#include <vector>
+
 
 namespace bond { namespace ext { namespace gRPC {
 
@@ -89,13 +91,13 @@ namespace bond { namespace ext { namespace gRPC {
         template <typename T>
         void Shutdown(const T& deadline)
         {
-            _grpcServer->Shutdown(deadline);
+            _server->Shutdown(deadline);
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
-            _grpcServer->Shutdown();
+            _server->Shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -104,22 +106,32 @@ namespace bond { namespace ext { namespace gRPC {
         /// thread must call \p Shutdown for this function to ever return.
         void Wait()
         {
-            _grpcServer->Wait();
+            _server->Wait();
         }
-
-        friend class server_builder;
 
     private:
+        friend class server_builder;
+
         server(
             std::unique_ptr<grpc::Server> grpcServer,
+            std::vector<std::unique_ptr<detail::service>> services,
             std::unique_ptr<grpc::ServerCompletionQueue> cq)
-            : _grpcServer(std::move(grpcServer)),
+            : _server(std::move(grpcServer)),
+              _services(std::move(services)),
               _ioManager(std::move(cq))
         {
-            BOOST_ASSERT(_grpcServer);
+            BOOST_ASSERT(_server);
+
+            // Tickle all the services so they queue a receive for all their
+            // methods.
+            for (auto& service : _services)
+            {
+                service->start();
+            }
         }
 
-        std::unique_ptr<grpc::Server> _grpcServer;
+        std::unique_ptr<grpc::Server> _server;
+        std::vector<std::unique_ptr<detail::service>> _services;
         io_manager _ioManager;
     };
 

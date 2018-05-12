@@ -52,7 +52,7 @@ public:
         std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
         : _channel(std::move(channel)),
-          _ioManager(std::move(ioManager)),
+          _cq(ioManager->cq()),
           _scheduler(scheduler),
           _responseReader(),
           _context(std::move(context)),
@@ -60,7 +60,7 @@ public:
           _self()
     {
         BOOST_ASSERT(_channel);
-        BOOST_ASSERT(_ioManager);
+        BOOST_ASSERT(_cq);
         BOOST_ASSERT(_scheduler);
         BOOST_ASSERT(_context);
     }
@@ -75,7 +75,7 @@ public:
         _responseReader.reset(
             ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
                 _channel.get(),
-                _ioManager->cq(),
+                _cq,
                 method,
                 _context.get(),
                 request,
@@ -106,8 +106,8 @@ private:
 
     /// The channel to send the request on.
     std::shared_ptr<grpc::ChannelInterface> _channel;
-    /// The io_manager to use for both sending and receiving.
-    std::shared_ptr<io_manager> _ioManager;
+    /// The completion port to post IO operations to.
+    grpc::CompletionQueue* _cq;
     /// The scheduler in which to invoke the callback.
     Scheduler _scheduler;
     /// A response reader.

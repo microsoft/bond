@@ -224,52 +224,21 @@ template <typename Payload>
     class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service()
-        {
-            this->AddMethod("/tests.Foo/foo31");
-            this->AddMethod("/tests.Foo/foo32");
-            this->AddMethod("/tests.Foo/foo33");
-            this->AddMethod("/tests.Foo/ConsumesGeneric1");
-            this->AddMethod("/tests.Foo/ConsumesGeneric2");
-        }
+        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+            : ::bond::ext::gRPC::detail::service(
+                scheduler,
+                {
+                    "/tests.Foo/foo31",
+                    "/tests.Foo/foo32",
+                    "/tests.Foo/foo33",
+                    "/tests.Foo/ConsumesGeneric1",
+                    "/tests.Foo/ConsumesGeneric2"
+                })
+        {}
 
-        virtual void start(
-            ::grpc::ServerCompletionQueue* cq,
-            const ::bond::ext::gRPC::Scheduler& scheduler) override
+        void start() override
         {
-            BOOST_ASSERT(cq);
-            BOOST_ASSERT(scheduler);
-
-            _rd_foo31.emplace(
-                *this,
-                0,
-                cq,
-                scheduler,
-                std::bind(&Service::foo31, this, std::placeholders::_1));
-            _rd_foo32.emplace(
-                *this,
-                1,
-                cq,
-                scheduler,
-                std::bind(&Service::foo32, this, std::placeholders::_1));
-            _rd_foo33.emplace(
-                *this,
-                2,
-                cq,
-                scheduler,
-                std::bind(&Service::foo33, this, std::placeholders::_1));
-            _rd_ConsumesGeneric1.emplace(
-                *this,
-                3,
-                cq,
-                scheduler,
-                std::bind(&Service::ConsumesGeneric1, this, std::placeholders::_1));
-            _rd_ConsumesGeneric2.emplace(
-                *this,
-                4,
-                cq,
-                scheduler,
-                std::bind(&Service::ConsumesGeneric2, this, std::placeholders::_1));
+            _data.emplace(*this);
         }
 
         virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, ::bond::Void>) = 0;
@@ -279,11 +248,21 @@ template <typename Payload>
         virtual void ConsumesGeneric2(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>, ::bond::Void>) = 0;
 
     private:
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<Payload>, ::bond::Void>> _rd_foo31;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, Payload>> _rd_foo32;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded<Payload>, Payload>> _rd_foo33;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::SomeBox<int32_t>>, ::bond::Void>> _rd_ConsumesGeneric1;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>, ::bond::Void>> _rd_ConsumesGeneric2;
+        struct data
+        {
+            explicit data(Service& s)
+                : _s(s)
+            {}
+
+            Service& _s;
+            ::bond::ext::gRPC::detail::service::Method<typename Schema::service::foo31> _m0{ _s, 0, ::std::bind(&Service::foo31, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<typename Schema::service::foo32> _m1{ _s, 1, ::std::bind(&Service::foo32, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<typename Schema::service::foo33> _m2{ _s, 2, ::std::bind(&Service::foo33, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<typename Schema::service::ConsumesGeneric1> _m3{ _s, 3, ::std::bind(&Service::ConsumesGeneric1, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<typename Schema::service::ConsumesGeneric2> _m4{ _s, 4, ::std::bind(&Service::ConsumesGeneric2, &_s, ::std::placeholders::_1) };
+        };
+
+        ::boost::optional<data> _data;
     };
 };
 

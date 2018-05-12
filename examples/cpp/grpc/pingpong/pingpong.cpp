@@ -64,7 +64,9 @@ private:
 class DoublePingServiceImpl final : public DoublePing::Service
 {
 public:
-    event pingNoResponse_event;
+    using DoublePing::Service::Service;
+
+    std::shared_ptr<event> pingNoResponse_event{ std::make_shared<event>() };
 
 private:
     void Ping(
@@ -105,7 +107,7 @@ private:
         // This will be fixed in a later release.
         call.Finish(bond::bonded<bond::Void>{bond::Void()});
 
-        pingNoResponse_event.set();
+        pingNoResponse_event->set();
     }
 
     void PingVoid(
@@ -139,6 +141,10 @@ private:
 
 class PingPongServiceImpl final : public PingPong<PingRequest>::Service
 {
+public:
+    using PingPong<PingRequest>::Service::Service;
+
+private:
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
@@ -193,17 +199,18 @@ int main()
 {
     bond::ext::gRPC::thread_pool threadPool;
 
-    DoublePingServiceImpl double_ping_service;
-    PingPongServiceImpl ping_pong_service;
+    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl(threadPool) };
+    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl(threadPool) };
+
+    auto pingNoResponse_event = double_ping_service->pingNoResponse_event;
 
     const std::string server_address("127.0.0.1:50051");
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
-            .SetScheduler(threadPool)
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(&double_ping_service)
-            .RegisterService(&ping_pong_service)
+            .RegisterService(std::move(double_ping_service))
+            .RegisterService(std::move(ping_pong_service))
             .BuildAndStart());
 
     auto ioManager = std::make_shared<io_manager>();
@@ -262,7 +269,7 @@ int main()
 
     {
         doublePing.AsyncPingNoResponse(request);
-        bool wasEventHandled = double_ping_service.pingNoResponse_event.wait_for(std::chrono::seconds(10));
+        bool wasEventHandled = pingNoResponse_event->wait_for(std::chrono::seconds(10));
 
         if (!wasEventHandled)
         {

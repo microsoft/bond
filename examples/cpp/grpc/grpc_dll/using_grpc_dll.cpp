@@ -115,11 +115,10 @@ int main()
         const std::string server_address("127.0.0.1:50051");
 
         // Create and start a service instance
-        TestServiceImpl service;
         std::unique_ptr<bond::ext::gRPC::server> server(
             bond::ext::gRPC::server_builder{}
                 .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-                .RegisterService(&service)
+                .RegisterService(std::unique_ptr<TestServiceImpl>{ new TestServiceImpl })
                 .BuildAndStart());
 
         // Create a proxy

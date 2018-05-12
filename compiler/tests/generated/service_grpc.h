@@ -563,157 +563,36 @@ struct Foo final
     class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        Service()
-        {
-            this->AddMethod("/tests.Foo/foo11");
-            this->AddMethod("/tests.Foo/foo12");
-            this->AddMethod("/tests.Foo/foo12_impl");
-            this->AddMethod("/tests.Foo/foo13");
-            this->AddMethod("/tests.Foo/foo14");
-            this->AddMethod("/tests.Foo/foo15");
-            this->AddMethod("/tests.Foo/foo21");
-            this->AddMethod("/tests.Foo/foo22");
-            this->AddMethod("/tests.Foo/foo23");
-            this->AddMethod("/tests.Foo/foo24");
-            this->AddMethod("/tests.Foo/foo31");
-            this->AddMethod("/tests.Foo/foo32");
-            this->AddMethod("/tests.Foo/foo33");
-            this->AddMethod("/tests.Foo/_rd_foo33");
-            this->AddMethod("/tests.Foo/foo34");
-            this->AddMethod("/tests.Foo/foo41");
-            this->AddMethod("/tests.Foo/foo42");
-            this->AddMethod("/tests.Foo/foo43");
-            this->AddMethod("/tests.Foo/foo44");
-            this->AddMethod("/tests.Foo/cq");
-        }
+        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+            : ::bond::ext::gRPC::detail::service(
+                scheduler,
+                {
+                    "/tests.Foo/foo11",
+                    "/tests.Foo/foo12",
+                    "/tests.Foo/foo12_impl",
+                    "/tests.Foo/foo13",
+                    "/tests.Foo/foo14",
+                    "/tests.Foo/foo15",
+                    "/tests.Foo/foo21",
+                    "/tests.Foo/foo22",
+                    "/tests.Foo/foo23",
+                    "/tests.Foo/foo24",
+                    "/tests.Foo/foo31",
+                    "/tests.Foo/foo32",
+                    "/tests.Foo/foo33",
+                    "/tests.Foo/_rd_foo33",
+                    "/tests.Foo/foo34",
+                    "/tests.Foo/foo41",
+                    "/tests.Foo/foo42",
+                    "/tests.Foo/foo43",
+                    "/tests.Foo/foo44",
+                    "/tests.Foo/cq"
+                })
+        {}
 
-        virtual void start(
-            ::grpc::ServerCompletionQueue* cq0,
-            const ::bond::ext::gRPC::Scheduler& scheduler) override
+        void start() override
         {
-            BOOST_ASSERT(cq0);
-            BOOST_ASSERT(scheduler);
-
-            _rd_foo11.emplace(
-                *this,
-                0,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo11, this, std::placeholders::_1));
-            _rd_foo12.emplace(
-                *this,
-                1,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo12, this, std::placeholders::_1));
-            _rd_foo12_impl.emplace(
-                *this,
-                2,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo12_impl, this, std::placeholders::_1));
-            _rd_foo13.emplace(
-                *this,
-                3,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo13, this, std::placeholders::_1));
-            _rd_foo14.emplace(
-                *this,
-                4,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo14, this, std::placeholders::_1));
-            _rd_foo15.emplace(
-                *this,
-                5,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo15, this, std::placeholders::_1));
-            _rd_foo21.emplace(
-                *this,
-                6,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo21, this, std::placeholders::_1));
-            _rd_foo22.emplace(
-                *this,
-                7,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo22, this, std::placeholders::_1));
-            _rd_foo23.emplace(
-                *this,
-                8,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo23, this, std::placeholders::_1));
-            _rd_foo24.emplace(
-                *this,
-                9,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo24, this, std::placeholders::_1));
-            _rd_foo31.emplace(
-                *this,
-                10,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo31, this, std::placeholders::_1));
-            _rd_foo32.emplace(
-                *this,
-                11,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo32, this, std::placeholders::_1));
-            _rd_foo330.emplace(
-                *this,
-                12,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo33, this, std::placeholders::_1));
-            _rd__rd_foo33.emplace(
-                *this,
-                13,
-                cq0,
-                scheduler,
-                std::bind(&Service::_rd_foo33, this, std::placeholders::_1));
-            _rd_foo34.emplace(
-                *this,
-                14,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo34, this, std::placeholders::_1));
-            _rd_foo41.emplace(
-                *this,
-                15,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo41, this, std::placeholders::_1));
-            _rd_foo42.emplace(
-                *this,
-                16,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo42, this, std::placeholders::_1));
-            _rd_foo43.emplace(
-                *this,
-                17,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo43, this, std::placeholders::_1));
-            _rd_foo44.emplace(
-                *this,
-                18,
-                cq0,
-                scheduler,
-                std::bind(&Service::foo44, this, std::placeholders::_1));
-            _rd_cq.emplace(
-                *this,
-                19,
-                cq0,
-                scheduler,
-                std::bind(&Service::cq, this, std::placeholders::_1));
+            _data.emplace(*this);
         }
 
         virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
@@ -738,26 +617,36 @@ struct Foo final
         virtual void cq(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>) = 0;
 
     private:
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::Void>> _rd_foo11;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::Void>> _rd_foo12;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::Void>> _rd_foo12_impl;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::Void>> _rd_foo13;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::Void>> _rd_foo14;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::Void>> _rd_foo15;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::Void>> _rd_foo21;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::bond::Void>> _rd_foo22;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::bond::Void>> _rd_foo23;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::bond::Void>> _rd_foo24;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>> _rd_foo31;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>> _rd_foo32;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::tests::BasicTypes>> _rd_foo330;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::tests::BasicTypes>> _rd__rd_foo33;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::tests::BasicTypes>> _rd_foo34;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::tests::dummy>> _rd_foo41;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::tests::dummy>> _rd_foo42;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::BasicTypes>, ::tests::dummy>> _rd_foo43;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::dummy>, ::tests::dummy>> _rd_foo44;
-        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>> _rd_cq;
+        struct data
+        {
+            explicit data(Service& s)
+                : _s(s)
+            {}
+
+            Service& _s;
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo11> _m0{ _s, 0, ::std::bind(&Service::foo11, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo12> _m1{ _s, 1, ::std::bind(&Service::foo12, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo12_impl> _m2{ _s, 2, ::std::bind(&Service::foo12_impl, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo13> _m3{ _s, 3, ::std::bind(&Service::foo13, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo14> _m4{ _s, 4, ::std::bind(&Service::foo14, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo15> _m5{ _s, 5, ::std::bind(&Service::foo15, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo21> _m6{ _s, 6, ::std::bind(&Service::foo21, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo22> _m7{ _s, 7, ::std::bind(&Service::foo22, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo23> _m8{ _s, 8, ::std::bind(&Service::foo23, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo24> _m9{ _s, 9, ::std::bind(&Service::foo24, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo31> _m10{ _s, 10, ::std::bind(&Service::foo31, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo32> _m11{ _s, 11, ::std::bind(&Service::foo32, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo33> _m12{ _s, 12, ::std::bind(&Service::foo33, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::_rd_foo33> _m13{ _s, 13, ::std::bind(&Service::_rd_foo33, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo34> _m14{ _s, 14, ::std::bind(&Service::foo34, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo41> _m15{ _s, 15, ::std::bind(&Service::foo41, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo42> _m16{ _s, 16, ::std::bind(&Service::foo42, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo43> _m17{ _s, 17, ::std::bind(&Service::foo43, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo44> _m18{ _s, 18, ::std::bind(&Service::foo44, &_s, ::std::placeholders::_1) };
+            ::bond::ext::gRPC::detail::service::Method<Schema::service::cq> _m19{ _s, 19, ::std::bind(&Service::cq, &_s, ::std::placeholders::_1) };
+        };
+
+        ::boost::optional<data> _data;
     };
 };
 
