@@ -283,7 +283,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
 
         serviceStartMethod = [lt|virtual void start(
             ::grpc::ServerCompletionQueue* #{cqParam},
-            ::std::shared_ptr<TThreadPool> #{tpParam}) override
+            std::shared_ptr<TThreadPool> #{tpParam}) override
         {
             BOOST_ASSERT(#{cqParam});
             BOOST_ASSERT(#{tpParam});
@@ -299,7 +299,7 @@ inline void #{className}::#{proxyName}<TThreadPool>::Async#{methodName}(
                 #{index},
                 #{cqParam},
                 #{tpParam},
-                ::std::bind(&#{serviceName}::#{methodName}, this, ::std::placeholders::_1));|]
+                std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
 
         serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}, TThreadPool>> #{serviceRdMember methodName};|]
         serviceMethodReceiveData Event{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}, TThreadPool>> #{serviceRdMember methodName};|]

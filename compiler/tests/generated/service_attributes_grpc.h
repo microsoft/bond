@@ -85,7 +85,7 @@ public:
 
         virtual void start(
             ::grpc::ServerCompletionQueue* cq,
-            ::std::shared_ptr<TThreadPool> tp) override
+            std::shared_ptr<TThreadPool> tp) override
         {
             BOOST_ASSERT(cq);
             BOOST_ASSERT(tp);
@@ -95,7 +95,7 @@ public:
                 0,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::foo, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo, this, std::placeholders::_1));
         }
 
         virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::tests::Result>) = 0;

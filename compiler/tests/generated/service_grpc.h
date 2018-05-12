@@ -198,7 +198,7 @@ public:
 
         virtual void start(
             ::grpc::ServerCompletionQueue* cq0,
-            ::std::shared_ptr<TThreadPool> tp) override
+            std::shared_ptr<TThreadPool> tp) override
         {
             BOOST_ASSERT(cq0);
             BOOST_ASSERT(tp);
@@ -208,121 +208,121 @@ public:
                 0,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo11, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo11, this, std::placeholders::_1));
             _rd_foo12.emplace(
                 *this,
                 1,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo12, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo12, this, std::placeholders::_1));
             _rd_foo12_impl.emplace(
                 *this,
                 2,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo12_impl, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo12_impl, this, std::placeholders::_1));
             _rd_foo13.emplace(
                 *this,
                 3,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo13, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo13, this, std::placeholders::_1));
             _rd_foo14.emplace(
                 *this,
                 4,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo14, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo14, this, std::placeholders::_1));
             _rd_foo15.emplace(
                 *this,
                 5,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo15, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo15, this, std::placeholders::_1));
             _rd_foo21.emplace(
                 *this,
                 6,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo21, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo21, this, std::placeholders::_1));
             _rd_foo22.emplace(
                 *this,
                 7,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo22, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo22, this, std::placeholders::_1));
             _rd_foo23.emplace(
                 *this,
                 8,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo23, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo23, this, std::placeholders::_1));
             _rd_foo24.emplace(
                 *this,
                 9,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo24, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo24, this, std::placeholders::_1));
             _rd_foo31.emplace(
                 *this,
                 10,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo31, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo31, this, std::placeholders::_1));
             _rd_foo32.emplace(
                 *this,
                 11,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo32, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo32, this, std::placeholders::_1));
             _rd_foo330.emplace(
                 *this,
                 12,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo33, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
             _rd__rd_foo33.emplace(
                 *this,
                 13,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::_rd_foo33, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::_rd_foo33, this, std::placeholders::_1));
             _rd_foo34.emplace(
                 *this,
                 14,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo34, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo34, this, std::placeholders::_1));
             _rd_foo41.emplace(
                 *this,
                 15,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo41, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo41, this, std::placeholders::_1));
             _rd_foo42.emplace(
                 *this,
                 16,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo42, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo42, this, std::placeholders::_1));
             _rd_foo43.emplace(
                 *this,
                 17,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo43, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo43, this, std::placeholders::_1));
             _rd_foo44.emplace(
                 *this,
                 18,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::foo44, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo44, this, std::placeholders::_1));
             _rd_cq.emplace(
                 *this,
                 19,
                 cq0,
                 tp,
-                ::std::bind(&ServiceCore::cq, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::cq, this, std::placeholders::_1));
         }
 
         virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;

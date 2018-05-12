@@ -114,7 +114,7 @@ public:
 
         virtual void start(
             ::grpc::ServerCompletionQueue* cq,
-            ::std::shared_ptr<TThreadPool> tp) override
+            std::shared_ptr<TThreadPool> tp) override
         {
             BOOST_ASSERT(cq);
             BOOST_ASSERT(tp);
@@ -124,31 +124,31 @@ public:
                 0,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::foo31, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo31, this, std::placeholders::_1));
             _rd_foo32.emplace(
                 *this,
                 1,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::foo32, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo32, this, std::placeholders::_1));
             _rd_foo33.emplace(
                 *this,
                 2,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::foo33, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::foo33, this, std::placeholders::_1));
             _rd_ConsumesGeneric1.emplace(
                 *this,
                 3,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::ConsumesGeneric1, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::ConsumesGeneric1, this, std::placeholders::_1));
             _rd_ConsumesGeneric2.emplace(
                 *this,
                 4,
                 cq,
                 tp,
-                ::std::bind(&ServiceCore::ConsumesGeneric2, this, ::std::placeholders::_1));
+                std::bind(&ServiceCore::ConsumesGeneric2, this, std::placeholders::_1));
         }
 
         virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, ::bond::Void>) = 0;
