@@ -12,6 +12,7 @@
 #include <bond/ext/grpc/reflection.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
+#include <bond/ext/grpc/detail/client.h>
 #include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/detail/service_call_data.h>
@@ -64,51 +65,22 @@ struct Foo final
         
     };
 
-    class Client
+    class Client : public ::bond::ext::gRPC::detail::client
     {
     public:
-        Client(
-            const std::shared_ptr< ::grpc::ChannelInterface>& channel,
-            std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler = {})
-            : _channel(channel)
-            , _ioManager(ioManager)
-            , _scheduler(scheduler)
-            , rpcmethod_foo_("/tests.Foo/foo", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-        {
-            if (!_scheduler)
-            {
-                _scheduler = ::bond::ext::gRPC::thread_pool{};
-            }
-        }
+        using ::bond::ext::gRPC::detail::client::client;
 
         void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::Param, ::tests::Result>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_foo_, request);
+            ::bond::ext::gRPC::detail::client::dispatch(_mfoo, request, std::move(context), cb);
         }
         void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
         }
 
-        Client(const Client&) = delete;
-        Client& operator=(const Client&) = delete;
-
-        Client(Client&&) = default;
-        Client& operator=(Client&&) = default;
-
     private:
-        ::std::shared_ptr< ::grpc::ChannelInterface> _channel;
-        ::std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
-        ::bond::ext::gRPC::Scheduler _scheduler;
-
-        const ::grpc::internal::RpcMethod rpcmethod_foo_;
+        const ::grpc::internal::RpcMethod _mfoo{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo") };
     };
 
     class Service : public ::bond::ext::gRPC::detail::service

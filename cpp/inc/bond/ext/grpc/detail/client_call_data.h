@@ -26,6 +26,8 @@
 #endif
 
 #include <boost/assert.hpp>
+#include <boost/intrusive_ptr.hpp>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 
 #include <functional>
 #include <memory>
@@ -37,7 +39,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 /// outgoing unary calls.
 template <typename Request, typename Response>
 class client_unary_call_data
-    : public std::enable_shared_from_this<client_unary_call_data<Request, Response>>,
+    : public boost::intrusive_ref_counter<client_unary_call_data<Request, Response>>,
       io_manager_tag
 {
     /// The type of the user-defined callback that will be invoked for the
@@ -46,46 +48,39 @@ class client_unary_call_data
 
 public:
     client_unary_call_data(
+        const grpc::internal::RpcMethod& method,
+        const bonded<Request>& request,
+        std::shared_ptr<grpc::CompletionQueue> cq,
         std::shared_ptr<grpc::ChannelInterface> channel,
-        std::shared_ptr<io_manager> ioManager,
-        const Scheduler& scheduler,
         std::shared_ptr<grpc::ClientContext> context,
+        const Scheduler& scheduler,
         CallbackType cb = {})
-        : _channel(std::move(channel)),
-          _cq(ioManager->cq()),
-          _scheduler(scheduler),
-          _responseReader(),
+        : _cq(std::move(cq)),
+          _channel(std::move(channel)),
           _context(std::move(context)),
+          _responseReader(
+              ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
+                  _channel.get(),
+                  _cq.get(),
+                  method,
+                  _context.get(),
+                  request,
+                  /* start */ true)),
+          _scheduler(scheduler),
+          _response(),
+          _status(),
           _cb(std::move(cb)),
-          _self()
+          _self(this)
     {
-        BOOST_ASSERT(_channel);
-        BOOST_ASSERT(_cq);
         BOOST_ASSERT(_scheduler);
-        BOOST_ASSERT(_context);
+
+        auto alive = _self;
+
+        _responseReader->Finish(&_response, &_status, tag());
     }
 
     client_unary_call_data(const client_unary_call_data& other) = delete;
     client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
-
-    /// @brief Initiates the client request and wires up completion
-    /// notification.
-    void dispatch(const grpc::internal::RpcMethod& method, const bonded<Request>& request)
-    {
-        _responseReader.reset(
-            ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
-                _channel.get(),
-                _cq,
-                method,
-                _context.get(),
-                request,
-                /* start */ true));
-
-        _self = this->shared_from_this();
-
-        auto self = _self; // Make sure `this` will outlive the below call.
-        _responseReader->Finish(&_response, &_status, tag());
-    }
 
 private:
     /// @brief Invoked after the response has been received.
@@ -103,17 +98,16 @@ private:
         _self.reset();
     }
 
-
+    /// The completion port to post IO operations to.
+    std::shared_ptr<grpc::CompletionQueue> _cq;
     /// The channel to send the request on.
     std::shared_ptr<grpc::ChannelInterface> _channel;
-    /// The completion port to post IO operations to.
-    grpc::CompletionQueue* _cq;
-    /// The scheduler in which to invoke the callback.
-    Scheduler _scheduler;
-    /// A response reader.
-    std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
     /// @brief The client context under which the request was executed.
     std::shared_ptr<grpc::ClientContext> _context;
+    /// A response reader.
+    std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+    /// The scheduler in which to invoke the callback.
+    Scheduler _scheduler;
     /// @brief The response received from the service.
     bonded<Response> _response;
     /// @brief The status of the request.
@@ -122,7 +116,7 @@ private:
     CallbackType _cb;
     /// A pointer to ourselves used to keep us alive while waiting to
     /// receive the response.
-    std::shared_ptr<client_unary_call_data> _self;
+    boost::intrusive_ptr<client_unary_call_data> _self;
 };
 
 } } } } //namespace bond::ext::gRPC::detail

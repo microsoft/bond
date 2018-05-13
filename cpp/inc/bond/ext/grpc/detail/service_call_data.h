@@ -89,7 +89,7 @@ private:
             &_receivedCall->context(),
             &_receivedCall->request(),
             &_receivedCall->responder(),
-            this);
+            tag());
 
         return receivedCall;
     }

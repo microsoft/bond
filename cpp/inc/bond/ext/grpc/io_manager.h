@@ -21,6 +21,7 @@
 #endif
 
 #include <boost/assert.hpp>
+#include <boost/thread/scoped_thread.hpp>
 
 #include <atomic>
 #include <memory>
@@ -114,9 +115,9 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// @note Ownership of the completion queue remains with the
         /// io_manager.
-        grpc::CompletionQueue* cq()
+        const std::shared_ptr<grpc::CompletionQueue>& cq() const
         {
-            return _cq.get();
+            return _cq;
         }
 
         /// @brief Starts polling the completion queue.
@@ -134,13 +135,14 @@ namespace bond { namespace ext { namespace gRPC {
             {
                 _threads.reserve(_numThreads);
 
+                auto cq = _cq;
                 for (size_t i = 0; i < _numThreads; ++i)
                 {
-                    _threads.emplace_back([this]()
+                    _threads.emplace_back([cq]
                     {
                         void* tag;
                         bool ok;
-                        while (_cq->Next(&tag, &ok))
+                        while (cq->Next(&tag, &ok))
                         {
                             BOOST_ASSERT(tag);
                             static_cast<detail::io_manager_tag*>(tag)->invoke(ok);
@@ -179,18 +181,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// return.
         void wait()
         {
-            bond::detail::call_once(
-                _waitFlag,
-                [this]
-                {
-                    for (auto& thread : _threads)
-                    {
-                        BOOST_ASSERT(thread.joinable());
-                        thread.join();
-                    }
-
-                    _threads.clear();
-                });
+            bond::detail::call_once(_waitFlag, [this]{ _threads.clear(); });
         }
 
     private:
@@ -207,9 +198,9 @@ namespace bond { namespace ext { namespace gRPC {
             return numThreads != 0 ? numThreads : recourseNumThreads;
         }
 
-        std::unique_ptr<grpc::CompletionQueue> _cq;
+        std::shared_ptr<grpc::CompletionQueue> _cq;
         size_t _numThreads;
-        std::vector<std::thread> _threads;
+        std::vector<boost::scoped_thread<boost::join_if_joinable>> _threads;
 
         std::atomic_flag _isShutdownRequested = ATOMIC_FLAG_INIT;
         bond::detail::once_flag _waitFlag{};
