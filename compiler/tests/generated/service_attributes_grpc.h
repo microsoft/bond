@@ -80,7 +80,7 @@ struct Foo final
         }
 
     private:
-        const ::grpc::internal::RpcMethod _mfoo{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo") };
     };
 
     class Service : public ::bond::ext::gRPC::detail::service

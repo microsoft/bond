@@ -383,26 +383,26 @@ struct Foo final
         }
 
     private:
-        const ::grpc::internal::RpcMethod _mfoo11{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo11") };
-        const ::grpc::internal::RpcMethod _mfoo12{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo12") };
-        const ::grpc::internal::RpcMethod _mfoo12_impl{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo12_impl") };
-        const ::grpc::internal::RpcMethod _mfoo13{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo13") };
-        const ::grpc::internal::RpcMethod _mfoo14{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo14") };
-        const ::grpc::internal::RpcMethod _mfoo15{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo15") };
-        const ::grpc::internal::RpcMethod _mfoo21{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo21") };
-        const ::grpc::internal::RpcMethod _mfoo22{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo22") };
-        const ::grpc::internal::RpcMethod _mfoo23{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo23") };
-        const ::grpc::internal::RpcMethod _mfoo24{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo24") };
-        const ::grpc::internal::RpcMethod _mfoo31{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo31") };
-        const ::grpc::internal::RpcMethod _mfoo32{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo32") };
-        const ::grpc::internal::RpcMethod _mfoo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo33") };
-        const ::grpc::internal::RpcMethod _m_rd_foo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/_rd_foo33") };
-        const ::grpc::internal::RpcMethod _mfoo34{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo34") };
-        const ::grpc::internal::RpcMethod _mfoo41{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo41") };
-        const ::grpc::internal::RpcMethod _mfoo42{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo42") };
-        const ::grpc::internal::RpcMethod _mfoo43{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo43") };
-        const ::grpc::internal::RpcMethod _mfoo44{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo44") };
-        const ::grpc::internal::RpcMethod _mcq{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/cq") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo11{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo11") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo12{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo12") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo12_impl{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo12_impl") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo13{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo13") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo14{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo14") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo15{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo15") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo21{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo21") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo22{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo22") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo23{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo23") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo24{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo24") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo31{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo31") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo32{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo32") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo33") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _m_rd_foo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/_rd_foo33") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo34{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo34") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo41{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo41") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo42{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo42") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo43{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo43") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo44{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo44") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mcq{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/cq") };
     };
 
     class Service : public ::bond::ext::gRPC::detail::service

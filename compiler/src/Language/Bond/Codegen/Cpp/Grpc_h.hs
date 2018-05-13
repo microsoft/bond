@@ -229,7 +229,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
 
-        privateProxyMethodDecl f = [lt|const ::grpc::internal::RpcMethod _m#{methodName f}{ ::bond::ext::gRPC::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
+        privateProxyMethodDecl f = [lt|const ::bond::ext::gRPC::detail::client::RpcMethod _m#{methodName f}{ ::bond::ext::gRPC::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
 
         serviceMethodName f = [lt|"/#{getDeclTypeName idl s}/#{methodName f}"|]
 
