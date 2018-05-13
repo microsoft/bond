@@ -6,7 +6,6 @@
 #include <bond/core/config.h>
 
 #include "bond_utils.h"
-#include "service_call_data.h"
 #include <bond/ext/grpc/thread_pool.h>
 
 #ifdef _MSC_VER
@@ -157,3 +156,5 @@ private:
 };
 
 } } } } // namespace bond::ext::gRPC::detail
+
+#include "service_call_data.h"
