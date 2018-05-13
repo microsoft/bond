@@ -7,7 +7,7 @@
 
 #include "io_manager_tag.h"
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/client_callback.h>
+#include <bond/ext/grpc/unary_call_result.h>
 
 #ifdef _MSC_VER
     #pragma warning (push)
