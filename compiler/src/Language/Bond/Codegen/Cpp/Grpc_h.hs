@@ -179,9 +179,10 @@ inline #{className}::#{proxyName}<TThreadPool>::#{proxyName}(
         className = CPP.className s
         template = CPP.template s
         onlyTemplate x = if null declParams then mempty else x
+        onlyNonTemplate x = if null declParams then x else mempty
         typename = onlyTemplate [lt|typename |]
 
-        export_attr = optional (\a -> [lt|#{a}
+        export_attr = onlyNonTemplate $ optional (\a -> [lt|#{a}
         |]) export_attribute
 
         methodMetadataVar m = [lt|s_#{methodName m}_metadata|]
