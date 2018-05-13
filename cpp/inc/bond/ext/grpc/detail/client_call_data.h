@@ -5,11 +5,9 @@
 
 #include <bond/core/config.h>
 
+#include "io_manager_tag.h"
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/detail/service.h>
 #include <bond/ext/grpc/client_callback.h>
-#include <bond/ext/grpc/io_manager.h>
-#include <bond/ext/grpc/unary_call.h>
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -17,8 +15,11 @@
 #endif
 
 #include <grpcpp/grpcpp.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
 #include <grpcpp/impl/codegen/rpc_method.h>
-#include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
@@ -33,7 +34,11 @@
 #include <memory>
 
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
+namespace bond { namespace ext { namespace gRPC {
+
+using Scheduler = std::function<void(const std::function<void()>& func)>;
+
+namespace detail {
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing unary calls.

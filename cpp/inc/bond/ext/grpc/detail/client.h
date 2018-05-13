@@ -5,30 +5,16 @@
 
 #include <bond/core/config.h>
 
+#include "bond_utils.h"
 #include "client_call_data.h"
-
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
-
-#ifdef _MSC_VER
-    #pragma warning (push)
-    #pragma warning (disable: 4100 4702)
-#endif
-
-#include <grpcpp/impl/codegen/channel_interface.h>
-
-#ifdef _MSC_VER
-    #pragma warning (pop)
-#endif
 
 #include <boost/assert.hpp>
 
 #include <functional>
 
-namespace bond { namespace ext { namespace gRPC {
-
-using Scheduler = std::function<void(const std::function<void()>& func)>;
-    
-namespace detail {
+namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 /// @brief Helper base class Bond gRPC++ clients.
 ///
@@ -53,19 +39,19 @@ public:
 
 protected:
 #if !defined(__GNUC__) || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
-    using RpcMethod = grpc::internal::RpcMethod;
+    using Method = grpc::internal::RpcMethod;
 #else
     // Workaround for a bug in GCC < 7.2: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67054.
-    struct RpcMethod : grpc::internal::RpcMethod
+    struct Method : grpc::internal::RpcMethod
     {
         using grpc::internal::RpcMethod::RpcMethod;
-        RpcMethod();
+        Method();
     };
 #endif
 
-    RpcMethod make_method(const char* name) const
+    Method make_method(const char* name) const
     {
-        return RpcMethod{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
+        return Method{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
     }
 
     template <typename Request = Void, typename Response = bonded<Void>>
