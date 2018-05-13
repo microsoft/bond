@@ -81,9 +81,6 @@ public:
         _responseReader->Finish(&_response, &_status, tag());
     }
 
-    client_unary_call_data(const client_unary_call_data& other) = delete;
-    client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
-
 private:
     /// @brief Invoked after the response has been received.
     void invoke(bool ok) override

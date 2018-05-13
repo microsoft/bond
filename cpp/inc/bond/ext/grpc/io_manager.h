@@ -6,7 +6,7 @@
 #include <bond/core/config.h>
 
 #include <bond/core/detail/once.h>
-#include <bond/ext/grpc/detail/io_manager_tag.h>
+#include "detail/io_manager_tag.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)

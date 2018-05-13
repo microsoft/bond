@@ -42,9 +42,6 @@ public:
         queue_receive();
     }
 
-    service_unary_call_data(const service_unary_call_data& other) = delete;
-    service_unary_call_data& operator=(const service_unary_call_data& other) = delete;
-
     void invoke(bool ok) override
     {
         if (ok)

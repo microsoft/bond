@@ -41,7 +41,7 @@ class shared_unary_call;
 template <typename Request, typename Response>
 class unary_call final : public detail::unary_call_base<Request, Response>
 {
-    using base_type = detail::unary_call_base<Request, Response>;
+    using base_type = typename unary_call::unary_call_base;
 
 public:
     /// @brief The default constructor of unary_call is not callable: the
