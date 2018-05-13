@@ -68,12 +68,12 @@ protected:
         return RpcMethod{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
     }
 
-    template <typename Response, typename Request>
+    template <typename Request = Void, typename Response = bonded<Void>>
     void dispatch(
         const grpc::internal::RpcMethod& method,
-        const bonded<Request>& request,
         std::shared_ptr<grpc::ClientContext> context = {},
-        const std::function<void(unary_call_result<Response>)>& cb = {})
+        const std::function<void(unary_call_result<Response>)>& cb = {},
+        const bonded<Request>& request = bonded<Request>{ Request{} })
     {
         new client_unary_call_data<Request, Response>{
             method,
