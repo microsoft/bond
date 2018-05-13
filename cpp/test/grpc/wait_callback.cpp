@@ -20,19 +20,20 @@
 
 namespace wait_callback_tests
 {
-    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
-    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::gRPC::unary_call_result<bond::Box<int>>>::value);
+    using test_struct_type = bond::Box<int>;
 
-    using wait_callbackBox = bond::ext::gRPC::wait_callback<bond::Box<int>>;
-    using callback_arg = wait_callbackBox::arg_type;
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::gRPC::unary_call_result<test_struct_type>>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::gRPC::unary_call_result<test_struct_type>>::value);
+
+    using test_wait_callback = bond::ext::gRPC::wait_callback<test_struct_type>;
 
     static const int ANY_INT_VALUE = 100;
-    static bond::bonded<bond::Box<int>> anyBondedValue;
+    static bond::bonded<test_struct_type> anyBondedValue;
     static grpc::Status anyStatus;
 
-    static bond::bonded<bond::Box<int>> MakeAnyBonded()
+    static bond::bonded<test_struct_type> MakeAnyBonded()
     {
-        bond::Box<int> boxedInt;
+        test_struct_type boxedInt;
         boxedInt.value = ANY_INT_VALUE;
 
         bond::OutputBuffer ob;
@@ -44,38 +45,24 @@ namespace wait_callback_tests
         bond::InputBuffer ib(buffer);
         bond::CompactBinaryReader<bond::InputBuffer> reader(ib);
 
-        return bond::bonded<bond::Box<int>>(reader);
-    }
-
-    static callback_arg MakeCallbackArg(
-        const bond::bonded<bond::Box<int>>& response,
-        const grpc::Status& status)
-    {
-        // We don't want to create a real context to test against. When
-        // there's a real context, it has to be cleaned up, but to properly
-        // clean it up, some globals in gRPC++ need to still be alive.
-        // However, we don't want to deal with making sure that the test
-        // globals and the gRPC++ globals are destroyed in the right order.
-        // Thus, we test with nullptr.
-        return callback_arg(response, status, nullptr);
+        return bond::bonded<test_struct_type>(reader);
     }
 
     static void CallbackCapturesValues()
     {
-        wait_callbackBox cb;
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        test_wait_callback cb;
+        cb({ anyBondedValue, anyStatus });
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
-        UT_AssertIsTrue(cb.context() == nullptr);
     }
 
     static void SubsequentInvocationThrow()
     {
-        wait_callbackBox cb;
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        test_wait_callback cb;
+        cb({ anyBondedValue, anyStatus });
 
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        bond::ext::gRPC::unary_call_result<test_struct_type> args2{ anyBondedValue, grpc::Status::CANCELLED };
 
         UT_AssertThrows(cb(std::move(args2)), bond::ext::gRPC::MultipleInvocationException);
 
@@ -85,12 +72,12 @@ namespace wait_callback_tests
 
     static void SubsequentInvocationOnCopyThrow()
     {
-        wait_callbackBox cb;
-        wait_callbackBox otherCb(cb);
+        test_wait_callback cb;
+        test_wait_callback otherCb(cb);
 
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        cb({ anyBondedValue, anyStatus });
 
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        bond::ext::gRPC::unary_call_result<test_struct_type> args2{ anyBondedValue, grpc::Status::CANCELLED };
 
         UT_AssertThrows(otherCb(std::move(args2)), bond::ext::gRPC::MultipleInvocationException);
 
@@ -100,10 +87,10 @@ namespace wait_callback_tests
 
     static void CanBeConvertedToStdFunction()
     {
-        wait_callbackBox cb;
-        std::function<void(callback_arg)> f = cb;
+        test_wait_callback cb;
+        std::function<void(bond::ext::gRPC::unary_call_result<test_struct_type>)> f = cb;
 
-        f(MakeCallbackArg(anyBondedValue, anyStatus));
+        f({ anyBondedValue, anyStatus });
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
@@ -111,10 +98,10 @@ namespace wait_callback_tests
 
     static void CopiesSeeSameValues()
     {
-        wait_callbackBox cb;
-        wait_callbackBox otherCb(cb);
+        test_wait_callback cb;
+        test_wait_callback otherCb(cb);
 
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        cb({ anyBondedValue, anyStatus });
 
         UT_AssertIsTrue(otherCb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(otherCb.status().ok());
@@ -122,11 +109,11 @@ namespace wait_callback_tests
 
     static void AsignmentSeesSameValues()
     {
-        wait_callbackBox cb;
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        test_wait_callback cb;
+        cb({ anyBondedValue, anyStatus });
 
-        wait_callbackBox otherCb;
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        test_wait_callback otherCb;
+        bond::ext::gRPC::unary_call_result<test_struct_type> args2{ anyBondedValue, grpc::Status::CANCELLED };
         otherCb(std::move(args2));
 
         UT_AssertIsTrue(!otherCb.status().ok());
@@ -137,19 +124,19 @@ namespace wait_callback_tests
 
     static void WaitReturnsTrueAfterCBInvoked()
     {
-        wait_callbackBox cb;
+        test_wait_callback cb;
 
         bool wasInvoked = cb.wait_for(std::chrono::milliseconds(0));
         UT_AssertIsFalse(wasInvoked);
 
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        cb({ anyBondedValue, anyStatus });
         wasInvoked = cb.wait_for(std::chrono::milliseconds(0));
         UT_AssertIsTrue(wasInvoked);
     }
 
     static void WaitingThreadGetsNotified()
     {
-        wait_callbackBox cb;
+        test_wait_callback cb;
         unit_test::event threadStarted;
         std::atomic<bool> wasInvoked(false);
 
@@ -165,7 +152,7 @@ namespace wait_callback_tests
         bool wasStarted = threadStarted.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasStarted);
 
-        cb(MakeCallbackArg(anyBondedValue, anyStatus));
+        cb({ anyBondedValue, anyStatus });
         t.join();
 
         UT_AssertIsTrue(wasInvoked);

@@ -8,7 +8,6 @@
 #include <bond/core/bonded.h>
 
 #include <grpcpp/impl/codegen/status.h>
-#include <grpcpp/client_context.h>
 
 #include <memory>
 
@@ -24,14 +23,9 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// @param response The response.
         /// @param status The status.
-        /// @param context the context under which the request is being executed.
-        unary_call_result(
-            bonded<Response> response,
-            const grpc::Status& status,
-            std::shared_ptr<grpc::ClientContext> context)
+        unary_call_result(bonded<Response> response, const grpc::Status& status)
             : _response(std::move(response)),
-              _status(status),
-              _context(std::move(context))
+              _status(status)
         { }
 
         const bonded<Response>& response() const BOND_NOEXCEPT
@@ -44,11 +38,6 @@ namespace bond { namespace ext { namespace gRPC {
             return _status;
         }
 
-        const std::shared_ptr<grpc::ClientContext>& context() const BOND_NOEXCEPT
-        {
-            return _context;
-        }
-
     private:
         /// @brief The response received from the service.
         ///
@@ -59,8 +48,6 @@ namespace bond { namespace ext { namespace gRPC {
         bonded<Response> _response;
         /// @brief The status of the request.
         grpc::Status _status;
-        /// @brief The client context under which the request was executed.
-        std::shared_ptr<grpc::ClientContext> _context;
     };
 
 } } } // namespace bond::ext::gRPC

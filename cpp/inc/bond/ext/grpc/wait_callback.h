@@ -33,13 +33,11 @@ template <typename Response>
 class wait_callback final
 {
 public:
-    using arg_type = unary_call_result<Response>;
-
     /// @brief Records the response and status.
     ///
     /// @exception MultipleInvocationException thrown if the callback (or a
     /// copy of the callback) is invoked more than once.
-    void operator()(arg_type result) const
+    void operator()(unary_call_result<Response> result) const
     {
         {
             std::lock_guard<std::mutex> lock(*_state);
@@ -95,19 +93,10 @@ public:
         return _state->result->status();
     }
 
-    /// @brief Gets the context.
-    ///
-    /// @warning Blocks until this has been invoked.
-    const std::shared_ptr<grpc::ClientContext>& context() const
-    {
-        wait();
-        return _state->result->context();
-    }
-
 private:
     struct state : std::mutex, std::condition_variable
     {
-        boost::optional<arg_type> result;
+        boost::optional<unary_call_result<Response>> result;
     };
 
     std::shared_ptr<state> _state{ std::make_shared<state>() };

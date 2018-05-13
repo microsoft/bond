@@ -94,7 +94,7 @@ private:
             _scheduler(std::bind(
                 [](CallbackType& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
                 std::move(_cb),
-                unary_call_result<Response>{ std::move(_response), _status, std::move(_context) }));
+                unary_call_result<Response>{ std::move(_response), _status }));
         }
 
         _self.reset();
