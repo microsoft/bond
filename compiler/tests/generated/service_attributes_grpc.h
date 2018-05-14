@@ -52,18 +52,10 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        void Asyncfoo(::std::shared_ptr< ::grpc::ClientContext> context, const ::bond::bonded< ::tests::Param>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb);
-        void Asyncfoo(::std::shared_ptr< ::grpc::ClientContext> context, const ::tests::Param& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb)
+        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo(const ::tests::Param& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            Asyncfoo(context, ::bond::bonded< ::tests::Param>{request}, cb);
-        }
-        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb)
-        {
-            Asyncfoo(::std::make_shared< ::grpc::ClientContext>(), request, cb);
-        }
-        void Asyncfoo(const ::tests::Param& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb)
-        {
-            Asyncfoo(::std::make_shared< ::grpc::ClientContext>(), ::bond::bonded< ::tests::Param>{request}, cb);
+            Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
         }
 
         ClientCore(const ClientCore&) = delete;
@@ -128,16 +120,16 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
 
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
-    ::std::shared_ptr< ::grpc::ClientContext> context,
     const ::bond::bonded< ::tests::Param>& request,
-    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb)
+    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
 {
     
     auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::Param, ::tests::Result, TThreadPool>>(
         _channel,
         _ioManager,
         _threadPool,
-        context,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
         cb);
     calldata->dispatch(rpcmethod_foo_, request);
 }

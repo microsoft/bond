@@ -239,7 +239,7 @@ int main()
         // response.
         auto context = std::make_shared<grpc::ClientContext>();
         wait_callback<PingReply> cb;
-        doublePing.AsyncPingNoPayload(context, cb);
+        doublePing.AsyncPingNoPayload(cb, context);
         assertResponseReceived(cb, __LINE__);
         assertResponseContents(cb, __LINE__);
 
