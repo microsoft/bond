@@ -35,9 +35,9 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing unary calls.
-template <typename Request, typename Response, typename ThreadPool>
+template <typename Request, typename Response>
 class client_unary_call_data
-    : public std::enable_shared_from_this<client_unary_call_data<Request, Response, ThreadPool>>,
+    : public std::enable_shared_from_this<client_unary_call_data<Request, Response>>,
       io_manager_tag
 {
     /// The type of the user-defined callback that will be invoked for the
@@ -48,12 +48,12 @@ public:
     client_unary_call_data(
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<io_manager> ioManager,
-        std::shared_ptr<ThreadPool> threadPool,
+        const Scheduler& scheduler,
         std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
         : _channel(std::move(channel)),
           _ioManager(std::move(ioManager)),
-          _threadPool(std::move(threadPool)),
+          _scheduler(scheduler),
           _responseReader(),
           _context(std::move(context)),
           _cb(std::move(cb)),
@@ -61,7 +61,7 @@ public:
     {
         BOOST_ASSERT(_channel);
         BOOST_ASSERT(_ioManager);
-        BOOST_ASSERT(_threadPool);
+        BOOST_ASSERT(_scheduler);
         BOOST_ASSERT(_context);
     }
 
@@ -94,7 +94,7 @@ private:
         if (ok && _cb)
         {
             // TODO: Use lambda with move-capture when allowed to use C++14.
-            _threadPool->schedule(std::bind(
+            _scheduler(std::bind(
                 [](CallbackType& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
                 std::move(_cb),
                 unary_call_result<Response>{ std::move(_response), _status, std::move(_context) }));
@@ -108,8 +108,8 @@ private:
     std::shared_ptr<grpc::ChannelInterface> _channel;
     /// The io_manager to use for both sending and receiving.
     std::shared_ptr<io_manager> _ioManager;
-    /// The thread pool in which to invoke the callback.
-    std::shared_ptr<ThreadPool> _threadPool;
+    /// The scheduler in which to invoke the callback.
+    Scheduler _scheduler;
     /// A response reader.
     std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
     /// @brief The client context under which the request was executed.

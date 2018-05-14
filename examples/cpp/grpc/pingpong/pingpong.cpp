@@ -191,20 +191,22 @@ static void assertResponseContents(const wait_callback<PingReply>& cb, size_t li
 
 int main()
 {
-    auto ioManager = std::make_shared<io_manager>();
-    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
+    bond::ext::gRPC::thread_pool threadPool;
 
     DoublePingServiceImpl double_ping_service;
     PingPongServiceImpl ping_pong_service;
 
-    bond::ext::gRPC::server_builder builder;
-    builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:50051");
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder
-        .RegisterService(&double_ping_service)
-        .RegisterService(&ping_pong_service);
-    std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
+
+    std::unique_ptr<bond::ext::gRPC::server> server(
+        bond::ext::gRPC::server_builder{}
+            .SetScheduler(threadPool)
+            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+            .RegisterService(&double_ping_service)
+            .RegisterService(&ping_pong_service)
+            .BuildAndStart());
+
+    auto ioManager = std::make_shared<io_manager>();
 
     DoublePing::Client doublePing(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
@@ -215,7 +217,6 @@ int main()
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
         ioManager,
         threadPool);
-
 
     const std::string user("pong");
 

@@ -79,9 +79,9 @@ int main()
     { // Create and start a service
         PingPongServiceImpl service;
 
-        auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
+        bond::ext::gRPC::thread_pool threadPool;
         bond::ext::gRPC::server_builder builder;
-        builder.SetThreadPool(threadPool);
+        builder.SetScheduler(threadPool);
         const std::string server_address("127.0.0.1:50051");
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
