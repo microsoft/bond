@@ -28,26 +28,8 @@
 namespace bond { namespace ext { namespace gRPC
 {
 
-#if 0
-/// @brief The interface that a compliant thread pool must implement.
-class thread_pool_concept
-{
-    /// @brief Schedules a callback for execution.
-    ///
-    /// @warning The scheduled callback must be executed at some point in
-    /// the future. Some components use the thread_pool_concept to schedule
-    /// the freeing of resources. If a scheduled callback is dropped, these
-    /// resources may not be freed.
-    ///
-    /// @param callback functor object to be scheduled. Must accept any
-    /// callable object.
-    template <typename Callback>
-    void schedule(Callback&& callback);
-};
-#endif
-
 /// @brief Basic thread pool implementation.
-class thread_pool : private boost::asio::io_service
+class thread_pool
 {
 public:
     /// @brief Constant to indicate that the number of threads should be
@@ -62,7 +44,7 @@ public:
     /// will be created.
     explicit
     thread_pool(size_t numThreads = USE_HARDWARE_CONC)
-        : _work(*this)
+        : _service{ std::make_shared<service>() }
     {
         if (USE_HARDWARE_CONC == numThreads)
         {
@@ -77,38 +59,46 @@ public:
         }
 
         // Spin working threads.
+        auto& service = *_service;
         for (size_t i = 0; i < numThreads; ++i)
         {
-            _threads.emplace_back(
-                [this]()
+            service.threads.emplace_back(
+                [&service]
                 {
-                    this->run();
+                    service.run();
                 });
         }
     }
-
 
     /// @brief Schedules a callback for execution.
     ///
     /// @param callback: functor object to be scheduled.
     template <typename Callback>
-    void schedule(Callback&& callback)
+    void operator()(Callback&& callback)
     {
-        this->post(std::forward<Callback>(callback));
+        _service->post(std::forward<Callback>(callback));
     }
 
     /// @brief Get the underlying boost::asio::io_service
     boost::asio::io_service& get_io_service()
     {
-        return *this;
+        return *_service;
     }
 
 private:
-    /// Working threads.
-    std::vector<boost::scoped_thread<boost::join_if_joinable>> _threads;
+    struct service : boost::asio::io_service
+    {
+        service()
+            : work(*this)
+        {}
 
-    /// Helper to keep io_service spinning.
-    boost::asio::io_service::work _work;
+        /// Working threads.
+        std::vector<boost::scoped_thread<boost::join_if_joinable>> threads;
+        /// Helper to keep io_service spinning.
+        boost::asio::io_service::work work;
+    };
+
+    std::shared_ptr<service> _service;
 };
 
 } } } // namespace bond::ext::gRPC

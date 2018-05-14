@@ -73,6 +73,13 @@ different versioning scheme, following the Haskell community's
   `const_reference` typedefs have been removed from `bond::nullable<T>`.
 * **Breaking change** The `Allocator` (second) type parameter has be removed from
   `bond::nullable<T>` and now it is always deduced from `T`.
+* **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
+  functions are now accepting the `std::shared_ptr<grpc::ClientContext>`
+  as the last parameter.
+* **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts
+  `bond::ext::gRPC::unary_call_result<Response>` (drops the `std::shared_ptr`).
+* **Breaking change** The Bond-over-gRPC now uses marshaling API which breaks the wire
+  format compatibility.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

@@ -55,34 +55,27 @@
 
 #include <boost/assert.hpp>
 
+#include <algorithm>
 #include <memory>
-#include <set>
+#include <vector>
 
 namespace bond { namespace ext { namespace gRPC {
 
     /// @brief A builder class for the creation and startup of \a
     /// bond::ext::gRPC::server instances.
-    template <typename TThreadPool>
-    class server_builder_core final {
+    class server_builder final
+    {
     public:
-        server_builder_core()
-            : _grpcServerBuilder(),
-              _services(),
-              _threadPool()
-        {
-        }
-
         /// Register a service. This call does not take ownership of the
         /// service. The service must exist for the lifetime of the \p
         /// server instance returned by \p BuildAndStart().
         ///
         /// Matches requests with any :authority
-        server_builder_core& RegisterService(detail::service<TThreadPool>* service)
+        server_builder& RegisterService(std::unique_ptr<detail::service> service)
         {
             BOOST_ASSERT(service);
-            _grpcServerBuilder.RegisterService(service->grpc_service());
-            _services.insert(service);
-
+            _builder.RegisterService(service->grpc_service());
+            _services.push_back(std::move(service));
             return *this;
         }
 
@@ -91,26 +84,25 @@ namespace bond { namespace ext { namespace gRPC {
         /// server instance returned by BuildAndStart().
         ///
         /// Only matches requests with :authority \p host
-        server_builder_core& RegisterService(const grpc::string& host, detail::service<TThreadPool>* service)
+        server_builder& RegisterService(const grpc::string& host, std::unique_ptr<detail::service> service)
         {
             BOOST_ASSERT(service);
-            _grpcServerBuilder.RegisterService(host, service->grpc_service());
-            _services.insert(service);
-
+            _builder.RegisterService(host, service->grpc_service());
+            _services.push_back(std::move(service));
             return *this;
         }
 
         /// Set max receive message size in bytes.
-        server_builder_core& SetMaxReceiveMessageSize(int max_receive_message_size)
+        server_builder& SetMaxReceiveMessageSize(int max_receive_message_size)
         {
-            _grpcServerBuilder.SetMaxReceiveMessageSize(max_receive_message_size);
+            _builder.SetMaxReceiveMessageSize(max_receive_message_size);
             return *this;
         }
 
         /// Set max send message size in bytes.
-        server_builder_core& SetMaxSendMessageSize(int max_send_message_size)
+        server_builder& SetMaxSendMessageSize(int max_send_message_size)
         {
-            _grpcServerBuilder.SetMaxSendMessageSize(max_send_message_size);
+            _builder.SetMaxSendMessageSize(max_send_message_size);
             return *this;
         }
 
@@ -120,42 +112,36 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// Incoming calls compressed with an unsupported algorithm will
         /// fail with GRPC_STATUS_UNIMPLEMENTED.
-        server_builder_core& SetCompressionAlgorithmSupportStatus(
+        server_builder& SetCompressionAlgorithmSupportStatus(
             grpc_compression_algorithm algorithm,
             bool enabled)
         {
-            _grpcServerBuilder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
+            _builder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
             return *this;
         }
 
         /// The default compression level to use for all channel calls in
         /// the absence of a call-specific level.
-        server_builder_core& SetDefaultCompressionLevel(grpc_compression_level level)
+        server_builder& SetDefaultCompressionLevel(grpc_compression_level level)
         {
-            _grpcServerBuilder.SetDefaultCompressionLevel(level);
+            _builder.SetDefaultCompressionLevel(level);
             return *this;
         }
 
         /// The default compression algorithm to use for all channel calls
         /// in the absence of a call-specific level. Note that it overrides
         /// any compression level set by \p SetDefaultCompressionLevel.
-        server_builder_core& SetDefaultCompressionAlgorithm(
+        server_builder& SetDefaultCompressionAlgorithm(
             grpc_compression_algorithm algorithm)
         {
-            _grpcServerBuilder.SetDefaultCompressionAlgorithm(algorithm);
+            _builder.SetDefaultCompressionAlgorithm(algorithm);
             return *this;
         }
 
         /// Set the attached buffer pool for this server.
-        server_builder_core& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
+        server_builder& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
         {
-            _grpcServerBuilder.SetResourceQuota(resource_quota);
-            return *this;
-        }
-
-        server_builder_core& SetThreadPool(std::shared_ptr<TThreadPool> thread_pool)
-        {
-            _threadPool = thread_pool;
+            _builder.SetResourceQuota(resource_quota);
             return *this;
         }
 
@@ -168,49 +154,32 @@ namespace bond { namespace ext { namespace gRPC {
         /// @param creds The credentials associated with the server.
         /// @param[out] selected_port Upon success, updated to contain the
         /// port number. \p nullptr otherwise.
-        server_builder_core& AddListeningPort(
+        server_builder& AddListeningPort(
             const grpc::string& addr,
             std::shared_ptr<grpc::ServerCredentials> creds,
             int* selected_port = nullptr)
         {
-            _grpcServerBuilder.AddListeningPort(addr, creds, selected_port);
+            _builder.AddListeningPort(addr, creds, selected_port);
             return *this;
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> BuildAndStart()
+        std::unique_ptr<server> BuildAndStart()
         {
-            std::unique_ptr<grpc::ServerCompletionQueue> cq =
-                _grpcServerBuilder.AddCompletionQueue();
-            std::unique_ptr<grpc::Server> server =
-                _grpcServerBuilder.BuildAndStart();
+            auto cq = _builder.AddCompletionQueue();
 
-            if (!_threadPool)
-            {
-                _threadPool = std::make_shared<TThreadPool>();
-            }
-
-            // Tickle all the services so they queue a receive for all their
-            // methods.
             for (auto& service : _services)
             {
-                service->start(cq.get(), _threadPool);
+                service->SetCompletionQueue(cq.get());
             }
 
-            std::unique_ptr<bond::ext::gRPC::server_core<TThreadPool>> result {
-                new bond::ext::gRPC::server_core<TThreadPool> {
-                    std::move(server),
-                    std::move(cq) } };
-
-            return result;
+            return std::unique_ptr<server>{
+                new server{ _builder.BuildAndStart(), std::move(_services), std::move(cq) } };
         }
 
     private:
-        grpc::ServerBuilder _grpcServerBuilder;
-        std::set<detail::service<TThreadPool>*> _services;
-        std::shared_ptr<TThreadPool> _threadPool;
+        grpc::ServerBuilder _builder;
+        std::vector<std::unique_ptr<detail::service>> _services;
     };
-
-    using server_builder = server_builder_core<bond::ext::gRPC::thread_pool>;
 
 } } } // namespace bond::ext::gRPC

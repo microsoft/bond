@@ -34,7 +34,7 @@ class BasicThreadPoolTests
 
         std::function<void(int*, unit_test::event*)> f_addOne = addOne;
 
-        threads.schedule(std::bind(f_addOne, &sum, &sum_event));
+        threads(std::bind(f_addOne, &sum, &sum_event));
 
         bool waitResult = sum_event.wait_for(std::chrono::seconds(30));
 
@@ -48,7 +48,7 @@ class BasicThreadPoolTests
         int sum = 0;
         unit_test::event sum_event;
 
-        threads.schedule([&sum, &sum_event]()
+        threads([&sum, &sum_event]
         {
             ++sum;
             sum_event.set();
@@ -65,15 +65,15 @@ class BasicThreadPoolTests
         std::unique_ptr<bond::ext::gRPC::thread_pool> threads(new bond::ext::gRPC::thread_pool(2));
         std::atomic<int> sum(0);
 
-        auto increment = [&sum](){
+        auto increment = [&sum]{
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             sum++;
         };
 
-        threads->schedule(increment);
-        threads->schedule(increment);
-        threads->schedule(increment);
-        threads->schedule(increment);
+        (*threads)(increment);
+        (*threads)(increment);
+        (*threads)(increment);
+        (*threads)(increment);
 
         // blocks until all schedule tasks are finished
         threads.reset();

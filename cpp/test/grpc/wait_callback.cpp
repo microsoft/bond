@@ -6,14 +6,12 @@
 
 #include <bond/core/bond.h>
 #include <bond/core/bond_reflection.h>
-#include <bond/ext/grpc/client_callback.h>
 #include <bond/ext/grpc/wait_callback.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>
 
 #include "event.h"
 
-#include <boost/optional.hpp>
 #include <boost/static_assert.hpp>
 
 #include <atomic>
@@ -49,7 +47,7 @@ namespace wait_callback_tests
         return bond::bonded<bond::Box<int>>(reader);
     }
 
-    static std::shared_ptr<callback_arg> MakeCallbackArg(
+    static callback_arg MakeCallbackArg(
         const bond::bonded<bond::Box<int>>& response,
         const grpc::Status& status)
     {
@@ -59,7 +57,7 @@ namespace wait_callback_tests
         // However, we don't want to deal with making sure that the test
         // globals and the gRPC++ globals are destroyed in the right order.
         // Thus, we test with nullptr.
-        return std::make_shared<callback_arg>(response, status, nullptr);
+        return callback_arg(response, status, nullptr);
     }
 
     static void CallbackCapturesValues()
@@ -103,7 +101,7 @@ namespace wait_callback_tests
     static void CanBeConvertedToStdFunction()
     {
         wait_callbackBox cb;
-        std::function<void(std::shared_ptr<callback_arg>)> f = cb;
+        std::function<void(callback_arg)> f = cb;
 
         f(MakeCallbackArg(anyBondedValue, anyStatus));
 

@@ -15,12 +15,12 @@ namespace bond { namespace ext { namespace gRPC {
 
 namespace detail {
 
-    template <typename TRequest, typename TResponse, typename TThreadPool>
+    template <typename Request, typename Response>
     class service_unary_call_data;
 
 } // namespace detail
 
-template <typename TRequest, typename TResponse>
+template <typename Request, typename Response>
 class shared_unary_call;
 
 /// @brief Exclusive owner of the details of a single async, unary call.
@@ -38,10 +38,10 @@ class shared_unary_call;
 ///
 /// @warning A moved-from unary_call is only valid for destruction or
 /// assignment.
-template <typename TRequest, typename TResponse>
-class unary_call final : public detail::unary_call_base<TRequest, TResponse>
+template <typename Request, typename Response>
+class unary_call final : public detail::unary_call_base<Request, Response>
 {
-    using base_type = detail::unary_call_base<TRequest, TResponse>;
+    using base_type = detail::unary_call_base<Request, Response>;
 
 public:
     /// @brief The default constructor of unary_call is not callable: the
@@ -76,20 +76,20 @@ public:
     /// This instance will be in a moved-from state after \ref share has
     /// been called, and the returned shared instance should be used to
     /// finish the call.
-    shared_unary_call<TRequest, TResponse> share() && noexcept
+    shared_unary_call<Request, Response> share() && noexcept
     {
-        return shared_unary_call<TRequest, TResponse>{ std::move(*this) };
+        return shared_unary_call<Request, Response>{ std::move(*this) };
     }
 
 private:
-    template <typename OtherRequest, typename OtherResponse, typename OtherThreadPool>
+    template <typename OtherRequest, typename OtherResponse>
     friend class detail::service_unary_call_data;
 
     using base_type::base_type;
 };
 
-template <typename TRequest, typename TResponse>
-inline void swap(unary_call<TRequest, TResponse>& lhs, unary_call<TRequest, TResponse>& rhs) noexcept
+template <typename Request, typename Response>
+inline void swap(unary_call<Request, Response>& lhs, unary_call<Request, Response>& rhs) noexcept
 {
     lhs.swap(rhs);
 }

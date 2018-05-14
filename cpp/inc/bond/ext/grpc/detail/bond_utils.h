@@ -6,8 +6,6 @@
 #include <bond/core/config.h>
 
 #include <bond/core/bond.h>
-#include <bond/core/bonded.h>
-#include <bond/core/reflection.h>
 #include <bond/stream/output_buffer.h>
 
 #include <grpcpp/support/byte_buffer.h>
@@ -18,10 +16,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
 
-#include <cstdint>
-#include <cstdlib>
 #include <limits>
-#include <stdint.h>
 
 namespace bond { namespace ext { namespace gRPC { namespace detail
 {
@@ -61,8 +56,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     {
         OutputBuffer output;
         CompactBinaryWriter<OutputBuffer> writer(output);
-
-        msg.Serialize(writer);
+        Marshal(msg, writer);
 
         buffer = to_byte_buffer(output);
         own_buffer = true;
@@ -105,9 +99,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         // TODO: create a Bond input stream over grpc::ByteBuffer to avoid
         // having to make this copy into a blob.
-        blob data(buff, static_cast<uint32_t>(bufferSize));
-        CompactBinaryReader<InputBuffer> cbreader(data);
-        msg = bonded<T>(cbreader);
+        Unmarshal(InputBuffer(blob(buff, static_cast<uint32_t>(bufferSize))), msg);
 
         return grpc::Status::OK;
     }

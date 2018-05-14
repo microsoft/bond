@@ -6,8 +6,8 @@
 #include <bond/core/config.h>
 
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/exception.h>
-#include <bond/ext/grpc/client_callback.h>
+#include "exception.h"
+#include "unary_call_result.h"
 
 #include <grpcpp/impl/codegen/status.h>
 
@@ -17,7 +17,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <tuple>
+
 
 namespace bond { namespace ext { namespace gRPC {
 
@@ -29,41 +29,39 @@ namespace bond { namespace ext { namespace gRPC {
 /// The wait() member function can be used to wait until the callback has
 /// been called. Then, the status() and response() member functions can be
 /// called to inspect the results.
-template <typename TResponse>
+template <typename Response>
 class wait_callback final
 {
 public:
-    wait_callback() : _impl(std::make_shared<impl>()) { }
-
-    typedef unary_call_result<TResponse> arg_type;
+    using arg_type = unary_call_result<Response>;
 
     /// @brief Records the response and status.
     ///
     /// @exception MultipleInvocationException thrown if the callback (or a
     /// copy of the callback) is invoked more than once.
-    void operator()(std::shared_ptr<arg_type> args)
+    void operator()(arg_type result) const
     {
-        std::unique_lock<std::mutex> lock(_impl->_m);
-        if (!_impl->_results)
         {
-            _impl->_results = std::move(args);
+            std::lock_guard<std::mutex> lock(*_state);
 
-            // Drop the lock before notifying so we don't wake someone up to
-            // then have them wait on the lock.
-            lock.unlock();
-            _impl->_cv.notify_all();
+            if (!_state->result)
+            {
+                _state->result = std::move(result);
+            }
+            else
+            {
+                throw MultipleInvocationException();
+            }
         }
-        else
-        {
-            throw MultipleInvocationException();
-        }
+
+        _state->notify_all();
     }
 
     /// @brief Waits for this to have been invoked.
     void wait() const
     {
-        std::unique_lock<std::mutex> lock(_impl->_m);
-        _impl->_cv.wait(lock, [this]() { return static_cast<bool>(_impl->_results); });
+        std::unique_lock<std::mutex> lock(*_state);
+        _state->wait(lock, [this] { return static_cast<bool>(_state->result); });
     }
 
     /// @brief Waits at least \p timeout for this to have been invoked.
@@ -75,17 +73,17 @@ public:
     template <typename Rep, typename Period>
     bool wait_for(const std::chrono::duration<Rep, Period>& timeout) const
     {
-        std::unique_lock<std::mutex> lock(_impl->_m);
-        return _impl->_cv.wait_for(lock, timeout, [this]() { return static_cast<bool>(_impl->_results); });
+        std::unique_lock<std::mutex> lock(*_state);
+        return _state->wait_for(lock, timeout, [this] { return static_cast<bool>(_state->result); });
     }
 
     /// @brief Gets the response.
     ///
     /// @warning Blocks until this has been invoked.
-    const bond::bonded<TResponse>& response() const
+    const bonded<Response>& response() const
     {
         wait();
-        return _impl->_results->response;
+        return _state->result->response();
     }
 
     /// @brief Gets the status.
@@ -94,43 +92,25 @@ public:
     const grpc::Status& status() const
     {
         wait();
-        return _impl->_results->status;
+        return _state->result->status();
     }
 
     /// @brief Gets the context.
     ///
     /// @warning Blocks until this has been invoked.
-    std::shared_ptr<grpc::ClientContext> context() const
+    const std::shared_ptr<grpc::ClientContext>& context() const
     {
         wait();
-        return _impl->_results->context;
+        return _state->result->context();
     }
 
 private:
-    /// The interesting guts of wait_callback. We use an impl class so that
-    /// wait_callback can be copied and all the copies affect the same underlying
-    /// state.
-    struct impl final
+    struct state : std::mutex, std::condition_variable
     {
-        impl() = default;
-        impl(const impl&) = delete;
-        impl(impl&&) = delete;
-        impl& operator=(const impl&) = delete;
-        impl& operator=(impl&&) = delete;
-
-        /// mutex to lock the shared state
-        std::mutex _m;
-        /// condition variable used to signal anyone waiting
-        std::condition_variable _cv;
-        /// The results, but more importantly, doubles as a flag
-        /// indicating whether a callback has been invoked yet. If this is
-        /// nullptr, no callback has been invoked yet. If not nullptr, a
-        /// callback has already been invoked.
-        std::shared_ptr<arg_type> _results;
+        boost::optional<arg_type> result;
     };
 
-    /// shared_ptr to the actual state.
-    std::shared_ptr<impl> _impl;
+    std::shared_ptr<state> _state{ std::make_shared<state>() };
 };
 
 /// @example wait_callback_example.cpp
@@ -138,4 +118,4 @@ private:
 /// This is a brief example showing how wait_callback can be used to
 /// synchronously get the result of invoking an async proxy method.
 
-} } } // bond::extgrpc
+} } } // bond::ext::gRPC
