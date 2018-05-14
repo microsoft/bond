@@ -74,7 +74,7 @@ different versioning scheme, following the Haskell community's
 * **Breaking change** The `Allocator` (second) type parameter has be removed from
   `bond::nullable<T>` and now it is always deduced from `T`.
 * **Breaking change** The `bond::capped_allocator` and related types have been
-  moved to `bond::ext` namespace.
+  moved to the `bond::ext` namespace and the "bond/ext" include directory.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.
