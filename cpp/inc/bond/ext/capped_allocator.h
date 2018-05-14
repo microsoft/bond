@@ -5,12 +5,13 @@
 
 #include <bond/core/config.h>
 
-#include <bond/core/detail/alloc.h>
 #include "capped_allocator_fwd.h"
 #include "detail/value_or_reference.h"
 #include "multi_threaded_counter.h"
 #include "shared_counter.h"
 #include "single_threaded_counter.h"
+
+#include <bond/core/detail/alloc.h>
 
 #include <boost/utility/enable_if.hpp>
 
