@@ -42,6 +42,8 @@ different versioning scheme, following the Haskell community's
   `GetValueToNameMap`.
 * C++ codegen now applies the `--export-attribute` to the `ToString`,
   `FromString`, `ToEnum` and `FromEnum` functions.
+* Fixed a bug in C++ codegen that incorrectly applied the export attribute
+  to generic gRPC services.
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
   `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
