@@ -57,30 +57,29 @@
 
 #include <memory>
 #include <thread>
+#include <vector>
+
 
 namespace bond { namespace ext { namespace gRPC {
-
-    template <typename TThreadPool> class server_builder_core;
 
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via
     /// bond::ext:gRPC::server_builder.
-    template <typename TThreadPool>
-    class server_core final
+    class server final
     {
     public:
-        ~server_core()
+        ~server()
         {
             Shutdown();
             Wait();
         }
 
-        server_core(const server_core&) = delete;
-        server_core& operator=(const server_core&) = delete;
+        server(const server&) = delete;
+        server& operator=(const server&) = delete;
 
-        server_core(server_core&&) = default;
-        server_core& operator=(server_core&&) = default;
+        server(server&&) = default;
+        server& operator=(server&&) = default;
 
         /// @brief Shutdown the server, blocking until all rpc processing
         /// finishes.
@@ -89,16 +88,16 @@ namespace bond { namespace ext { namespace gRPC {
         ///
         /// @param deadline How long to wait until pending rpcs are
         /// forcefully terminated.
-        template <class T>
+        template <typename T>
         void Shutdown(const T& deadline)
         {
-            _grpcServer->Shutdown(deadline);
+            _server->Shutdown(deadline);
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
-            _grpcServer->Shutdown();
+            _server->Shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -107,25 +106,33 @@ namespace bond { namespace ext { namespace gRPC {
         /// thread must call \p Shutdown for this function to ever return.
         void Wait()
         {
-            _grpcServer->Wait();
+            _server->Wait();
         }
 
-        friend class server_builder_core<TThreadPool>;
+    private:
+        friend class server_builder;
 
-private:
-    server_core(
-        std::unique_ptr<grpc::Server> grpcServer,
-        std::unique_ptr<grpc::ServerCompletionQueue> cq)
-        : _grpcServer(std::move(grpcServer)),
-          _ioManager(std::move(cq))
-    {
-        BOOST_ASSERT(_grpcServer);
-    }
+        server(
+            std::unique_ptr<grpc::Server> grpcServer,
+            std::vector<std::unique_ptr<detail::service>> services,
+            std::unique_ptr<grpc::ServerCompletionQueue> cq)
+            : _server(std::move(grpcServer)),
+              _services(std::move(services)),
+              _ioManager(std::move(cq))
+        {
+            BOOST_ASSERT(_server);
 
-        std::unique_ptr<grpc::Server> _grpcServer;
+            // Tickle all the services so they queue a receive for all their
+            // methods.
+            for (auto& service : _services)
+            {
+                service->start();
+            }
+        }
+
+        std::unique_ptr<grpc::Server> _server;
+        std::vector<std::unique_ptr<detail::service>> _services;
         io_manager _ioManager;
     };
-
-    using server = server_core<bond::ext::gRPC::thread_pool>;
 
 } } } //namespace bond::ext::gRPC

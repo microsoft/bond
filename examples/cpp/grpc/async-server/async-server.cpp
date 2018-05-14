@@ -57,17 +57,14 @@ class GreeterServiceImpl final : public Greeter::Service
 public:
     // In this example, we use the same thread pool to perform asynchronous
     // processing of requests as is used in the rest of the program.
-    explicit GreeterServiceImpl(std::shared_ptr<bond::ext::gRPC::thread_pool> tp)
-        : _tp(std::move(tp))
+    explicit GreeterServiceImpl(bond::ext::gRPC::thread_pool tp)
+        : Greeter::Service(std::move(tp))
     { }
 
     void SayHello(CallType call) override
     {
-        _tp->schedule(PerRequestState{ std::move(call) });
+        scheduler()(PerRequestState{ std::move(call) });
     }
-
-private:
-    std::shared_ptr<bond::ext::gRPC::thread_pool> _tp;
 };
 
 int main()
@@ -75,16 +72,15 @@ int main()
     const std::string server_address("127.0.0.1:50051");
 
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
+    bond::ext::gRPC::thread_pool threadPool;
 
-    GreeterServiceImpl service(threadPool);
+    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl(threadPool) };
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
-        .SetThreadPool(threadPool)
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(&service)
-        .BuildAndStart());
+            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+            .RegisterService(std::move(service))
+            .BuildAndStart());
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
