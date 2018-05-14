@@ -26,123 +26,103 @@
 #endif
 
 #include <boost/assert.hpp>
-#include <boost/optional.hpp>
 
 #include <functional>
 #include <memory>
-#include <thread>
+
 
 namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing unary calls.
-template <typename TRequest, typename TResponse, typename TThreadPool>
-struct client_unary_call_data
-    : std::enable_shared_from_this<client_unary_call_data<TRequest, TResponse, TThreadPool>>,
+template <typename Request, typename Response, typename ThreadPool>
+class client_unary_call_data
+    : public std::enable_shared_from_this<client_unary_call_data<Request, Response, ThreadPool>>,
       io_manager_tag
 {
     /// The type of the user-defined callback that will be invoked for the
     /// response.
-    typedef std::function<void(std::shared_ptr<unary_call_result<TResponse>>)> CallbackType;
+    using CallbackType = std::function<void(unary_call_result<Response>)>;
 
-    /// The channel to send the request on.
-    std::shared_ptr<grpc::ChannelInterface> _channel;
-    /// The io_manager to use for both sending and receiving.
-    std::shared_ptr<io_manager> _ioManager;
-    /// The thread pool in which to invoke the callback.
-    std::shared_ptr<TThreadPool> _threadPool;
-    /// A response reader.
-    std::unique_ptr<grpc::ClientAsyncResponseReader<bond::bonded<TResponse>>> _responseReader;
-    /// The arguments to pass back into the client callback. Also doubles as
-    /// storage for the response, status, and context.
-    unary_call_result<TResponse> _callbackArgs;
-    /// The user code to invoke when a response is received.
-    CallbackType _cb;
-    /// A pointer to ourselves used to keep us alive while waiting to
-    /// receive the response.
-    std::shared_ptr<client_unary_call_data> _self;
-
+public:
     client_unary_call_data(
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<io_manager> ioManager,
-        std::shared_ptr<TThreadPool> threadPool,
+        std::shared_ptr<ThreadPool> threadPool,
         std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
         : _channel(std::move(channel)),
           _ioManager(std::move(ioManager)),
           _threadPool(std::move(threadPool)),
           _responseReader(),
-          _callbackArgs(std::move(context)),
+          _context(std::move(context)),
           _cb(std::move(cb)),
           _self()
     {
         BOOST_ASSERT(_channel);
         BOOST_ASSERT(_ioManager);
         BOOST_ASSERT(_threadPool);
-        BOOST_ASSERT(_callbackArgs.context);
+        BOOST_ASSERT(_context);
     }
+
+    client_unary_call_data(const client_unary_call_data& other) = delete;
+    client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
 
     /// @brief Initiates the client request and wires up completion
     /// notification.
-    void dispatch(
-        const grpc::internal::RpcMethod& method,
-        const bond::bonded<TRequest>& request)
+    void dispatch(const grpc::internal::RpcMethod& method, const bonded<Request>& request)
     {
         _responseReader.reset(
-            ::grpc::internal::ClientAsyncResponseReaderFactory<bond::bonded<TResponse>>::Create(
+            ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
                 _channel.get(),
                 _ioManager->cq(),
                 method,
-                _callbackArgs.context.get(),
+                _context.get(),
                 request,
                 /* start */ true));
 
         _self = this->shared_from_this();
 
-        _responseReader->Finish(
-            &_callbackArgs.response,
-            &_callbackArgs.status,
-            tag());
+        auto self = _self; // Make sure `this` will outlive the below call.
+        _responseReader->Finish(&_response, &_status, tag());
     }
 
+private:
     /// @brief Invoked after the response has been received.
     void invoke(bool ok) override
     {
         if (ok && _cb)
         {
-            _threadPool->schedule([this]
-            {
-                // pass a shared_ptr to unary_call_result, but that
-                // participates in shared ownership of the containing
-                // client_unary_call_data
-                _cb(std::shared_ptr<unary_call_result<TResponse>>(_self, &_callbackArgs));
-                clean_up_after_receive();
-            });
+            // TODO: Use lambda with move-capture when allowed to use C++14.
+            _threadPool->schedule(std::bind(
+                [](CallbackType& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
+                std::move(_cb),
+                unary_call_result<Response>{ std::move(_response), _status, std::move(_context) }));
         }
-        else
-        {
-            clean_up_after_receive();
-        }
-    }
 
-    /// @brief Cleans up resources that are no longer needed after receiving
-    /// the response.
-    ///
-    /// The callback may copy the unary_call_result shared_ptr that is gets,
-    /// but we don't need these members anymore.
-    void clean_up_after_receive()
-    {
-        _channel.reset();
-        _ioManager.reset();
-        _threadPool.reset();
-        _responseReader.reset();
-        _cb = {};
-
-        // In case we're the only reference keeping ourselves alive, we need
-        // to clear _self last so we don't attempt to access a local after
-        // this instance has been destroyed.
         _self.reset();
     }
+
+
+    /// The channel to send the request on.
+    std::shared_ptr<grpc::ChannelInterface> _channel;
+    /// The io_manager to use for both sending and receiving.
+    std::shared_ptr<io_manager> _ioManager;
+    /// The thread pool in which to invoke the callback.
+    std::shared_ptr<ThreadPool> _threadPool;
+    /// A response reader.
+    std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+    /// @brief The client context under which the request was executed.
+    std::shared_ptr<grpc::ClientContext> _context;
+    /// @brief The response received from the service.
+    bonded<Response> _response;
+    /// @brief The status of the request.
+    grpc::Status _status;
+    /// The user code to invoke when a response is received.
+    CallbackType _cb;
+    /// A pointer to ourselves used to keep us alive while waiting to
+    /// receive the response.
+    std::shared_ptr<client_unary_call_data> _self;
 };
 
 } } } } //namespace bond::ext::gRPC::detail
