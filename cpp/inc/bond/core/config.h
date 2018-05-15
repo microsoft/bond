@@ -22,7 +22,7 @@
 #define BOND_NO_CX11_HDR_MUTEX
 #endif
 
-// The MSVC 14 (VS 2015) has only a dangerous partial implementation of expression SFINAE.
+// MSVC 14 (VS 2015) has only a dangerous partial implementation of expression SFINAE.
 #if defined(BOOST_NO_SFINAE_EXPR) || (defined(_MSC_VER) && (_MSC_VER < 1910))
 #define BOND_NO_SFINAE_EXPR
 #endif
