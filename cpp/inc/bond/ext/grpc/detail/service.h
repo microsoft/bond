@@ -5,6 +5,8 @@
 
 #include <bond/core/config.h>
 
+#include <bond/ext/grpc/scheduler.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -21,6 +23,8 @@
 
 #include <boost/assert.hpp>
 
+#include <functional>
+
 namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 struct io_manager_tag;
@@ -31,7 +35,6 @@ struct io_manager_tag;
 ///
 /// Helper class that codegen uses to generate abstract service classes,
 /// which a bond::ext::gRPC::server then hosts multiple services.
-template <typename TThreadPool>
 class service : private grpc::Service
 {
 public:
@@ -44,7 +47,7 @@ public:
     ///
     /// Typical implementations call queue_receive on all the methods in the
     /// service to kick of the process of receiving messages.
-    virtual void start(grpc::ServerCompletionQueue* cq, std::shared_ptr<TThreadPool> threadPool) = 0;
+    virtual void start(grpc::ServerCompletionQueue* cq, const Scheduler& scheduler) = 0;
 
     /// @brief Starts the receive process for a method.
     ///
@@ -68,11 +71,11 @@ public:
     ///
     /// @param tag the io_manager_tag to include with the completion queue
     /// notification
-    template <typename TRequest>
+    template <typename Request>
     void queue_receive(
         int methodIndex,
         grpc::ServerContext* context,
-        TRequest* request,
+        Request* request,
         grpc::internal::ServerAsyncStreamingInterface* responseStream,
         grpc::ServerCompletionQueue* cq,
         io_manager_tag* tag)
@@ -117,4 +120,4 @@ protected:
     }
 };
 
-} } } } //namespace bond::ext::gRPC::detail
+} } } } // namespace bond::ext::gRPC::detail

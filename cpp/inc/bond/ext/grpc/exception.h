@@ -14,7 +14,19 @@ namespace bond { namespace ext { namespace gRPC {
     class MultipleInvocationException : public Exception
     {
     public:
-        MultipleInvocationException() : Exception("The callback was invoked more than once.") { }
+        MultipleInvocationException()
+            : Exception{ "The callback was invoked more than once." }
+        {}
+    };
+
+    /// @brief %Exception thrown when std::thread::hardware_concurrency
+    /// returns 0.
+    class InvalidThreadCount : public Exception
+    {
+    public:
+        InvalidThreadCount()
+            : Exception{ "Invalid number of threads." }
+        {}
     };
 
 } } } // namespace bond::ext::gRPC

@@ -111,14 +111,13 @@ public:
 int main()
 {
     PingPongServiceImpl service;
-    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
 
-    bond::ext::gRPC::server_builder builder;
-    builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
-    std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
+
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(&service)
+        .BuildAndStart();
 
     printf("Server ready\n");
     fflush(stdout);

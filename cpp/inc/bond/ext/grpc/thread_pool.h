@@ -5,6 +5,8 @@
 
 #include <bond/core/config.h>
 
+#include "exception.h"
+
 #if defined (__APPLE__)
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
     #pragma GCC diagnostic push
@@ -28,87 +30,69 @@
 namespace bond { namespace ext { namespace gRPC
 {
 
-#if 0
-/// @brief The interface that a compliant thread pool must implement.
-class thread_pool_concept
-{
-    /// @brief Schedules a callback for execution.
-    ///
-    /// @warning The scheduled callback must be executed at some point in
-    /// the future. Some components use the thread_pool_concept to schedule
-    /// the freeing of resources. If a scheduled callback is dropped, these
-    /// resources may not be freed.
-    ///
-    /// @param callback functor object to be scheduled. Must accept any
-    /// callable object.
-    template <typename Callback>
-    void schedule(Callback&& callback);
-};
-#endif
-
 /// @brief Basic thread pool implementation.
-class thread_pool : private boost::asio::io_service
+class thread_pool
 {
 public:
-    /// @brief Constant to indicate that the number of threads should be
-    /// based on the hardware's available concurrency.
-    static constexpr size_t USE_HARDWARE_CONC = 0;
+    /// @brief Constructs and starts a thread pool with number of threads equal
+    /// to CPU/cores available.
+    ///
+    /// @throws InvalidThreadCount when std::thread::hardware_concurrency return 0.
+    thread_pool()
+        : thread_pool{ std::thread::hardware_concurrency() }
+    {}
 
     /// @brief Constructs and starts a thread pool with the specified number of
     /// threads.
     ///
-    /// @param numThreads total number of threads to be created. If
-    /// \ref USE_HARDWARE_CONC then as many threads as CPU/cores are available
-    /// will be created.
-    explicit
-    thread_pool(size_t numThreads = USE_HARDWARE_CONC)
-        : _work(*this)
+    /// @throws InvalidThreadCount when 0 is specified.
+    explicit thread_pool(unsigned int numThreads)
     {
-        if (USE_HARDWARE_CONC == numThreads)
+        if (numThreads == 0)
         {
-            numThreads = static_cast<size_t>(std::thread::hardware_concurrency());
-            if (numThreads == 0)
-            {
-                // hardware_concurrency can return 0 if it can't figure out
-                // the hardware concurrency. Use a small number larger than 1.
-                const size_t recourseNumThreads = 2;
-                numThreads = recourseNumThreads;
-            }
+            throw InvalidThreadCount{};
         }
 
-        // Spin working threads.
-        for (size_t i = 0; i < numThreads; ++i)
+        auto& service = *_service;
+        for (unsigned int i = 0; i < numThreads; ++i)
         {
-            _threads.emplace_back(
-                [this]()
+            service.threads.emplace_back(
+                [&service]
                 {
-                    this->run();
+                    service.run();
                 });
         }
     }
-
 
     /// @brief Schedules a callback for execution.
     ///
     /// @param callback: functor object to be scheduled.
     template <typename Callback>
-    void schedule(Callback&& callback)
+    void operator()(Callback&& callback)
     {
-        this->post(std::forward<Callback>(callback));
+        _service->post(std::forward<Callback>(callback));
     }
 
     /// @brief Get the underlying boost::asio::io_service
     boost::asio::io_service& get_io_service()
     {
-        return *this;
+        return *_service;
     }
 
 private:
-    /// Working threads.
-    std::vector<boost::scoped_thread<boost::join_if_joinable>> _threads;
+    struct service : boost::asio::io_service
+    {
+        service()
+            : work{ *this }
+        {}
 
-    /// Helper to keep io_service spinning.
-    boost::asio::io_service::work _work;
+        /// Working threads.
+        std::vector<boost::scoped_thread<boost::join_if_joinable>> threads;
+        /// Helper to keep io_service spinning.
+        boost::asio::io_service::work work;
+    };
+
+    std::shared_ptr<service> _service{ std::make_shared<service>() };
 };
 
 } } } // namespace bond::ext::gRPC

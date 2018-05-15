@@ -110,16 +110,16 @@ static void MakeSumRequest(ScalarMethods::Client& client)
 int main()
 {
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
+    bond::ext::gRPC::thread_pool threadPool;
 
     ScalarMethodsImpl service;
 
-    bond::ext::gRPC::server_builder builder;
-    builder.SetThreadPool(threadPool);
     const std::string server_address("127.0.0.1:50051");
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service);
-    std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
+
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(&service)
+        .BuildAndStart();
 
     ScalarMethods::Client client(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
