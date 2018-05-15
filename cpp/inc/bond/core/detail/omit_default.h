@@ -142,11 +142,10 @@ implements_field_omitting<Writer,
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
     typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
 #else
-    typename boost::enable_if<std::is_void<
-        decltype(std::declval<Writer>().WriteFieldOmitted(
-            std::declval<BondDataType>(),
-            std::declval<uint16_t>(),
-            std::declval<Metadata>()))>>::type>
+    detail::mpl::void_t<decltype(std::declval<Writer>().WriteFieldOmitted(
+        std::declval<BondDataType>(),
+        std::declval<uint16_t>(),
+        std::declval<Metadata>()))>>
 #endif
     : std::true_type {};
 
