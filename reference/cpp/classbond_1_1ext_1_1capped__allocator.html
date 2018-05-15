@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bond: bond::capped_allocator&lt; Alloc, Counter &gt; Class Template Reference</title>
+<title>Bond: bond::ext::capped_allocator&lt; Alloc, Counter &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classbond_1_1capped__allocator.html','');});
+$(document).ready(function(){initNavTree('classbond_1_1ext_1_1capped__allocator.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -91,38 +91,38 @@ $(document).ready(function(){initNavTree('classbond_1_1capped__allocator.html','
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classbond_1_1capped__allocator-members.html">List of all members</a>  </div>
+<a href="classbond_1_1ext_1_1capped__allocator-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::capped_allocator&lt; Alloc, Counter &gt; Class Template Reference</div>  </div>
+<div class="title">bond::ext::capped_allocator&lt; Alloc, Counter &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="dynheader">
-Inheritance diagram for bond::capped_allocator&lt; Alloc, Counter &gt;:</div>
+Inheritance diagram for bond::ext::capped_allocator&lt; Alloc, Counter &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classbond_1_1capped__allocator.png" usemap="#bond::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map" alt=""/>
-  <map id="bond::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map" name="bond::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map">
-<area href="classbond_1_1detail_1_1allocator__holder.html" alt="bond::detail::allocator_holder&lt; Alloc &gt;" shape="rect" coords="0,0,251,24"/>
+  <img src="classbond_1_1ext_1_1capped__allocator.png" usemap="#bond::ext::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map" alt=""/>
+  <map id="bond::ext::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map" name="bond::ext::capped_5Fallocator_3C_20Alloc_2C_20Counter_20_3E_map">
+<area href="classbond_1_1detail_1_1allocator__holder.html" alt="bond::detail::allocator_holder&lt; Alloc &gt;" shape="rect" coords="0,0,273,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2f752a3c86a6b5b2e24f2c79fd47f25c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1capped__allocator.html#a2f752a3c86a6b5b2e24f2c79fd47f25c">capped_allocator</a> (<a class="el" href="classbond_1_1detail_1_1value__or__reference.html">detail::value_or_reference</a>&lt; Counter &gt; count, const Alloc &amp;alloc={}, bool subtract_on_deallocate=true)</td></tr>
-<tr class="memdesc:a2f752a3c86a6b5b2e24f2c79fd47f25c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs capped allocator adapter.  <a href="#a2f752a3c86a6b5b2e24f2c79fd47f25c">More...</a><br /></td></tr>
-<tr class="separator:a2f752a3c86a6b5b2e24f2c79fd47f25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21503c48084029afe3f6e961e91c8978"><td class="memTemplParams" colspan="2">template&lt;typename C  = Counter, typename boost::enable_if&lt; std::uses_allocator&lt; C, Alloc &gt;&gt;::type *  = nullptr&gt; </td></tr>
-<tr class="memitem:a21503c48084029afe3f6e961e91c8978"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1capped__allocator.html#a21503c48084029afe3f6e961e91c8978">capped_allocator</a> (typename C::value_type max_value, const Alloc &amp;alloc={}, bool subtract_on_deallocate=true)</td></tr>
-<tr class="memdesc:a21503c48084029afe3f6e961e91c8978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs capped allocator adapter.  <a href="#a21503c48084029afe3f6e961e91c8978">More...</a><br /></td></tr>
-<tr class="separator:a21503c48084029afe3f6e961e91c8978"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3318155a5655718c00f8c5314e2127cb"><td class="memTemplParams" colspan="2">template&lt;typename OtherAlloc , typename boost::enable_if&lt; std::is_convertible&lt; OtherAlloc, Alloc &gt;&gt;::type *  = nullptr&gt; </td></tr>
-<tr class="memitem:a3318155a5655718c00f8c5314e2127cb"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1capped__allocator.html#a3318155a5655718c00f8c5314e2127cb">capped_allocator</a> (const <a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a>&lt; OtherAlloc, Counter &gt; &amp;other)</td></tr>
-<tr class="memdesc:a3318155a5655718c00f8c5314e2127cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts from a compatible allocator.  <a href="#a3318155a5655718c00f8c5314e2127cb">More...</a><br /></td></tr>
-<tr class="separator:a3318155a5655718c00f8c5314e2127cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c5db54b689d015823918a3c41f1a47"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html#a92c5db54b689d015823918a3c41f1a47">capped_allocator</a> (<a class="el" href="classbond_1_1ext_1_1detail_1_1value__or__reference.html">detail::value_or_reference</a>&lt; Counter &gt; count, const Alloc &amp;alloc={}, bool subtract_on_deallocate=true)</td></tr>
+<tr class="memdesc:a92c5db54b689d015823918a3c41f1a47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs capped allocator adapter.  <a href="#a92c5db54b689d015823918a3c41f1a47">More...</a><br /></td></tr>
+<tr class="separator:a92c5db54b689d015823918a3c41f1a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4afa9f4a3a27517f095499ae1004c43"><td class="memTemplParams" colspan="2">template&lt;typename C  = Counter, typename boost::enable_if&lt; std::uses_allocator&lt; C, Alloc &gt;&gt;::type *  = nullptr&gt; </td></tr>
+<tr class="memitem:ac4afa9f4a3a27517f095499ae1004c43"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html#ac4afa9f4a3a27517f095499ae1004c43">capped_allocator</a> (typename C::value_type max_value, const Alloc &amp;alloc={}, bool subtract_on_deallocate=true)</td></tr>
+<tr class="memdesc:ac4afa9f4a3a27517f095499ae1004c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs capped allocator adapter.  <a href="#ac4afa9f4a3a27517f095499ae1004c43">More...</a><br /></td></tr>
+<tr class="separator:ac4afa9f4a3a27517f095499ae1004c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a107e278c06e422f558a20882c55e92cf"><td class="memTemplParams" colspan="2">template&lt;typename OtherAlloc , typename boost::enable_if&lt; std::is_convertible&lt; OtherAlloc, Alloc &gt;&gt;::type *  = nullptr&gt; </td></tr>
+<tr class="memitem:a107e278c06e422f558a20882c55e92cf"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html#a107e278c06e422f558a20882c55e92cf">capped_allocator</a> (const <a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a>&lt; OtherAlloc, Counter &gt; &amp;other)</td></tr>
+<tr class="memdesc:a107e278c06e422f558a20882c55e92cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts from a compatible allocator.  <a href="#a107e278c06e422f558a20882c55e92cf">More...</a><br /></td></tr>
+<tr class="separator:a107e278c06e422f558a20882c55e92cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename Alloc, typename Counter&gt;<br />
-class bond::capped_allocator&lt; Alloc, Counter &gt;</h3>
+class bond::ext::capped_allocator&lt; Alloc, Counter &gt;</h3>
 
 <p>STL-compatible allocator adapter that fails allocations by throwing <code>std::bad_alloc</code> if the maximum number of bytes to be allocated is exceeded</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
@@ -134,8 +134,8 @@ class bond::capped_allocator&lt; Alloc, Counter &gt;</h3>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>The provided counter is used to measure allocations in bytes. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2f752a3c86a6b5b2e24f2c79fd47f25c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f752a3c86a6b5b2e24f2c79fd47f25c">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[1/3]</span></h2>
+<a id="a92c5db54b689d015823918a3c41f1a47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c5db54b689d015823918a3c41f1a47">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -146,9 +146,9 @@ template&lt;typename Alloc, typename Counter&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classbond_1_1capped__allocator.html">bond::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a> </td>
+          <td class="memname"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html">bond::ext::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a> </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classbond_1_1detail_1_1value__or__reference.html">detail::value_or_reference</a>&lt; Counter &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classbond_1_1ext_1_1detail_1_1value__or__reference.html">detail::value_or_reference</a>&lt; Counter &gt;&#160;</td>
           <td class="paramname"><em>count</em>, </td>
         </tr>
         <tr>
@@ -195,8 +195,8 @@ template&lt;typename Alloc, typename Counter&gt; </div>
 
 </div>
 </div>
-<a id="a21503c48084029afe3f6e961e91c8978"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21503c48084029afe3f6e961e91c8978">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[2/3]</span></h2>
+<a id="ac4afa9f4a3a27517f095499ae1004c43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4afa9f4a3a27517f095499ae1004c43">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +209,7 @@ template&lt;typename C  = Counter, typename boost::enable_if&lt; std::uses_alloc
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classbond_1_1capped__allocator.html">bond::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a> </td>
+          <td class="memname"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html">bond::ext::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a> </td>
           <td>(</td>
           <td class="paramtype">typename C::value_type&#160;</td>
           <td class="paramname"><em>max_value</em>, </td>
@@ -252,8 +252,8 @@ template&lt;typename C  = Counter, typename boost::enable_if&lt; std::uses_alloc
 
 </div>
 </div>
-<a id="a3318155a5655718c00f8c5314e2127cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3318155a5655718c00f8c5314e2127cb">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[3/3]</span></h2>
+<a id="a107e278c06e422f558a20882c55e92cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107e278c06e422f558a20882c55e92cf">&#9670;&nbsp;</a></span>capped_allocator() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,9 +263,9 @@ template&lt;typename Alloc, typename Counter&gt; </div>
 template&lt;typename OtherAlloc , typename boost::enable_if&lt; std::is_convertible&lt; OtherAlloc, Alloc &gt;&gt;::type *  = nullptr&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classbond_1_1capped__allocator.html">bond::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a> </td>
+          <td class="memname"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html">bond::ext::capped_allocator</a>&lt; Alloc, Counter &gt;::<a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a> </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a>&lt; OtherAlloc, Counter &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a>&lt; OtherAlloc, Counter &gt; &amp;&#160;</td>
           <td class="paramname"><em>other</em></td><td>)</td>
           <td></td>
         </tr>
@@ -281,7 +281,7 @@ template&lt;typename OtherAlloc , typename boost::enable_if&lt; std::is_converti
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a></li>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1capped__allocator.html">capped_allocator</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>

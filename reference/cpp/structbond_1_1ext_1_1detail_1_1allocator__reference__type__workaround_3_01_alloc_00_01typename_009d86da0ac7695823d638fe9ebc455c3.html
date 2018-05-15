@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bond: bond::detail::counter_base&lt; T &gt; Class Template Reference</title>
+<title>Bond: bond::ext::detail::allocator_reference_type_workaround&lt; Alloc, typename boost::enable_if_c&lt; !std::is_void&lt; typename Alloc::value_type &gt;::value &amp;&amp;(std::is_void&lt; typename Alloc::reference &gt;::value||std::is_void&lt; typename Alloc::const_reference &gt;::value)&gt;::type &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classbond_1_1detail_1_1counter__base.html','');});
+$(document).ready(function(){initNavTree('structbond_1_1ext_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_009d86da0ac7695823d638fe9ebc455c3.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -90,35 +90,25 @@ $(document).ready(function(){initNavTree('classbond_1_1detail_1_1counter__base.h
 
 <div class="header">
   <div class="summary">
-<a href="classbond_1_1detail_1_1counter__base-members.html">List of all members</a>  </div>
+<a href="structbond_1_1ext_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_0b49a5daaae54ed9c5b26e4e1d331e9d1.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::detail::counter_base&lt; T &gt; Class Template Reference</div>  </div>
+<div class="title">bond::ext::detail::allocator_reference_type_workaround&lt; Alloc, typename boost::enable_if_c&lt; !std::is_void&lt; typename Alloc::value_type &gt;::value &amp;&amp;(std::is_void&lt; typename Alloc::reference &gt;::value||std::is_void&lt; typename Alloc::const_reference &gt;::value)&gt;::type &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Helper base class for counters.  
- <a href="classbond_1_1detail_1_1counter__base.html#details">More...</a></p>
-<div class="dynheader">
-Inheritance diagram for bond::detail::counter_base&lt; T &gt;:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="classbond_1_1detail_1_1counter__base.png" usemap="#bond::detail::counter_5Fbase_3C_20T_20_3E_map" alt=""/>
-  <map id="bond::detail::counter_5Fbase_3C_20T_20_3E_map" name="bond::detail::counter_5Fbase_3C_20T_20_3E_map">
-<area href="classbond_1_1multi__threaded__counter.html" title="Multi-threaded counter to be used with capped_allocator. " alt="bond::multi_threaded_counter&lt; T &gt;" shape="rect" coords="0,56,217,80"/>
-<area href="classbond_1_1single__threaded__counter.html" title="Single-threaded counter to be used with capped_allocator. " alt="bond::single_threaded_counter&lt; T &gt;" shape="rect" coords="227,56,444,80"/>
-</map>
- </div></div>
+<p>Use <code>value_type</code> if <code>reference</code> and <code>const_reference</code> are not available.  
+ <a href="structbond_1_1ext_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_009d86da0ac7695823d638fe9ebc455c3.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T&gt;<br />
-class bond::detail::counter_base&lt; T &gt;</h3>
+<div class="textblock"><h3>template&lt;typename Alloc&gt;<br />
+struct bond::ext::detail::allocator_reference_type_workaround&lt; Alloc, typename boost::enable_if_c&lt; !std::is_void&lt; typename Alloc::value_type &gt;::value &amp;&amp;(std::is_void&lt; typename Alloc::reference &gt;::value||std::is_void&lt; typename Alloc::const_reference &gt;::value)&gt;::type &gt;</h3>
 
-<p>Helper base class for counters. </p>
+<p>Use <code>value_type</code> if <code>reference</code> and <code>const_reference</code> are not available. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>detail</b></li><li class="navelem"><a class="el" href="classbond_1_1detail_1_1counter__base.html">counter_base</a></li>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>detail</b></li><li class="navelem"><a class="el" href="structbond_1_1ext_1_1detail_1_1allocator__reference__type__workaround_3_01_alloc_00_01typename_009d86da0ac7695823d638fe9ebc455c3.html">allocator_reference_type_workaround&lt; Alloc, typename boost::enable_if_c&lt; !std::is_void&lt; typename Alloc::value_type &gt;::value &amp;&amp;(std::is_void&lt; typename Alloc::reference &gt;::value||std::is_void&lt; typename Alloc::const_reference &gt;::value)&gt;::type &gt;</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>

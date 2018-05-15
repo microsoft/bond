@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bond: bond::multi_threaded_counter&lt; T &gt; Class Template Reference</title>
+<title>Bond: bond::ext::detail::counter_base&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classbond_1_1multi__threaded__counter.html','');});
+$(document).ready(function(){initNavTree('classbond_1_1ext_1_1detail_1_1counter__base.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -90,68 +90,35 @@ $(document).ready(function(){initNavTree('classbond_1_1multi__threaded__counter.
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classbond_1_1multi__threaded__counter-members.html">List of all members</a>  </div>
+<a href="classbond_1_1ext_1_1detail_1_1counter__base-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::multi_threaded_counter&lt; T &gt; Class Template Reference</div>  </div>
+<div class="title">bond::ext::detail::counter_base&lt; T &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Multi-threaded counter to be used with <a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a>.  
- <a href="classbond_1_1multi__threaded__counter.html#details">More...</a></p>
+<p>Helper base class for counters.  
+ <a href="classbond_1_1ext_1_1detail_1_1counter__base.html#details">More...</a></p>
 <div class="dynheader">
-Inheritance diagram for bond::multi_threaded_counter&lt; T &gt;:</div>
+Inheritance diagram for bond::ext::detail::counter_base&lt; T &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classbond_1_1multi__threaded__counter.png" usemap="#bond::multi_5Fthreaded_5Fcounter_3C_20T_20_3E_map" alt=""/>
-  <map id="bond::multi_5Fthreaded_5Fcounter_3C_20T_20_3E_map" name="bond::multi_5Fthreaded_5Fcounter_3C_20T_20_3E_map">
-<area href="classbond_1_1detail_1_1counter__base.html" title="Helper base class for counters. " alt="bond::detail::counter_base&lt; T &gt;" shape="rect" coords="0,0,209,24"/>
+  <img src="classbond_1_1ext_1_1detail_1_1counter__base.png" usemap="#bond::ext::detail::counter_5Fbase_3C_20T_20_3E_map" alt=""/>
+  <map id="bond::ext::detail::counter_5Fbase_3C_20T_20_3E_map" name="bond::ext::detail::counter_5Fbase_3C_20T_20_3E_map">
+<area href="classbond_1_1ext_1_1multi__threaded__counter.html" title="Multi-threaded counter to be used with capped_allocator. " alt="bond::ext::multi_threaded_counter&lt; T &gt;" shape="rect" coords="0,56,239,80"/>
+<area href="classbond_1_1ext_1_1single__threaded__counter.html" title="Single-threaded counter to be used with capped_allocator. " alt="bond::ext::single_threaded_counter&lt; T &gt;" shape="rect" coords="249,56,488,80"/>
 </map>
  </div></div>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:ae900846199dae14badbab115316759b0"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1multi__threaded__counter.html#ae900846199dae14badbab115316759b0">value</a> () const BOND_NOEXCEPT</td></tr>
-<tr class="separator:ae900846199dae14badbab115316759b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename T&gt;<br />
-class bond::multi_threaded_counter&lt; T &gt;</h3>
+class bond::ext::detail::counter_base&lt; T &gt;</h3>
 
-<p>Multi-threaded counter to be used with <a class="el" href="classbond_1_1capped__allocator.html">capped_allocator</a>. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">T</td><td>underlying counter type. </td></tr>
-  </table>
-  </dd>
-</dl>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae900846199dae14badbab115316759b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae900846199dae14badbab115316759b0">&#9670;&nbsp;</a></span>value()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">T <a class="el" href="classbond_1_1multi__threaded__counter.html">bond::multi_threaded_counter</a>&lt; T &gt;::value </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section remark"><dt>Remarks</dt><dd>The returned value may not be up-to-date. </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+<p>Helper base class for counters. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><a class="el" href="classbond_1_1multi__threaded__counter.html">multi_threaded_counter</a></li>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>detail</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1detail_1_1counter__base.html">counter_base</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
