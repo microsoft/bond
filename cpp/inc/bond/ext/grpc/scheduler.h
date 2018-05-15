@@ -10,7 +10,7 @@
 namespace bond { namespace ext { namespace gRPC
 {
 
-#if 0
+#ifdef BOND_DOXYGEN_ONLY
 /// @brief The interface that a compliant scheduler must implement.
 class scheduler
 {

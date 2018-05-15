@@ -12,7 +12,7 @@ Struct PopulateStruct()
 {
     // Use capped_allocator with unlimited size in order to populate
     // the struct with values.
-    bond::capped_allocator<> alloc{ (std::numeric_limits<std::uint32_t>::max)() };
+    bond::ext::capped_allocator<> alloc{ (std::numeric_limits<std::uint32_t>::max)() };
 
     // A copy of allocator must be passed to corresponding functions.
     Struct obj{ alloc };
@@ -40,7 +40,7 @@ int main()
         SerializeStruct(PopulateStruct()) };
 
     // Limit the allowed memory allocations to 100 bytes.
-    Struct obj{ bond::capped_allocator<>{ 100 } };
+    Struct obj{ bond::ext::capped_allocator<>{ 100 } };
 
     try
     {

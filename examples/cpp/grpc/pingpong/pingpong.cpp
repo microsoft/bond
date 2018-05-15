@@ -198,13 +198,12 @@ int main()
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .SetScheduler(threadPool)
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(&double_ping_service)
-            .RegisterService(&ping_pong_service)
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .SetScheduler(threadPool)
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(&double_ping_service)
+        .RegisterService(&ping_pong_service)
+        .BuildAndStart();
 
     auto ioManager = std::make_shared<io_manager>();
 

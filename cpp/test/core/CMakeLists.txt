@@ -99,9 +99,9 @@ add_bond_codegen (TARGET unit_test_codegen4
     allocator_test.bond
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/capped_allocator_tests_generated"
     OPTIONS
-        --using=\"Vector=std::vector<{0}, bond::capped_allocator<std::allocator<{0}> > >\"
-        --header=\"<bond/core/capped_allocator.h>\"
-        --allocator=\"bond::capped_allocator<>\"
+        --using=\"Vector=std::vector<{0}, bond::ext::capped_allocator<std::allocator<{0}> > >\"
+        --header=\"<bond/ext/capped_allocator.h>\"
+        --allocator=\"bond::ext::capped_allocator<>\"
         --namespace=\"allocator_test=capped_allocator_tests\")
 
 add_bond_codegen (TARGET unit_test_codegen_import2
