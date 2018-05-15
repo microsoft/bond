@@ -39,6 +39,9 @@ class GreeterServiceImpl final : public Greeter::Service
 
 int main()
 {
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    bond::ext::gRPC::thread_pool threadPool;
+
     GreeterServiceImpl service;
 
     const std::string server_address("127.0.0.1:50051");
@@ -50,7 +53,8 @@ int main()
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-        std::make_shared<bond::ext::gRPC::io_manager>());
+        ioManager,
+        threadPool);
 
     const std::string user("world");
 

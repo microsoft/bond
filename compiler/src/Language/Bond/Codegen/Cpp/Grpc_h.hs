@@ -101,7 +101,7 @@ public:
         #{proxyName}(
             const std::shared_ptr< ::grpc::ChannelInterface>& channel,
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler = {});
+            const ::bond::ext::gRPC::Scheduler& scheduler);
 
         #{doubleLineSep 2 publicProxyMethodDecl serviceMethods}
 
@@ -145,10 +145,7 @@ public:
     , _scheduler(scheduler)
     #{newlineSep 1 proxyMethodMemberInit serviceMethods}
 {
-    if (!_scheduler)
-    {
-        _scheduler = ::bond::ext::gRPC::thread_pool{};
-    }
+    BOOST_ASSERT(_scheduler);
 }
 
 #{doubleLineSep 0 methodDecl serviceMethods}

@@ -111,6 +111,8 @@ int main()
     }
 
     { // Exercise gRPC facilities
+        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+        bond::ext::gRPC::thread_pool threadPool;
 
         const std::string server_address("127.0.0.1:50051");
 
@@ -124,7 +126,8 @@ int main()
         // Create a proxy
         TestService<uint32_t>::Client proxy(
             grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-            std::make_shared<bond::ext::gRPC::io_manager>());
+            ioManager,
+            threadPool);
     }
 
     return 0;

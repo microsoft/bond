@@ -19,13 +19,13 @@ namespace bond { namespace ext { namespace gRPC {
         {}
     };
 
-    /// @bried %Exception thrown when std::thread::hardware_concurrency
+    /// @brief %Exception thrown when std::thread::hardware_concurrency
     /// returns 0.
     class InvalidThreadCount : public Exception
     {
     public:
         InvalidThreadCount()
-            : Exception{ "Invalid number of threads is used." }
+            : Exception{ "Invalid number of threads." }
         {}
     };
 

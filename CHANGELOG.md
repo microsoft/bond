@@ -77,15 +77,25 @@ different versioning scheme, following the Haskell community's
   `bond::nullable<T>` and now it is always deduced from `T`.
 * **Breaking change** The `bond::capped_allocator` and related types have been
   moved to the `bond::ext` namespace and the "bond/ext" include directory.
-* **Breaking change** When using Bond-over-gRPC, previously generated `ClientCore` and
-  `ServiceCore` types that were templated on `ThreadPool` parameter have been removed
-  in favor of simplified runtime representation of a `Scheduler`.
-* **Breaking change** When using Bond-over-gRPC, the generated `Client::Async*`
-  functions now accept `std::shared_ptr<grpc::ClientContext>`
-  as the last parameter instead of as the first.
-* **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts
-  `bond::ext::gRPC::unary_call_result<Response>` (drops the `std::shared_ptr`).
-  Also the `unary_call_result` now exposes read-only getters rather than fields.
+* **Breaking changes** in Bond-over-gRPC (based on real-world use and feedback):
+  - The generated `ClientCore` and `ServiceCore` class templates and the
+    `Client` and `Service` convenience typedefs have all been replaced with
+    normal classes named `Client` and `Service`. The `ThreadPool` type parameter
+    has been removed in favor of simplified runtime representation of a `Scheduler`.
+  - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool` implementation
+    now use `operator()` instead of a `schedule()` member function.
+  - The `bond::ext::gRPC::server_core` class template and the `bond::ext::gRPC::server`
+    convenience typedef have been replaced with the normal classes bond::ext::gRPC::server.
+  - The `bond::ext::gRPC::server_builder_core` class template and the
+    `bond::ext::gRPC::server_builder` convenience typedef have been replaced
+    with the normal class `bond::ext::gRPC::server_builder`.
+    Also the `bond::ext::gRPC::server_builder::SetThreadPool` has been
+    renamed to `SetScheduler` and now takes the revised `Scheduler`.
+  - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
+    as the last parameter instead of as the first.
+  - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
+    (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
+    read-only getters rather than fields.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

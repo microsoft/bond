@@ -54,7 +54,7 @@ public:
         }
 
         auto& service = *_service;
-        for (unsigned long i = 0; i < numThreads; ++i)
+        for (unsigned int i = 0; i < numThreads; ++i)
         {
             service.threads.emplace_back(
                 [&service]
