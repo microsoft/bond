@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['field',['field',['../structbond_1_1reflection_1_1_field_template.html#a32f61cd5d3d0fc4d70988458c2780b46',1,'bond::reflection::FieldTemplate']]]
+  ['metadata',['metadata',['../structbond_1_1reflection_1_1_field_template.html#aef3425067490554d13260a0fbd6277fe',1,'bond::reflection::FieldTemplate::metadata()'],['../structbond_1_1reflection_1_1_method_template.html#a01f4dedcf76af9589d6d2a30cd74d2ad',1,'bond::reflection::MethodTemplate::metadata()'],['../structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template.html#aac90a60bd549ddf9687341837434c1a0',1,'bond::ext::gRPC::reflection::MethodTemplate::metadata()']]],
+  ['method',['method',['../structbond_1_1reflection_1_1_method_template.html#a838d0659e31a7259e753dc9449e2cabe',1,'bond::reflection::MethodTemplate']]]
 ];
