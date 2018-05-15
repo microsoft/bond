@@ -231,7 +231,8 @@ implements_struct_begin_with_base<Input,
 
 // StructBegin
 template <typename Input>
-typename boost::enable_if<implements_struct_begin<Input> >::type
+typename boost::enable_if_c<implements_struct_begin<Input>::value
+                          && !implements_struct_begin_with_base<Input>::value>::type
 StructBegin(Input& input, bool /*base*/)
 {
     return input.ReadStructBegin();
@@ -255,7 +256,8 @@ StructBegin(Input& /*input*/, bool /*base*/)
 
 // StructEnd
 template <typename Input>
-typename boost::enable_if<implements_struct_begin<Input> >::type
+typename boost::enable_if_c<implements_struct_begin<Input>::value
+                          && !implements_struct_begin_with_base<Input>::value>::type
 StructEnd(Input& input, bool /*base*/)
 {
     return input.ReadStructEnd();
