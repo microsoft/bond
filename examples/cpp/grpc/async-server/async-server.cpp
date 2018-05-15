@@ -79,12 +79,11 @@ int main()
 
     GreeterServiceImpl service(threadPool);
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .SetScheduler(threadPool)
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(&service)
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .SetScheduler(threadPool)
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(&service)
+        .BuildAndStart();
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
