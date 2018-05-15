@@ -52,8 +52,8 @@ public:
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
             std::shared_ptr<TThreadPool> threadPool);
 
-        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
-        void Asyncfoo(const ::tests::Param& request, const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
         }
@@ -121,7 +121,7 @@ inline Foo::ClientCore<TThreadPool>::ClientCore(
 template <typename TThreadPool>
 inline void Foo::ClientCore<TThreadPool>::Asyncfoo(
     const ::bond::bonded< ::tests::Param>& request,
-    const std::function<void(std::shared_ptr< ::bond::ext::gRPC::unary_call_result< ::tests::Result>>)>& cb,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb,
     ::std::shared_ptr< ::grpc::ClientContext> context)
 {
     
