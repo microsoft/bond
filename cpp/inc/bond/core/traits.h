@@ -113,7 +113,8 @@ get_protocol_writer<Reader<Input, MarshaledBondedProtocols>, Output>
     typedef typename Reader<Output, MarshaledBondedProtocols>::Writer type;
 };
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
+
+#ifdef BOND_NO_SFINAE_EXPR
 template <typename T, T> struct
 check_method
     : std::true_type {};

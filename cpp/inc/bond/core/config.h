@@ -16,14 +16,15 @@
 // BOND_SIMPLE_JSON_PROTOCOL disabled by default
 #endif
 
-#if defined(BOOST_NO_CXX11_NOEXCEPT) || defined(BOOST_NO_NOEXCEPT)
-#define BOND_NO_CXX11_NOEXCEPT
-#endif
-
 // std::once seems problematic on Linux (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60662)
 // For now we use std::call_once only on MSVC and boost::call_once on GCC/Clang.
 #if defined(BOOST_NO_CXX11_HDR_MUTEX) || !defined(_MSC_VER)
 #define BOND_NO_CX11_HDR_MUTEX
+#endif
+
+// The MSVC 14 (VS 2015) has only a dangerous partial implementation of expression SFINAE.
+#if defined(BOOST_NO_SFINAE_EXPR) || (defined(_MSC_VER) && (_MSC_VER < 1910))
+#define BOND_NO_SFINAE_EXPR
 #endif
 
 #if defined(BOOST_NO_CXX14_RETURN_TYPE_DEDUCTION)

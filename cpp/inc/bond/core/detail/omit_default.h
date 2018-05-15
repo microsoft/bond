@@ -129,7 +129,7 @@ implements_field_omitting
     : std::false_type {};
 
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#ifdef BOND_NO_SFINAE_EXPR
 template <typename T> struct
 implements_field_omitting<T&>
     : implements_field_omitting<T> {};
@@ -141,8 +141,8 @@ implements_field_omitting<T&>
 // be implemented by untagged protocols that allow omitting optional fields.
 template <typename Writer> struct
 implements_field_omitting<Writer,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
 #else
     detail::mpl::void_t<decltype(std::declval<Writer>().WriteFieldOmitted(
         std::declval<BondDataType>(),
@@ -156,8 +156,8 @@ implements_field_omitting<Writer,
 // by untagged protocols that allow omitting optional fields.
 template <typename Input> struct
 implements_field_omitting<Input,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
 #else
     typename boost::enable_if<std::is_same<
         bool,
@@ -213,8 +213,8 @@ implements_struct_begin_with_base
 
 template <typename Input> struct
 implements_struct_begin<Input,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
 #else
     detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin())>>
 #endif
@@ -223,8 +223,8 @@ implements_struct_begin<Input,
 
 template <typename Input> struct
 implements_struct_begin_with_base<Input,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
 #else
     detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin(std::declval<bool>()))>>
 #endif

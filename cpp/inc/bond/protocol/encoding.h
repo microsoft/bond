@@ -22,8 +22,8 @@ implements_varint_write
 
 template <typename Buffer, typename T> struct
 implements_varint_write<Buffer, T,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<void (Buffer::*)(T), &Buffer::WriteVariableUnsigned> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Buffer::*)(T), &Buffer::WriteVariableUnsigned> >::type>
 #else
     detail::mpl::void_t<decltype(std::declval<Buffer>().WriteVariableUnsigned(std::declval<T>()))>>
 #endif
@@ -79,8 +79,8 @@ implements_varint_read
 
 template <typename Buffer, typename T> struct
 implements_varint_read<Buffer, T,
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    typename boost::enable_if<bond::check_method<void (Buffer::*)(T&), &Buffer::ReadVariableUnsigned> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Buffer::*)(T&), &Buffer::ReadVariableUnsigned> >::type>
 #else
     detail::mpl::void_t<decltype(std::declval<Buffer>().ReadVariableUnsigned(std::declval<T&>()))>>
 #endif
