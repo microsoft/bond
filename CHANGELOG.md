@@ -77,7 +77,10 @@ different versioning scheme, following the Haskell community's
   `bond::nullable<T>` and now it is always deduced from `T`.
 * **Breaking change** The `bond::capped_allocator` and related types have been
   moved to the `bond::ext` namespace and the "bond/ext" include directory.
-* **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
+* **Breaking change** When using Bond-over-gRPC, previously generated `ClientCore` and
+  `ServiceCore` types that were templated on `ThreadPool` parameter have been removed
+  in favor of simplified runtime representation of a `Scheduler`.
+* **Breaking change** When using Bond-over-gRPC, the generated `Client::Async*`
   functions now accept `std::shared_ptr<grpc::ClientContext>`
   as the last parameter instead of as the first.
 * **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts

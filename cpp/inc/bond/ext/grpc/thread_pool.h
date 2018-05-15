@@ -5,6 +5,8 @@
 
 #include <bond/core/config.h>
 
+#include "exception.h"
+
 #if defined (__APPLE__)
     // Work-around: 'OSMemoryBarrier' has been explicitly marked deprecated
     #pragma GCC diagnostic push
@@ -32,35 +34,27 @@ namespace bond { namespace ext { namespace gRPC
 class thread_pool
 {
 public:
-    /// @brief Constant to indicate that the number of threads should be
-    /// based on the hardware's available concurrency.
-    static constexpr size_t USE_HARDWARE_CONC = 0;
+    /// @brief Constructs and starts a thread pool with number of threads equal
+    /// to CPU/cores available.
+    ///
+    /// @throws InvalidThreadCount when std::thread::hardware_concurrency return 0.
+    thread_pool()
+        : thread_pool{ std::thread::hardware_concurrency() }
+    {}
 
     /// @brief Constructs and starts a thread pool with the specified number of
     /// threads.
     ///
-    /// @param numThreads total number of threads to be created. If
-    /// \ref USE_HARDWARE_CONC then as many threads as CPU/cores are available
-    /// will be created.
-    explicit
-    thread_pool(size_t numThreads = USE_HARDWARE_CONC)
-        : _service{ std::make_shared<service>() }
+    /// @throws InvalidThreadCount when 0 is specified.
+    explicit thread_pool(unsigned int numThreads)
     {
-        if (USE_HARDWARE_CONC == numThreads)
+        if (numThreads == 0)
         {
-            numThreads = static_cast<size_t>(std::thread::hardware_concurrency());
-            if (numThreads == 0)
-            {
-                // hardware_concurrency can return 0 if it can't figure out
-                // the hardware concurrency. Use a small number larger than 1.
-                const size_t recourseNumThreads = 2;
-                numThreads = recourseNumThreads;
-            }
+            throw InvalidThreadCount{};
         }
 
-        // Spin working threads.
         auto& service = *_service;
-        for (size_t i = 0; i < numThreads; ++i)
+        for (unsigned long i = 0; i < numThreads; ++i)
         {
             service.threads.emplace_back(
                 [&service]
@@ -89,7 +83,7 @@ private:
     struct service : boost::asio::io_service
     {
         service()
-            : work(*this)
+            : work{ *this }
         {}
 
         /// Working threads.
@@ -98,7 +92,7 @@ private:
         boost::asio::io_service::work work;
     };
 
-    std::shared_ptr<service> _service;
+    std::shared_ptr<service> _service{ std::make_shared<service>() };
 };
 
 } } } // namespace bond::ext::gRPC
