@@ -42,6 +42,8 @@ different versioning scheme, following the Haskell community's
   `GetValueToNameMap`.
 * C++ codegen now applies the `--export-attribute` to the `ToString`,
   `FromString`, `ToEnum` and `FromEnum` functions.
+* Fixed a bug in C++ codegen that incorrectly applied the export attribute
+  to generic gRPC services.
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
   `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
@@ -73,11 +75,14 @@ different versioning scheme, following the Haskell community's
   `const_reference` typedefs have been removed from `bond::nullable<T>`.
 * **Breaking change** The `Allocator` (second) type parameter has be removed from
   `bond::nullable<T>` and now it is always deduced from `T`.
+* **Breaking change** The `bond::capped_allocator` and related types have been
+  moved to the `bond::ext` namespace and the "bond/ext" include directory.
 * **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
-  functions are now accepting the `std::shared_ptr<grpc::ClientContext>`
-  as the last parameter.
+  functions now accept `std::shared_ptr<grpc::ClientContext>`
+  as the last parameter instead of as the first.
 * **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts
   `bond::ext::gRPC::unary_call_result<Response>` (drops the `std::shared_ptr`).
+  Also the `unary_call_result` now exposes read-only getters rather than fields.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.
@@ -107,6 +112,7 @@ different versioning scheme, following the Haskell community's
   passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
 * Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
   to `T` when `allocator_type` was not explicitly defined.
+* Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
 
 ### C# ###
 

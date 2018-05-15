@@ -6,15 +6,16 @@
 #include <bond/core/config.h>
 
 #include "capped_allocator_fwd.h"
-#include "detail/alloc.h"
 #include "detail/value_or_reference.h"
 #include "multi_threaded_counter.h"
 #include "shared_counter.h"
 #include "single_threaded_counter.h"
 
+#include <bond/core/detail/alloc.h>
+
 #include <boost/utility/enable_if.hpp>
 
-namespace bond
+namespace bond { namespace ext
 {
     namespace detail
     {
@@ -65,9 +66,9 @@ namespace bond
     ///
     /// @remarks The provided counter is used to measure allocations in bytes.
     template <typename Alloc, typename Counter>
-    class capped_allocator : private detail::allocator_holder<Alloc>
+    class capped_allocator : private bond::detail::allocator_holder<Alloc>
     {
-        using holder = detail::allocator_holder<Alloc>;
+        using holder = typename capped_allocator::allocator_holder;
         using traits = std::allocator_traits<Alloc>;
 
     public:
@@ -273,4 +274,4 @@ namespace bond
         return a1.get_allocator() != a2.get_allocator();
     }
 
-} // namespace bond
+} } // namespace bond::ext

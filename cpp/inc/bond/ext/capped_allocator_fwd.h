@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace bond
+namespace bond { namespace ext
 {
     template <typename T = std::size_t>
     class single_threaded_counter;
@@ -25,4 +25,4 @@ namespace bond
             multi_threaded_counter<typename std::allocator_traits<Alloc>::size_type>>>
     class capped_allocator;
 
-} // namespace bond
+} } // namespace bond::ext
