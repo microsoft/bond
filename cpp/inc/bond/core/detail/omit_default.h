@@ -129,9 +129,11 @@ implements_field_omitting
     : std::false_type {};
 
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 template <typename T> struct
 implements_field_omitting<T&>
     : implements_field_omitting<T> {};
+#endif
 
 
 // WriteFieldOmitted is an optional protocol writer method which is called for
