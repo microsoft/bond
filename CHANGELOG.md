@@ -75,6 +75,8 @@ different versioning scheme, following the Haskell community's
   `const_reference` typedefs have been removed from `bond::nullable<T>`.
 * **Breaking change** The `Allocator` (second) type parameter has be removed from
   `bond::nullable<T>` and now it is always deduced from `T`.
+* **Breaking change** The `bond::capped_allocator` and related types have been
+  moved to the `bond::ext` namespace and the "bond/ext" include directory.
 * **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
   functions now accept `std::shared_ptr<grpc::ClientContext>`
   as the last parameter instead of as the first.

@@ -5,7 +5,7 @@
 #include "capped_allocator_tests_generated/allocator_test_reflection.h"
 #endif
 
-#include <bond/core/capped_allocator.h>
+#include <bond/ext/capped_allocator.h>
 
 #include <boost/mpl/list.hpp>
 #include <boost/range/combine.hpp>
@@ -29,14 +29,14 @@
 BOOST_AUTO_TEST_SUITE(CappedAllocatorTests)
 
 using all_counter_types = boost::mpl::list<
-    bond::single_threaded_counter<>,
-    bond::multi_threaded_counter<>,
-    bond::shared_counter<bond::single_threaded_counter<>>,
-    bond::shared_counter<bond::multi_threaded_counter<>>>;
+    bond::ext::single_threaded_counter<>,
+    bond::ext::multi_threaded_counter<>,
+    bond::ext::shared_counter<bond::ext::single_threaded_counter<>>,
+    bond::ext::shared_counter<bond::ext::multi_threaded_counter<>>>;
 
 using thread_safe_counter_types = boost::mpl::list<
-    bond::multi_threaded_counter<>,
-    bond::shared_counter<bond::multi_threaded_counter<>>>;
+    bond::ext::multi_threaded_counter<>,
+    bond::ext::shared_counter<bond::ext::multi_threaded_counter<>>>;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CounterBasicTests, Counter, all_counter_types)
 {
@@ -98,14 +98,14 @@ BOOST_AUTO_TEST_CASE(SharedCounterAllocationTests)
         allocator_with_state<> alloc{ state };
         BOOST_CHECK_EQUAL(state.use_count(), 2);
 
-        bond::shared_counter<> counter{ 1024, alloc };
+        bond::ext::shared_counter<> counter{ 1024, alloc };
         const auto initial_value = counter.value();
         BOOST_CHECK_NE(initial_value, 0u);
         const auto inital_use_count = state.use_count();
         BOOST_CHECK_GT(inital_use_count, 2);
 
         BOOST_CHECK_THROW(
-            bond::shared_counter<>(counter.value() - 1, alloc),
+            bond::ext::shared_counter<>(counter.value() - 1, alloc),
             std::bad_alloc);
         
         auto copy1 = counter;
@@ -133,37 +133,37 @@ BOOST_AUTO_TEST_CASE(AllocatorCounterReferenceTest)
 {
     // BOOST_TEST_CONTEXT("Reference type holding a reference")
     {
-        bond::single_threaded_counter<> counter{ 0 };
-        bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter };
+        bond::ext::single_threaded_counter<> counter{ 0 };
+        bond::ext::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Reference type holding a reference using std::ref")
     {
-        bond::single_threaded_counter<> counter{ 0 };
-        bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ std::ref(counter) };
+        bond::ext::single_threaded_counter<> counter{ 0 };
+        bond::ext::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ std::ref(counter) };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Value type holding a value")
     {
-        bond::shared_counter<> counter{ 0 };
-        bond::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ counter };
+        bond::ext::shared_counter<> counter{ 0 };
+        bond::ext::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ counter };
         BOOST_CHECK_NE(&counter, &alloc.get_counter());
     }
 
     // BOOST_TEST_CONTEXT("Value type holding a reference")
     {
-        bond::shared_counter<> counter{ 0 };
-        bond::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ std::ref(counter) };
+        bond::ext::shared_counter<> counter{ 0 };
+        bond::ext::capped_allocator<std::allocator<char>, decltype(counter)> alloc{ std::ref(counter) };
         BOOST_CHECK_EQUAL(&counter, &alloc.get_counter());
     }
 }
 
 BOOST_AUTO_TEST_CASE(AllocatorSubtractOnDeallocateTest)
 {
-    bond::single_threaded_counter<> counter{ 10 };
-    bond::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter, {}, false };
+    bond::ext::single_threaded_counter<> counter{ 10 };
+    bond::ext::capped_allocator<std::allocator<char>, decltype(counter)&> alloc{ counter, {}, false };
 
     auto test = [](decltype(alloc)& alloc)
     {
@@ -194,8 +194,8 @@ BOOST_AUTO_TEST_CASE(AllocatorSubtractOnDeallocateTest)
 
 BOOST_AUTO_TEST_CASE(AllocatorCounterInBytesTest)
 {
-    bond::single_threaded_counter<> counter{ 10 };
-    bond::capped_allocator<std::allocator<char[10]>, decltype(counter)&> alloc{ counter };
+    bond::ext::single_threaded_counter<> counter{ 10 };
+    bond::ext::capped_allocator<std::allocator<char[10]>, decltype(counter)&> alloc{ counter };
     BOOST_CHECK_EQUAL(counter.value(), 0u);
     const auto ptr = alloc.allocate(1);
     BOOST_CHECK_NE(ptr, static_cast<void*>(nullptr));
@@ -226,20 +226,20 @@ BOOST_AUTO_TEST_CASE(AllocatorAwareCounterTest)
 
     // BOOST_TEST_CONTEXT("Counter passed by value")
     {
-        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ counter_mock{ 10 } };
+        bond::ext::capped_allocator<std::allocator<char>, counter_mock> alloc{ counter_mock{ 10 } };
         BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter passed by reference")
     {
         counter_mock counter{ 20 };
-        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ std::ref(counter) };
+        bond::ext::capped_allocator<std::allocator<char>, counter_mock> alloc{ std::ref(counter) };
         BOOST_CHECK(allocate_call_args.empty());
     }
 
     // BOOST_TEST_CONTEXT("Counter emplacement")
     {
-        bond::capped_allocator<std::allocator<char>, counter_mock> alloc{ 30 };
+        bond::ext::capped_allocator<std::allocator<char>, counter_mock> alloc{ 30 };
         BOOST_REQUIRE_EQUAL(allocate_call_args.size(), 1u);
         BOOST_CHECK_EQUAL(allocate_call_args.front(), 30);
     }
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(AllocatorAwareCounterTest)
 
 BOOST_AUTO_TEST_CASE(AllocatorExceptionSafetyTest)
 {
-    bond::capped_allocator<std::allocator<char>, bond::shared_counter<>> alloc{ 100 };
+    bond::ext::capped_allocator<std::allocator<char>, bond::ext::shared_counter<>> alloc{ 100 };
     const auto count = alloc.get_counter().value();
     BOOST_CHECK_NE(count, 0u);
 
@@ -259,16 +259,16 @@ BOOST_AUTO_TEST_CASE(AllocatorComparisonTest)
 {
     auto state = std::make_shared<int>();
 
-    bond::capped_allocator<allocator_with_state<>> a1(1024, state);
+    bond::ext::capped_allocator<allocator_with_state<>> a1(1024, state);
     BOOST_CHECK_EQUAL(a1.get_allocator().state, state);
 
-    bond::capped_allocator<allocator_with_state<>> a2(1024, state);
+    bond::ext::capped_allocator<allocator_with_state<>> a2(1024, state);
     BOOST_CHECK_EQUAL(a2.get_allocator().state, state);
 
     BOOST_CHECK_NE(&a1.get_counter(), &a2.get_counter());
     BOOST_CHECK((a1 == a2));
 
-    bond::capped_allocator<allocator_with_state<>> a3(1024, std::make_shared<int>());
+    bond::ext::capped_allocator<allocator_with_state<>> a3(1024, std::make_shared<int>());
     BOOST_CHECK_NE(a1.get_allocator().state, a3.get_allocator().state);
     BOOST_CHECK_NE(a2.get_allocator().state, a3.get_allocator().state);
     BOOST_CHECK((a1 != a3));
@@ -285,7 +285,7 @@ using all_protocols = boost::mpl::list<
 BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protocols)
 {
     const std::size_t max_size = (std::numeric_limits<std::uint32_t>::max)();
-    bond::capped_allocator<std::allocator<char>> alloc{ max_size };
+    bond::ext::capped_allocator<std::allocator<char>> alloc{ max_size };
 
     capped_allocator_tests::Struct from{ alloc };
 

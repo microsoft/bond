@@ -13,7 +13,7 @@
 #include <atomic>
 #include <functional>
 
-namespace bond
+namespace bond { namespace ext
 {
     /// @brief Shared counter to be used with \ref capped_allocator.
     ///
@@ -200,12 +200,12 @@ namespace bond
         boost::intrusive_ptr<internal_counter> _value;
     };
 
-} // namespace bond
+} } // namespace bond::ext
 
 namespace std
 {
     template <typename Counter, typename Alloc>
-    struct uses_allocator<bond::shared_counter<Counter>, Alloc> : std::true_type
+    struct uses_allocator<bond::ext::shared_counter<Counter>, Alloc> : std::true_type
     {};
 
 } // namespace std
