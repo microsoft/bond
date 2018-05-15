@@ -113,10 +113,11 @@ get_protocol_writer<Reader<Input, MarshaledBondedProtocols>, Output>
     typedef typename Reader<Output, MarshaledBondedProtocols>::Writer type;
 };
 
-
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 template <typename T, T> struct
 check_method
     : std::true_type {};
+#endif
 
 
 template <typename T> struct

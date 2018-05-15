@@ -139,7 +139,15 @@ implements_field_omitting<T&>
 // be implemented by untagged protocols that allow omitting optional fields.
 template <typename Writer> struct
 implements_field_omitting<Writer,
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
+#else
+    typename boost::enable_if<std::is_void<
+        decltype(std::declval<Writer>().WriteFieldOmitted(
+            std::declval<BondDataType>(),
+            std::declval<uint16_t>(),
+            std::declval<Metadata>()))>>::type>
+#endif
     : std::true_type {};
 
 
@@ -147,7 +155,13 @@ implements_field_omitting<Writer,
 // by untagged protocols that allow omitting optional fields.
 template <typename Input> struct
 implements_field_omitting<Input,
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     typename boost::enable_if<bond::check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
+#else
+    typename boost::enable_if<std::is_same<
+        bool,
+        decltype(std::declval<Input>().ReadFieldOmitted())>>::type>
+#endif
     : std::true_type {};
 
 
@@ -198,13 +212,21 @@ implements_struct_begin_with_base
 
 template <typename Input> struct
 implements_struct_begin<Input,
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     typename boost::enable_if<bond::check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin())>>
+#endif
     : std::true_type {};
 
 
 template <typename Input> struct
 implements_struct_begin_with_base<Input,
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     typename boost::enable_if<bond::check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin(std::declval<bool>()))>>
+#endif
     : std::true_type {};
 
 

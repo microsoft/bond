@@ -350,9 +350,15 @@ template <typename T, typename Enable = void> struct
 is_writer
     : std::false_type {};
 
-
 template <typename T> struct
-is_writer<T, typename boost::enable_if<check_method<void (T::*)(const Metadata&, bool), &T::WriteStructBegin> >::type>
+is_writer<T,
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    typename boost::enable_if<check_method<void (T::*)(const Metadata&, bool), &T::WriteStructBegin> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<T>().WriteStructBegin(
+        std::declval<Metadata>(),
+        std::declval<bool>()))>>
+#endif
      : std::true_type {};
 
 
