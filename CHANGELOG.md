@@ -129,6 +129,7 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
 * The use of `bond::check_method` has been replaced with less restricting expression
   SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
+* Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
 
 ### C# ###
 
