@@ -38,8 +38,8 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/grpc/io_manager.h>
-#include <bond/ext/grpc/thread_pool.h>
+#include "io_manager.h"
+#include "thread_pool.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -58,8 +58,8 @@
 #include <memory>
 #include <thread>
 
-namespace bond { namespace ext { namespace gRPC {
-
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via
@@ -67,6 +67,9 @@ namespace bond { namespace ext { namespace gRPC {
     class server final
     {
     public:
+        server(server&&) = default;
+        server & operator=(server&&) = default;
+
         ~server()
         {
             Shutdown();
@@ -101,23 +104,25 @@ namespace bond { namespace ext { namespace gRPC {
             _server->Wait();
         }
 
+    private:
         friend class server_builder;
 
     private:
         server(
             std::unique_ptr<grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
-            std::unique_ptr<grpc::ServerCompletionQueue> cq)
+            std::unique_ptr<io_manager> ioManager)
             : _server{ std::move(server) },
               _services{ std::move(services) },
-              _ioManager{ std::move(cq) }
+              _ioManager{ std::move(ioManager) }
         {
             BOOST_ASSERT(_server);
+            BOOST_ASSERT(_ioManager);
         }
 
         std::unique_ptr<grpc::Server> _server;
         std::vector<std::unique_ptr<detail::service>> _services;
-        io_manager _ioManager;
+        std::unique_ptr<io_manager> _ioManager;
     };
 
 } } } //namespace bond::ext::gRPC

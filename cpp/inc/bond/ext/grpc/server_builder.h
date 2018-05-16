@@ -169,7 +169,7 @@ namespace bond { namespace ext { namespace gRPC
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<bond::ext::gRPC::server> BuildAndStart()
+        server BuildAndStart()
         {
             if (!_scheduler)
             {
@@ -177,17 +177,20 @@ namespace bond { namespace ext { namespace gRPC
             }
 
             auto cq = _builder.AddCompletionQueue();
-            auto server = _builder.BuildAndStart();
+            auto grpcServer = _builder.BuildAndStart();
 
-            // Tickle all the services so they queue a receive for all their
-            // methods.
             for (auto& service : _services)
             {
                 service->start(cq.get(), _scheduler);
             }
 
-            return std::unique_ptr<bond::ext::gRPC::server>{
-                new bond::ext::gRPC::server{ std::move(server), std::move(_services), std::move(cq) } };
+            std::unique_ptr<io_manager> ioManager{
+                new io_manager{
+                    std::thread::hardware_concurrency(),
+                    /*delay=*/ false,
+                    std::move(cq) } };
+
+            return server{ std::move(grpcServer), std::move(_services), std::move(ioManager) };
         }
 
     private:
