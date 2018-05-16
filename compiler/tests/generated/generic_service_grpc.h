@@ -6,13 +6,35 @@
 
 #include <bond/core/bond_reflection.h>
 #include <bond/core/bonded.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/client_callback.h>
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/reflection.h>
+#include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client.h>
+#include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
 #include <functional>
 #include <memory>
+
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable: 4100 4267)
+#endif
+
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/status.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 namespace tests
 {
@@ -136,11 +158,11 @@ template <typename Payload>
         }
 
     private:
-        const ::bond::ext::gRPC::detail::client::Method _mfoo31{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo31") };
-        const ::bond::ext::gRPC::detail::client::Method _mfoo32{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo32") };
-        const ::bond::ext::gRPC::detail::client::Method _mfoo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo33") };
-        const ::bond::ext::gRPC::detail::client::Method _mConsumesGeneric1{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/ConsumesGeneric1") };
-        const ::bond::ext::gRPC::detail::client::Method _mConsumesGeneric2{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/ConsumesGeneric2") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo31{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo31") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo32{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo32") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mfoo33{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo33") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mConsumesGeneric1{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/ConsumesGeneric1") };
+        const ::bond::ext::gRPC::detail::client::RpcMethod _mConsumesGeneric2{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/ConsumesGeneric2") };
     };
 
     class Service : public ::bond::ext::gRPC::detail::service

@@ -30,13 +30,35 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 #{newlineSep 0 includeImport imports}
 #{includeBondReflection}
 #include <bond/core/bonded.h>
+#include <bond/ext/grpc/bond_utils.h>
+#include <bond/ext/grpc/client_callback.h>
+#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/reflection.h>
+#include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/unary_call.h>
 #include <bond/ext/grpc/detail/client.h>
+#include <bond/ext/grpc/detail/client_call_data.h>
 #include <bond/ext/grpc/detail/service.h>
+#include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
 #include <functional>
 #include <memory>
+
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable: 4100 4267)
+#endif
+
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/status.h>
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 #{CPP.openNamespace cpp}
 #{doubleLineSep 1 grpc declarations}
@@ -207,7 +229,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
 
-        privateProxyMethodDecl f = [lt|const ::bond::ext::gRPC::detail::client::Method _m#{methodName f}{ ::bond::ext::gRPC::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
+        privateProxyMethodDecl f = [lt|const ::bond::ext::gRPC::detail::client::RpcMethod _m#{methodName f}{ ::bond::ext::gRPC::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
 
         serviceMethodName f = [lt|"/#{getDeclTypeName idl s}/#{methodName f}"|]
 
