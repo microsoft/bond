@@ -206,11 +206,11 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb);
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, #{bonded Nothing}{ ::bond::Void() }, std::move(context), cb);
         }|]
         publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb, request);
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, request, std::move(context), cb);
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
@@ -218,11 +218,11 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
         }|]
         publicProxyMethodDecl Event{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context));
+            ::bond::ext::gRPC::detail::client::dispatch<#{bonded Nothing}>(_m#{methodName}, #{bonded Nothing}{ ::bond::Void() }, std::move(context));
         }|]
         publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), {}, request);
+            ::bond::ext::gRPC::detail::client::dispatch<#{bonded Nothing}>(_m#{methodName}, request, std::move(context));
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
