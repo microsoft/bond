@@ -39,3 +39,18 @@ extra-deps:
 - primitive-0.6.2.0
 - scientific-0.3.5.2
 - vector-0.12.0.1
+
+#
+# The following sections are related to build optimizations and debug
+# settings.
+#
+# These defaults are chosen for a fast build that can be debugged. The
+# CMake-based build will override these via commmand line arguments when
+# needed. See CMakeLists.txt for those details.
+#
+ghc-options:
+  "$locals": -O0
+
+build:
+  executable-stripping: false
+  library-stripping: false
