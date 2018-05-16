@@ -38,8 +38,8 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/grpc/io_manager.h>
-#include <bond/ext/grpc/thread_pool.h>
+#include "io_manager.h"
+#include "thread_pool.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -58,8 +58,8 @@
 #include <memory>
 #include <thread>
 
-namespace bond { namespace ext { namespace gRPC {
-
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via
@@ -67,17 +67,14 @@ namespace bond { namespace ext { namespace gRPC {
     class server final
     {
     public:
+        server(server&&) = default;
+        server & operator=(server&&) = default;
+
         ~server()
         {
             Shutdown();
             Wait();
         }
-
-        server(const server&) = delete;
-        server& operator=(const server&) = delete;
-
-        server(server&&) = default;
-        server& operator=(server&&) = default;
 
         /// @brief Shutdown the server, blocking until all rpc processing
         /// finishes.
@@ -89,13 +86,13 @@ namespace bond { namespace ext { namespace gRPC {
         template <typename T>
         void Shutdown(const T& deadline)
         {
-            _grpcServer->Shutdown(deadline);
+            _server->Shutdown(deadline);
         }
 
         /// Shutdown the server, waiting for all rpc processing to finish.
         void Shutdown()
         {
-            _grpcServer->Shutdown();
+            _server->Shutdown();
         }
 
         /// @brief Block waiting for all work to complete.
@@ -104,23 +101,22 @@ namespace bond { namespace ext { namespace gRPC {
         /// thread must call \p Shutdown for this function to ever return.
         void Wait()
         {
-            _grpcServer->Wait();
+            _server->Wait();
         }
-
-        friend class server_builder;
 
     private:
-        server(
-            std::unique_ptr<grpc::Server> grpcServer,
-            std::unique_ptr<grpc::ServerCompletionQueue> cq)
-            : _grpcServer(std::move(grpcServer)),
-              _ioManager(std::move(cq))
+        friend class server_builder;
+
+        server(std::unique_ptr<grpc::Server> grpcServer, std::unique_ptr<io_manager> ioManager)
+            : _server(std::move(grpcServer)),
+              _ioManager(std::move(ioManager))
         {
-            BOOST_ASSERT(_grpcServer);
+            BOOST_ASSERT(_server);
+            BOOST_ASSERT(_ioManager);
         }
 
-        std::unique_ptr<grpc::Server> _grpcServer;
-        io_manager _ioManager;
+        std::unique_ptr<grpc::Server> _server;
+        std::unique_ptr<io_manager> _ioManager;
     };
 
 } } } //namespace bond::ext::gRPC
