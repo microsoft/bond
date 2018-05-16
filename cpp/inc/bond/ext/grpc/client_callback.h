@@ -34,32 +34,32 @@ namespace bond { namespace ext { namespace gRPC {
               _context(std::move(context))
         { }
 
-        const bonded<Response>& response() const BOND_NOEXCEPT
-        {
-            return _response;
-        }
-
-        const grpc::Status& status() const BOND_NOEXCEPT
-        {
-            return _status;
-        }
-
-        const std::shared_ptr<grpc::ClientContext>& context() const BOND_NOEXCEPT
-        {
-            return _context;
-        }
-
-    private:
         /// @brief The response received from the service.
         ///
         /// @note Depending on the implementation of the service, this may or
         /// may not contain an actual response. Consult the documentation for
         /// the service to determine under what conditions it sends back a
         /// response.
-        bonded<Response> _response;
+        const bonded<Response>& response() const BOND_NOEXCEPT
+        {
+            return _response;
+        }
+
         /// @brief The status of the request.
-        grpc::Status _status;
+        const grpc::Status& status() const BOND_NOEXCEPT
+        {
+            return _status;
+        }
+
         /// @brief The client context under which the request was executed.
+        const std::shared_ptr<grpc::ClientContext>& context() const BOND_NOEXCEPT
+        {
+            return _context;
+        }
+
+    private:
+        bonded<Response> _response;
+        grpc::Status _status;
         std::shared_ptr<grpc::ClientContext> _context;
     };
 

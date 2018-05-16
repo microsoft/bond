@@ -49,7 +49,7 @@ public:
         Client(
             const std::shared_ptr< ::grpc::ChannelInterface>& channel,
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler = {});
+            const ::bond::ext::gRPC::Scheduler& scheduler);
 
         void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
         void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
@@ -110,10 +110,7 @@ inline Foo::Client::Client(
     , _scheduler(scheduler)
     , rpcmethod_foo_("/tests.Foo/foo", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
 {
-    if (!_scheduler)
-    {
-        _scheduler = ::bond::ext::gRPC::thread_pool{};
-    }
+    BOOST_ASSERT(_scheduler);
 }
 
 inline void Foo::Client::Asyncfoo(

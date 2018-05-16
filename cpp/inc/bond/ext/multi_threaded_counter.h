@@ -13,7 +13,7 @@
 #include <atomic>
 
 
-namespace bond
+namespace bond { namespace ext
 {
     /// @brief Multi-threaded counter to be used with \ref capped_allocator.
     ///
@@ -70,4 +70,4 @@ namespace bond
         std::atomic<T> _value{};
     };
 
-} // namespace bond
+} } // namespace bond::ext

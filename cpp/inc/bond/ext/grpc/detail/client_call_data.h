@@ -26,8 +26,6 @@
 #endif
 
 #include <boost/assert.hpp>
-#include <boost/intrusive_ptr.hpp>
-#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 
 #include <functional>
 #include <memory>
@@ -39,7 +37,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 /// outgoing unary calls.
 template <typename Request, typename Response>
 class client_unary_call_data
-    : public boost::intrusive_ref_counter<client_unary_call_data<Request, Response>>,
+    : public std::enable_shared_from_this<client_unary_call_data<Request, Response>>,
       io_manager_tag
 {
     /// The type of the user-defined callback that will be invoked for the
@@ -48,34 +46,41 @@ class client_unary_call_data
 
 public:
     client_unary_call_data(
-        const grpc::internal::RpcMethod& method,
-        const bonded<Request>& request,
-        std::shared_ptr<grpc::CompletionQueue> cq,
         std::shared_ptr<grpc::ChannelInterface> channel,
-        std::shared_ptr<grpc::ClientContext> context,
+        std::shared_ptr<io_manager> ioManager,
         const Scheduler& scheduler,
+        std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
-        : _cq(std::move(cq)),
-          _channel(std::move(channel)),
-          _context(std::move(context)),
-          _responseReader(
-              ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
-                  _channel.get(),
-                  _cq.get(),
-                  method,
-                  _context.get(),
-                  request,
-                  /* start */ true)),
+        : _channel(std::move(channel)),
+          _ioManager(std::move(ioManager)),
           _scheduler(scheduler),
-          _response(),
-          _status(),
+          _responseReader(),
+          _context(std::move(context)),
           _cb(std::move(cb)),
-          _self(this)
+          _self()
     {
+        BOOST_ASSERT(_channel);
+        BOOST_ASSERT(_ioManager);
         BOOST_ASSERT(_scheduler);
+        BOOST_ASSERT(_context);
+    }
 
-        auto alive = _self;
+    /// @brief Initiates the client request and wires up completion
+    /// notification.
+    void dispatch(const grpc::internal::RpcMethod& method, const bonded<Request>& request)
+    {
+        _responseReader.reset(
+            ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
+                _channel.get(),
+                _ioManager->cq(),
+                method,
+                _context.get(),
+                request,
+                /* start */ true));
 
+        _self = this->shared_from_this();
+
+        auto self = _self; // Make sure `this` will outlive the below call.
         _responseReader->Finish(&_response, &_status, tag());
     }
 
@@ -95,16 +100,17 @@ private:
         _self.reset();
     }
 
-    /// The completion port to post IO operations to.
-    std::shared_ptr<grpc::CompletionQueue> _cq;
+
     /// The channel to send the request on.
     std::shared_ptr<grpc::ChannelInterface> _channel;
-    /// @brief The client context under which the request was executed.
-    std::shared_ptr<grpc::ClientContext> _context;
-    /// A response reader.
-    std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+    /// The io_manager to use for both sending and receiving.
+    std::shared_ptr<io_manager> _ioManager;
     /// The scheduler in which to invoke the callback.
     Scheduler _scheduler;
+    /// A response reader.
+    std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+    /// @brief The client context under which the request was executed.
+    std::shared_ptr<grpc::ClientContext> _context;
     /// @brief The response received from the service.
     bonded<Response> _response;
     /// @brief The status of the request.
@@ -113,7 +119,7 @@ private:
     CallbackType _cb;
     /// A pointer to ourselves used to keep us alive while waiting to
     /// receive the response.
-    boost::intrusive_ptr<client_unary_call_data> _self;
+    std::shared_ptr<client_unary_call_data> _self;
 };
 
 } } } } //namespace bond::ext::gRPC::detail
