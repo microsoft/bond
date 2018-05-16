@@ -124,8 +124,8 @@ int main()
 
     bool countdownSet = Countdown.wait_for(std::chrono::seconds(30));
 
-    server->Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(10));
-    server->Wait();
+    server.Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(10));
+    server.Wait();
 
     if (!countdownSet ||
         (NumRequestsReceived != NumRequests) ||
