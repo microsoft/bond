@@ -234,8 +234,8 @@ alphabetical order. -->
 <p>The key generated C++ classes for gRPC are:</p>
 <ul>
 <li>A simple class with the name of the service (e.g.: <code>Example</code>). This class provides some basic encapsulation of the server-side service base and the client-side proxy stub.</li>
-<li>The service base, which is an inner class named <code>Service</code> (e.g.: <code>Example::Service</code>). This class has abstract methods for each of the methods defined in the service IDL, serving as a base for the concrete implementation which will provide the actual server-side business logic. (Technically, <code>Service</code> is a type alias for <code>ServiceCore&lt;bond::ext::gRPC::thread_pool&gt;</code>. The <code>ServiceCore&lt;T&gt;</code> template can be used to customize the service implementation to use a different thread pool implementation.)</li>
-<li>The proxy stub, which is an inner class named <code>Client</code> (e.g.: <code>Example::Client</code>). This is used to invoke the service from the client side. (Likewise, <code>Client</code> is a type alias for <code>ClientCore&lt;bond::ext::gRPC::thread_pool&gt;</code>. The <code>ClientCore&lt;T&gt;</code> template can be used to customize the client implementation to use a different thread pool implementation.)</li>
+<li>The service base, which is an inner class named <code>Service</code> (e.g.: <code>Example::Service</code>). This class has abstract methods for each of the methods defined in the service IDL, serving as a base for the concrete implementation which will provide the actual server-side business logic.</li>
+<li>The proxy stub, which is an inner class named <code>Client</code> (e.g.: <code>Example::Client</code>). This is used to invoke the service from the client side.</li>
 </ul>
 <p>To build the service functionality, simply write a concrete service implementation by subclassing the server base and supplying the business logic:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">class</span> ExampleServiceImpl <span class="kw">final</span> : Example::Service
@@ -254,26 +254,27 @@ alphabetical order. -->
     }
 }</code></pre></div>
 <p>This service implementation is hooked up to a gRPC server as follows:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
-<span class="kw">auto</span> threadPool = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bond::ext::gRPC::thread_pool threadPool;
 <span class="at">const</span> <span class="bu">std::</span>string server_address(Host + <span class="st">&quot;:&quot;</span> + Port);
 
 ExampleServiceImpl service;
-bond::ext::gRPC::server_builder builder;
-builder.SetThreadPool(threadPool);
-builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-builder.RegisterService(&amp;service);
-<span class="bu">std::</span>unique_ptr&lt;bond::ext::gRPC::server&gt; server(builder.BuildAndStart());</code></pre></div>
+
+<span class="bu">std::</span>unique_ptr&lt;bond::ext::gRPC::server&gt; server =
+    bond::ext::gRPC::server_builder{}
+        .SetScheduler(threadPool)
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(&amp;service)
+        .BuildAndStart();</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
-<span class="kw">auto</span> threadPool = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::thread_pool&gt;();
+bond::ext::gRPC::thread_pool threadPool;
 <span class="at">const</span> <span class="bu">std::</span>string server_address(Host + <span class="st">&quot;:&quot;</span> + Port);
 
-Example::Client client(
+Example::Client client{
     grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
     ioManager,
-    threadPool);</code></pre></div>
+    threadPool };</code></pre></div>
 <p>The proxy stub can then be used to make calls to the server as follows:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">ExampleRequest request;
 <span class="co">// Fill in request fields here</span>

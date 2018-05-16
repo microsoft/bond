@@ -91,7 +91,6 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1thread_
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::ext::gRPC::thread_pool Class Reference</div>  </div>
@@ -100,33 +99,53 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1thread_
 
 <p>Basic thread pool implementation.  
  <a href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#details">More...</a></p>
-
-<p>Inherits io_service.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac59ad846e8a5a08ea2a4ef98776b3bda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#ac59ad846e8a5a08ea2a4ef98776b3bda">thread_pool</a> (size_t numThreads=<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#aff5e9a25724060263b5912dca2db27b8">USE_HARDWARE_CONC</a>)</td></tr>
-<tr class="memdesc:ac59ad846e8a5a08ea2a4ef98776b3bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with the specified number of threads.  <a href="#ac59ad846e8a5a08ea2a4ef98776b3bda">More...</a><br /></td></tr>
-<tr class="separator:ac59ad846e8a5a08ea2a4ef98776b3bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bb3500f11b9c6c5dd04fda6a16618d3"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
-<tr class="memitem:a4bb3500f11b9c6c5dd04fda6a16618d3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a4bb3500f11b9c6c5dd04fda6a16618d3">schedule</a> (Callback &amp;&amp;callback)</td></tr>
-<tr class="memdesc:a4bb3500f11b9c6c5dd04fda6a16618d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules a callback for execution.  <a href="#a4bb3500f11b9c6c5dd04fda6a16618d3">More...</a><br /></td></tr>
-<tr class="separator:a4bb3500f11b9c6c5dd04fda6a16618d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489e275f7a462f38ad50d9320a92f081"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a489e275f7a462f38ad50d9320a92f081">thread_pool</a> ()</td></tr>
+<tr class="memdesc:a489e275f7a462f38ad50d9320a92f081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with number of threads equal to CPU/cores available.  <a href="#a489e275f7a462f38ad50d9320a92f081">More...</a><br /></td></tr>
+<tr class="separator:a489e275f7a462f38ad50d9320a92f081"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d9942ec05f07af4582d8992154d7e96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a7d9942ec05f07af4582d8992154d7e96">thread_pool</a> (unsigned int numThreads)</td></tr>
+<tr class="memdesc:a7d9942ec05f07af4582d8992154d7e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with the specified number of threads.  <a href="#a7d9942ec05f07af4582d8992154d7e96">More...</a><br /></td></tr>
+<tr class="separator:a7d9942ec05f07af4582d8992154d7e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29073cde0f3e2264f1bfd01b37807229"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
+<tr class="memitem:a29073cde0f3e2264f1bfd01b37807229"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a29073cde0f3e2264f1bfd01b37807229">operator()</a> (Callback &amp;&amp;callback)</td></tr>
+<tr class="memdesc:a29073cde0f3e2264f1bfd01b37807229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules a callback for execution.  <a href="#a29073cde0f3e2264f1bfd01b37807229">More...</a><br /></td></tr>
+<tr class="separator:a29073cde0f3e2264f1bfd01b37807229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ed98e0a7958af712ed45b05201c0101"><td class="memItemLeft" align="right" valign="top">boost::asio::io_service &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a8ed98e0a7958af712ed45b05201c0101">get_io_service</a> ()</td></tr>
 <tr class="memdesc:a8ed98e0a7958af712ed45b05201c0101"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying boost::asio::io_service.  <a href="#a8ed98e0a7958af712ed45b05201c0101">More...</a><br /></td></tr>
 <tr class="separator:a8ed98e0a7958af712ed45b05201c0101"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:aff5e9a25724060263b5912dca2db27b8"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#aff5e9a25724060263b5912dca2db27b8">USE_HARDWARE_CONC</a> = 0</td></tr>
-<tr class="memdesc:aff5e9a25724060263b5912dca2db27b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constant to indicate that the number of threads should be based on the hardware's available concurrency.  <a href="#aff5e9a25724060263b5912dca2db27b8">More...</a><br /></td></tr>
-<tr class="separator:aff5e9a25724060263b5912dca2db27b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Basic thread pool implementation. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac59ad846e8a5a08ea2a4ef98776b3bda"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac59ad846e8a5a08ea2a4ef98776b3bda">&#9670;&nbsp;</a></span>thread_pool()</h2>
+<a id="a489e275f7a462f38ad50d9320a92f081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a489e275f7a462f38ad50d9320a92f081">&#9670;&nbsp;</a></span>thread_pool() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bond::ext::gRPC::thread_pool::thread_pool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs and starts a thread pool with number of threads equal to CPU/cores available. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html" title="Exception thrown when std::thread::hardware_concurrency returns 0. ">InvalidThreadCount</a></td><td>when std::thread::hardware_concurrency return 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7d9942ec05f07af4582d8992154d7e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d9942ec05f07af4582d8992154d7e96">&#9670;&nbsp;</a></span>thread_pool() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,8 +156,8 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">bond::ext::gRPC::thread_pool::thread_pool </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numThreads</em> = <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#aff5e9a25724060263b5912dca2db27b8">USE_HARDWARE_CONC</a></code></td><td>)</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>numThreads</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -150,9 +169,9 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructs and starts a thread pool with the specified number of threads. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">numThreads</td><td>total number of threads to be created. If <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#aff5e9a25724060263b5912dca2db27b8">USE_HARDWARE_CONC</a> then as many threads as CPU/cores are available will be created. </td></tr>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html" title="Exception thrown when std::thread::hardware_concurrency returns 0. ">InvalidThreadCount</a></td><td>when 0 is specified. </td></tr>
   </table>
   </dd>
 </dl>
@@ -179,8 +198,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4bb3500f11b9c6c5dd04fda6a16618d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bb3500f11b9c6c5dd04fda6a16618d3">&#9670;&nbsp;</a></span>schedule()</h2>
+<a id="a29073cde0f3e2264f1bfd01b37807229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29073cde0f3e2264f1bfd01b37807229">&#9670;&nbsp;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -188,7 +207,7 @@ Static Public Attributes</h2></td></tr>
 template&lt;typename Callback &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void bond::ext::gRPC::thread_pool::schedule </td>
+          <td class="memname">void bond::ext::gRPC::thread_pool::operator() </td>
           <td>(</td>
           <td class="paramtype">Callback &amp;&amp;&#160;</td>
           <td class="paramname"><em>callback</em></td><td>)</td>
@@ -204,31 +223,6 @@ template&lt;typename Callback &gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="aff5e9a25724060263b5912dca2db27b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff5e9a25724060263b5912dca2db27b8">&#9670;&nbsp;</a></span>USE_HARDWARE_CONC</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t bond::ext::gRPC::thread_pool::USE_HARDWARE_CONC = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constant to indicate that the number of threads should be based on the hardware's available concurrency. </p>
 
 </div>
 </div>

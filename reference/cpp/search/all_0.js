@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['addlisteningport',['AddListeningPort',['../classbond_1_1ext_1_1g_r_p_c_1_1server__builder__core.html#a5bd0662de77aafcb968dd8ec09e4e800',1,'bond::ext::gRPC::server_builder_core']]],
-  ['addmethod',['AddMethod',['../classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#ac41909d0a82d3667faacbb1946c3efe5',1,'bond::ext::gRPC::detail::service']]],
+  ['addlisteningport',['AddListeningPort',['../classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#addaecc715025e342f17b656d0189747d',1,'bond::ext::gRPC::server_builder']]],
+  ['addmethod',['AddMethod',['../classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#ab5addd78a738a6fb3d7229c0c6aaaad7',1,'bond::ext::gRPC::detail::service']]],
   ['allocator_5fholder',['allocator_holder',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20alloc_20_3e',['allocator_holder&lt; Alloc &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20detail_3a_3aallocator_5ftype_3c_20t_20_3e_3a_3atype_20_3e',['allocator_holder&lt; detail::allocator_type&lt; T &gt;::type &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
