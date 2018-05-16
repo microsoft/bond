@@ -39,76 +39,10 @@ namespace tests
 {
 
 template <typename Payload>
-    struct Foo final
+    class Foo final
 {
-    struct Schema
-    {
-        static const ::bond::Metadata metadata;
-
-        private: static const ::bond::Metadata s_foo31_metadata;
-        private: static const ::bond::Metadata s_foo32_metadata;
-        private: static const ::bond::Metadata s_foo33_metadata;
-        private: static const ::bond::Metadata s_ConsumesGeneric1_metadata;
-        private: static const ::bond::Metadata s_ConsumesGeneric2_metadata;
-
-        public: struct service
-        {
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded<Payload>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo31_metadata
-            > foo31;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded<Payload>,
-                &s_foo32_metadata
-            > foo32;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded<Payload>,
-                ::bond::bonded<Payload>,
-                &s_foo33_metadata
-            > foo33;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::SomeBox<int32_t>>,
-                ::bond::bonded< ::bond::Void>,
-                &s_ConsumesGeneric1_metadata
-            > ConsumesGeneric1;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>,
-                ::bond::bonded< ::bond::Void>,
-                &s_ConsumesGeneric2_metadata
-            > ConsumesGeneric2;
-        };
-
-        private: typedef boost::mpl::list<> methods0;
-        private: typedef typename boost::mpl::push_front<methods0, typename service::ConsumesGeneric2>::type methods1;
-        private: typedef typename boost::mpl::push_front<methods1, typename service::ConsumesGeneric1>::type methods2;
-        private: typedef typename boost::mpl::push_front<methods2, typename service::foo33>::type methods3;
-        private: typedef typename boost::mpl::push_front<methods3, typename service::foo32>::type methods4;
-        private: typedef typename boost::mpl::push_front<methods4, typename service::foo31>::type methods5;
-
-        public: typedef typename methods5::type methods;
-
-        Schema()
-        {
-            // Force instantiation of template statics
-            (void)metadata;
-            (void)s_foo31_metadata;
-            (void)s_foo32_metadata;
-            (void)s_foo33_metadata;
-            (void)s_ConsumesGeneric1_metadata;
-            (void)s_ConsumesGeneric2_metadata;
-        }
-    };
+public:
+    struct Schema;
 
     class Client
     {
@@ -116,88 +50,29 @@ template <typename Payload>
         Client(
             const std::shared_ptr< ::grpc::ChannelInterface>& channel,
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler = {})
-            : _channel(channel)
-            , _ioManager(ioManager)
-            , _scheduler(scheduler)
-            , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-            , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-            , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-            , rpcmethod_ConsumesGeneric1_("/tests.Foo/ConsumesGeneric1", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-            , rpcmethod_ConsumesGeneric2_("/tests.Foo/ConsumesGeneric2", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-        {
-            if (!_scheduler)
-            {
-                _scheduler = ::bond::ext::gRPC::thread_pool{};
-            }
-        }
+            const ::bond::ext::gRPC::Scheduler& scheduler = {});
 
-        void Asyncfoo31(const ::bond::bonded<Payload>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
-        {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< Payload, ::bond::Void>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_foo31_, request);
-        }
+        void Asyncfoo31(const ::bond::bonded<Payload>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
         void Asyncfoo31(const Payload& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo31(::bond::bonded<Payload>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo32(const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
-        {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, Payload>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_foo32_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
-        }
+        void Asyncfoo32(const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
 
-        void Asyncfoo33(const ::bond::bonded<Payload>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
-        {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< Payload, Payload>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_foo33_, request);
-        }
+        void Asyncfoo33(const ::bond::bonded<Payload>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
         void Asyncfoo33(const Payload& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo33(::bond::bonded<Payload>{request}, cb, ::std::move(context));
         }
 
-        void AsyncConsumesGeneric1(const ::bond::bonded< ::tests::SomeBox<int32_t>>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
-        {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<int32_t>, ::bond::Void>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_ConsumesGeneric1_, request);
-        }
+        void AsyncConsumesGeneric1(const ::bond::bonded< ::tests::SomeBox<int32_t>>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
         void AsyncConsumesGeneric1(const ::tests::SomeBox<int32_t>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             AsyncConsumesGeneric1(::bond::bonded< ::tests::SomeBox<int32_t>>{request}, cb, ::std::move(context));
         }
 
-        void AsyncConsumesGeneric2(const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
-        {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_ConsumesGeneric2_, request);
-        }
+        void AsyncConsumesGeneric2(const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
         void AsyncConsumesGeneric2(const ::tests::SomeBox<std::vector<int32_t> >& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             AsyncConsumesGeneric2(::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>{request}, cb, ::std::move(context));
@@ -287,6 +162,175 @@ template <typename Payload>
     };
 };
 
+template <typename Payload>
+    inline Foo<Payload>::Client::Client(
+    const ::std::shared_ptr< ::grpc::ChannelInterface>& channel,
+    ::std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
+    const ::bond::ext::gRPC::Scheduler& scheduler)
+    : _channel(channel)
+    , _ioManager(ioManager)
+    , _scheduler(scheduler)
+    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric1_("/tests.Foo/ConsumesGeneric1", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+    , rpcmethod_ConsumesGeneric2_("/tests.Foo/ConsumesGeneric2", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+{
+    if (!_scheduler)
+    {
+        _scheduler = ::bond::ext::gRPC::thread_pool{};
+    }
+}
+
+template <typename Payload>
+    inline void Foo<Payload>::Client::Asyncfoo31(
+    const ::bond::bonded<Payload>& request,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< Payload, ::bond::Void>>(
+        _channel,
+        _ioManager,
+        _scheduler,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+        cb);
+    calldata->dispatch(rpcmethod_foo31_, request);
+}
+
+template <typename Payload>
+    inline void Foo<Payload>::Client::Asyncfoo32(
+    
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
+{
+    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, Payload>>(
+        _channel,
+        _ioManager,
+        _scheduler,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+        cb);
+    calldata->dispatch(rpcmethod_foo32_, request);
+}
+
+template <typename Payload>
+    inline void Foo<Payload>::Client::Asyncfoo33(
+    const ::bond::bonded<Payload>& request,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< Payload>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< Payload, Payload>>(
+        _channel,
+        _ioManager,
+        _scheduler,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+        cb);
+    calldata->dispatch(rpcmethod_foo33_, request);
+}
+
+template <typename Payload>
+    inline void Foo<Payload>::Client::AsyncConsumesGeneric1(
+    const ::bond::bonded< ::tests::SomeBox<int32_t>>& request,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<int32_t>, ::bond::Void>>(
+        _channel,
+        _ioManager,
+        _scheduler,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+        cb);
+    calldata->dispatch(rpcmethod_ConsumesGeneric1_, request);
+}
+
+template <typename Payload>
+    inline void Foo<Payload>::Client::AsyncConsumesGeneric2(
+    const ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>& request,
+    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
+    ::std::shared_ptr< ::grpc::ClientContext> context)
+{
+    
+    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void>>(
+        _channel,
+        _ioManager,
+        _scheduler,
+        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+        cb);
+    calldata->dispatch(rpcmethod_ConsumesGeneric2_, request);
+}
+
+template <typename Payload>
+    struct Foo<Payload>::Schema
+{
+    static const ::bond::Metadata metadata;
+
+    private: static const ::bond::Metadata s_foo31_metadata;
+    private: static const ::bond::Metadata s_foo32_metadata;
+    private: static const ::bond::Metadata s_foo33_metadata;
+    private: static const ::bond::Metadata s_ConsumesGeneric1_metadata;
+    private: static const ::bond::Metadata s_ConsumesGeneric2_metadata;
+
+    public: struct service
+    {
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded<Payload>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo31_metadata
+            > foo31;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded<Payload>,
+                &s_foo32_metadata
+            > foo32;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded<Payload>,
+                ::bond::bonded<Payload>,
+                &s_foo33_metadata
+            > foo33;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::tests::SomeBox<int32_t>>,
+                ::bond::bonded< ::bond::Void>,
+                &s_ConsumesGeneric1_metadata
+            > ConsumesGeneric1;
+
+        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo<Payload>,
+                ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>,
+                ::bond::bonded< ::bond::Void>,
+                &s_ConsumesGeneric2_metadata
+            > ConsumesGeneric2;
+    };
+
+    private: typedef boost::mpl::list<> methods0;
+    private: typedef typename boost::mpl::push_front<methods0, typename service::ConsumesGeneric2>::type methods1;
+    private: typedef typename boost::mpl::push_front<methods1, typename service::ConsumesGeneric1>::type methods2;
+    private: typedef typename boost::mpl::push_front<methods2, typename service::foo33>::type methods3;
+    private: typedef typename boost::mpl::push_front<methods3, typename service::foo32>::type methods4;
+    private: typedef typename boost::mpl::push_front<methods4, typename service::foo31>::type methods5;
+
+    public: typedef typename methods5::type methods;
+
+    Schema()
+        {
+            // Force instantiation of template statics
+            (void)metadata;
+            (void)s_foo31_metadata;
+            (void)s_foo32_metadata;
+            (void)s_foo33_metadata;
+            (void)s_ConsumesGeneric1_metadata;
+            (void)s_ConsumesGeneric2_metadata;
+        }
+};
 
     template <typename Payload>
     const ::bond::Metadata Foo<Payload>::Schema::metadata
