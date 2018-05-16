@@ -7,7 +7,6 @@
 
 #include "io_manager_tag.h"
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call_result.h>
 
 #ifdef _MSC_VER
@@ -35,7 +34,11 @@
 #include <memory>
 
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
+namespace bond { namespace ext { namespace gRPC {
+
+using Scheduler = std::function<void(const std::function<void()>& func)>;
+
+namespace detail {
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing unary calls.
