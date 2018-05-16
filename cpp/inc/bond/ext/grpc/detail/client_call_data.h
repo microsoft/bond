@@ -65,9 +65,6 @@ public:
         BOOST_ASSERT(_context);
     }
 
-    client_unary_call_data(const client_unary_call_data& other) = delete;
-    client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
-
     /// @brief Initiates the client request and wires up completion
     /// notification.
     void dispatch(const grpc::internal::RpcMethod& method, const bonded<Request>& request)
