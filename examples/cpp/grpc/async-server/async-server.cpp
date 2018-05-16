@@ -58,13 +58,16 @@ public:
     // In this example, we use the same thread pool to perform asynchronous
     // processing of requests as is used in the rest of the program.
     explicit GreeterServiceImpl(bond::ext::gRPC::thread_pool tp)
-        : Greeter::Service(std::move(tp))
+        : _tp(std::move(tp))
     { }
 
     void SayHello(CallType call) override
     {
-        scheduler()(PerRequestState{ std::move(call) });
+        _tp(PerRequestState{ std::move(call) });
     }
+
+private:
+    bond::ext::gRPC::thread_pool _tp;
 };
 
 int main()
@@ -74,12 +77,13 @@ int main()
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl(threadPool) };
+    GreeterServiceImpl service(threadPool);
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
+            .SetScheduler(threadPool)
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
+            .RegisterService(&service)
             .BuildAndStart());
 
     Greeter::Client greeter(

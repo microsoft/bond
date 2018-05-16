@@ -109,14 +109,14 @@ static void MakeSumRequest(ScalarMethods::Client& client)
 
 int main()
 {
-    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl };
+    ScalarMethodsImpl service;
 
     const std::string server_address("127.0.0.1:50051");
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
+            .RegisterService(&service)
             .BuildAndStart());
 
     ScalarMethods::Client client(

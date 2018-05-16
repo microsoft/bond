@@ -110,14 +110,14 @@ public:
 
 int main()
 {
-    std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl };
+    PingPongServiceImpl service;
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
+            .RegisterService(&service)
             .BuildAndStart());
 
     printf("Server ready\n");

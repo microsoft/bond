@@ -39,14 +39,14 @@ class GreeterServiceImpl final : public Greeter::Service
 
 int main()
 {
-    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl };
+    GreeterServiceImpl service;
 
     const std::string server_address("127.0.0.1:50051");
 
     std::unique_ptr<bond::ext::gRPC::server> server(
         bond::ext::gRPC::server_builder{}
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
+            .RegisterService(&service)
             .BuildAndStart());
 
     Greeter::Client greeter(

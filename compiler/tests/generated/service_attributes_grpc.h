@@ -114,33 +114,30 @@ struct Foo final
     class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler = {})
-            : ::bond::ext::gRPC::detail::service(
-                scheduler,
-                {
-                    "/tests.Foo/foo"
-                })
-        {}
-
-        void start() override
+        Service()
         {
-            _data.emplace(*this);
+            this->AddMethod("/tests.Foo/foo");
+        }
+
+        virtual void start(
+            ::grpc::ServerCompletionQueue* cq,
+            const ::bond::ext::gRPC::Scheduler& scheduler) override
+        {
+            BOOST_ASSERT(cq);
+            BOOST_ASSERT(scheduler);
+
+            _rd_foo.emplace(
+                *this,
+                0,
+                cq,
+                scheduler,
+                std::bind(&Service::foo, this, std::placeholders::_1));
         }
 
         virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::tests::Result>) = 0;
 
     private:
-        struct data
-        {
-            explicit data(Service& s)
-                : _s(s)
-            {}
-
-            Service& _s;
-            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo> _m0{ _s, 0, ::std::bind(&Service::foo, &_s, ::std::placeholders::_1) };
-        };
-
-        ::boost::optional<data> _data;
+        ::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< ::bond::bonded< ::tests::Param>, ::tests::Result>> _rd_foo;
     };
 };
 

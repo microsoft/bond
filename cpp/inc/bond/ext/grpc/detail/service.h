@@ -23,19 +23,11 @@
 
 #include <boost/assert.hpp>
 
-#include <initializer_list>
 #include <functional>
 
-namespace bond { namespace ext { namespace gRPC {
-
-class server_builder;
-    
-namespace detail {
+namespace bond { namespace ext { namespace gRPC { namespace detail {
 
 struct io_manager_tag;
-
-template <typename Request, typename Response>
-class service_unary_call_data;
 
 /// @brief Base class that all Bond gRPC++ services implement.
 ///
@@ -55,7 +47,7 @@ public:
     ///
     /// Typical implementations call queue_receive on all the methods in the
     /// service to kick of the process of receiving messages.
-    virtual void start() = 0;
+    virtual void start(grpc::ServerCompletionQueue* cq, const Scheduler& scheduler) = 0;
 
     /// @brief Starts the receive process for a method.
     ///
@@ -74,6 +66,9 @@ public:
     ///
     /// @param responseStream pointer to a response stream to populate
     ///
+    /// @param cq the completion queue to notify when a call has been
+    /// received
+    ///
     /// @param tag the io_manager_tag to include with the completion queue
     /// notification
     template <typename Request>
@@ -82,17 +77,16 @@ public:
         grpc::ServerContext* context,
         Request* request,
         grpc::internal::ServerAsyncStreamingInterface* responseStream,
+        grpc::ServerCompletionQueue* cq,
         io_manager_tag* tag)
     {
-        BOOST_ASSERT(_cq);
-
         RequestAsyncUnary(
             methodIndex,
             context,
             request,
             responseStream,
-            _cq,
-            _cq,
+            cq,
+            cq,
             tag);
     }
 
@@ -104,54 +98,26 @@ public:
         return this;
     }
 
-    Scheduler& scheduler()
-    {
-        return _scheduler;
-    }
-
 protected:
-    template <typename MethodT>
-    using Method = service_unary_call_data<
-        typename MethodT::input_type,
-        typename remove_bonded<
-            typename std::conditional<
-                std::is_void<typename MethodT::result_type>::value,
-                Void,
-                typename MethodT::result_type>::type>::type>;
+    service() = default;
 
-    service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
-        : _scheduler(scheduler ? scheduler : thread_pool{}),
-          _cq(nullptr)
+    /// @brief Registers a method name for dispatch to this service.
+    ///
+    /// @note This method is for use by generated and helper code only.
+    ///
+    /// The order in which methods are registered assigned the method index,
+    /// which is used elsewhere.
+    void AddMethod(const char* methodName)
     {
-        AddMethods(methodNames);
+        BOOST_ASSERT(methodName);
+
+        // ownership of the service method is transfered to grpc::Service
+        grpc::Service::AddMethod(
+            new grpc::internal::RpcServiceMethod(
+                methodName,
+                grpc::internal::RpcMethod::NORMAL_RPC,
+                nullptr)); // nullptr indicates async handler
     }
-
-private:
-    friend class gRPC::server_builder;
-
-    void AddMethods(std::initializer_list<const char*> names)
-    {
-        for (const char* name : names)
-        {
-            BOOST_ASSERT(name);
-
-            // ownership of the service method is transfered to grpc::Service
-            grpc::Service::AddMethod(
-                new grpc::internal::RpcServiceMethod(
-                    name,
-                    grpc::internal::RpcMethod::NORMAL_RPC,
-                    nullptr)); // nullptr indicates async handler
-        }
-    }
-
-    void SetCompletionQueue(grpc::ServerCompletionQueue* cq)
-    {
-        BOOST_ASSERT(!_cq);
-        _cq = cq;
-    }
-
-    Scheduler _scheduler;
-    grpc::ServerCompletionQueue* _cq;
 };
 
 } } } } // namespace bond::ext::gRPC::detail

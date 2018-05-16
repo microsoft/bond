@@ -55,27 +55,26 @@
 
 #include <boost/assert.hpp>
 
-#include <algorithm>
 #include <memory>
-#include <vector>
+#include <set>
 
 namespace bond { namespace ext { namespace gRPC {
 
     /// @brief A builder class for the creation and startup of \a
     /// bond::ext::gRPC::server instances.
-    class server_builder final
-    {
+    class server_builder final {
     public:
         /// Register a service. This call does not take ownership of the
         /// service. The service must exist for the lifetime of the \p
         /// server instance returned by \p BuildAndStart().
         ///
         /// Matches requests with any :authority
-        server_builder& RegisterService(std::unique_ptr<detail::service> service)
+        server_builder& RegisterService(detail::service* service)
         {
             BOOST_ASSERT(service);
-            _builder.RegisterService(service->grpc_service());
-            _services.push_back(std::move(service));
+            _grpcServerBuilder.RegisterService(service->grpc_service());
+            _services.insert(service);
+
             return *this;
         }
 
@@ -84,25 +83,26 @@ namespace bond { namespace ext { namespace gRPC {
         /// server instance returned by BuildAndStart().
         ///
         /// Only matches requests with :authority \p host
-        server_builder& RegisterService(const grpc::string& host, std::unique_ptr<detail::service> service)
+        server_builder& RegisterService(const grpc::string& host, detail::service* service)
         {
             BOOST_ASSERT(service);
-            _builder.RegisterService(host, service->grpc_service());
-            _services.push_back(std::move(service));
+            _grpcServerBuilder.RegisterService(host, service->grpc_service());
+            _services.insert(service);
+
             return *this;
         }
 
         /// Set max receive message size in bytes.
         server_builder& SetMaxReceiveMessageSize(int max_receive_message_size)
         {
-            _builder.SetMaxReceiveMessageSize(max_receive_message_size);
+            _grpcServerBuilder.SetMaxReceiveMessageSize(max_receive_message_size);
             return *this;
         }
 
         /// Set max send message size in bytes.
         server_builder& SetMaxSendMessageSize(int max_send_message_size)
         {
-            _builder.SetMaxSendMessageSize(max_send_message_size);
+            _grpcServerBuilder.SetMaxSendMessageSize(max_send_message_size);
             return *this;
         }
 
@@ -116,7 +116,7 @@ namespace bond { namespace ext { namespace gRPC {
             grpc_compression_algorithm algorithm,
             bool enabled)
         {
-            _builder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
+            _grpcServerBuilder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
             return *this;
         }
 
@@ -124,7 +124,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// the absence of a call-specific level.
         server_builder& SetDefaultCompressionLevel(grpc_compression_level level)
         {
-            _builder.SetDefaultCompressionLevel(level);
+            _grpcServerBuilder.SetDefaultCompressionLevel(level);
             return *this;
         }
 
@@ -134,14 +134,20 @@ namespace bond { namespace ext { namespace gRPC {
         server_builder& SetDefaultCompressionAlgorithm(
             grpc_compression_algorithm algorithm)
         {
-            _builder.SetDefaultCompressionAlgorithm(algorithm);
+            _grpcServerBuilder.SetDefaultCompressionAlgorithm(algorithm);
             return *this;
         }
 
         /// Set the attached buffer pool for this server.
         server_builder& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
         {
-            _builder.SetResourceQuota(resource_quota);
+            _grpcServerBuilder.SetResourceQuota(resource_quota);
+            return *this;
+        }
+
+        server_builder& SetScheduler(const Scheduler& scheduler)
+        {
+            _scheduler = scheduler;
             return *this;
         }
 
@@ -159,27 +165,36 @@ namespace bond { namespace ext { namespace gRPC {
             std::shared_ptr<grpc::ServerCredentials> creds,
             int* selected_port = nullptr)
         {
-            _builder.AddListeningPort(addr, creds, selected_port);
+            _grpcServerBuilder.AddListeningPort(addr, creds, selected_port);
             return *this;
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<server> BuildAndStart()
+        std::unique_ptr<bond::ext::gRPC::server> BuildAndStart()
         {
-            auto cq = _builder.AddCompletionQueue();
-
-            for (auto& service : _services)
+            if (!_scheduler)
             {
-                service->SetCompletionQueue(cq.get());
+                _scheduler = thread_pool{};
             }
 
-            return std::unique_ptr<server>{
-                new server{ _builder.BuildAndStart(), std::move(_services), std::move(cq) } };
+            auto cq = _grpcServerBuilder.AddCompletionQueue();
+            auto server = _grpcServerBuilder.BuildAndStart();
+
+            // Tickle all the services so they queue a receive for all their
+            // methods.
+            for (auto& service : _services)
+            {
+                service->start(cq.get(), _scheduler);
+            }
+
+            return std::unique_ptr<bond::ext::gRPC::server>{
+                new bond::ext::gRPC::server{ std::move(server), std::move(cq) } };
         }
 
     private:
-        grpc::ServerBuilder _builder;
-        std::vector<std::unique_ptr<detail::service>> _services;
+        grpc::ServerBuilder _grpcServerBuilder;
+        std::set<detail::service*> _services;
+        Scheduler _scheduler;
     };
 
 } } } // namespace bond::ext::gRPC
