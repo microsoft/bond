@@ -97,6 +97,8 @@ different versioning scheme, following the Haskell community's
     (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
     read-only getters rather than fields.
   - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
+  - The `bond::ext::gRPC::server_builder::BuildAndStart` now returns plain
+    `bond::ext::gRPC::server` object.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

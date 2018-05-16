@@ -198,12 +198,11 @@ const std::string server_address(Host + ":" + Port);
 
 ExampleServiceImpl service;
 
-std::unique_ptr<bond::ext::gRPC::server> server =
-    bond::ext::gRPC::server_builder{}
-        .SetScheduler(threadPool)
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(&service)
-        .BuildAndStart();
+bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
+    .SetScheduler(threadPool)
+    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+    .RegisterService(&service)
+    .BuildAndStart();
 ```
 
 At this point the server is ready to receive requests and route them to the

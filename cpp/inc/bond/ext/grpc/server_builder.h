@@ -58,11 +58,12 @@
 #include <memory>
 #include <set>
 
-namespace bond { namespace ext { namespace gRPC {
-
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief A builder class for the creation and startup of \a
     /// bond::ext::gRPC::server instances.
-    class server_builder final {
+    class server_builder final
+    {
     public:
         /// Register a service. This call does not take ownership of the
         /// service. The service must exist for the lifetime of the \p
@@ -170,18 +171,18 @@ namespace bond { namespace ext { namespace gRPC {
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<bond::ext::gRPC::server> BuildAndStart()
+        server BuildAndStart()
         {
+            BOOST_STATIC_ASSERT(std::is_move_constructible<server>::value);
+
             if (!_scheduler)
             {
                 _scheduler = thread_pool{};
             }
 
             auto cq = _builder.AddCompletionQueue();
-            auto server = _builder.BuildAndStart();
+            auto grpcServer = _builder.BuildAndStart();
 
-            // Tickle all the services so they queue a receive for all their
-            // methods.
             for (auto& service : _services)
             {
                 service->start(cq.get(), _scheduler);
@@ -190,13 +191,10 @@ namespace bond { namespace ext { namespace gRPC {
             std::unique_ptr<io_manager> ioManager{
                 new io_manager{
                     std::thread::hardware_concurrency(),
-                    false,
+                    /*delay=*/ false,
                     std::move(cq) } };
 
-            return std::unique_ptr<bond::ext::gRPC::server>{
-                new bond::ext::gRPC::server{
-                    std::move(server),
-                    std::move(ioManager) } };
+            return server{ std::move(grpcServer), std::move(ioManager) };
         }
 
     private:

@@ -103,7 +103,7 @@ namespace bond { namespace ext { namespace gRPC
             {
                 if (!t.joinable())
                 {
-                    t = boost::joining_thread{ [this]{ run(); } };
+                    t = boost::scoped_thread<>{ [this]{ run(); } };
                 }
             }
         }
