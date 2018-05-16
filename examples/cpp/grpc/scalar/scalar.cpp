@@ -112,13 +112,13 @@ int main()
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     bond::ext::gRPC::thread_pool threadPool;
 
-    ScalarMethodsImpl service;
+    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl };
 
     const std::string server_address("127.0.0.1:50051");
 
     auto server = bond::ext::gRPC::server_builder{}
         .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(&service)
+        .RegisterService(std::move(service))
         .BuildAndStart();
 
     ScalarMethods::Client client(
