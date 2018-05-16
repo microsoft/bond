@@ -37,7 +37,7 @@ public:
     /// @brief Constructs and starts a thread pool with number of threads equal
     /// to CPU/cores available.
     ///
-    /// @throws InvalidThreadCount when std::thread::hardware_concurrency return 0.
+    /// @throws InvalidThreadCount when std::thread::hardware_concurrency returns 0.
     thread_pool()
         : thread_pool{ std::thread::hardware_concurrency() }
     {}
@@ -87,7 +87,7 @@ private:
         {}
 
         /// Working threads.
-        std::vector<boost::scoped_thread<boost::join_if_joinable>> threads;
+        std::vector<boost::joining_thread> threads;
         /// Helper to keep io_service spinning.
         boost::asio::io_service::work work;
     };

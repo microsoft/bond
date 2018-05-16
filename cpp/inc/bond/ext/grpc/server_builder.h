@@ -72,7 +72,7 @@ namespace bond { namespace ext { namespace gRPC {
         server_builder& RegisterService(detail::service* service)
         {
             BOOST_ASSERT(service);
-            _grpcServerBuilder.RegisterService(service->grpc_service());
+            _builder.RegisterService(service->grpc_service());
             _services.insert(service);
 
             return *this;
@@ -86,7 +86,7 @@ namespace bond { namespace ext { namespace gRPC {
         server_builder& RegisterService(const grpc::string& host, detail::service* service)
         {
             BOOST_ASSERT(service);
-            _grpcServerBuilder.RegisterService(host, service->grpc_service());
+            _builder.RegisterService(host, service->grpc_service());
             _services.insert(service);
 
             return *this;
@@ -95,14 +95,14 @@ namespace bond { namespace ext { namespace gRPC {
         /// Set max receive message size in bytes.
         server_builder& SetMaxReceiveMessageSize(int max_receive_message_size)
         {
-            _grpcServerBuilder.SetMaxReceiveMessageSize(max_receive_message_size);
+            _builder.SetMaxReceiveMessageSize(max_receive_message_size);
             return *this;
         }
 
         /// Set max send message size in bytes.
         server_builder& SetMaxSendMessageSize(int max_send_message_size)
         {
-            _grpcServerBuilder.SetMaxSendMessageSize(max_send_message_size);
+            _builder.SetMaxSendMessageSize(max_send_message_size);
             return *this;
         }
 
@@ -116,7 +116,7 @@ namespace bond { namespace ext { namespace gRPC {
             grpc_compression_algorithm algorithm,
             bool enabled)
         {
-            _grpcServerBuilder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
+            _builder.SetCompressionAlgorithmSupportStatus(algorithm, enabled);
             return *this;
         }
 
@@ -124,7 +124,7 @@ namespace bond { namespace ext { namespace gRPC {
         /// the absence of a call-specific level.
         server_builder& SetDefaultCompressionLevel(grpc_compression_level level)
         {
-            _grpcServerBuilder.SetDefaultCompressionLevel(level);
+            _builder.SetDefaultCompressionLevel(level);
             return *this;
         }
 
@@ -134,14 +134,14 @@ namespace bond { namespace ext { namespace gRPC {
         server_builder& SetDefaultCompressionAlgorithm(
             grpc_compression_algorithm algorithm)
         {
-            _grpcServerBuilder.SetDefaultCompressionAlgorithm(algorithm);
+            _builder.SetDefaultCompressionAlgorithm(algorithm);
             return *this;
         }
 
         /// Set the attached buffer pool for this server.
         server_builder& SetResourceQuota(const grpc::ResourceQuota& resource_quota)
         {
-            _grpcServerBuilder.SetResourceQuota(resource_quota);
+            _builder.SetResourceQuota(resource_quota);
             return *this;
         }
 
@@ -165,7 +165,7 @@ namespace bond { namespace ext { namespace gRPC {
             std::shared_ptr<grpc::ServerCredentials> creds,
             int* selected_port = nullptr)
         {
-            _grpcServerBuilder.AddListeningPort(addr, creds, selected_port);
+            _builder.AddListeningPort(addr, creds, selected_port);
             return *this;
         }
 
@@ -177,8 +177,8 @@ namespace bond { namespace ext { namespace gRPC {
                 _scheduler = thread_pool{};
             }
 
-            auto cq = _grpcServerBuilder.AddCompletionQueue();
-            auto server = _grpcServerBuilder.BuildAndStart();
+            auto cq = _builder.AddCompletionQueue();
+            auto server = _builder.BuildAndStart();
 
             // Tickle all the services so they queue a receive for all their
             // methods.
@@ -187,12 +187,20 @@ namespace bond { namespace ext { namespace gRPC {
                 service->start(cq.get(), _scheduler);
             }
 
+            std::unique_ptr<io_manager> ioManager{
+                new io_manager{
+                    std::thread::hardware_concurrency(),
+                    false,
+                    std::move(cq) } };
+
             return std::unique_ptr<bond::ext::gRPC::server>{
-                new bond::ext::gRPC::server{ std::move(server), std::move(cq) } };
+                new bond::ext::gRPC::server{
+                    std::move(server),
+                    std::move(ioManager) } };
         }
 
     private:
-        grpc::ServerBuilder _grpcServerBuilder;
+        grpc::ServerBuilder _builder;
         std::set<detail::service*> _services;
         Scheduler _scheduler;
     };
