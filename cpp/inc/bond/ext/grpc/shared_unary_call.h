@@ -24,10 +24,10 @@ namespace bond { namespace ext { namespace gRPC {
 /// If no explicit call to \p Finish or \p FinishWithError has been made before all
 /// the shared owners are destroyed, a generic internal server error is
 /// sent.
-template <typename TRequest, typename TResponse>
-class shared_unary_call final : public detail::unary_call_base<TRequest, TResponse>
+template <typename Request, typename Response>
+class shared_unary_call final : public detail::unary_call_base<Request, Response>
 {
-    using base_type = detail::unary_call_base<TRequest, TResponse>;
+    using base_type = typename shared_unary_call::unary_call_base;
 
 public:
     /// @brief Creates an empty shared_unary_call.
@@ -41,7 +41,7 @@ public:
     ///
     /// The shared_unary_call assumes ownership, and the provided unary_call
     /// will be in the moved-from state.
-    explicit shared_unary_call(unary_call<TRequest, TResponse> other) noexcept
+    explicit shared_unary_call(unary_call<Request, Response> other) noexcept
         : base_type(std::move(other))
     { }
 
@@ -59,8 +59,8 @@ public:
     using base_type::swap;
 };
 
-template <typename TRequest, typename TResponse>
-inline void swap(shared_unary_call<TRequest, TResponse>& lhs, shared_unary_call<TRequest, TResponse>& rhs) noexcept
+template <typename Request, typename Response>
+inline void swap(shared_unary_call<Request, Response>& lhs, shared_unary_call<Request, Response>& rhs) noexcept
 {
     lhs.swap(rhs);
 }
