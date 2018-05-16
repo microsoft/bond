@@ -6,7 +6,7 @@
 #include <bond/core/config.h>
 
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/detail/io_manager_tag.h>
+#include "io_manager_tag.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -50,14 +50,11 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
     /// completion queue, %invoke() calls %Release() on itself, decrementing
     /// the ref count, and allowing the remaining unary_call and
     /// shared_unary_call objects, if any, to control lifetime.
-    template <typename TRequest, typename TResponse>
+    template <typename Request, typename Response>
     class unary_call_impl final : io_manager_tag
     {
     public:
         unary_call_impl() = default;
-
-        unary_call_impl(const unary_call_impl&) = delete;
-        unary_call_impl& operator=(const unary_call_impl&) = delete;
 
         const grpc::ServerContext& context() const noexcept
         {
@@ -69,27 +66,27 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             return _context;
         }
 
-        const TRequest& request() const noexcept
+        const Request& request() const noexcept
         {
             return _request;
         }
 
-        TRequest& request() noexcept
+        Request& request() noexcept
         {
             return _request;
         }
 
-        const grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>>& responder() const noexcept
+        const grpc::ServerAsyncResponseWriter<bond::bonded<Response>>& responder() const noexcept
         {
             return _responder;
         }
 
-        grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>>& responder() noexcept
+        grpc::ServerAsyncResponseWriter<bond::bonded<Response>>& responder() noexcept
         {
             return _responder;
         }
 
-        void Finish(const bond::bonded<TResponse>& msg, const grpc::Status& status)
+        void Finish(const bond::bonded<Response>& msg, const grpc::Status& status)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
@@ -163,8 +160,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         // A pointer to the context is passed to _responder when
         // constructing it, so this needs to be declared before _responder.
         grpc::ServerContext _context{};
-        TRequest _request{};
-        grpc::ServerAsyncResponseWriter<bond::bonded<TResponse>> _responder{ &_context };
+        Request _request{};
+        grpc::ServerAsyncResponseWriter<bond::bonded<Response>> _responder{ &_context };
         std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
@@ -176,7 +173,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
 
     /// @brief Detail class that helps implement \ref unary_call and \ref
     /// shared_unary_call.
-    template <typename TRequest, typename TResponse>
+    template <typename Request, typename Response>
     class unary_call_base
     {
     public:
@@ -199,13 +196,13 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         }
 
         /// @brief Get the request message for this call.
-        const TRequest& request() const noexcept
+        const Request& request() const noexcept
         {
             return impl().request();
         }
 
         /// @brief Get the request message for this call.
-        TRequest& request() noexcept
+        Request& request() noexcept
         {
             return impl().request();
         }
@@ -214,16 +211,16 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         ///
         /// Only the first call to \p Finish or \p FinishWithError will be
         /// honored.
-        void Finish(const TResponse& msg, const grpc::Status& status = grpc::Status::OK)
+        void Finish(const Response& msg, const grpc::Status& status = grpc::Status::OK)
         {
-            Finish(bond::bonded<TResponse>{ msg }, status);
+            Finish(bond::bonded<Response>{ msg }, status);
         }
 
         /// @brief Responds to the client with the given message and status.
         ///
         /// Only the first call to \p Finish or \p FinishWithError will be
         /// honored.
-        void Finish(const bond::bonded<TResponse>& msg, const grpc::Status& status = grpc::Status::OK)
+        void Finish(const bond::bonded<Response>& msg, const grpc::Status& status = grpc::Status::OK)
         {
             impl().Finish(msg, status);
         }
@@ -238,7 +235,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         }
 
     protected:
-        using impl_type = unary_call_impl<TRequest, TResponse>;
+        using impl_type = unary_call_impl<Request, Response>;
 
         unary_call_base() = default;
 

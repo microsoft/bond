@@ -96,6 +96,7 @@ different versioning scheme, following the Haskell community's
   - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
     (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
     read-only getters rather than fields.
+  - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.
@@ -126,6 +127,8 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
   to `T` when `allocator_type` was not explicitly defined.
 * Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
+* The use of `bond::check_method` has been replaced with less restricting expression
+  SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
 
 ### C# ###
 

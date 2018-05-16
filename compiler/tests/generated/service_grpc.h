@@ -39,10 +39,202 @@
 namespace tests
 {
 
-class Foo final
+struct Foo final
 {
-public:
-    struct Schema;
+    struct Schema
+    {
+        static const ::bond::Metadata metadata;
+
+        private: static const ::bond::Metadata s_foo11_metadata;
+        private: static const ::bond::Metadata s_foo12_metadata;
+        private: static const ::bond::Metadata s_foo12_impl_metadata;
+        private: static const ::bond::Metadata s_foo13_metadata;
+        private: static const ::bond::Metadata s_foo14_metadata;
+        private: static const ::bond::Metadata s_foo15_metadata;
+        private: static const ::bond::Metadata s_foo21_metadata;
+        private: static const ::bond::Metadata s_foo22_metadata;
+        private: static const ::bond::Metadata s_foo23_metadata;
+        private: static const ::bond::Metadata s_foo24_metadata;
+        private: static const ::bond::Metadata s_foo31_metadata;
+        private: static const ::bond::Metadata s_foo32_metadata;
+        private: static const ::bond::Metadata s_foo33_metadata;
+        private: static const ::bond::Metadata s__rd_foo33_metadata;
+        private: static const ::bond::Metadata s_foo34_metadata;
+        private: static const ::bond::Metadata s_foo41_metadata;
+        private: static const ::bond::Metadata s_foo42_metadata;
+        private: static const ::bond::Metadata s_foo43_metadata;
+        private: static const ::bond::Metadata s_foo44_metadata;
+        private: static const ::bond::Metadata s_cq_metadata;
+
+        public: struct service
+        {
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo11_metadata
+            > foo11;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo12_metadata
+            > foo12;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                void,
+                &s_foo12_impl_metadata
+            > foo12_impl;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                void,
+                &s_foo13_metadata
+            > foo13;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                void,
+                &s_foo14_metadata
+            > foo14;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests2::OtherBasicTypes>,
+                void,
+                &s_foo15_metadata
+            > foo15;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo21_metadata
+            > foo21;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo22_metadata
+            > foo22;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo23_metadata
+            > foo23;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::bond::Void>,
+                &s_foo24_metadata
+            > foo24;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo31_metadata
+            > foo31;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo32_metadata
+            > foo32;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo33_metadata
+            > foo33;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s__rd_foo33_metadata
+            > _rd_foo33;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_foo34_metadata
+            > foo34;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo41_metadata
+            > foo41;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo42_metadata
+            > foo42;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::BasicTypes>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo43_metadata
+            > foo43;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::tests::dummy>,
+                ::bond::bonded< ::tests::dummy>,
+                &s_foo44_metadata
+            > foo44;
+
+            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
+                Foo,
+                ::bond::bonded< ::bond::Void>,
+                ::bond::bonded< ::tests::BasicTypes>,
+                &s_cq_metadata
+            > cq;
+        };
+
+        private: typedef boost::mpl::list<> methods0;
+        private: typedef boost::mpl::push_front<methods0, service::cq>::type methods1;
+        private: typedef boost::mpl::push_front<methods1, service::foo44>::type methods2;
+        private: typedef boost::mpl::push_front<methods2, service::foo43>::type methods3;
+        private: typedef boost::mpl::push_front<methods3, service::foo42>::type methods4;
+        private: typedef boost::mpl::push_front<methods4, service::foo41>::type methods5;
+        private: typedef boost::mpl::push_front<methods5, service::foo34>::type methods6;
+        private: typedef boost::mpl::push_front<methods6, service::_rd_foo33>::type methods7;
+        private: typedef boost::mpl::push_front<methods7, service::foo33>::type methods8;
+        private: typedef boost::mpl::push_front<methods8, service::foo32>::type methods9;
+        private: typedef boost::mpl::push_front<methods9, service::foo31>::type methods10;
+        private: typedef boost::mpl::push_front<methods10, service::foo24>::type methods11;
+        private: typedef boost::mpl::push_front<methods11, service::foo23>::type methods12;
+        private: typedef boost::mpl::push_front<methods12, service::foo22>::type methods13;
+        private: typedef boost::mpl::push_front<methods13, service::foo21>::type methods14;
+        private: typedef boost::mpl::push_front<methods14, service::foo15>::type methods15;
+        private: typedef boost::mpl::push_front<methods15, service::foo14>::type methods16;
+        private: typedef boost::mpl::push_front<methods16, service::foo13>::type methods17;
+        private: typedef boost::mpl::push_front<methods17, service::foo12_impl>::type methods18;
+        private: typedef boost::mpl::push_front<methods18, service::foo12>::type methods19;
+        private: typedef boost::mpl::push_front<methods19, service::foo11>::type methods20;
+
+        public: typedef methods20::type methods;
+
+        
+    };
 
     class Client
     {
@@ -50,87 +242,287 @@ public:
         Client(
             const std::shared_ptr< ::grpc::ChannelInterface>& channel,
             std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler);
+            const ::bond::ext::gRPC::Scheduler& scheduler)
+            : _channel(channel)
+            , _ioManager(ioManager)
+            , _scheduler(scheduler)
+            , rpcmethod_foo11_("/tests.Foo/foo11", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo12_("/tests.Foo/foo12", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo12_impl_("/tests.Foo/foo12_impl", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo13_("/tests.Foo/foo13", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo14_("/tests.Foo/foo14", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo15_("/tests.Foo/foo15", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo21_("/tests.Foo/foo21", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo22_("/tests.Foo/foo22", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo23_("/tests.Foo/foo23", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo24_("/tests.Foo/foo24", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod__rd_foo33_("/tests.Foo/_rd_foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo34_("/tests.Foo/foo34", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo41_("/tests.Foo/foo41", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo42_("/tests.Foo/foo42", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo43_("/tests.Foo/foo43", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_foo44_("/tests.Foo/foo44", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+            , rpcmethod_cq_("/tests.Foo/cq", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+        {
+            BOOST_ASSERT(_scheduler);
+        }
 
-        void Asyncfoo11(::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo11(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo11_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo12(::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo12(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo12_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo12_impl(::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo12_impl(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo12_impl_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo13(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo13(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo13_, request);
+        }
         void Asyncfoo13(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo13(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
-        void Asyncfoo14(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo14(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo14_, request);
+        }
         void Asyncfoo14(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo14(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
         }
 
-        void Asyncfoo15(const ::bond::bonded< ::tests2::OtherBasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo15(const ::bond::bonded< ::tests2::OtherBasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests2::OtherBasicTypes, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
+            calldata->dispatch(rpcmethod_foo15_, request);
+        }
         void Asyncfoo15(const ::tests2::OtherBasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo15(::bond::bonded< ::tests2::OtherBasicTypes>{request}, ::std::move(context));
         }
 
-        void Asyncfoo21(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo21(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo21_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo22(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo22(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo22_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo23_, request);
+        }
         void Asyncfoo23(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo24_, request);
+        }
         void Asyncfoo24(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo31(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo31(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo31_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo32(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo32(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo32_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo33_, request);
+        }
         void Asyncfoo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
         }
 
-        void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod__rd_foo33_, request);
+        }
         void Async_rd_foo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async_rd_foo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo34_, request);
+        }
         void Asyncfoo34(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo34(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo41(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo41(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo41_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo42(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo42(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo42_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
-        void Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::dummy>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo43_, request);
+        }
         void Asyncfoo43(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo43(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
         }
 
-        void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::dummy>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_foo44_, request);
+        }
         void Asyncfoo44(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo44(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
         }
 
-        void Asynccq(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {});
+        void Asynccq(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
+                _channel,
+                _ioManager,
+                _scheduler,
+                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
+                cb);
+            calldata->dispatch(rpcmethod_cq_, ::bond::bonded< ::bond::Void>{ ::bond::Void() });
+        }
 
         Client(const Client&) = delete;
         Client& operator=(const Client&) = delete;
@@ -366,519 +758,6 @@ public:
     };
 };
 
-inline Foo::Client::Client(
-    const ::std::shared_ptr< ::grpc::ChannelInterface>& channel,
-    ::std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-    const ::bond::ext::gRPC::Scheduler& scheduler)
-    : _channel(channel)
-    , _ioManager(ioManager)
-    , _scheduler(scheduler)
-    , rpcmethod_foo11_("/tests.Foo/foo11", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo12_("/tests.Foo/foo12", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo12_impl_("/tests.Foo/foo12_impl", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo13_("/tests.Foo/foo13", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo14_("/tests.Foo/foo14", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo15_("/tests.Foo/foo15", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo21_("/tests.Foo/foo21", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo22_("/tests.Foo/foo22", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo23_("/tests.Foo/foo23", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo24_("/tests.Foo/foo24", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo31_("/tests.Foo/foo31", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo32_("/tests.Foo/foo32", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo33_("/tests.Foo/foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod__rd_foo33_("/tests.Foo/_rd_foo33", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo34_("/tests.Foo/foo34", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo41_("/tests.Foo/foo41", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo42_("/tests.Foo/foo42", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo43_("/tests.Foo/foo43", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_foo44_("/tests.Foo/foo44", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-    , rpcmethod_cq_("/tests.Foo/cq", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-{
-    BOOST_ASSERT(_scheduler);
-}
-
-inline void Foo::Client::Asyncfoo11(
-    
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo11_, request);
-}
-
-inline void Foo::Client::Asyncfoo12(
-    
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo12_, request);
-}
-
-inline void Foo::Client::Asyncfoo12_impl(
-    
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo12_impl_, request);
-}
-
-inline void Foo::Client::Asyncfoo13(
-    const ::bond::bonded< ::tests::BasicTypes>& request,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo13_, request);
-}
-
-inline void Foo::Client::Asyncfoo14(
-    const ::bond::bonded< ::tests::dummy>& request,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo14_, request);
-}
-
-inline void Foo::Client::Asyncfoo15(
-    const ::bond::bonded< ::tests2::OtherBasicTypes>& request,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests2::OtherBasicTypes, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-    calldata->dispatch(rpcmethod_foo15_, request);
-}
-
-inline void Foo::Client::Asyncfoo21(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo21_, request);
-}
-
-inline void Foo::Client::Asyncfoo22(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo22_, request);
-}
-
-inline void Foo::Client::Asyncfoo23(
-    const ::bond::bonded< ::tests::BasicTypes>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo23_, request);
-}
-
-inline void Foo::Client::Asyncfoo24(
-    const ::bond::bonded< ::tests::dummy>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::bond::Void>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo24_, request);
-}
-
-inline void Foo::Client::Asyncfoo31(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo31_, request);
-}
-
-inline void Foo::Client::Asyncfoo32(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo32_, request);
-}
-
-inline void Foo::Client::Asyncfoo33(
-    const ::bond::bonded< ::tests::BasicTypes>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo33_, request);
-}
-
-inline void Foo::Client::Async_rd_foo33(
-    const ::bond::bonded< ::tests::BasicTypes>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod__rd_foo33_, request);
-}
-
-inline void Foo::Client::Asyncfoo34(
-    const ::bond::bonded< ::tests::dummy>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo34_, request);
-}
-
-inline void Foo::Client::Asyncfoo41(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo41_, request);
-}
-
-inline void Foo::Client::Asyncfoo42(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::dummy>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo42_, request);
-}
-
-inline void Foo::Client::Asyncfoo43(
-    const ::bond::bonded< ::tests::BasicTypes>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::BasicTypes, ::tests::dummy>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo43_, request);
-}
-
-inline void Foo::Client::Asyncfoo44(
-    const ::bond::bonded< ::tests::dummy>& request,
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::tests::dummy, ::tests::dummy>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_foo44_, request);
-}
-
-inline void Foo::Client::Asynccq(
-    
-    const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb,
-    ::std::shared_ptr< ::grpc::ClientContext> context)
-{
-    auto request = ::bond::bonded< ::bond::Void>{ ::bond::Void()};
-    auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< ::bond::Void, ::tests::BasicTypes>>(
-        _channel,
-        _ioManager,
-        _scheduler,
-        context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-        cb);
-    calldata->dispatch(rpcmethod_cq_, request);
-}
-
-struct Foo::Schema
-{
-    static const ::bond::Metadata metadata;
-
-    private: static const ::bond::Metadata s_foo11_metadata;
-    private: static const ::bond::Metadata s_foo12_metadata;
-    private: static const ::bond::Metadata s_foo12_impl_metadata;
-    private: static const ::bond::Metadata s_foo13_metadata;
-    private: static const ::bond::Metadata s_foo14_metadata;
-    private: static const ::bond::Metadata s_foo15_metadata;
-    private: static const ::bond::Metadata s_foo21_metadata;
-    private: static const ::bond::Metadata s_foo22_metadata;
-    private: static const ::bond::Metadata s_foo23_metadata;
-    private: static const ::bond::Metadata s_foo24_metadata;
-    private: static const ::bond::Metadata s_foo31_metadata;
-    private: static const ::bond::Metadata s_foo32_metadata;
-    private: static const ::bond::Metadata s_foo33_metadata;
-    private: static const ::bond::Metadata s__rd_foo33_metadata;
-    private: static const ::bond::Metadata s_foo34_metadata;
-    private: static const ::bond::Metadata s_foo41_metadata;
-    private: static const ::bond::Metadata s_foo42_metadata;
-    private: static const ::bond::Metadata s_foo43_metadata;
-    private: static const ::bond::Metadata s_foo44_metadata;
-    private: static const ::bond::Metadata s_cq_metadata;
-
-    public: struct service
-    {
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo11_metadata
-            > foo11;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo12_metadata
-            > foo12;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo12_impl_metadata
-            > foo12_impl;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                void,
-                &s_foo13_metadata
-            > foo13;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                void,
-                &s_foo14_metadata
-            > foo14;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests2::OtherBasicTypes>,
-                void,
-                &s_foo15_metadata
-            > foo15;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo21_metadata
-            > foo21;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo22_metadata
-            > foo22;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo23_metadata
-            > foo23;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo24_metadata
-            > foo24;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo31_metadata
-            > foo31;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo32_metadata
-            > foo32;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo33_metadata
-            > foo33;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s__rd_foo33_metadata
-            > _rd_foo33;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo34_metadata
-            > foo34;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo41_metadata
-            > foo41;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo42_metadata
-            > foo42;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo43_metadata
-            > foo43;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo44_metadata
-            > foo44;
-
-        typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_cq_metadata
-            > cq;
-    };
-
-    private: typedef boost::mpl::list<> methods0;
-    private: typedef boost::mpl::push_front<methods0, service::cq>::type methods1;
-    private: typedef boost::mpl::push_front<methods1, service::foo44>::type methods2;
-    private: typedef boost::mpl::push_front<methods2, service::foo43>::type methods3;
-    private: typedef boost::mpl::push_front<methods3, service::foo42>::type methods4;
-    private: typedef boost::mpl::push_front<methods4, service::foo41>::type methods5;
-    private: typedef boost::mpl::push_front<methods5, service::foo34>::type methods6;
-    private: typedef boost::mpl::push_front<methods6, service::_rd_foo33>::type methods7;
-    private: typedef boost::mpl::push_front<methods7, service::foo33>::type methods8;
-    private: typedef boost::mpl::push_front<methods8, service::foo32>::type methods9;
-    private: typedef boost::mpl::push_front<methods9, service::foo31>::type methods10;
-    private: typedef boost::mpl::push_front<methods10, service::foo24>::type methods11;
-    private: typedef boost::mpl::push_front<methods11, service::foo23>::type methods12;
-    private: typedef boost::mpl::push_front<methods12, service::foo22>::type methods13;
-    private: typedef boost::mpl::push_front<methods13, service::foo21>::type methods14;
-    private: typedef boost::mpl::push_front<methods14, service::foo15>::type methods15;
-    private: typedef boost::mpl::push_front<methods15, service::foo14>::type methods16;
-    private: typedef boost::mpl::push_front<methods16, service::foo13>::type methods17;
-    private: typedef boost::mpl::push_front<methods17, service::foo12_impl>::type methods18;
-    private: typedef boost::mpl::push_front<methods18, service::foo12>::type methods19;
-    private: typedef boost::mpl::push_front<methods19, service::foo11>::type methods20;
-
-    public: typedef methods20::type methods;
-
-    
-};
 
 
 

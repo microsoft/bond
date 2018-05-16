@@ -17,11 +17,18 @@
 #include <utility>
 
 
-namespace bond
+namespace bond { namespace detail { namespace mpl
 {
 
-namespace detail { namespace mpl
+template <typename...> struct
+make_void
 {
+    using type = void;
+};
+
+template <typename... T>
+using void_t = typename make_void<T...>::type;
+
 
 template <typename T> struct
 identity
@@ -125,6 +132,4 @@ inline auto try_apply(F&& f)
 }
 
 
-}} // namespace mpl { namespace detail
-
-} // namespace bond
+} } } // namespace bond::detail::mpl
