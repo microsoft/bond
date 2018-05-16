@@ -31,6 +31,13 @@
 
 namespace bond { namespace ext { namespace gRPC
 {
+    namespace detail
+    {
+        template <typename Request, typename Response>
+        class client_unary_call_data;
+
+    } // namespace detail
+
     /// @brief Manages a pool of threads polling for work from the same
     /// %grpc::CompletionQueue
     ///
@@ -141,6 +148,14 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     private:
+        template <typename Request, typename Response>
+        friend class detail::client_unary_call_data;
+
+        const std::shared_ptr<grpc::CompletionQueue>& shared_cq() const
+        {
+            return _cq;
+        }
+
         void run()
         {
             void* tag;
@@ -152,7 +167,7 @@ namespace bond { namespace ext { namespace gRPC
             }
         }
 
-        std::unique_ptr<grpc::CompletionQueue> _cq;
+        std::shared_ptr<grpc::CompletionQueue> _cq;
         std::vector<boost::scoped_thread<>> _threads;
 
         std::atomic_flag _isShutdownRequested = ATOMIC_FLAG_INIT;
