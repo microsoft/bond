@@ -114,11 +114,10 @@ get_protocol_writer<Reader<Input, MarshaledBondedProtocols>, Output>
 };
 
 
-#ifdef BOND_NO_SFINAE_EXPR
+// Used only for older compilers for which BOND_NO_SFINAE_EXPR is defined.
 template <typename T, T> struct
 check_method
     : std::true_type {};
-#endif
 
 
 template <typename T> struct
