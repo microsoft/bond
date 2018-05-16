@@ -6,8 +6,8 @@
 #include <bond/core/config.h>
 
 #include <bond/core/bonded.h>
-#include "exception.h"
-#include "unary_call_result.h"
+#include <bond/ext/grpc/exception.h>
+#include <bond/ext/grpc/client_callback.h>
 
 #include <grpcpp/impl/codegen/status.h>
 
