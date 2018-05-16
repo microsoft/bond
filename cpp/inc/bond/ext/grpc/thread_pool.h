@@ -87,7 +87,7 @@ private:
         {}
 
         /// Working threads.
-        std::vector<boost::joining_thread> threads;
+        std::vector<boost::scoped_thread<>> threads;
         /// Helper to keep io_service spinning.
         boost::asio::io_service::work work;
     };

@@ -57,8 +57,8 @@ namespace bond { namespace ext { namespace gRPC
         ///
         /// @throws InvalidThreadCount when std::thread::hardware_concurrency returns 0.
         explicit io_manager(unsigned int numThreads, bool delay = false, std::unique_ptr<grpc::CompletionQueue> cq = {})
-            : _threads{ numThreads },
-              _cq{ cq ? std::move(cq) : std::unique_ptr<grpc::CompletionQueue>{ new grpc::CompletionQueue{} } }
+            : _cq{ cq ? std::move(cq) : std::unique_ptr<grpc::CompletionQueue>{ new grpc::CompletionQueue{} } },
+              _threads{ numThreads }
         {
             if (_threads.empty())
             {
@@ -153,7 +153,7 @@ namespace bond { namespace ext { namespace gRPC
         }
 
         std::unique_ptr<grpc::CompletionQueue> _cq;
-        std::vector<boost::joining_thread> _threads;
+        std::vector<boost::scoped_thread<>> _threads;
 
         std::atomic_flag _isShutdownRequested = ATOMIC_FLAG_INIT;
         bond::detail::once_flag _waitFlag{};
