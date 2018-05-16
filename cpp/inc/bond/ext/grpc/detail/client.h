@@ -52,20 +52,9 @@ public:
     client& operator=(client&& other) = default;
 
 protected:
-#if !defined(__GNUC__) || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
-    using RpcMethod = grpc::internal::RpcMethod;
-#else
-    // Workaround for a bug in GCC < 7.2: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67054.
-    struct RpcMethod : grpc::internal::RpcMethod
+    grpc::internal::RpcMethod make_method(const char* name) const
     {
-        using grpc::internal::RpcMethod::RpcMethod;
-        RpcMethod();
-    };
-#endif
-
-    RpcMethod make_method(const char* name) const
-    {
-        return RpcMethod{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
+        return grpc::internal::RpcMethod{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
     }
 
     template <typename Response, typename Request>
