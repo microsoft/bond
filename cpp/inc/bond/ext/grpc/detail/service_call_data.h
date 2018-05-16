@@ -86,7 +86,7 @@ private:
             &_receivedCall->context(),
             &_receivedCall->request(),
             &_receivedCall->responder(),
-            tag());
+            this);
 
         return receivedCall;
     }
