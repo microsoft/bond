@@ -5,32 +5,18 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/grpc/detail/io_manager_tag.h>
-#include <bond/ext/grpc/detail/service.h>
+#include "io_manager_tag.h"
 #include <bond/ext/grpc/unary_call.h>
-
-#ifdef _MSC_VER
-    #pragma warning (push)
-    #pragma warning (disable: 4100 4702)
-#endif
-
-#include <grpcpp/grpcpp.h>
-#include <grpcpp/impl/codegen/rpc_method.h>
-#include <grpcpp/impl/codegen/service_type.h>
-#include <grpcpp/impl/codegen/status.h>
-
-#ifdef _MSC_VER
-    #pragma warning (pop)
-#endif
 
 #include <boost/assert.hpp>
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 
 #include <functional>
 #include <memory>
-#include <thread>
 
 namespace bond { namespace ext { namespace gRPC { namespace detail {
+
+class service;
 
 /// @brief Implementation class that hold the state associated with
 /// receiving incoming calls for one method.

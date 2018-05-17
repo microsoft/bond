@@ -33,8 +33,7 @@ namespace bond { namespace ext { namespace gRPC
 {
     namespace detail
     {
-        template <typename Request, typename Response>
-        class client_unary_call_data;
+        class client;
 
     } // namespace detail
 
@@ -148,8 +147,7 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     private:
-        template <typename Request, typename Response>
-        friend class detail::client_unary_call_data;
+        friend class detail::client;
 
         const std::shared_ptr<grpc::CompletionQueue>& shared_cq() const
         {

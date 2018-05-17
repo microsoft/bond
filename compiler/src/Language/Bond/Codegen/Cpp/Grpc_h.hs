@@ -30,34 +30,13 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 #{newlineSep 0 includeImport imports}
 #{includeBondReflection}
 #include <bond/core/bonded.h>
-#include <bond/ext/grpc/bond_utils.h>
-#include <bond/ext/grpc/client_callback.h>
-#include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/reflection.h>
-#include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/detail/client_call_data.h>
+#include <bond/ext/grpc/detail/client.h>
 #include <bond/ext/grpc/detail/service.h>
-#include <bond/ext/grpc/detail/service_call_data.h>
 
 #include <boost/optional/optional.hpp>
 #include <functional>
 #include <memory>
-
-#ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100 4267)
-#endif
-
-#include <grpcpp/impl/codegen/channel_interface.h>
-#include <grpcpp/impl/codegen/client_context.h>
-#include <grpcpp/impl/codegen/completion_queue.h>
-#include <grpcpp/impl/codegen/rpc_method.h>
-#include <grpcpp/impl/codegen/status.h>
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
 
 #{CPP.openNamespace cpp}
 #{doubleLineSep 1 grpc declarations}
@@ -111,34 +90,14 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
         #{constructor}
     };
 
-    class #{proxyName}
+    class #{proxyName} : public ::bond::ext::gRPC::detail::client
     {
     public:
-        #{proxyName}(
-            const std::shared_ptr< ::grpc::ChannelInterface>& channel,
-            std::shared_ptr< ::bond::ext::gRPC::io_manager> ioManager,
-            const ::bond::ext::gRPC::Scheduler& scheduler)
-            : _channel(channel)
-            , _ioManager(ioManager)
-            , _scheduler(scheduler)
-            #{newlineSep 3 proxyMethodMemberInit serviceMethods}
-        {
-            BOOST_ASSERT(_scheduler);
-        }
+        using ::bond::ext::gRPC::detail::client::client;
 
         #{doubleLineSep 2 publicProxyMethodDecl serviceMethods}
 
-        #{proxyName}(const #{proxyName}&) = delete;
-        #{proxyName}& operator=(const #{proxyName}&) = delete;
-
-        #{proxyName}(#{proxyName}&&) = default;
-        #{proxyName}& operator=(#{proxyName}&&) = default;
-
     private:
-        ::std::shared_ptr< ::grpc::ChannelInterface> _channel;
-        ::std::shared_ptr< ::bond::ext::gRPC::io_manager> _ioManager;
-        ::bond::ext::gRPC::Scheduler _scheduler;
-
         #{newlineSep 2 privateProxyMethodDecl serviceMethods}
     };
 
@@ -226,54 +185,42 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload Nothing}, #{payload (methodTypeToMaybe methodResult)}>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_#{methodName}_, #{bonded Nothing}{ ::bond::Void() });
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<#{payload (methodTypeToMaybe methodResult)}>(_m#{methodName}, std::move(context));
         }|]
         publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>(),
-                cb);
-            calldata->dispatch(rpcmethod_#{methodName}_, request);
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb, request);
+        }
+        std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<#{payload (methodTypeToMaybe methodResult)}>(_m#{methodName}, std::move(context), request);
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
         publicProxyMethodDecl Event{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload Nothing}, #{payload Nothing}>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-            calldata->dispatch(rpcmethod_#{methodName}_, #{bonded Nothing}{ ::bond::Void() });
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), {});
         }|]
         publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            auto calldata = std::make_shared< ::bond::ext::gRPC::detail::client_unary_call_data< #{payload (methodTypeToMaybe methodInput)}, #{payload Nothing}>>(
-                _channel,
-                _ioManager,
-                _scheduler,
-                context ? ::std::move(context) : ::std::make_shared< ::grpc::ClientContext>());
-            calldata->dispatch(rpcmethod_#{methodName}_, request);
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), {}, request);
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
 
-        privateProxyMethodDecl f = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName f}_;|]
-
-        proxyMethodMemberInit f = [lt|, rpcmethod_#{methodName f}_("/#{getDeclTypeName idl s}/#{methodName f}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
+        privateProxyMethodDecl f = [lt|const ::bond::ext::gRPC::detail::client::Method _m#{methodName f}{ ::bond::ext::gRPC::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
 
         serviceMethodName f = [lt|"/#{getDeclTypeName idl s}/#{methodName f}"|]
 

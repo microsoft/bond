@@ -5,6 +5,7 @@
 
 #include <bond/core/config.h>
 
+#include "bond_utils.h"
 #include <bond/ext/grpc/scheduler.h>
 
 #ifdef _MSC_VER
@@ -13,8 +14,8 @@
 #endif
 
 #include <grpcpp/grpcpp.h>
-#include <grpcpp/impl/codegen/rpc_method.h>
-#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 
 #ifdef _MSC_VER
@@ -159,3 +160,5 @@ private:
 };
 
 } } } } // namespace bond::ext::gRPC::detail
+
+#include "service_call_data.h"

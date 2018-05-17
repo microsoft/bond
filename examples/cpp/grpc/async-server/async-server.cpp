@@ -7,7 +7,6 @@
 #include <bond/ext/grpc/shared_unary_call.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <functional>
@@ -91,22 +90,23 @@ int main()
     HelloRequest request;
     request.name = user;
 
-    bond::ext::gRPC::wait_callback<HelloReply> cb;
-    greeter.AsyncSayHello(request, cb);
-
-    if (!cb.wait_for(std::chrono::seconds(10)))
+    auto result = greeter.AsyncSayHello(request);
+    if (result.wait_for(std::chrono::seconds(10)) == std::future_status::timeout)
     {
         std::cout << "timeout ocurred";
         return 1;
     }
-    else if (!cb.status().ok())
-    {
-        std::cout << "request failed: " << cb.status().error_message();
-        return 1;
-    }
 
     HelloReply reply;
-    cb.response().Deserialize(reply);
+    try
+    {
+        result.get().response().Deserialize(reply);
+    }
+    catch (const bond::ext::gRPC::UnaryCallException& e)
+    {
+        std::cout << "request failed: " << e.status().error_message();
+        return 1;
+    }
 
     if (reply.message.compare("hello world") != 0)
     {

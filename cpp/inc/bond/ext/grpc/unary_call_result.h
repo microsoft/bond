@@ -20,6 +20,10 @@ namespace bond { namespace ext { namespace gRPC {
     class unary_call_result
     {
     public:
+#ifdef _MSC_VER
+        unary_call_result() = default; // Workaround for a buggy std::promise in MSVC.
+#endif
+
         /// @brief Create a unary_call_result with the given values.
         ///
         /// @param response The response.
