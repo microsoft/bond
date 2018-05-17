@@ -89,8 +89,6 @@ different versioning scheme, following the Haskell community's
   - The `bond::ext::gRPC::server_builder_core` class template and the
     `bond::ext::gRPC::server_builder` convenience typedef have been replaced
     with the normal class `bond::ext::gRPC::server_builder`.
-    Also the `bond::ext::gRPC::server_builder::SetThreadPool` has been
-    renamed to `SetScheduler` and now takes the revised `Scheduler`.
   - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
     as the last parameter instead of as the first.
   - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
@@ -101,6 +99,9 @@ different versioning scheme, following the Haskell community's
     `bond::ext::gRPC::server` object.
   - The `bond::ext::gRPC::server_builder::RegisterService` now only accepts service
     instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
+  - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
+    implementations must now pass a `Scheduler` to the generated `Service` base class which
+    is no longer default constructible.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.

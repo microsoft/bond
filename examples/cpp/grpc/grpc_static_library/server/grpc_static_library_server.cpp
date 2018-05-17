@@ -39,6 +39,10 @@ using namespace examples::grpc_static_library;
 
 class PingPongServiceImpl final : public PingPong::Service
 {
+public:
+    using PingPong::Service::Service;
+
+private:
     void Ping(
         bond::ext::gRPC::unary_call<
         bond::bonded<::examples::grpc_static_library::PingRequest>,
@@ -77,14 +81,12 @@ int main()
     }
 
     { // Create and start a service
-        std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{} };
+        bond::ext::gRPC::thread_pool threadPool;
+        std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{ threadPool } };
 
         const std::string server_address("127.0.0.1:50051");
 
-        bond::ext::gRPC::thread_pool threadPool;
-
         auto server = bond::ext::gRPC::server_builder{}
-            .SetScheduler(threadPool)
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
             .RegisterService(std::move(service))
             .BuildAndStart();

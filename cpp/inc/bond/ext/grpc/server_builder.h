@@ -55,6 +55,7 @@
 
 #include <boost/assert.hpp>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -144,12 +145,6 @@ namespace bond { namespace ext { namespace gRPC
             return *this;
         }
 
-        server_builder& SetScheduler(const Scheduler& scheduler)
-        {
-            _scheduler = scheduler;
-            return *this;
-        }
-
         /// Tries to bind this server to the given \p addr.
         ///
         /// It can be invoked multiple times.
@@ -171,17 +166,11 @@ namespace bond { namespace ext { namespace gRPC
         /// Return a running server which is ready for processing calls.
         server BuildAndStart()
         {
-            if (!_scheduler)
-            {
-                _scheduler = thread_pool{};
-            }
-
             auto cq = _builder.AddCompletionQueue();
-            auto grpcServer = _builder.BuildAndStart();
 
             for (auto& service : _services)
             {
-                service->start(cq.get(), _scheduler);
+                service->SetCompletionQueue(cq.get());
             }
 
             std::unique_ptr<io_manager> ioManager{
@@ -190,13 +179,12 @@ namespace bond { namespace ext { namespace gRPC
                     /*delay=*/ false,
                     std::move(cq) } };
 
-            return server{ std::move(grpcServer), std::move(_services), std::move(ioManager) };
+            return server{ _builder.BuildAndStart(), std::move(_services), std::move(ioManager) };
         }
 
     private:
         grpc::ServerBuilder _builder;
         std::vector<std::unique_ptr<detail::service>> _services;
-        Scheduler _scheduler;
     };
 
 } } } // namespace bond::ext::gRPC

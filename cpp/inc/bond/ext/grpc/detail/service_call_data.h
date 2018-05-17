@@ -46,23 +46,13 @@ class service_unary_call_data : io_manager_tag
 {
 public:
     template <typename Callback>
-    service_unary_call_data(
-        service& service,
-        int methodIndex,
-        grpc::ServerCompletionQueue* cq,
-        const Scheduler& scheduler,
-        Callback&& cb)
+    service_unary_call_data(service& service, int methodIndex, Callback&& cb)
         : _service(service),
           _methodIndex(methodIndex),
-          _cq(cq),
-          _scheduler(scheduler),
           _cb(std::forward<Callback>(cb)),
           _receivedCall()
     {
-        BOOST_ASSERT(_cq);
-        BOOST_ASSERT(_scheduler);
         BOOST_ASSERT(_cb);
-
         queue_receive();
     }
 
@@ -71,7 +61,7 @@ public:
         if (ok)
         {
             // TODO: Use lambda with move-capture when allowed to use C++14.
-            _scheduler(std::bind(
+            _service.scheduler()(std::bind(
                 [](const decltype(_cb)& cb, boost::intrusive_ptr<uc_impl>& receivedCall)
                 {
                     cb(unary_call<Request, Response>{ std::move(receivedCall) });
@@ -96,8 +86,7 @@ private:
             &_receivedCall->context(),
             &_receivedCall->request(),
             &_receivedCall->responder(),
-            _cq,
-            this);
+            tag());
 
         return receivedCall;
     }
@@ -107,10 +96,6 @@ private:
     /// The index of the method. Method indices correspond to the order in
     /// which they were registered with detail::service::AddMethod
     const int _methodIndex;
-    /// The completion port to post IO operations to.
-    grpc::ServerCompletionQueue* _cq;
-    /// The scheduler implementation to use to invoke the user callback.
-    Scheduler _scheduler;
     /// The user code to invoke when a call to this method is received.
     std::function<void(unary_call<Request, Response>)> _cb;
     /// Individual state for one specific call to this method.

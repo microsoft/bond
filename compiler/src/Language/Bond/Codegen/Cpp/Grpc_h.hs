@@ -145,17 +145,33 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
     class #{serviceName} : public ::bond::ext::gRPC::detail::service
     {
     public:
-        #{serviceName}()
-        {
-            #{newlineSep 3 serviceAddMethod serviceMethods}
-        }
+        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler)
+            : ::bond::ext::gRPC::detail::service(
+                scheduler,
+                {
+                    #{commaLineSep 5 serviceMethodName serviceMethods}
+                })
+        {}
 
-        #{serviceStartMethod}
+        void start() override
+        {
+            _data.emplace(*this);
+        }
 
         #{newlineSep 2 serviceVirtualMethod serviceMethods}
 
     private:
-        #{newlineSep 2 serviceMethodReceiveData serviceMethods}
+        struct data
+        {
+            explicit data(#{serviceName}& s)
+                : _s(s)
+            {}
+
+            #{serviceName}& _s;
+            #{newlineSep 3 serviceDataMember serviceMethodsWithIndex}
+        };
+
+        ::boost::optional<data> _data;
     };
 };
 
@@ -204,9 +220,6 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         proxyName = "Client" :: String
         serviceName = "Service" :: String
-
-        methodNames :: [String]
-        methodNames = map methodName serviceMethods
 
         serviceMethodsWithIndex :: [(Integer,Method)]
         serviceMethodsWithIndex = zip [0..] serviceMethods
@@ -258,41 +271,17 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
 
-        privateProxyMethodDecl Function{..} = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName}_;|]
-        privateProxyMethodDecl Event{..} = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName}_;|]
+        privateProxyMethodDecl f = [lt|const ::grpc::internal::RpcMethod rpcmethod_#{methodName f}_;|]
 
-        proxyMethodMemberInit Function{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
-        proxyMethodMemberInit Event{..} = [lt|, rpcmethod_#{methodName}_("/#{getDeclTypeName idl s}/#{methodName}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
+        proxyMethodMemberInit f = [lt|, rpcmethod_#{methodName f}_("/#{getDeclTypeName idl s}/#{methodName f}", ::grpc::internal::RpcMethod::NORMAL_RPC, channel)|]
 
-        serviceAddMethod Function{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
-        serviceAddMethod Event{..} = [lt|this->AddMethod("/#{getDeclTypeName idl s}/#{methodName}");|]
+        serviceMethodName f = [lt|"/#{getDeclTypeName idl s}/#{methodName f}"|]
 
-        serviceStartMethod = [lt|virtual void start(
-            ::grpc::ServerCompletionQueue* #{cqParam},
-            const ::bond::ext::gRPC::Scheduler& #{schedulerParam}) override
-        {
-            BOOST_ASSERT(#{cqParam});
-            BOOST_ASSERT(#{schedulerParam});
+        serviceDataMember (index,f) = [lt|::bond::ext::gRPC::detail::service::Method<#{typename}Schema::service::#{methodName f}> _m#{index}{ _s, #{index}, ::std::bind(&#{serviceName}::#{methodName f}, &_s, ::std::placeholders::_1) };|]
 
-            #{newlineSep 3 initMethodReceiveData serviceMethodsWithIndex}
-        }|]
-            where cqParam = uniqueName "cq" methodNames
-                  schedulerParam = uniqueName "scheduler" methodNames
-                  initMethodReceiveData (index,Function{..}) = initMethodReceiveDataContent index methodName
-                  initMethodReceiveData (index,Event{..}) = initMethodReceiveDataContent index methodName
-                  initMethodReceiveDataContent index methodName = [lt|#{serviceRdMember methodName}.emplace(
-                *this,
-                #{index},
-                #{cqParam},
-                #{schedulerParam},
-                std::bind(&#{serviceName}::#{methodName}, this, std::placeholders::_1));|]
-
-        serviceMethodReceiveData Function{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}>> #{serviceRdMember methodName};|]
-        serviceMethodReceiveData Event{..} = [lt|::boost::optional< ::bond::ext::gRPC::detail::service_unary_call_data< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}>> #{serviceRdMember methodName};|]
-
-        serviceVirtualMethod Function{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded (methodTypeToMaybe methodInput)}, #{payload (methodTypeToMaybe methodResult)}>) = 0;|]
-        serviceVirtualMethod Event{..} = [lt|virtual void #{methodName}(::bond::ext::gRPC::unary_call< #{bonded (methodTypeToMaybe methodInput)}, #{payload Nothing}>) = 0;|]
-
-        serviceRdMember methodName = uniqueName ("_rd_" ++ methodName) methodNames
+        serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::gRPC::unary_call< #{bonded $ methodTypeToMaybe $ methodInput f}, #{payload $ result f}>) = 0;|]
+          where
+            result Function{..} = methodTypeToMaybe methodResult
+            result Event{..} = Nothing
 
     grpc _ = mempty

@@ -23,6 +23,10 @@ using namespace helloworld;
 // Logic and data behind the server's behavior.
 class GreeterServiceImpl final : public Greeter::Service
 {
+public:
+    using Greeter::Service::Service;
+
+private:
     void SayHello(
         bond::ext::gRPC::unary_call<
             bond::bonded<HelloRequest>,
@@ -42,7 +46,7 @@ int main()
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl };
+    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 

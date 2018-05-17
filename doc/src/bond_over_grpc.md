@@ -173,8 +173,12 @@ To build the service functionality, simply write a concrete service
 implementation by subclassing the server base and supplying the business logic:
 
 ```cpp
-class ExampleServiceImpl final : Example::Service
+class ExampleServiceImpl final : public Example::Service
 {
+public:
+    using Example::Service::Service;
+
+private:
     void ExampleMethod(
         bond::ext::gRPC::unary_call<
             bond::bonded<ExampleRequest>,
@@ -194,12 +198,11 @@ This service implementation is hooked up to a gRPC server as follows:
 
 ```cpp
 bond::ext::gRPC::thread_pool threadPool;
-const std::string server_address(Host + ":" + Port);
+const std::string server_address{ Host + ":" + Port };
 
-std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{} };
+std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{ threadPool } };
 
 bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
-    .SetScheduler(threadPool)
     .AddListeningPort(server_address, grpc::InsecureServerCredentials())
     .RegisterService(std::move(service))
     .BuildAndStart();
@@ -213,7 +216,7 @@ On the client side, the proxy stub establishes a connection to the server like t
 ```cpp
 auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
 bond::ext::gRPC::thread_pool threadPool;
-const std::string server_address(Host + ":" + Port);
+const std::string server_address{ Host + ":" + Port };
 
 Example::Client client{
     grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),

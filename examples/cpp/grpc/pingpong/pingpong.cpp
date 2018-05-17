@@ -64,6 +64,8 @@ private:
 class DoublePingServiceImpl final : public DoublePing::Service
 {
 public:
+    using DoublePing::Service::Service;
+
     std::shared_ptr<event> pingNoResponse_event{ std::make_shared<event>() };
 
 private:
@@ -139,6 +141,10 @@ private:
 
 class PingPongServiceImpl final : public PingPong<PingRequest>::Service
 {
+public:
+    using PingPong<PingRequest>::Service::Service;
+
+private:
     void Ping(
         bond::ext::gRPC::unary_call<
             bond::bonded<PingRequest>,
@@ -193,15 +199,14 @@ int main()
 {
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl{} };
-    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl{} };
+    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl{ threadPool } };
+    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl{ threadPool } };
 
     auto pingNoResponse_event = double_ping_service->pingNoResponse_event;
 
     const std::string server_address("127.0.0.1:50051");
 
     auto server = bond::ext::gRPC::server_builder{}
-        .SetScheduler(threadPool)
         .AddListeningPort(server_address, grpc::InsecureServerCredentials())
         .RegisterService(std::move(double_ping_service))
         .RegisterService(std::move(ping_pong_service))
