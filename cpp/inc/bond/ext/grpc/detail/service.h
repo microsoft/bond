@@ -169,8 +169,7 @@ namespace detail
     /// be re-used for receiving subsequent calls. A new detail::unary_call_impl
     /// is created for each individual call to hold the call-specific data. Once
     /// the invocation of the user callback along with the call-specific data
-    /// has been scheduled, detail::service_unary_call_data re-enqueues itself
-    /// to get the next call.
+    /// has been scheduled, unary_call_data re-enqueues itself to get the next call.
     template <typename Request, typename Response>
     class service::unary_call_data : io_manager_tag
     {
