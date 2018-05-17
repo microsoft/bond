@@ -7,11 +7,11 @@
 
 #include <bond/core/exception.h>
 
-#include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/client_context.h>
+#include <grpcpp/impl/codegen/status.h>
 
-namespace bond { namespace ext { namespace gRPC {
-
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief %Exception thrown to indicate that a callback has been
     /// invoked multiple times when only one invocation is expected.
     class MultipleInvocationException : public Exception
@@ -32,6 +32,7 @@ namespace bond { namespace ext { namespace gRPC {
         {}
     };
 
+    /// @brief %Exception thrown when proxy invocation returns failure status.
     class UnaryCallException : public Exception
     {
     public:

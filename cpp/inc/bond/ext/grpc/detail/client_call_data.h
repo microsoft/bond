@@ -6,6 +6,7 @@
 #include <bond/core/config.h>
 
 #include "io_manager_tag.h"
+
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call_result.h>
@@ -35,7 +36,8 @@
 #include <memory>
 
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
+namespace bond { namespace ext { namespace gRPC { namespace detail
+{
 
 /// @brief Implementation class that hold the state associated with
 /// outgoing unary calls.
@@ -44,11 +46,8 @@ class client_unary_call_data
     : public boost::intrusive_ref_counter<client_unary_call_data<Request, Response>>,
       io_manager_tag
 {
-    /// The type of the user-defined callback that will be invoked for the
-    /// response.
-    using CallbackType = std::function<void(unary_call_result<Response>)>;
-
 public:
+    template <typename Callback>
     client_unary_call_data(
         const grpc::internal::RpcMethod& method,
         const bonded<Request>& request,
@@ -56,7 +55,7 @@ public:
         std::shared_ptr<grpc::ChannelInterface> channel,
         std::shared_ptr<grpc::ClientContext> context,
         const Scheduler& scheduler,
-        CallbackType cb = {})
+        Callback&& cb)
         : _cq(std::move(cq)),
           _channel(std::move(channel)),
           _context(std::move(context)),
@@ -71,7 +70,7 @@ public:
           _scheduler(scheduler),
           _response(),
           _status(),
-          _cb(std::move(cb)),
+          _cb(std::forward<Callback>(cb)),
           _self(this)
     {
         BOOST_ASSERT(_scheduler);
@@ -88,7 +87,7 @@ private:
         {
             // TODO: Use lambda with move-capture when allowed to use C++14.
             _scheduler(std::bind(
-                [](CallbackType& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
+                [](decltype(_cb)& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
                 std::move(_cb),
                 unary_call_result<Response>{ std::move(_response), _status, std::move(_context) }));
         }
@@ -111,7 +110,7 @@ private:
     /// @brief The status of the request.
     grpc::Status _status;
     /// The user code to invoke when a response is received.
-    CallbackType _cb;
+    std::function<void(unary_call_result<Response>)> _cb;
     /// A pointer to ourselves used to keep us alive while waiting to
     /// receive the response.
     boost::intrusive_ptr<client_unary_call_data> _self;
