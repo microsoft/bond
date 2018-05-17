@@ -74,13 +74,12 @@ int main()
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl(threadPool) };
+    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl{ threadPool } };
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(service))
+        .BuildAndStart();
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),

@@ -6,7 +6,7 @@
 #include <bond/core/config.h>
 
 #include "bond_utils.h"
-#include <bond/ext/grpc/thread_pool.h>
+#include <bond/ext/grpc/scheduler.h>
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -27,11 +27,13 @@
 #include <initializer_list>
 #include <functional>
 
-namespace bond { namespace ext { namespace gRPC {
+namespace bond { namespace ext { namespace gRPC
+{
 
 class server_builder;
-    
-namespace detail {
+
+namespace detail
+{
 
 struct io_manager_tag;
 
@@ -121,9 +123,11 @@ protected:
                 typename MethodT::result_type>::type>::type>;
 
     service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
-        : _scheduler(scheduler ? scheduler : thread_pool{}),
-          _cq(nullptr)
+        : _scheduler{ scheduler },
+          _cq{ nullptr }
     {
+        BOOST_ASSERT(_scheduler);
+
         AddMethods(methodNames);
     }
 

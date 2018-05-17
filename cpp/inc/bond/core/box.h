@@ -14,10 +14,10 @@ namespace bond
 {
 
 template <typename T>
-Box<typename std::remove_reference<T>::type> make_box(T&& arg)
+Box<typename std::decay<T>::type> make_box(T&& value)
 {
-    Box<typename std::remove_reference<T>::type> b;
-    b.value = std::forward<T>(arg);
+    Box<typename std::decay<T>::type> b;
+    b.value = std::forward<T>(value);
     return b;
 }
 

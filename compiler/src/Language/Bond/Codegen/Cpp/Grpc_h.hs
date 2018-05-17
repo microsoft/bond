@@ -104,7 +104,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
     class #{serviceName} : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler)
             : ::bond::ext::gRPC::detail::service(
                 scheduler,
                 {
@@ -139,9 +139,10 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
       where
         template = CPP.template s
         onlyTemplate x = if null declParams then mempty else x
+        onlyNonTemplate x = if null declParams then x else mempty
         typename = onlyTemplate [lt|typename |]
 
-        export_attr = optional (\a -> [lt|#{a}
+        export_attr = onlyNonTemplate $ optional (\a -> [lt|#{a}
         |]) export_attribute
 
         methodMetadataVar m = [lt|s_#{methodName m}_metadata|]

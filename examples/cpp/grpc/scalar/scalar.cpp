@@ -30,6 +30,10 @@ using namespace scalar;
 // Logic and data behind the server's behavior.
 class ScalarMethodsImpl final : public ScalarMethods::Service
 {
+public:
+    using ScalarMethods::Service::Service;
+
+private:
     void Negate(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Box<int32_t>>,
@@ -109,19 +113,22 @@ static void MakeSumRequest(ScalarMethods::Client& client)
 
 int main()
 {
-    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl };
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    bond::ext::gRPC::thread_pool threadPool;
+
+    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(service))
+        .BuildAndStart();
 
     ScalarMethods::Client client(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-        std::make_shared<bond::ext::gRPC::io_manager>());
+        ioManager,
+        threadPool);
 
     MakeNegateRequest(client);
     MakeSumRequest(client);

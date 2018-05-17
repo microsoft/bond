@@ -164,23 +164,21 @@ The key generated C++ classes for gRPC are:
   `Example::Service`). This class has abstract methods
   for each of the methods defined in the service IDL, serving as a base for the
   concrete implementation which will provide the actual server-side business
-  logic. (Technically, `Service` is a type alias for
-  `ServiceCore<bond::ext::gRPC::thread_pool>`. The `ServiceCore<T>` template
-  can be used to customize the service implementation to use a different
-  thread pool implementation.)
+  logic.
 * The proxy stub, which is an inner class named `Client` (e.g.:
   `Example::Client`). This is used to invoke the service from the
-  client side. (Likewise, `Client` is a type alias for
-  `ClientCore<bond::ext::gRPC::thread_pool>`. The `ClientCore<T>` template
-  can be used to customize the client implementation to use a different
-  thread pool implementation.)  
+  client side.
 
 To build the service functionality, simply write a concrete service
 implementation by subclassing the server base and supplying the business logic:
 
 ```cpp
-class ExampleServiceImpl final : Example::Service
+class ExampleServiceImpl final : public Example::Service
 {
+public:
+    using Example::Service::Service;
+
+private:
     void ExampleMethod(
         bond::ext::gRPC::unary_call<
             bond::bonded<ExampleRequest>,
@@ -199,16 +197,15 @@ class ExampleServiceImpl final : Example::Service
 This service implementation is hooked up to a gRPC server as follows:
 
 ```cpp
-auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
-const std::string server_address(Host + ":" + Port);
+bond::ext::gRPC::thread_pool threadPool;
+const std::string server_address{ Host + ":" + Port };
 
-ExampleServiceImpl service;
-bond::ext::gRPC::server_builder builder;
-builder.SetThreadPool(threadPool);
-builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-builder.RegisterService(&service);
-std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
+std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{ threadPool } };
+
+bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
+    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+    .RegisterService(std::move(service))
+    .BuildAndStart();
 ```
 
 At this point the server is ready to receive requests and route them to the
@@ -218,13 +215,13 @@ On the client side, the proxy stub establishes a connection to the server like t
 
 ```cpp
 auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
-const std::string server_address(Host + ":" + Port);
+bond::ext::gRPC::thread_pool threadPool;
+const std::string server_address{ Host + ":" + Port };
 
-Example::Client client(
+Example::Client client{
     grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
     ioManager,
-    threadPool);
+    threadPool };
 ```
 
 The proxy stub can then be used to make calls to the server as follows:

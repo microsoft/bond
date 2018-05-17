@@ -76,13 +76,9 @@ public:
     {
         BOOST_ASSERT(_scheduler);
 
-        auto alive = _self;
-
+        auto self = _self; // Make sure `this` will outlive the below call.
         _responseReader->Finish(&_response, &_status, tag());
     }
-
-    client_unary_call_data(const client_unary_call_data& other) = delete;
-    client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
 
 private:
     /// @brief Invoked after the response has been received.

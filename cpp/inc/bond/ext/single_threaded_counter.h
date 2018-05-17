@@ -10,7 +10,7 @@
 
 #include <boost/assert.hpp>
 
-namespace bond
+namespace bond { namespace ext
 {
     /// @brief Single-threaded counter to be used with \ref capped_allocator.
     ///
@@ -55,4 +55,4 @@ namespace bond
         T _value{};
     };
 
-} // namespace bond
+} } // namespace bond::ext

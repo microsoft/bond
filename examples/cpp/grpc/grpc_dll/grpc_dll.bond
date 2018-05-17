@@ -1,18 +1,18 @@
 namespace examples.grpc_dll
 
-struct Item
+struct Item<T>
 {
-    0: string       str = "default string value";
-    1: list<uint32> numbers;
+    0: string  str = "default string value";
+    1: list<T> numbers;
 }
 
 struct MyStruct
 {
-    0: vector<Item> items;
-    1: bonded<Item> item;
+    0: vector<Item<uint32>> items;
+    1: bonded<Item<uint32>> item;
 }
 
-service TestService
+service TestService<T>
 {
-    Item TestMethod(MyStruct);
+    Item<T> TestMethod(MyStruct);
 }

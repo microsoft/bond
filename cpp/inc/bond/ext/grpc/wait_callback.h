@@ -6,8 +6,8 @@
 #include <bond/core/config.h>
 
 #include <bond/core/bonded.h>
-#include "exception.h"
-#include "unary_call_result.h"
+#include <bond/ext/grpc/exception.h>
+#include <bond/ext/grpc/unary_call_result.h>
 
 #include <grpcpp/impl/codegen/status.h>
 
@@ -33,13 +33,11 @@ template <typename Response>
 class wait_callback final
 {
 public:
-    using arg_type = unary_call_result<Response>;
-
     /// @brief Records the response and status.
     ///
     /// @exception MultipleInvocationException thrown if the callback (or a
     /// copy of the callback) is invoked more than once.
-    void operator()(arg_type result) const
+    void operator()(unary_call_result<Response> result) const
     {
         {
             std::lock_guard<std::mutex> lock(*_state);
@@ -107,7 +105,7 @@ public:
 private:
     struct state : std::mutex, std::condition_variable
     {
-        boost::optional<arg_type> result;
+        boost::optional<unary_call_result<Response>> result;
     };
 
     std::shared_ptr<state> _state{ std::make_shared<state>() };

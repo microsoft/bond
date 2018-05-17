@@ -66,7 +66,7 @@ protected:
         new client_unary_call_data<Request, Response>{
             method,
             request,
-            _ioManager->cq(),
+            _ioManager->shared_cq(),
             _channel,
             context ? std::move(context) : std::make_shared<grpc::ClientContext>(),
             _scheduler,

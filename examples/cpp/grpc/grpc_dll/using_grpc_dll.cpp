@@ -43,15 +43,19 @@ using grpc::ServerContext;
 
 using namespace examples::grpc_dll;
 
-struct TestServiceImpl : TestService::Service
+class TestServiceImpl : public TestService<uint32_t>::Service
 {
+public:
+    using TestService<uint32_t>::Service::Service;
+
+private:
     void TestMethod(bond::ext::gRPC::unary_call<
                         bond::bonded<MyStruct>,
-                        Item> call) override
+                        Item<uint32_t>> call) override
     {
         MyStruct request = call.request().Deserialize();
 
-        Item response;
+        Item<uint32_t> response;
         response = request.items[0];
 
         call.Finish(response);
@@ -74,10 +78,10 @@ int main()
         obj.items.resize(1);
         obj.items[0].numbers.push_back(13);
 
-        Item item;
+        Item<uint32_t> item;
 
         item.numbers.push_back(11);
-        obj.item = bond::bonded<Item>(item);
+        obj.item = bond::bonded<Item<uint32_t>>(item);
 
         // Serialize
         bond::OutputBuffer buffer;
@@ -92,7 +96,7 @@ int main()
         bond::CompactBinaryReader<bond::InputBuffer> reader(data);
         bond::Deserialize(reader, obj2);
 
-        Item item2;
+        Item<uint32_t> item2;
 
         obj2.item.Deserialize(item2);
 
@@ -105,26 +109,29 @@ int main()
 
         std::cout << schema.GetSchema().structs[schema.GetSchema().root.struct_def].fields[0].metadata.name << std::endl;
 
-        print_metadata()(TestService::Schema());
+        print_metadata()(TestService<uint32_t>::Schema());
 
-        boost::mpl::for_each<TestService::Schema::methods>(print_metadata());
+        boost::mpl::for_each<TestService<uint32_t>::Schema::methods>(print_metadata());
     }
 
     { // Exercise gRPC facilities
+        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+        bond::ext::gRPC::thread_pool threadPool;
 
         const std::string server_address("127.0.0.1:50051");
 
         // Create and start a service instance
-        std::unique_ptr<bond::ext::gRPC::server> server(
-            bond::ext::gRPC::server_builder{}
-                .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-                .RegisterService(std::unique_ptr<TestServiceImpl>{ new TestServiceImpl })
-                .BuildAndStart());
+        std::unique_ptr<TestServiceImpl> service{ new TestServiceImpl{ threadPool } };
+        auto server = bond::ext::gRPC::server_builder{}
+            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+            .RegisterService(std::move(service))
+            .BuildAndStart();
 
         // Create a proxy
-        TestService::Client proxy(
+        TestService<uint32_t>::Client proxy(
             grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-            std::make_shared<bond::ext::gRPC::io_manager>());
+            ioManager,
+            threadPool);
     }
 
     return 0;

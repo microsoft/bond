@@ -199,19 +199,18 @@ int main()
 {
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl(threadPool) };
-    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl(threadPool) };
+    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl{ threadPool } };
+    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl{ threadPool } };
 
     auto pingNoResponse_event = double_ping_service->pingNoResponse_event;
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(double_ping_service))
-            .RegisterService(std::move(ping_pong_service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(double_ping_service))
+        .RegisterService(std::move(ping_pong_service))
+        .BuildAndStart();
 
     auto ioManager = std::make_shared<io_manager>();
 
@@ -229,11 +228,6 @@ int main()
 
     PingRequest request;
     request.name = user;
-
-    // future
-    {
-        auto response = doublePing.AsyncPing(request).get().response().Deserialize();
-    }
 
     {
         // A bonded object can also be used for the request. Here we use a

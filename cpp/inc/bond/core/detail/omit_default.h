@@ -129,9 +129,11 @@ implements_field_omitting
     : std::false_type {};
 
 
+#ifdef BOND_NO_SFINAE_EXPR
 template <typename T> struct
 implements_field_omitting<T&>
     : implements_field_omitting<T> {};
+#endif
 
 
 // WriteFieldOmitted is an optional protocol writer method which is called for
@@ -139,7 +141,14 @@ implements_field_omitting<T&>
 // be implemented by untagged protocols that allow omitting optional fields.
 template <typename Writer> struct
 implements_field_omitting<Writer,
-    typename boost::enable_if<bond::check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Writer::*)(BondDataType, uint16_t, const Metadata&), &Writer::WriteFieldOmitted> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<Writer>().WriteFieldOmitted(
+        std::declval<BondDataType>(),
+        std::declval<uint16_t>(),
+        std::declval<Metadata>()))>>
+#endif
     : std::true_type {};
 
 
@@ -147,7 +156,13 @@ implements_field_omitting<Writer,
 // by untagged protocols that allow omitting optional fields.
 template <typename Input> struct
 implements_field_omitting<Input,
-    typename boost::enable_if<bond::check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<bool (Input::*)(), &Input::ReadFieldOmitted> >::type>
+#else
+    typename boost::enable_if<std::is_same<
+        bool,
+        decltype(std::declval<Input>().ReadFieldOmitted())>>::type>
+#endif
     : std::true_type {};
 
 
@@ -198,19 +213,28 @@ implements_struct_begin_with_base
 
 template <typename Input> struct
 implements_struct_begin<Input,
-    typename boost::enable_if<bond::check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Input::*)(), &Input::ReadStructBegin> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin())>>
+#endif
     : std::true_type {};
 
 
 template <typename Input> struct
 implements_struct_begin_with_base<Input,
-    typename boost::enable_if<bond::check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
+#ifdef BOND_NO_SFINAE_EXPR
+    typename boost::enable_if<check_method<void (Input::*)(bool), &Input::ReadStructBegin> >::type>
+#else
+    detail::mpl::void_t<decltype(std::declval<Input>().ReadStructBegin(std::declval<bool>()))>>
+#endif
     : std::true_type {};
 
 
 // StructBegin
 template <typename Input>
-typename boost::enable_if<implements_struct_begin<Input> >::type
+typename boost::enable_if_c<implements_struct_begin<Input>::value
+                          && !implements_struct_begin_with_base<Input>::value>::type
 StructBegin(Input& input, bool /*base*/)
 {
     return input.ReadStructBegin();
@@ -234,7 +258,8 @@ StructBegin(Input& /*input*/, bool /*base*/)
 
 // StructEnd
 template <typename Input>
-typename boost::enable_if<implements_struct_begin<Input> >::type
+typename boost::enable_if_c<implements_struct_begin<Input>::value
+                          && !implements_struct_begin_with_base<Input>::value>::type
 StructEnd(Input& input, bool /*base*/)
 {
     return input.ReadStructEnd();
