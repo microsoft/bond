@@ -107,7 +107,6 @@ namespace bond { namespace ext { namespace gRPC
     private:
         friend class server_builder;
 
-    private:
         server(
             std::unique_ptr<grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
@@ -118,6 +117,11 @@ namespace bond { namespace ext { namespace gRPC
         {
             BOOST_ASSERT(_server);
             BOOST_ASSERT(_ioManager);
+
+            for (auto& service : _services)
+            {
+                service->start();
+            }
         }
 
         std::unique_ptr<grpc::Server> _server;
