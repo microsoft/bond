@@ -6,7 +6,6 @@
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <functional>
@@ -23,6 +22,10 @@ using namespace helloworld;
 // Logic and data behind the server's behavior.
 class GreeterServiceImpl final : public Greeter::Service
 {
+public:
+    using Greeter::Service::Service;
+
+private:
     void SayHello(
         bond::ext::gRPC::unary_call<
             bond::bonded<HelloRequest>,
@@ -39,43 +42,45 @@ class GreeterServiceImpl final : public Greeter::Service
 
 int main()
 {
-    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl };
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    bond::ext::gRPC::thread_pool threadPool;
+
+    std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(service))
+        .BuildAndStart();
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-        std::make_shared<bond::ext::gRPC::io_manager>());
+        ioManager,
+        threadPool);
 
     const std::string user("world");
 
     HelloRequest request;
     request.name = user;
 
-    bond::ext::gRPC::wait_callback<HelloReply> cb;
-    greeter.AsyncSayHello(request, cb);
-
-    bool waitResult = cb.wait_for(std::chrono::seconds(10));
-
-    if (!waitResult)
+    auto result = greeter.AsyncSayHello(request);
+    if (result.wait_for(std::chrono::seconds(10)) == std::future_status::timeout)
     {
         std::cout << "timeout ocurred";
         return 1;
     }
-    else if (!cb.status().ok())
-    {
-        std::cout << "request failed";
-        return 1;
-    }
 
     HelloReply reply;
-    cb.response().Deserialize(reply);
+    try
+    {
+        result.get().response().Deserialize(reply);
+    }
+    catch (const bond::ext::gRPC::UnaryCallException& e)
+    {
+        std::cout << "request failed: " << e.status().error_message();
+        return 1;
+    }
 
     if (reply.message.compare("hello world") != 0)
     {

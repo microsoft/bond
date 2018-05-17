@@ -9,7 +9,6 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <memory>
@@ -25,13 +24,14 @@ using namespace PingPongNS;
 int main()
 {
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    bond::ext::gRPC::thread_pool threadPool;
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
     std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    PingPong::Client client(channel, ioManager);
+    PingPong::Client client(channel, ioManager, threadPool);
 
     printf("Start client\n");
     fflush(stdout);
@@ -48,30 +48,29 @@ int main()
             printf("Sending request\n");
             fflush(stdout);
 
-            bond::ext::gRPC::wait_callback<PingResponse> cb;
-            client.AsyncPing(request, cb);
-            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
-
-            if (!gotResponse)
+            auto futureResult = client.AsyncPing(request);
+            if (futureResult.wait_for(std::chrono::seconds(1)) == std::future_status::timeout)
             {
                 printf("Client timed out waiting for response\n");
                 fflush(stdout);
                 exit(1);
             }
 
-            Status status = cb.status();
-
-            if (!status.ok())
+            try
             {
-                printf("Error response received: %d\n", status.error_code());
-                printf("Client failed\n");
-                fflush(stdout);
-                exit(1);
+                auto result = futureResult.get();
+
+                if (result.response().Deserialize().Payload != request.Payload)
+                {
+                    printf("Response payload did not match request\n");
+                    printf("Client failed\n");
+                    fflush(stdout);
+                    exit(1);
+                }
             }
-
-            if (cb.response().Deserialize().Payload != request.Payload)
+            catch (const bond::ext::gRPC::UnaryCallException& e)
             {
-                printf("Response payload did not match request\n");
+                printf("Error response received: %d\n", e.status().error_code());
                 printf("Client failed\n");
                 fflush(stdout);
                 exit(1);
@@ -100,26 +99,25 @@ int main()
             printf("Sending request\n");
             fflush(stdout);
 
-            bond::ext::gRPC::wait_callback<PingResponse> cb;
-            client.AsyncPing(request, cb);
-            bool gotResponse = cb.wait_for(std::chrono::seconds(1));
-
-            if (!gotResponse)
+            auto futureResult = client.AsyncPing(request);
+            if (futureResult.wait_for(std::chrono::seconds(1)) == std::future_status::timeout)
             {
                 printf("Client timed out waiting for response\n");
                 fflush(stdout);
                 exit(1);
             }
 
-            Status status = cb.status();
-
-            if (status.ok())
+            try
             {
-                printf("Non-error response received: %s\n", cb.response().Deserialize().Payload.c_str());
+                auto result = futureResult.get();
+
+                printf("Non-error response received: %s\n", result.response().Deserialize().Payload.c_str());
                 printf("Client failed\n");
                 fflush(stdout);
                 exit(1);
             }
+            catch (const bond::ext::gRPC::UnaryCallException&)
+            {}
         }
     }
     catch (std::exception& e)

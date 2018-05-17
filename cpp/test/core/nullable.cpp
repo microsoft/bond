@@ -230,23 +230,23 @@ TEST_CASE_BEGIN(NullableAllocators)
     using capped_allocator_tests::NullableFields;
     using capped_allocator_tests::SimpleType;
 
-    bond::capped_allocator<> a1{ (std::numeric_limits<std::uint32_t>::max)() };
-    bond::capped_allocator<> a2{ (std::numeric_limits<std::uint32_t>::max)() };
+    bond::ext::capped_allocator<> a1{ (std::numeric_limits<std::uint32_t>::max)() };
+    bond::ext::capped_allocator<> a2{ (std::numeric_limits<std::uint32_t>::max)() };
 
     NullableFields x(a1);
     NullableFields y(a1);
 
-    list<float, std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<float> > l(a2);
+    list<float, std::allocator_traits<bond::ext::capped_allocator<> >::rebind_alloc<float> > l(a2);
     SimpleType s(a2);
 
     bond::nullable<list<float,
-        std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<float> > > l1(l);
+        std::allocator_traits<bond::ext::capped_allocator<> >::rebind_alloc<float> > > l1(l);
     bond::nullable<SimpleType> s1(s, a2);
 
     NullableTests(x, y, s1, l1);
 
     bond::nullable<std::set<bool, std::less<bool>,
-        std::allocator_traits<bond::capped_allocator<> >::rebind_alloc<bool> > > n1(a1);
+        std::allocator_traits<bond::ext::capped_allocator<> >::rebind_alloc<bool> > > n1(a1);
     UT_AssertIsTrue(n1.empty());
 
     NullableFields ns1(a1);

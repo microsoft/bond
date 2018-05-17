@@ -104,7 +104,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
     class #{serviceName} : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler)
             : ::bond::ext::gRPC::detail::service(
                 scheduler,
                 {
@@ -139,9 +139,10 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
       where
         template = CPP.template s
         onlyTemplate x = if null declParams then mempty else x
+        onlyNonTemplate x = if null declParams then x else mempty
         typename = onlyTemplate [lt|typename |]
 
-        export_attr = optional (\a -> [lt|#{a}
+        export_attr = onlyNonTemplate $ optional (\a -> [lt|#{a}
         |]) export_attribute
 
         methodMetadataVar m = [lt|s_#{methodName m}_metadata|]
@@ -185,18 +186,30 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
         publicProxyMethodDecl Function{methodInput = Void, ..} = [lt|void Async#{methodName}(const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<#{payload (methodTypeToMaybe methodResult)}>(_m#{methodName}, std::move(context));
         }|]
         publicProxyMethodDecl Function{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<#{payload (methodTypeToMaybe methodResult)}>(_m#{methodName}, std::move(context), request);
+        }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< #{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
         }|]
         publicProxyMethodDecl Event{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context));
+            ::bond::ext::gRPC::detail::client::dispatch(_m#{methodName}, std::move(context), {});
         }|]
         publicProxyMethodDecl Event{..} = [lt|void Async#{methodName}(const #{bonded (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {

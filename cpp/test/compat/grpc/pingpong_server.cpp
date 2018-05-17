@@ -37,6 +37,7 @@ static std::atomic<uint32_t> NumErrorsReceived(0);
 class PingPongServiceImpl final : public PingPong::Service
 {
 public:
+    using PingPong::Service::Service;
 
     void Ping(
         bond::ext::gRPC::unary_call<
@@ -110,23 +111,24 @@ public:
 
 int main()
 {
-    std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl };
+    bond::ext::gRPC::thread_pool threadPool;
+
+    std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(service))
+        .BuildAndStart();
 
     printf("Server ready\n");
     fflush(stdout);
 
     bool countdownSet = Countdown.wait_for(std::chrono::seconds(30));
 
-    server->Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(10));
-    server->Wait();
+    server.Shutdown(std::chrono::system_clock::now() + std::chrono::seconds(10));
+    server.Wait();
 
     if (!countdownSet ||
         (NumRequestsReceived != NumRequests) ||

@@ -7,14 +7,54 @@
 
 #include <bond/core/exception.h>
 
-namespace bond { namespace ext { namespace gRPC {
+#include <grpcpp/client_context.h>
+#include <grpcpp/impl/codegen/status.h>
 
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief %Exception thrown to indicate that a callback has been
     /// invoked multiple times when only one invocation is expected.
     class MultipleInvocationException : public Exception
     {
     public:
-        MultipleInvocationException() : Exception("The callback was invoked more than once.") { }
+        MultipleInvocationException()
+            : Exception{ "The callback was invoked more than once." }
+        {}
+    };
+
+    /// @brief %Exception thrown when std::thread::hardware_concurrency
+    /// returns 0.
+    class InvalidThreadCount : public Exception
+    {
+    public:
+        InvalidThreadCount()
+            : Exception{ "Invalid number of threads." }
+        {}
+    };
+
+    /// @brief %Exception thrown when proxy invocation returns failure status.
+    class UnaryCallException : public Exception
+    {
+    public:
+        UnaryCallException(const grpc::Status& status, std::shared_ptr<grpc::ClientContext> context)
+            : Exception{ status.error_message().c_str() },
+              _status{ status },
+              _context{ std::move(context) }
+        {}
+
+        const grpc::Status& status() const BOND_NOEXCEPT
+        {
+            return _status;
+        }
+
+        const std::shared_ptr<grpc::ClientContext>& context() const BOND_NOEXCEPT
+        {
+            return _context;
+        }
+
+    private:
+        const grpc::Status _status;
+        const std::shared_ptr<grpc::ClientContext> _context;
     };
 
 } } } // namespace bond::ext::gRPC

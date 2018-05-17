@@ -6,7 +6,6 @@
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <chrono>
 #include <condition_variable>
@@ -23,7 +22,6 @@ using grpc::Status;
 using grpc::StatusCode;
 
 using bond::ext::gRPC::io_manager;
-using bond::ext::gRPC::wait_callback;
 
 using namespace pingpong;
 
@@ -161,33 +159,10 @@ private:
     }
 };
 
-template <typename T>
-static void assertResponseReceived(wait_callback<T>& cb, size_t line)
+void assertResponseContents(const bond::ext::gRPC::unary_call_result<PingReply>& result, size_t line)
 {
-    bool wasInvoked = cb.wait_for(std::chrono::seconds(2));
-    if (!wasInvoked)
-    {
-        std::cerr << "Callback invocation at line " << line << " timed out." << std::endl;
-        abort();
-    }
-}
+    const std::string& message = result.response().Deserialize().message;
 
-static void assertStatus(StatusCode expected, StatusCode actual, size_t line)
-{
-    if (expected != actual)
-    {
-        std::cerr
-            << "Expected status code " << expected << " but got " << actual
-            << " at line " << line << std::endl;
-        abort();
-    }
-}
-
-static void assertResponseContents(const wait_callback<PingReply>& cb, size_t line)
-{
-    assertStatus(StatusCode::OK, cb.status().error_code(), line);
-
-    const std::string& message = cb.response().Deserialize().message;
     if (message.compare("ping pong") != 0)
     {
         std::cerr << "Response at line " << line << " had unexpected message: " << message << std::endl;
@@ -195,23 +170,69 @@ static void assertResponseContents(const wait_callback<PingReply>& cb, size_t li
     }
 }
 
+void assertResponseContents(const bond::ext::gRPC::unary_call_result<bond::Void>&, size_t)
+{}
+
+template <typename T>
+boost::optional<T> getResponse(StatusCode expected, std::future<T> result, size_t line)
+{
+    if (result.wait_for(std::chrono::seconds(2)) == std::future_status::timeout)
+    {
+        std::cerr << "Callback invocation at line " << line << " timed out." << std::endl;
+        abort();
+    }
+
+    boost::optional<T> response;
+    StatusCode actual;
+    try
+    {
+        response = result.get();
+        actual = StatusCode::OK;
+    }
+    catch (const bond::ext::gRPC::UnaryCallException& e)
+    {
+        actual = e.status().error_code();
+    }
+
+    if (expected != actual)
+    {
+        std::cerr
+            << "Expected status code " << expected << " but got " << actual
+            << " at line " << line << std::endl;
+        abort();
+    }
+
+    return response;
+}
+
+template <typename T>
+void assertResponseReceived(std::future<T> result, size_t line)
+{
+    assertResponseContents(getResponse(StatusCode::OK, std::move(result), line).value(), line);
+}
+
+template <typename T>
+void assertResponseCanceled(std::future<T> result, size_t line)
+{
+    getResponse(StatusCode::CANCELLED, std::move(result), line);
+}
+
 int main()
 {
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl(threadPool) };
-    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl(threadPool) };
+    std::unique_ptr<DoublePingServiceImpl> double_ping_service{ new DoublePingServiceImpl{ threadPool } };
+    std::unique_ptr<PingPongServiceImpl> ping_pong_service{ new PingPongServiceImpl{ threadPool } };
 
     auto pingNoResponse_event = double_ping_service->pingNoResponse_event;
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(double_ping_service))
-            .RegisterService(std::move(ping_pong_service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(double_ping_service))
+        .RegisterService(std::move(ping_pong_service))
+        .BuildAndStart();
 
     auto ioManager = std::make_shared<io_manager>();
 
@@ -235,10 +256,7 @@ int main()
         // bonded object backed by an instance of PingRequest, but we could
         // also use one backed by a reader.
         bond::bonded<PingRequest> bondedRequest(request);
-        wait_callback<PingReply> cb;
-        doublePing.AsyncPing(bondedRequest, cb);
-        assertResponseReceived(cb, __LINE__);
-        assertResponseContents(cb, __LINE__);
+        assertResponseReceived(doublePing.AsyncPing(bondedRequest), __LINE__);
     }
 
     {
@@ -246,10 +264,7 @@ int main()
         // example, inspect the metadata the service included in the
         // response.
         auto context = std::make_shared<grpc::ClientContext>();
-        wait_callback<PingReply> cb;
-        doublePing.AsyncPingNoPayload(cb, context);
-        assertResponseReceived(cb, __LINE__);
-        assertResponseContents(cb, __LINE__);
+        assertResponseReceived(doublePing.AsyncPingNoPayload(context), __LINE__);
 
         // After the response has been received, the server metadata can be
         // inspected.
@@ -269,35 +284,19 @@ int main()
 
     {
         doublePing.AsyncPingNoResponse(request);
-        bool wasEventHandled = pingNoResponse_event->wait_for(std::chrono::seconds(10));
 
-        if (!wasEventHandled)
+        if (!pingNoResponse_event->wait_for(std::chrono::seconds(10)))
         {
-            std::cerr << "timeout ocurred waiting for event to be handled at line " << __LINE__ << std::endl;
+            std::cerr << "timeout occurred waiting for event to be handled at line " << __LINE__ << std::endl;
             abort();
         }
     }
 
-    {
-        wait_callback<bond::Void> cb;
-        doublePing.AsyncPingVoid(cb);
-        assertResponseReceived(cb, __LINE__);
-        assertStatus(StatusCode::OK, cb.status().error_code(), __LINE__);
-    }
+    assertResponseReceived(doublePing.AsyncPingVoid(), __LINE__);
 
-    {
-        wait_callback<PingReply> cb;
-        doublePing.AsyncPingShouldThrow(request, cb);
-        assertResponseReceived(cb, __LINE__);
-        assertStatus(StatusCode::CANCELLED, cb.status().error_code(), __LINE__);
-    }
+    assertResponseCanceled(doublePing.AsyncPingShouldThrow(request), __LINE__);
 
-    {
-        wait_callback<PingReply> cb;
-        pingPong.AsyncPing(request, cb);
-        assertResponseReceived(cb, __LINE__);
-        assertResponseContents(cb, __LINE__);
-    }
+    assertResponseReceived(pingPong.AsyncPing(request), __LINE__);
 
     return 0;
 }

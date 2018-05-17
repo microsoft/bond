@@ -9,10 +9,7 @@
 
 #include <type_traits>
 
-
-namespace bond
-{
-namespace detail
+namespace bond { namespace ext { namespace detail
 {
     /// @brief Helper base class for counters.
     template <typename T>
@@ -38,5 +35,4 @@ namespace detail
         const T _max_value;
     };
 
-} // namespace detail
-} // namespace bond
+} } } // namespace bond::ext::detail

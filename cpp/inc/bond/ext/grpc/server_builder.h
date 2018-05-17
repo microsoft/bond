@@ -38,9 +38,9 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/grpc/detail/service.h>
+#include "detail/service.h"
+#include "server.h"
+#include "thread_pool.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -59,8 +59,8 @@
 #include <memory>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC {
-
+namespace bond { namespace ext { namespace gRPC
+{
     /// @brief A builder class for the creation and startup of \a
     /// bond::ext::gRPC::server instances.
     class server_builder final
@@ -164,7 +164,7 @@ namespace bond { namespace ext { namespace gRPC {
         }
 
         /// Return a running server which is ready for processing calls.
-        std::unique_ptr<server> BuildAndStart()
+        server BuildAndStart()
         {
             auto cq = _builder.AddCompletionQueue();
 
@@ -173,8 +173,13 @@ namespace bond { namespace ext { namespace gRPC {
                 service->SetCompletionQueue(cq.get());
             }
 
-            return std::unique_ptr<server>{
-                new server{ _builder.BuildAndStart(), std::move(_services), std::move(cq) } };
+            std::unique_ptr<io_manager> ioManager{
+                new io_manager{
+                    std::thread::hardware_concurrency(),
+                    /*delay=*/ false,
+                    std::move(cq) } };
+
+            return server{ _builder.BuildAndStart(), std::move(_services), std::move(ioManager) };
         }
 
     private:

@@ -42,6 +42,8 @@ different versioning scheme, following the Haskell community's
   `GetValueToNameMap`.
 * C++ codegen now applies the `--export-attribute` to the `ToString`,
   `FromString`, `ToEnum` and `FromEnum` functions.
+* Fixed a bug in C++ codegen that incorrectly applied the export attribute
+  to generic gRPC services.
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
   `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
@@ -73,13 +75,38 @@ different versioning scheme, following the Haskell community's
   `const_reference` typedefs have been removed from `bond::nullable<T>`.
 * **Breaking change** The `Allocator` (second) type parameter has be removed from
   `bond::nullable<T>` and now it is always deduced from `T`.
-* **Breaking change** When using Bond-over-gRPC, the generated `ClientCore::Async*`
-  functions are now accepting the `std::shared_ptr<grpc::ClientContext>`
-  as the last parameter.
-* **Breaking change** When using Bond-over-gRPC, the client callback now directly accepts
-  `bond::ext::gRPC::unary_call_result<Response>` (drops the `std::shared_ptr`).
+* **Breaking change** The `bond::capped_allocator` and related types have been
+  moved to the `bond::ext` namespace and the "bond/ext" include directory.
+* **Breaking changes** in Bond-over-gRPC (based on real-world use and feedback):
+  - The generated `ClientCore` and `ServiceCore` class templates and the
+    `Client` and `Service` convenience typedefs have all been replaced with
+    normal classes named `Client` and `Service`. The `ThreadPool` type parameter
+    has been removed in favor of simplified runtime representation of a `Scheduler`.
+  - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool` implementation
+    now use `operator()` instead of a `schedule()` member function.
+  - The `bond::ext::gRPC::server_core` class template and the `bond::ext::gRPC::server`
+    convenience typedef have been replaced with the normal classes bond::ext::gRPC::server.
+  - The `bond::ext::gRPC::server_builder_core` class template and the
+    `bond::ext::gRPC::server_builder` convenience typedef have been replaced
+    with the normal class `bond::ext::gRPC::server_builder`.
+  - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
+    as the last parameter instead of as the first.
+  - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
+    (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
+    read-only getters rather than fields.
+  - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
+  - The `bond::ext::gRPC::server_builder::BuildAndStart` now returns a plain
+    `bond::ext::gRPC::server` object.
+  - The `bond::ext::gRPC::server_builder::RegisterService` now only accepts service
+    instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
+  - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
+    implementations must now pass a `Scheduler` to the generated `Service` base class which
+    is no longer default constructible.
+  - The `client_callback.h` header file has been renamed to `unary_call_result.h`.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
+* The `bond::ext::gRPC::wait_callback` has been deprecated in favor of additionally
+  generated client functions that return `std::future`.
 * Fixed includes for gRPC services with events or parameterless methods.
   [Issue #735](https://github.com/Microsoft/bond/issues/735)
 * Fixed a bug which would read an unrelated struct's field(s) when deserializing a
@@ -107,6 +134,10 @@ different versioning scheme, following the Haskell community's
   passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
 * Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
   to `T` when `allocator_type` was not explicitly defined.
+* Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
+* The use of `bond::check_method` has been replaced with less restricting expression
+  SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
+* Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
 
 ### C# ###
 

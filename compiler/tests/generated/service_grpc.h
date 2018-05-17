@@ -222,17 +222,17 @@ struct Foo final
 
         void Asyncfoo11(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_mfoo11, std::move(context));
+            ::bond::ext::gRPC::detail::client::dispatch(_mfoo11, std::move(context), {});
         }
 
         void Asyncfoo12(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_mfoo12, std::move(context));
+            ::bond::ext::gRPC::detail::client::dispatch(_mfoo12, std::move(context), {});
         }
 
         void Asyncfoo12_impl(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_mfoo12_impl, std::move(context));
+            ::bond::ext::gRPC::detail::client::dispatch(_mfoo12_impl, std::move(context), {});
         }
 
         void Asyncfoo13(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
@@ -266,98 +266,182 @@ struct Foo final
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo21, std::move(context), cb);
         }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo21(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo21, std::move(context));
+        }
 
         void Asyncfoo22(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo22, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo22(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo22, std::move(context));
         }
 
         void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo23, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo23, std::move(context), request);
+        }
         void Asyncfoo23(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo23(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
         void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo24, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo24, std::move(context), request);
+        }
         void Asyncfoo24(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo24(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
         }
 
         void Asyncfoo31(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo31, std::move(context), cb);
         }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo31(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_mfoo31, std::move(context));
+        }
 
         void Asyncfoo32(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo32, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo32(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_mfoo32, std::move(context));
         }
 
         void Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo33, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo33(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_mfoo33, std::move(context), request);
+        }
         void Asyncfoo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo33(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo33(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
         void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_m_rd_foo33, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_m_rd_foo33, std::move(context), request);
+        }
         void Async_rd_foo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Async_rd_foo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Async_rd_foo33(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Async_rd_foo33(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
         void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo34, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_mfoo34, std::move(context), request);
+        }
         void Asyncfoo34(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo34(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asyncfoo34(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo34(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
         }
 
         void Asyncfoo41(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo41, std::move(context), cb);
         }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo41(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::dummy>(_mfoo41, std::move(context));
+        }
 
         void Asyncfoo42(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo42, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo42(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::dummy>(_mfoo42, std::move(context));
         }
 
         void Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo43, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo43(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::dummy>(_mfoo43, std::move(context), request);
+        }
         void Asyncfoo43(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo43(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo43(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo43(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
         void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo44, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::dummy>(_mfoo44, std::move(context), request);
+        }
         void Asyncfoo44(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::dummy>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo44(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::dummy>> Asyncfoo44(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo44(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
         }
 
         void Asynccq(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mcq, std::move(context), cb);
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::BasicTypes>> Asynccq(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::BasicTypes>(_mcq, std::move(context));
         }
 
     private:
@@ -386,7 +470,7 @@ struct Foo final
     class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler)
             : ::bond::ext::gRPC::detail::service(
                 scheduler,
                 {

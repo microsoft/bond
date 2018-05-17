@@ -9,7 +9,6 @@
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <bond/core/bond_apply.h>
 #include <bond/core/bond_types.h>
@@ -30,6 +29,10 @@ using namespace scalar;
 // Logic and data behind the server's behavior.
 class ScalarMethodsImpl final : public ScalarMethods::Service
 {
+public:
+    using ScalarMethods::Service::Service;
+
+private:
     void Negate(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Box<int32_t>>,
@@ -57,26 +60,27 @@ class ScalarMethodsImpl final : public ScalarMethods::Service
 };
 
 template <typename T>
-static void ValidateResponseOrDie(
+void ValidateResponseOrDie(
     const char* what,
     const T& expected,
-    bond::ext::gRPC::wait_callback<bond::Box<T>>& cb)
+    std::future<bond::ext::gRPC::unary_call_result<bond::Box<T>>> result)
 {
-    bool waitResult = cb.wait_for(std::chrono::seconds(10));
-
-    if (!waitResult)
+    if (result.wait_for(std::chrono::seconds(10)) == std::future_status::timeout)
     {
         std::cout << what << ": timeout ocurred\n";
         exit(1);
     }
-    else if (!cb.status().ok())
-    {
-        std::cout << what <<": request failed\n";
-        exit(1);
-    }
 
     bond::Box<T> reply;
-    cb.response().Deserialize(reply);
+    try
+    {
+        result.get().response().Deserialize(reply);
+    }
+    catch (const bond::ext::gRPC::UnaryCallException& e)
+    {
+        std::cout << "request failed: " << e.status().error_message();
+        exit(1);
+    }
 
     if (reply.value != expected)
     {
@@ -89,39 +93,32 @@ static void ValidateResponseOrDie(
 
 static void MakeNegateRequest(ScalarMethods::Client& client)
 {
-    bond::Box<int32_t> request = bond::make_box(10);
-
-    bond::ext::gRPC::wait_callback<bond::Box<int32_t>> cb;
-    client.AsyncNegate(request, cb);
-
-    ValidateResponseOrDie("negate", int32_t{-10}, cb);
+    ValidateResponseOrDie("negate", int32_t{-10}, client.AsyncNegate(bond::make_box(10)));
 }
 
 static void MakeSumRequest(ScalarMethods::Client& client)
 {
-    bond::Box<std::vector<uint64_t>> request = bond::make_box(std::vector<uint64_t>{1, 2, 3, 4, 5});
-
-    bond::ext::gRPC::wait_callback<bond::Box<uint64_t>> cb;
-    client.AsyncSum(request, cb);
-
-    ValidateResponseOrDie("sum", uint64_t{15}, cb);
+    ValidateResponseOrDie("sum", uint64_t{15}, client.AsyncSum(bond::make_box(std::vector<uint64_t>{1, 2, 3, 4, 5})));
 }
 
 int main()
 {
-    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl };
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
+    bond::ext::gRPC::thread_pool threadPool;
+
+    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
-    std::unique_ptr<bond::ext::gRPC::server> server(
-        bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart());
+    auto server = bond::ext::gRPC::server_builder{}
+        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+        .RegisterService(std::move(service))
+        .BuildAndStart();
 
     ScalarMethods::Client client(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
-        std::make_shared<bond::ext::gRPC::io_manager>());
+        ioManager,
+        threadPool);
 
     MakeNegateRequest(client);
     MakeSumRequest(client);

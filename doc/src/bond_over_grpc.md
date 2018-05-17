@@ -164,23 +164,21 @@ The key generated C++ classes for gRPC are:
   `Example::Service`). This class has abstract methods
   for each of the methods defined in the service IDL, serving as a base for the
   concrete implementation which will provide the actual server-side business
-  logic. (Technically, `Service` is a type alias for
-  `ServiceCore<bond::ext::gRPC::thread_pool>`. The `ServiceCore<T>` template
-  can be used to customize the service implementation to use a different
-  thread pool implementation.)
+  logic.
 * The proxy stub, which is an inner class named `Client` (e.g.:
   `Example::Client`). This is used to invoke the service from the
-  client side. (Likewise, `Client` is a type alias for
-  `ClientCore<bond::ext::gRPC::thread_pool>`. The `ClientCore<T>` template
-  can be used to customize the client implementation to use a different
-  thread pool implementation.)  
+  client side.
 
 To build the service functionality, simply write a concrete service
 implementation by subclassing the server base and supplying the business logic:
 
 ```cpp
-class ExampleServiceImpl final : Example::Service
+class ExampleServiceImpl final : public Example::Service
 {
+public:
+    using Example::Service::Service;
+
+private:
     void ExampleMethod(
         bond::ext::gRPC::unary_call<
             bond::bonded<ExampleRequest>,
@@ -199,16 +197,15 @@ class ExampleServiceImpl final : Example::Service
 This service implementation is hooked up to a gRPC server as follows:
 
 ```cpp
-auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
-const std::string server_address(Host + ":" + Port);
+bond::ext::gRPC::thread_pool threadPool;
+const std::string server_address{ Host + ":" + Port };
 
-ExampleServiceImpl service;
-bond::ext::gRPC::server_builder builder;
-builder.SetThreadPool(threadPool);
-builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-builder.RegisterService(&service);
-std::unique_ptr<bond::ext::gRPC::server> server(builder.BuildAndStart());
+std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{ threadPool } };
+
+bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
+    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+    .RegisterService(std::move(service))
+    .BuildAndStart();
 ```
 
 At this point the server is ready to receive requests and route them to the
@@ -218,13 +215,13 @@ On the client side, the proxy stub establishes a connection to the server like t
 
 ```cpp
 auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-auto threadPool = std::make_shared<bond::ext::gRPC::thread_pool>();
-const std::string server_address(Host + ":" + Port);
+bond::ext::gRPC::thread_pool threadPool;
+const std::string server_address{ Host + ":" + Port };
 
-Example::Client client(
+Example::Client client{
     grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
     ioManager,
-    threadPool);
+    threadPool };
 ```
 
 The proxy stub can then be used to make calls to the server as follows:
@@ -233,23 +230,39 @@ The proxy stub can then be used to make calls to the server as follows:
 ExampleRequest request;
 // Fill in request fields here
 
-bond::ext::gRPC::wait_callback<ExampleResponse> cb;
-client.AsyncExampleMethod(request, callback);
+// Blocking version using std::future
+try
+{
+    ExampleResponse response = client.AsyncExampleMethod(request).get().response().Deserialize();
+    // Examine response here
+}
+catch (const bond::ext::gRPC::UnaryCallException& e)
+{
+    // Examine e.status()
+}
 
-callback.wait();
-ExampleResponse response = callback.response().Deserialize();
-// Examine response here
+// Async version with a callback
+client.AsyncExampleMethod(
+    request,
+    [](bond::ext::gRPC::unary_call_result<ExampleResponse> result)
+    {
+        if (result.status().ok())
+        {
+            ExampleResponse response = result.response().Deserialize();
+            // Examine response here
+        }
+        else
+        {
+            // Examine result.status()
+        }
+    });
 ```
 
 Note these APIs are significantly different from the APIs presented in the
 gRPC documentation; Bond-over-gRPC is attempting to provide a more
 straightforward API for asynchronous communication than gRPC currently
 presents in C++. Bond-over-gRPC does not provide synchronous APIs in C++ by
-design. The use of [`wait_callback<T>`][wait_callback_reference] here is for
-illustrative purposes; any callback implementation with the same signature
-can be used. `wait_callback` satisfies the signature and provides a `wait()`
-method to adapt the asynchronous proxy method into an effectively
-synchronous call.
+design.
 
 The proxy stub has a number of overloads for each method. The simplest is
 demonstrated above, and there are ones that take `bonded<T>` and
@@ -271,5 +284,3 @@ See also the following example:
 
 - `examples/cpp/grpc/helloworld`
 - `examples/cpp/grpc/pingpong`
-
-[wait_callback_reference]: ../reference/cpp/classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html

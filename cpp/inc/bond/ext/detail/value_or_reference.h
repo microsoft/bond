@@ -12,9 +12,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace bond
-{
-namespace detail
+namespace bond { namespace ext { namespace detail
 {
     /// @brief Helper type that can hold either a value or a reference.
     template <typename T>
@@ -88,5 +86,4 @@ namespace detail
         std::reference_wrapper<T> _ref;
     };
 
-} // namespace detail
-} // namespace bond
+} } } // namespace bond::ext::detail

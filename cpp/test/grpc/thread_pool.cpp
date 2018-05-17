@@ -14,8 +14,9 @@
 #include <atomic>
 #include <chrono>
 #include <functional>
-#include <memory>
 #include <thread>
+
+#include <boost/optional.hpp>
 
 class BasicThreadPoolTests
 {
@@ -62,10 +63,12 @@ class BasicThreadPoolTests
 
     static void FinishAllTasksAfterDelete()
     {
-        std::unique_ptr<bond::ext::gRPC::thread_pool> threads(new bond::ext::gRPC::thread_pool(2));
-        std::atomic<int> sum(0);
+        boost::optional<bond::ext::gRPC::thread_pool> threads;
+        threads.emplace(2);
 
-        auto increment = [&sum]{
+        std::atomic<int> sum(0);
+        auto increment = [&sum]
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             sum++;
         };
