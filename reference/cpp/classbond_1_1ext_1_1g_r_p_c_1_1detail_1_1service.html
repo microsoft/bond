@@ -91,7 +91,6 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1detail_
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::ext::gRPC::detail::service Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -105,58 +104,22 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1detail_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a930963050a943eeebc207edb6032af3b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a930963050a943eeebc207edb6032af3b">start</a> (grpc::ServerCompletionQueue *cq, const Scheduler &amp;<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1scheduler.html">scheduler</a>)=0</td></tr>
-<tr class="memdesc:a930963050a943eeebc207edb6032af3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the service.  <a href="#a930963050a943eeebc207edb6032af3b">More...</a><br /></td></tr>
-<tr class="separator:a930963050a943eeebc207edb6032af3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6013d108ad378ba6b1f9eea576d6731d"><td class="memTemplParams" colspan="2">template&lt;typename Request &gt; </td></tr>
-<tr class="memitem:a6013d108ad378ba6b1f9eea576d6731d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a6013d108ad378ba6b1f9eea576d6731d">queue_receive</a> (int methodIndex, grpc::ServerContext *context, Request *request, grpc::internal::ServerAsyncStreamingInterface *responseStream, grpc::ServerCompletionQueue *cq, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *tag)</td></tr>
-<tr class="memdesc:a6013d108ad378ba6b1f9eea576d6731d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the receive process for a method.  <a href="#a6013d108ad378ba6b1f9eea576d6731d">More...</a><br /></td></tr>
-<tr class="separator:a6013d108ad378ba6b1f9eea576d6731d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c5600968f04b331591fdfba229caf8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#a02c5600968f04b331591fdfba229caf8">start</a> ()=0</td></tr>
+<tr class="memdesc:a02c5600968f04b331591fdfba229caf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the service.  <a href="#a02c5600968f04b331591fdfba229caf8">More...</a><br /></td></tr>
+<tr class="separator:a02c5600968f04b331591fdfba229caf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d6c91e4c1961a4612462e413287cb7"><td class="memTemplParams" colspan="2">template&lt;typename Request &gt; </td></tr>
+<tr class="memitem:ac8d6c91e4c1961a4612462e413287cb7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#ac8d6c91e4c1961a4612462e413287cb7">queue_receive</a> (int methodIndex, grpc::ServerContext *context, Request *request, grpc::internal::ServerAsyncStreamingInterface *responseStream, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *tag)</td></tr>
+<tr class="memdesc:ac8d6c91e4c1961a4612462e413287cb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the receive process for a method.  <a href="#ac8d6c91e4c1961a4612462e413287cb7">More...</a><br /></td></tr>
+<tr class="separator:ac8d6c91e4c1961a4612462e413287cb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab77e79953d7419143f6ff65e94bf323b"><td class="memItemLeft" align="right" valign="top">grpc::Service *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#ab77e79953d7419143f6ff65e94bf323b">grpc_service</a> ()</td></tr>
 <tr class="memdesc:ab77e79953d7419143f6ff65e94bf323b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides access to the raw grpc::Service type.  <a href="#ab77e79953d7419143f6ff65e94bf323b">More...</a><br /></td></tr>
 <tr class="separator:ab77e79953d7419143f6ff65e94bf323b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:ab5addd78a738a6fb3d7229c0c6aaaad7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html#ab5addd78a738a6fb3d7229c0c6aaaad7">AddMethod</a> (const char *methodName)</td></tr>
-<tr class="memdesc:ab5addd78a738a6fb3d7229c0c6aaaad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a method name for dispatch to this service.  <a href="#ab5addd78a738a6fb3d7229c0c6aaaad7">More...</a><br /></td></tr>
-<tr class="separator:ab5addd78a738a6fb3d7229c0c6aaaad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class that all Bond gRPC++ services implement. </p>
 <dl class="section note"><dt>Note</dt><dd>This class is for use by generated and helper code only.</dd></dl>
 <p>Helper class that codegen uses to generate abstract service classes, which a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html" title="Models a gRPC server powered by Bond services. ">bond::ext::gRPC::server</a> then hosts multiple services. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab5addd78a738a6fb3d7229c0c6aaaad7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5addd78a738a6fb3d7229c0c6aaaad7">&#9670;&nbsp;</a></span>AddMethod()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void bond::ext::gRPC::detail::service::AddMethod </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>methodName</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Registers a method name for dispatch to this service. </p>
-<dl class="section note"><dt>Note</dt><dd>This method is for use by generated and helper code only.</dd></dl>
-<p>The order in which methods are registered assigned the method index, which is used elsewhere. </p>
-
-</div>
-</div>
 <a id="ab77e79953d7419143f6ff65e94bf323b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab77e79953d7419143f6ff65e94bf323b">&#9670;&nbsp;</a></span>grpc_service()</h2>
 
@@ -177,8 +140,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6013d108ad378ba6b1f9eea576d6731d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6013d108ad378ba6b1f9eea576d6731d">&#9670;&nbsp;</a></span>queue_receive()</h2>
+<a id="ac8d6c91e4c1961a4612462e413287cb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8d6c91e4c1961a4612462e413287cb7">&#9670;&nbsp;</a></span>queue_receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,12 +175,6 @@ template&lt;typename Request &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">grpc::ServerCompletionQueue *&#160;</td>
-          <td class="paramname"><em>cq</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">io_manager_tag</a> *&#160;</td>
           <td class="paramname"><em>tag</em>&#160;</td>
         </tr>
@@ -238,7 +195,6 @@ template&lt;typename Request &gt; </div>
     <tr><td class="paramname">context</td><td>a fresh grpc::ServerContext for the call to populate</td></tr>
     <tr><td class="paramname">request</td><td>pointer to a request object to populate</td></tr>
     <tr><td class="paramname">responseStream</td><td>pointer to a response stream to populate</td></tr>
-    <tr><td class="paramname">cq</td><td>the completion queue to notify when a call has been received</td></tr>
     <tr><td class="paramname">tag</td><td>the <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html" title="Interface for completion queue tag types that io_manager expects. ">io_manager_tag</a> to include with the completion queue notification </td></tr>
   </table>
   </dd>
@@ -246,8 +202,8 @@ template&lt;typename Request &gt; </div>
 
 </div>
 </div>
-<a id="a930963050a943eeebc207edb6032af3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a930963050a943eeebc207edb6032af3b">&#9670;&nbsp;</a></span>start()</h2>
+<a id="a02c5600968f04b331591fdfba229caf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02c5600968f04b331591fdfba229caf8">&#9670;&nbsp;</a></span>start()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,19 +214,8 @@ template&lt;typename Request &gt; </div>
         <tr>
           <td class="memname">virtual void bond::ext::gRPC::detail::service::start </td>
           <td>(</td>
-          <td class="paramtype">grpc::ServerCompletionQueue *&#160;</td>
-          <td class="paramname"><em>cq</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">const Scheduler &amp;&#160;</td>
-          <td class="paramname"><em>scheduler</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
