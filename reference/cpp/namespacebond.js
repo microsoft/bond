@@ -21,7 +21,8 @@ var namespacebond =
       ] ],
       [ "gRPC", null, [
         [ "detail", null, [
-          [ "client_unary_call_data", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data" ],
+          [ "client", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client.html", null ],
+          [ "client_unary_call_data", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client__unary__call__data.html", null ],
           [ "io_manager_tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag" ],
           [ "service", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service" ],
           [ "service_unary_call_data", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service__unary__call__data" ],
@@ -41,6 +42,7 @@ var namespacebond =
         [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
         [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],
         [ "unary_call_result", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call__result" ],
+        [ "UnaryCallException", "classbond_1_1ext_1_1g_r_p_c_1_1_unary_call_exception.html", null ],
         [ "wait_callback", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback" ]
       ] ],
       [ "capped_allocator", "classbond_1_1ext_1_1capped__allocator.html", "classbond_1_1ext_1_1capped__allocator" ],
