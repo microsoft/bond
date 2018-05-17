@@ -230,6 +230,11 @@ int main()
     PingRequest request;
     request.name = user;
 
+    // future
+    {
+        auto response = doublePing.AsyncPing(request).get().response().Deserialize();
+    }
+
     {
         // A bonded object can also be used for the request. Here we use a
         // bonded object backed by an instance of PingRequest, but we could

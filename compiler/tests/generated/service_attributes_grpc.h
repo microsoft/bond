@@ -52,9 +52,17 @@ struct Foo final
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo, std::move(context), cb, request);
         }
+        std::future<::bond::ext::gRPC::unary_call_result< ::tests::Result>> Asyncfoo(const ::bond::bonded< ::tests::Param>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return ::bond::ext::gRPC::detail::client::dispatch<::tests::Result>(_mfoo, std::move(context), request);
+        }
         void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
+        }
+        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::Result>> Asyncfoo(const ::tests::Param& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        {
+            return Asyncfoo(::bond::bonded< ::tests::Param>{request}, ::std::move(context));
         }
 
     private:

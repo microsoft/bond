@@ -13,6 +13,7 @@
 #include <boost/assert.hpp>
 
 #include <functional>
+#include <future>
 
 namespace bond { namespace ext { namespace gRPC { namespace detail {
 
@@ -57,8 +58,8 @@ protected:
     template <typename Request = Void, typename Response = bonded<Void>>
     void dispatch(
         const grpc::internal::RpcMethod& method,
-        std::shared_ptr<grpc::ClientContext> context = {},
-        const std::function<void(unary_call_result<Response>)>& cb = {},
+        std::shared_ptr<grpc::ClientContext> context,
+        const std::function<void(unary_call_result<Response>)>& cb,
         const bonded<Request>& request = bonded<Request>{ Request{} })
     {
         new client_unary_call_data<Request, Response>{
@@ -71,6 +72,37 @@ protected:
             cb };
     }
 
+    template <typename Response, typename Request = Void>
+    std::future<unary_call_result<Response>> dispatch(
+        const grpc::internal::RpcMethod& method,
+        std::shared_ptr<grpc::ClientContext> context,
+        const bonded<Request>& request = bonded<Request>{ Request{} })
+    {
+        auto callback = std::make_shared<std::packaged_task<unary_call_result<Response>(unary_call_result<Response>)>>(
+            [](unary_call_result<Response> response) { return response; });
+
+        auto result = callback->get_future();
+
+        dispatch(
+            method,
+            std::move(context),
+            std::function<void(unary_call_result<Response>)>{
+                [callback](unary_call_result<Response> result)
+                {
+                    if (!result.status().ok())
+                    {
+                        // TODO: add exception
+                        throw std::logic_error{ result.status().error_message() };
+                    }
+
+                    (*callback)(std::move(result));
+                } },
+            request);
+
+        return result;
+    }
+
+private:
     std::shared_ptr<grpc::ChannelInterface> _channel;
     std::shared_ptr<io_manager> _ioManager;
     Scheduler _scheduler;
