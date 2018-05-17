@@ -107,15 +107,21 @@ namespace bond { namespace ext { namespace gRPC
     private:
         friend class server_builder;
 
-        server(std::unique_ptr<grpc::Server> grpcServer, std::unique_ptr<io_manager> ioManager)
-            : _server(std::move(grpcServer)),
-              _ioManager(std::move(ioManager))
+    private:
+        server(
+            std::unique_ptr<grpc::Server> server,
+            std::vector<std::unique_ptr<detail::service>> services,
+            std::unique_ptr<io_manager> ioManager)
+            : _server{ std::move(server) },
+              _services{ std::move(services) },
+              _ioManager{ std::move(ioManager) }
         {
             BOOST_ASSERT(_server);
             BOOST_ASSERT(_ioManager);
         }
 
         std::unique_ptr<grpc::Server> _server;
+        std::vector<std::unique_ptr<detail::service>> _services;
         std::unique_ptr<io_manager> _ioManager;
     };
 

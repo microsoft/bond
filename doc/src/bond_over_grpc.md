@@ -196,12 +196,12 @@ This service implementation is hooked up to a gRPC server as follows:
 bond::ext::gRPC::thread_pool threadPool;
 const std::string server_address(Host + ":" + Port);
 
-ExampleServiceImpl service;
+std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{} };
 
 bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
     .SetScheduler(threadPool)
     .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-    .RegisterService(&service)
+    .RegisterService(std::move(service))
     .BuildAndStart();
 ```
 

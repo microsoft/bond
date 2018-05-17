@@ -38,9 +38,9 @@
 
 #include <bond/core/config.h>
 
-#include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/thread_pool.h>
-#include <bond/ext/grpc/detail/service.h>
+#include "detail/service.h"
+#include "server.h"
+#include "thread_pool.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -56,7 +56,7 @@
 #include <boost/assert.hpp>
 
 #include <memory>
-#include <set>
+#include <vector>
 
 namespace bond { namespace ext { namespace gRPC
 {
@@ -70,12 +70,11 @@ namespace bond { namespace ext { namespace gRPC
         /// server instance returned by \p BuildAndStart().
         ///
         /// Matches requests with any :authority
-        server_builder& RegisterService(detail::service* service)
+        server_builder& RegisterService(std::unique_ptr<detail::service> service)
         {
             BOOST_ASSERT(service);
             _builder.RegisterService(service->grpc_service());
-            _services.insert(service);
-
+            _services.push_back(std::move(service));
             return *this;
         }
 
@@ -84,12 +83,11 @@ namespace bond { namespace ext { namespace gRPC
         /// server instance returned by BuildAndStart().
         ///
         /// Only matches requests with :authority \p host
-        server_builder& RegisterService(const grpc::string& host, detail::service* service)
+        server_builder& RegisterService(const grpc::string& host, std::unique_ptr<detail::service> service)
         {
             BOOST_ASSERT(service);
             _builder.RegisterService(host, service->grpc_service());
-            _services.insert(service);
-
+            _services.push_back(std::move(service));
             return *this;
         }
 
@@ -173,8 +171,6 @@ namespace bond { namespace ext { namespace gRPC
         /// Return a running server which is ready for processing calls.
         server BuildAndStart()
         {
-            BOOST_STATIC_ASSERT(std::is_move_constructible<server>::value);
-
             if (!_scheduler)
             {
                 _scheduler = thread_pool{};
@@ -194,12 +190,12 @@ namespace bond { namespace ext { namespace gRPC
                     /*delay=*/ false,
                     std::move(cq) } };
 
-            return server{ std::move(grpcServer), std::move(ioManager) };
+            return server{ std::move(grpcServer), std::move(_services), std::move(ioManager) };
         }
 
     private:
         grpc::ServerBuilder _builder;
-        std::set<detail::service*> _services;
+        std::vector<std::unique_ptr<detail::service>> _services;
         Scheduler _scheduler;
     };
 
