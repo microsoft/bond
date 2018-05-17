@@ -102,8 +102,11 @@ different versioning scheme, following the Haskell community's
   - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
     implementations must now pass a `Scheduler` to the generated `Service` base class which
     is no longer default constructible.
+  - The `client_callback.h` header file has been renamed to `unary_call_result.h`.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
+* The `bond::ext::gRPC::wait_callback` has been deprecated in favor of additionally
+  generated client functions that return `std::future`.
 * Fixed includes for gRPC services with events or parameterless methods.
   [Issue #735](https://github.com/Microsoft/bond/issues/735)
 * Fixed a bug which would read an unrelated struct's field(s) when deserializing a
