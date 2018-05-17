@@ -89,9 +89,7 @@ class io_managerTests
 
     static void ShutdownUnstarted()
     {
-        io_manager ioManager(
-            io_manager::USE_HARDWARE_CONC,
-            io_manager::delay_start_tag{});
+        io_manager ioManager(1, true);
         ioManager.shutdown();
         ioManager.wait();
 
@@ -101,6 +99,8 @@ class io_managerTests
     static void ConcurrentShutdown()
     {
         io_manager ioManager(
+            1,
+            false,
             // also tests that we can pass an explicit completion queue
             std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
 
@@ -138,10 +138,10 @@ class io_managerTests
     static void DelayStartDoesntStart()
     {
         io_manager ioManager(
+            1,
+            true,
             // also tests that we can pass an explicit completion queue
-            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue),
-            io_manager::USE_HARDWARE_CONC,
-            io_manager::delay_start_tag{});
+            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
 
         alarm_completion_tag<unit_test::event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);

@@ -15,6 +15,11 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
     /// operation in its implementation of \ref invoke.
     struct io_manager_tag
     {
+        io_manager_tag() = default;
+
+        io_manager_tag(const io_manager_tag& other) = delete;
+        io_manager_tag& operator=(const io_manager_tag& other) = delete;
+
         virtual ~io_manager_tag() = default;
 
         /// @brief Called when this instance is dequeued from a completion

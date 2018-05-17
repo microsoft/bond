@@ -47,12 +47,12 @@ class client_unary_call_data
 public:
     client_unary_call_data(
         std::shared_ptr<grpc::ChannelInterface> channel,
-        std::shared_ptr<io_manager> ioManager,
+        const std::shared_ptr<io_manager>& ioManager, // TODO: Accept std::shared_ptr<grpc::CompletionQueue>
         const Scheduler& scheduler,
         std::shared_ptr<grpc::ClientContext> context,
         CallbackType cb = {})
         : _channel(std::move(channel)),
-          _cq(ioManager->cq()),
+          _cq(ioManager->shared_cq()),
           _scheduler(scheduler),
           _responseReader(),
           _context(std::move(context)),
@@ -65,9 +65,6 @@ public:
         BOOST_ASSERT(_context);
     }
 
-    client_unary_call_data(const client_unary_call_data& other) = delete;
-    client_unary_call_data& operator=(const client_unary_call_data& other) = delete;
-
     /// @brief Initiates the client request and wires up completion
     /// notification.
     void dispatch(const grpc::internal::RpcMethod& method, const bonded<Request>& request)
@@ -75,7 +72,7 @@ public:
         _responseReader.reset(
             ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
                 _channel.get(),
-                _cq,
+                _cq.get(),
                 method,
                 _context.get(),
                 request,
@@ -107,7 +104,7 @@ private:
     /// The channel to send the request on.
     std::shared_ptr<grpc::ChannelInterface> _channel;
     /// The completion port to post IO operations to.
-    grpc::CompletionQueue* _cq;
+    std::shared_ptr<grpc::CompletionQueue> _cq;
     /// The scheduler in which to invoke the callback.
     Scheduler _scheduler;
     /// A response reader.

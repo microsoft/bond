@@ -77,12 +77,17 @@ int main()
     }
 
     { // Create and start a service
+        std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{} };
+
         const std::string server_address("127.0.0.1:50051");
-        std::unique_ptr<bond::ext::gRPC::server> server(
-            bond::ext::gRPC::server_builder{}
-                .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-                .RegisterService(std::unique_ptr<PingPongServiceImpl>{ new PingPongServiceImpl })
-                .BuildAndStart());
+
+        bond::ext::gRPC::thread_pool threadPool;
+
+        auto server = bond::ext::gRPC::server_builder{}
+            .SetScheduler(threadPool)
+            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
+            .RegisterService(std::move(service))
+            .BuildAndStart();
     }
 
     return 0;
