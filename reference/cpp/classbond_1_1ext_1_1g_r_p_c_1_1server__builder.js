@@ -2,8 +2,8 @@ var classbond_1_1ext_1_1g_r_p_c_1_1server__builder =
 [
     [ "AddListeningPort", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#addaecc715025e342f17b656d0189747d", null ],
     [ "BuildAndStart", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a19ecf93c4673c90ebc68193890d2e535", null ],
-    [ "RegisterService", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#ab49f13626cbf67c6fc1e4e6ac49da781", null ],
-    [ "RegisterService", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a843ff69b536ee103e8b0e5c11a8dcafd", null ],
+    [ "RegisterService", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a0c0d8f21276f2a2533de1cb8268f8b5c", null ],
+    [ "RegisterService", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a9e7574e5af69f41e191e95cd1d604f32", null ],
     [ "SetCompressionAlgorithmSupportStatus", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a11e0e5201f19b4d1abfb0a78d592301c", null ],
     [ "SetDefaultCompressionAlgorithm", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a76ef1313c9266aceb0d5f362c6679365", null ],
     [ "SetDefaultCompressionLevel", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a01ff5cbcf268b24725ebf54ff87a4cb4", null ],
