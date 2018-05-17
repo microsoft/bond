@@ -238,7 +238,7 @@ try
 }
 catch (const bond::ext::gRPC::UnaryCallException& e)
 {
-    // Examine e.status().error_message()
+    // Examine e.status()
 }
 
 // Async version with a callback
@@ -253,7 +253,7 @@ client.AsyncExampleMethod(
         }
         else
         {
-            // Examine result.status().error_message()
+            // Examine result.status()
         }
     });
 ```
