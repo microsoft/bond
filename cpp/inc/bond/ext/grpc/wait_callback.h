@@ -30,7 +30,11 @@ namespace bond { namespace ext { namespace gRPC {
 /// been called. Then, the status() and response() member functions can be
 /// called to inspect the results.
 template <typename Response>
-class wait_callback final
+class
+#if __cplusplus >= 201402L
+[[deprecated]]
+#endif
+wait_callback final
 {
 public:
     /// @brief Records the response and status.

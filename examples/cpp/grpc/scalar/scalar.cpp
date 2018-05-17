@@ -9,7 +9,6 @@
 #include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
-#include <bond/ext/grpc/wait_callback.h>
 
 #include <bond/core/bond_apply.h>
 #include <bond/core/bond_types.h>
@@ -61,26 +60,27 @@ private:
 };
 
 template <typename T>
-static void ValidateResponseOrDie(
+void ValidateResponseOrDie(
     const char* what,
     const T& expected,
-    bond::ext::gRPC::wait_callback<bond::Box<T>>& cb)
+    std::future<bond::ext::gRPC::unary_call_result<bond::Box<T>>> result)
 {
-    bool waitResult = cb.wait_for(std::chrono::seconds(10));
-
-    if (!waitResult)
+    if (result.wait_for(std::chrono::seconds(10)) == std::future_status::timeout)
     {
         std::cout << what << ": timeout ocurred\n";
         exit(1);
     }
-    else if (!cb.status().ok())
-    {
-        std::cout << what <<": request failed\n";
-        exit(1);
-    }
 
     bond::Box<T> reply;
-    cb.response().Deserialize(reply);
+    try
+    {
+        result.get().response().Deserialize(reply);
+    }
+    catch (const bond::ext::gRPC::UnaryCallException& e)
+    {
+        std::cout << "request failed: " << e.status().error_message();
+        exit(1);
+    }
 
     if (reply.value != expected)
     {
@@ -93,22 +93,12 @@ static void ValidateResponseOrDie(
 
 static void MakeNegateRequest(ScalarMethods::Client& client)
 {
-    bond::Box<int32_t> request = bond::make_box(10);
-
-    bond::ext::gRPC::wait_callback<bond::Box<int32_t>> cb;
-    client.AsyncNegate(request, cb);
-
-    ValidateResponseOrDie("negate", int32_t{-10}, cb);
+    ValidateResponseOrDie("negate", int32_t{-10}, client.AsyncNegate(bond::make_box(10)));
 }
 
 static void MakeSumRequest(ScalarMethods::Client& client)
 {
-    bond::Box<std::vector<uint64_t>> request = bond::make_box(std::vector<uint64_t>{1, 2, 3, 4, 5});
-
-    bond::ext::gRPC::wait_callback<bond::Box<uint64_t>> cb;
-    client.AsyncSum(request, cb);
-
-    ValidateResponseOrDie("sum", uint64_t{15}, cb);
+    ValidateResponseOrDie("sum", uint64_t{15}, client.AsyncSum(bond::make_box(std::vector<uint64_t>{1, 2, 3, 4, 5})));
 }
 
 int main()
