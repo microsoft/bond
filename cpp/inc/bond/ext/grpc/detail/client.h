@@ -7,6 +7,7 @@
 
 #include "bond_utils.h"
 #include "client_call_data.h"
+#include <bond/ext/grpc/exception.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/thread_pool.h>
 
@@ -79,25 +80,22 @@ protected:
         const bonded<Request>& request = bonded<Request>{ Request{} })
     {
         auto callback = std::make_shared<std::packaged_task<unary_call_result<Response>(unary_call_result<Response>)>>(
-            [](unary_call_result<Response> response) { return response; });
+            [](unary_call_result<Response> response)
+            {
+                return response.status().ok()
+                    ? response
+                    : throw UnaryCallException{ response.status(), response.context() };
+            });
 
         auto result = callback->get_future();
 
-        dispatch(
-            method,
-            std::move(context),
-            std::function<void(unary_call_result<Response>)>{
-                [callback](unary_call_result<Response> result)
-                {
-                    if (!result.status().ok())
-                    {
-                        // TODO: add exception
-                        throw std::logic_error{ result.status().error_message() };
-                    }
+        std::function<void(unary_call_result<Response>)> copyableCallback =
+            [callback](unary_call_result<Response> response)
+            {
+                (*callback)(std::move(response));
+            };
 
-                    (*callback)(std::move(result));
-                } },
-            request);
+        dispatch(method, std::move(context), copyableCallback, request);
 
         return result;
     }
