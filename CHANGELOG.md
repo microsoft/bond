@@ -99,10 +99,9 @@ different versioning scheme, following the Haskell community's
     `bond::ext::gRPC::server` object.
   - The `bond::ext::gRPC::server_builder::RegisterService` now only accepts service
     instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
-  - The generated `Service` class is no more default constructible and the users are
-    now required to pass a non-empty instance of `Scheduler`.
   - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
-    implementations must now pass a `Scheduler` to the generated `Service` base class.
+    implementations must now pass a `Scheduler` to the generated `Service` base class which
+    is no longer default constructible.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * Fixed includes for gRPC services with events or parameterless methods.
