@@ -257,12 +257,12 @@ alphabetical order. -->
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bond::ext::gRPC::thread_pool threadPool;
 <span class="at">const</span> <span class="bu">std::</span>string server_address(Host + <span class="st">&quot;:&quot;</span> + Port);
 
-ExampleServiceImpl service;
+<span class="bu">std::</span>unique_ptr&lt;ExampleServiceImpl&gt; service{ <span class="kw">new</span> ExampleServiceImpl{} };
 
 bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
     .SetScheduler(threadPool)
     .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-    .RegisterService(&amp;service)
+    .RegisterService(<span class="bu">std::</span>move(service))
     .BuildAndStart();</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
