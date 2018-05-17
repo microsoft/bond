@@ -90,9 +90,7 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1io__man
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::ext::gRPC::io_manager Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -102,26 +100,14 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1io__man
 <p>Manages a pool of threads polling for work from the same grpc::CompletionQueue.  
  <a href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html">delay_start_tag</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag type used to indicate that an <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> should not automatically start its polling threads.  <a href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a33ccbc74a8662713367d24fe78ed4fa1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#a33ccbc74a8662713367d24fe78ed4fa1">io_manager</a> (size_t numThreads=<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>)</td></tr>
-<tr class="memdesc:a33ccbc74a8662713367d24fe78ed4fa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a>.  <a href="#a33ccbc74a8662713367d24fe78ed4fa1">More...</a><br /></td></tr>
-<tr class="separator:a33ccbc74a8662713367d24fe78ed4fa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0099137efd68d162b3543b9409a222b3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#a0099137efd68d162b3543b9409a222b3">io_manager</a> (std::unique_ptr&lt; grpc::CompletionQueue &gt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#afd7e91a60b936d4c1be86a9f8cec895a">cq</a>, size_t numThreads=<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>)</td></tr>
-<tr class="memdesc:a0099137efd68d162b3543b9409a222b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a>.  <a href="#a0099137efd68d162b3543b9409a222b3">More...</a><br /></td></tr>
-<tr class="separator:a0099137efd68d162b3543b9409a222b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3351b2a31fbc3ae01cf2b5c4aa6770a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa3351b2a31fbc3ae01cf2b5c4aa6770a">io_manager</a> (size_t numThreads, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html">delay_start_tag</a>)</td></tr>
-<tr class="memdesc:aa3351b2a31fbc3ae01cf2b5c4aa6770a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an io_managed, but does not start it.  <a href="#aa3351b2a31fbc3ae01cf2b5c4aa6770a">More...</a><br /></td></tr>
-<tr class="separator:aa3351b2a31fbc3ae01cf2b5c4aa6770a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3adaaa2d9d6aa0a93c7d07a4422ab326"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#a3adaaa2d9d6aa0a93c7d07a4422ab326">io_manager</a> (std::unique_ptr&lt; grpc::CompletionQueue &gt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#afd7e91a60b936d4c1be86a9f8cec895a">cq</a>, size_t numThreads, <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html">delay_start_tag</a>)</td></tr>
-<tr class="memdesc:a3adaaa2d9d6aa0a93c7d07a4422ab326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an io_managed, but does not start it.  <a href="#a3adaaa2d9d6aa0a93c7d07a4422ab326">More...</a><br /></td></tr>
-<tr class="separator:a3adaaa2d9d6aa0a93c7d07a4422ab326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad203b48e78d16ba9d6239d11e1011ab3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#ad203b48e78d16ba9d6239d11e1011ab3">io_manager</a> ()</td></tr>
+<tr class="memdesc:ad203b48e78d16ba9d6239d11e1011ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> with number of threads equal to CPU/cores available.  <a href="#ad203b48e78d16ba9d6239d11e1011ab3">More...</a><br /></td></tr>
+<tr class="separator:ad203b48e78d16ba9d6239d11e1011ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbed4aa3da70fd76c28fbcf6dbc3dde"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#a2bbed4aa3da70fd76c28fbcf6dbc3dde">io_manager</a> (unsigned int numThreads, bool delay=false, std::unique_ptr&lt; grpc::CompletionQueue &gt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#afd7e91a60b936d4c1be86a9f8cec895a">cq</a>={})</td></tr>
+<tr class="memdesc:a2bbed4aa3da70fd76c28fbcf6dbc3dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> with specified number of threads.  <a href="#a2bbed4aa3da70fd76c28fbcf6dbc3dde">More...</a><br /></td></tr>
+<tr class="separator:a2bbed4aa3da70fd76c28fbcf6dbc3dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe4d4eea76e484da0ba6a32b9cead018"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#abe4d4eea76e484da0ba6a32b9cead018">~io_manager</a> ()</td></tr>
 <tr class="memdesc:abe4d4eea76e484da0ba6a32b9cead018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Waits for the <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a></code> to stop.  <a href="#abe4d4eea76e484da0ba6a32b9cead018">More...</a><br /></td></tr>
 <tr class="separator:abe4d4eea76e484da0ba6a32b9cead018"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,19 +121,38 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa8ac2b833a958e0d3fe6a3428067b47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3cc339cc74d3d7e462707f0e66c6dc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#af3cc339cc74d3d7e462707f0e66c6dc3">wait</a> ()</td></tr>
 <tr class="separator:af3cc339cc74d3d7e462707f0e66c6dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:aa1c62c3780febc0e4b3b8f50b6910aac"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a> = 0</td></tr>
-<tr class="memdesc:aa1c62c3780febc0e4b3b8f50b6910aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constant to indicate that the number of threads should be based on the hardware's available concurrency.  <a href="#aa1c62c3780febc0e4b3b8f50b6910aac">More...</a><br /></td></tr>
-<tr class="separator:aa1c62c3780febc0e4b3b8f50b6910aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages a pool of threads polling for work from the same grpc::CompletionQueue. </p>
 <p>All of the tags enqueued in this completion queue must inherit from <a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html">detail::io_manager_tag</a>. If not, the behavior is undefined. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a33ccbc74a8662713367d24fe78ed4fa1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33ccbc74a8662713367d24fe78ed4fa1">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[1/4]</span></h2>
+<a id="ad203b48e78d16ba9d6239d11e1011ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad203b48e78d16ba9d6239d11e1011ab3">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bond::ext::gRPC::io_manager::io_manager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> with number of threads equal to CPU/cores available. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html" title="Exception thrown when std::thread::hardware_concurrency returns 0. ">InvalidThreadCount</a></td><td>when std::thread::hardware_concurrency returns 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2bbed4aa3da70fd76c28fbcf6dbc3dde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbed4aa3da70fd76c28fbcf6dbc3dde">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -158,48 +163,20 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">bond::ext::gRPC::io_manager::io_manager </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numThreads</em> = <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a></code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">numThreads</td><td>the number of threads to start. If <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>, then a number of threads depending on the hardware's available concurrency will be started. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a0099137efd68d162b3543b9409a222b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0099137efd68d162b3543b9409a222b3">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[2/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bond::ext::gRPC::io_manager::io_manager </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; grpc::CompletionQueue &gt;&#160;</td>
-          <td class="paramname"><em>cq</em>, </td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>numThreads</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numThreads</em> = <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a></code>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>delay</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; grpc::CompletionQueue &gt;&#160;</td>
+          <td class="paramname"><em>cq</em> = <code>{}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -214,90 +191,18 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a>. </p>
+<p>Creates and starts and <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> with specified number of threads. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cq</td><td>the completion queue to poll. Takes ownership.</td></tr>
-    <tr><td class="paramname">numThreads</td><td>the number of threads to start. If <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>, then a number of threads depending on the hardware's available concurrency will be started. </td></tr>
+    <tr><td class="paramname">numThreads</td><td>the number of threads to start.</td></tr>
+    <tr><td class="paramname">delay</td><td>a flag to indicate if start should be delayed.</td></tr>
+    <tr><td class="paramname">cq</td><td>the completion queue to poll.</td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="aa3351b2a31fbc3ae01cf2b5c4aa6770a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3351b2a31fbc3ae01cf2b5c4aa6770a">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bond::ext::gRPC::io_manager::io_manager </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numThreads</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html">delay_start_tag</a>&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates an io_managed, but does not start it. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">numThreads</td><td>the number of threads to start. If <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>, then a number of threads depending on the hardware's available concurrency will be started. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a3adaaa2d9d6aa0a93c7d07a4422ab326"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3adaaa2d9d6aa0a93c7d07a4422ab326">&#9670;&nbsp;</a></span>io_manager() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bond::ext::gRPC::io_manager::io_manager </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; grpc::CompletionQueue &gt;&#160;</td>
-          <td class="paramname"><em>cq</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numThreads</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structbond_1_1ext_1_1g_r_p_c_1_1io__manager_1_1delay__start__tag.html">delay_start_tag</a>&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates an io_managed, but does not start it. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cq</td><td>the completion queue to poll. Takes ownership.</td></tr>
-    <tr><td class="paramname">numThreads</td><td>the number of threads to start. If <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa1c62c3780febc0e4b3b8f50b6910aac">USE_HARDWARE_CONC</a>, then a number of threads depending on the hardware's available concurrency will be started. </td></tr>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html" title="Exception thrown when std::thread::hardware_concurrency returns 0. ">InvalidThreadCount</a></td><td>when std::thread::hardware_concurrency returns 0. </td></tr>
   </table>
   </dd>
 </dl>
@@ -406,31 +311,6 @@ An <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="M
 <dl class="section warning"><dt>Warning</dt><dd>Cannot be called from an <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html" title="Manages a pool of threads polling for work from the same grpc::CompletionQueue. ">io_manager</a> worker thread. In other words, never call this function from inside of io_manager_tag::invoke.</dd>
 <dd>
 Either <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html#aa8ac2b833a958e0d3fe6a3428067b47e">shutdown</a> must have been called already, or some other thread must call <code>shutdown</code> for this function to return. </dd></dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="aa1c62c3780febc0e4b3b8f50b6910aac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1c62c3780febc0e4b3b8f50b6910aac">&#9670;&nbsp;</a></span>USE_HARDWARE_CONC</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t bond::ext::gRPC::io_manager::USE_HARDWARE_CONC = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constant to indicate that the number of threads should be based on the hardware's available concurrency. </p>
 
 </div>
 </div>

@@ -124,9 +124,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2962e755cdea276cc50a2591bcb9751a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addaecc715025e342f17b656d0189747d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html">server_builder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#addaecc715025e342f17b656d0189747d">AddListeningPort</a> (const grpc::string &amp;addr, std::shared_ptr&lt; grpc::ServerCredentials &gt; creds, int *selected_port=nullptr)</td></tr>
 <tr class="separator:addaecc715025e342f17b656d0189747d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcf061157d6d4c9a8bab1efe2c17d260"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">bond::ext::gRPC::server</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#abcf061157d6d4c9a8bab1efe2c17d260">BuildAndStart</a> ()</td></tr>
-<tr class="memdesc:abcf061157d6d4c9a8bab1efe2c17d260"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a running server which is ready for processing calls.  <a href="#abcf061157d6d4c9a8bab1efe2c17d260">More...</a><br /></td></tr>
-<tr class="separator:abcf061157d6d4c9a8bab1efe2c17d260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ecf93c4673c90ebc68193890d2e535"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a19ecf93c4673c90ebc68193890d2e535">BuildAndStart</a> ()</td></tr>
+<tr class="memdesc:a19ecf93c4673c90ebc68193890d2e535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a running server which is ready for processing calls.  <a href="#a19ecf93c4673c90ebc68193890d2e535">More...</a><br /></td></tr>
+<tr class="separator:a19ecf93c4673c90ebc68193890d2e535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A builder class for the creation and startup of <em><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html" title="Models a gRPC server powered by Bond services. ">bond::ext::gRPC::server</a></em> instances. </p>
@@ -175,14 +175,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="abcf061157d6d4c9a8bab1efe2c17d260"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcf061157d6d4c9a8bab1efe2c17d260">&#9670;&nbsp;</a></span>BuildAndStart()</h2>
+<a id="a19ecf93c4673c90ebc68193890d2e535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ecf93c4673c90ebc68193890d2e535">&#9670;&nbsp;</a></span>BuildAndStart()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">bond::ext::gRPC::server</a>&gt; bond::ext::gRPC::server_builder::BuildAndStart </td>
+          <td class="memname"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a> bond::ext::gRPC::server_builder::BuildAndStart </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -209,7 +209,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Register a service. This call does not take ownership of the service. The service must exist for the lifetime of the <code>server</code> instance returned by <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#abcf061157d6d4c9a8bab1efe2c17d260" title="Return a running server which is ready for processing calls. ">BuildAndStart()</a></code>.</p>
+<p>Register a service. This call does not take ownership of the service. The service must exist for the lifetime of the <code>server</code> instance returned by <code><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a19ecf93c4673c90ebc68193890d2e535" title="Return a running server which is ready for processing calls. ">BuildAndStart()</a></code>.</p>
 <p>Matches requests with any :authority </p>
 
 </div>
@@ -239,7 +239,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Register a service. This call does not take ownership of the service. The service must exist for the lifetime of the <code>server</code> instance returned by <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#abcf061157d6d4c9a8bab1efe2c17d260" title="Return a running server which is ready for processing calls. ">BuildAndStart()</a>.</p>
+<p>Register a service. This call does not take ownership of the service. The service must exist for the lifetime of the <code>server</code> instance returned by <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html#a19ecf93c4673c90ebc68193890d2e535" title="Return a running server which is ready for processing calls. ">BuildAndStart()</a>.</p>
 <p>Only matches requests with :authority <code>host</code> </p>
 
 </div>
