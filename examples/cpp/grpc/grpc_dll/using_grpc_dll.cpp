@@ -43,8 +43,12 @@ using grpc::ServerContext;
 
 using namespace examples::grpc_dll;
 
-struct TestServiceImpl : TestService<uint32_t>::Service
+class TestServiceImpl : public TestService<uint32_t>::Service
 {
+public:
+    using TestService<uint32_t>::Service::Service;
+
+private:
     void TestMethod(bond::ext::gRPC::unary_call<
                         bond::bonded<MyStruct>,
                         Item<uint32_t>> call) override
@@ -117,7 +121,7 @@ int main()
         const std::string server_address("127.0.0.1:50051");
 
         // Create and start a service instance
-        std::unique_ptr<TestServiceImpl> service{ new TestServiceImpl{} };
+        std::unique_ptr<TestServiceImpl> service{ new TestServiceImpl{ threadPool } };
         auto server = bond::ext::gRPC::server_builder{}
             .AddListeningPort(server_address, grpc::InsecureServerCredentials())
             .RegisterService(std::move(service))

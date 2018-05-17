@@ -111,7 +111,7 @@ struct Foo final
     class Service : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler)
             : ::bond::ext::gRPC::detail::service(
                 scheduler,
                 {

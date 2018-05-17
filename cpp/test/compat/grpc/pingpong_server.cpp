@@ -37,6 +37,7 @@ static std::atomic<uint32_t> NumErrorsReceived(0);
 class PingPongServiceImpl final : public PingPong::Service
 {
 public:
+    using PingPong::Service::Service;
 
     void Ping(
         bond::ext::gRPC::unary_call<
@@ -110,7 +111,9 @@ public:
 
 int main()
 {
-    std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{} };
+    bond::ext::gRPC::thread_pool threadPool;
+
+    std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
 

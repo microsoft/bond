@@ -29,7 +29,7 @@
 namespace bond { namespace ext { namespace gRPC {
 
 class server_builder;
-    
+
 namespace detail {
 
 struct io_manager_tag;

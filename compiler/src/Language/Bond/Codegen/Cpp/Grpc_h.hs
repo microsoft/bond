@@ -145,7 +145,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
     class #{serviceName} : public ::bond::ext::gRPC::detail::service
     {
     public:
-        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler = {})
+        explicit #{serviceName}(const ::bond::ext::gRPC::Scheduler& scheduler)
             : ::bond::ext::gRPC::detail::service(
                 scheduler,
                 {

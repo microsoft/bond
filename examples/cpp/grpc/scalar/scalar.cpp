@@ -30,6 +30,10 @@ using namespace scalar;
 // Logic and data behind the server's behavior.
 class ScalarMethodsImpl final : public ScalarMethods::Service
 {
+public:
+    using ScalarMethods::Service::Service;
+
+private:
     void Negate(
         bond::ext::gRPC::unary_call<
             bond::bonded<bond::Box<int32_t>>,
@@ -112,7 +116,7 @@ int main()
     auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
     bond::ext::gRPC::thread_pool threadPool;
 
-    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl };
+    std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
