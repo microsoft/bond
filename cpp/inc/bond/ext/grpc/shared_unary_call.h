@@ -28,6 +28,9 @@ namespace bond { namespace ext { namespace gRPC
     class shared_unary_call final : public detail::unary_call_base<Request, Response>
     {
     public:
+        /// @brief Creates an empty shared_unary_call.
+        shared_unary_call() = default;
+
         /// @brief Create a shared_unary_call by moving from an existing
         /// unary_call.
         ///

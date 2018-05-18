@@ -32,6 +32,9 @@ namespace bond { namespace ext { namespace gRPC
     class unary_call final : public detail::unary_call_base<Request, Response>
     {
     public:
+        /// @brief Creates an empty unary_call.
+        unary_call() = default;
+
         using unary_call::unary_call_base::unary_call_base;
 
         unary_call(const unary_call&) = delete;
