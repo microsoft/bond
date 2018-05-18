@@ -30,7 +30,7 @@
 namespace bond { namespace ext { namespace gRPC
 {
 
-class server_builder;
+class server;
 
 namespace detail
 {
@@ -132,7 +132,7 @@ protected:
     }
 
 private:
-    friend class gRPC::server_builder;
+    friend class gRPC::server;
 
     void AddMethods(std::initializer_list<const char*> names)
     {

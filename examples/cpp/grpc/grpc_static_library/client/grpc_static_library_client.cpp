@@ -26,8 +26,6 @@
 
 #include <memory>
 
-using grpc::Channel;
-
 using namespace examples::grpc_static_library;
 
 int main()

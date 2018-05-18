@@ -21,19 +21,11 @@
 #include <bond/core/reflection.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>
 
 #include <memory>
-
-using grpc::Status;
-using grpc::StatusCode;
-
-using grpc::Server;
-using grpc::ServerBuilder;
-using grpc::ServerContext;
 
 using namespace examples::grpc_static_library;
 
@@ -86,10 +78,10 @@ int main()
 
         const std::string server_address("127.0.0.1:50051");
 
-        auto server = bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart();
+        grpc::ServerBuilder builder;
+        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+        auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
     }
 
     return 0;

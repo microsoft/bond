@@ -3,7 +3,6 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -15,13 +14,6 @@
 #include <memory>
 #include <mutex>
 #include <string>
-
-using grpc::Channel;
-using grpc::ServerBuilder;
-using grpc::Status;
-using grpc::StatusCode;
-
-using bond::ext::gRPC::io_manager;
 
 using namespace pingpong;
 
@@ -91,7 +83,7 @@ private:
         // the server context can been accessed to add, for example,
         // additional metadata to the response
         call.context().AddInitialMetadata(metadata_key, "metadata-value");
-        call.Finish(reply, Status::OK);
+        call.Finish(reply, grpc::Status::OK);
     }
 
     void PingNoResponse(
@@ -133,7 +125,7 @@ private:
             bond::bonded<PingRequest>,
             PingReply> call) override
     {
-        call.FinishWithError(Status(StatusCode::CANCELLED, "do not want to respond"));
+        call.FinishWithError({ grpc::StatusCode::CANCELLED, "do not want to respond" });
     }
 };
 
@@ -153,7 +145,7 @@ private:
         PingReply reply;
         reply.message = "ping " + request.name;
 
-        call.Finish(bond::bonded<PingReply>{reply}, Status::OK);
+        call.Finish(bond::bonded<PingReply>{reply}, grpc::Status::OK);
         // could also call:
         // call.Finish(reply);
     }
@@ -174,7 +166,7 @@ void assertResponseContents(const bond::ext::gRPC::unary_call_result<bond::Void>
 {}
 
 template <typename T>
-boost::optional<T> getResponse(StatusCode expected, std::future<T> result, size_t line)
+boost::optional<T> getResponse(grpc::StatusCode expected, std::future<T> result, size_t line)
 {
     if (result.wait_for(std::chrono::seconds(2)) == std::future_status::timeout)
     {
@@ -183,11 +175,11 @@ boost::optional<T> getResponse(StatusCode expected, std::future<T> result, size_
     }
 
     boost::optional<T> response;
-    StatusCode actual;
+    grpc::StatusCode actual;
     try
     {
         response = result.get();
-        actual = StatusCode::OK;
+        actual = response->status().error_code();
     }
     catch (const bond::ext::gRPC::UnaryCallException& e)
     {
@@ -208,13 +200,13 @@ boost::optional<T> getResponse(StatusCode expected, std::future<T> result, size_
 template <typename T>
 void assertResponseReceived(std::future<T> result, size_t line)
 {
-    assertResponseContents(getResponse(StatusCode::OK, std::move(result), line).value(), line);
+    assertResponseContents(getResponse(grpc::StatusCode::OK, std::move(result), line).value(), line);
 }
 
 template <typename T>
 void assertResponseCanceled(std::future<T> result, size_t line)
 {
-    getResponse(StatusCode::CANCELLED, std::move(result), line);
+    getResponse(grpc::StatusCode::CANCELLED, std::move(result), line);
 }
 
 int main()
@@ -228,13 +220,15 @@ int main()
 
     const std::string server_address("127.0.0.1:50051");
 
-    auto server = bond::ext::gRPC::server_builder{}
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(std::move(double_ping_service))
-        .RegisterService(std::move(ping_pong_service))
-        .BuildAndStart();
+    grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 
-    auto ioManager = std::make_shared<io_manager>();
+    auto server = bond::ext::gRPC::server::Start(
+        builder,
+        std::move(double_ping_service),
+        std::move(ping_pong_service));
+
+    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
 
     DoublePing::Client doublePing(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),

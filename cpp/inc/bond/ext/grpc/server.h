@@ -38,8 +38,8 @@
 
 #include <bond/core/config.h>
 
+#include "detail/service.h"
 #include "io_manager.h"
-#include "thread_pool.h"
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -56,17 +56,51 @@
 #include <boost/optional/optional.hpp>
 
 #include <memory>
+#include <string>
 #include <thread>
 
 namespace bond { namespace ext { namespace gRPC
 {
     /// @brief Models a gRPC server powered by Bond services.
     ///
-    /// Servers are configured and started via
-    /// bond::ext:gRPC::server_builder.
+    /// Servers are configured and started via bond::ext:gRPC::server::Start.
     class server final
     {
     public:
+        template <typename... Services>
+        static server Start(
+            grpc::ServerBuilder& builder,
+            std::unique_ptr<Services>... services)
+        {
+            std::vector<std::unique_ptr<detail::service>> all;
+            std::initializer_list<int>{ (all.emplace_back(std::move(services)), 0)... };
+            return Start(builder, std::move(all));
+        }
+
+        template <typename... Services>
+        static server Start(
+            grpc::ServerBuilder& builder,
+            std::pair<std::string, std::unique_ptr<Services>>... namedServices)
+        {
+            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> all;
+            std::initializer_list<int>{ (all.emplace_back(std::move(namedServices)), 0)... };
+            return Start(builder, std::move(all));
+        }
+
+        static server Start(
+            grpc::ServerBuilder& builder,
+            std::vector<std::unique_ptr<detail::service>> services)
+        {
+            return Build(builder, Register(builder, std::move(services)));
+        }
+
+        static server Start(
+            grpc::ServerBuilder& builder,
+            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> namedServices)
+        {
+            return Build(builder, Register(builder, std::move(namedServices)));
+        }
+
         server(server&&) = default;
         server & operator=(server&&) = default;
 
@@ -105,8 +139,6 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     private:
-        friend class server_builder;
-
         server(
             std::unique_ptr<grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
@@ -118,10 +150,61 @@ namespace bond { namespace ext { namespace gRPC
             BOOST_ASSERT(_server);
             BOOST_ASSERT(_ioManager);
 
+            start();
+        }
+
+        void start()
+        {
             for (auto& service : _services)
             {
                 service->start();
             }
+        }
+
+        static std::vector<std::unique_ptr<detail::service>> Register(
+            grpc::ServerBuilder& builder,
+            std::vector<std::unique_ptr<detail::service>> services)
+        {
+            for (auto& service : services)
+            {
+                builder.RegisterService(service->grpc_service());
+            }
+
+            return services;
+        }
+
+        static std::vector<std::unique_ptr<detail::service>> Register(
+            grpc::ServerBuilder& builder,
+            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> services)
+        {
+            std::vector<std::unique_ptr<detail::service>> registered;
+            registered.reserve(services.size());
+
+            for (auto& pair : services)
+            {
+                builder.RegisterService(pair.first, pair.second->grpc_service());
+                registered.push_back(std::move(pair.second));
+            }
+
+            return registered;
+        }
+
+        static server Build(
+            grpc::ServerBuilder& builder,
+            std::vector<std::unique_ptr<detail::service>> services)
+        {
+            auto cq = builder.AddCompletionQueue();
+
+            for (auto& service : services)
+            {
+                service->SetCompletionQueue(cq.get());
+            }
+
+            return server{
+                builder.BuildAndStart(),
+                std::move(services),
+                std::unique_ptr<io_manager>{ new io_manager{
+                    std::thread::hardware_concurrency(), /*delay=*/ false, std::move(cq) } } };
         }
 
         std::unique_ptr<grpc::Server> _server;
