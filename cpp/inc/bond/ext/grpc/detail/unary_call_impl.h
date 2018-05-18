@@ -35,8 +35,8 @@
 #include <atomic>
 #include <utility>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
-
+namespace bond { namespace ext { namespace gRPC { namespace detail
+{
     /// @brief Implementation class that holds the state associated with a
     /// single async, unary call.
     ///
@@ -177,7 +177,22 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
     template <typename Request, typename Response>
     class unary_call_base
     {
+        using impl_type = unary_call_impl<Request, Response>;
+
     public:
+        unary_call_base() = default;
+
+        explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
+            : _impl(std::move(impl))
+        {
+            BOOST_ASSERT(_impl);
+        }
+
+        explicit operator bool() const noexcept
+        {
+            return static_cast<bool>(_impl);
+        }
+
         void swap(unary_call_base& rhs) noexcept
         {
             using std::swap;
@@ -230,22 +245,6 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         void Finish(const grpc::Status& status)
         {
             impl().Finish(status);
-        }
-
-    protected:
-        using impl_type = unary_call_impl<Request, Response>;
-
-        unary_call_base() = default;
-
-        explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
-            : _impl(std::move(impl))
-        {
-            BOOST_ASSERT(_impl);
-        }
-
-        explicit operator bool() const noexcept
-        {
-            return static_cast<bool>(_impl);
         }
 
     private:
