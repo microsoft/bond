@@ -26,10 +26,7 @@ public:
     using Greeter::Service::Service;
 
 private:
-    void SayHello(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<HelloRequest>,
-            HelloReply> call) override
+    void SayHello(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call) override
     {
         HelloRequest request = call.request().Deserialize();
 

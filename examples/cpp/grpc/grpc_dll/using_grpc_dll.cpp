@@ -49,9 +49,7 @@ public:
     using TestService<uint32_t>::Service::Service;
 
 private:
-    void TestMethod(bond::ext::gRPC::unary_call<
-                        bond::bonded<MyStruct>,
-                        Item<uint32_t>> call) override
+    void TestMethod(bond::ext::gRPC::unary_call<MyStruct, Item<uint32_t>> call) override
     {
         MyStruct request = call.request().Deserialize();
 

@@ -19,13 +19,6 @@
 #include <string>
 #include <thread>
 
-using grpc::Status;
-using grpc::StatusCode;
-
-using grpc::Server;
-using grpc::ServerBuilder;
-using grpc::ServerContext;
-
 using namespace PingPongNS;
 
 static unit_test::countdown_event Countdown(NumRequests + NumEvents + NumErrors);
@@ -39,10 +32,7 @@ class PingPongServiceImpl final : public PingPong::Service
 public:
     using PingPong::Service::Service;
 
-    void Ping(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<PingRequest>,
-            PingResponse> call) override
+    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -70,8 +60,7 @@ public:
 
                 NumErrorsReceived++;
 
-                Status error(StatusCode::UNIMPLEMENTED, "Application Exception");
-                call.FinishWithError(error);
+                call.Finish({ grpc::StatusCode::UNIMPLEMENTED, "Application Exception" });
                 Countdown.set();
                 break;
             }
@@ -81,18 +70,14 @@ public:
                 printf("Received unknown request \"%s\"\n", request.Payload.c_str());
                 fflush(stdout);
 
-                Status error(StatusCode::UNIMPLEMENTED, "Unknown PingAction");
-                call.FinishWithError(error);
+                call.Finish({ grpc::StatusCode::UNIMPLEMENTED, "Unknown PingAction" });
                 Countdown.set();
                 break;
             }
         }
     }
 
-    void PingEvent(
-        bond::ext::gRPC::unary_call<
-        bond::bonded<PingRequest>,
-        bond::Void> call) override
+    void PingEvent(bond::ext::gRPC::unary_call<PingRequest, bond::Void> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -101,9 +86,9 @@ public:
 
         NumEventsReceived++;
 
-        // TODO: the current implementation requires that we respond with dummy data.
+        // TODO: the current implementation requires that we respond with empty data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()});
+        call.Finish();
         Countdown.set();
     }
 

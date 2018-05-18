@@ -115,15 +115,14 @@ namespace detail
         template <typename Request, typename Response>
         class unary_call_data;
 
-    protected:
-        template <typename MethodT>
-        using Method = unary_call_data<
-            typename MethodT::input_type,
-            typename remove_bonded<
-                typename std::conditional<
-                    std::is_void<typename MethodT::result_type>::value,
-                    Void,
-                    typename MethodT::result_type>::type>::type>;
+protected:
+    template <typename MethodT>
+    using Method = unary_call_data<
+        typename MethodT::input_type,
+        typename std::conditional<
+            std::is_void<typename MethodT::result_type>::value,
+            Void,
+            typename MethodT::result_type>::type>;
 
         service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
             : _scheduler{ scheduler },

@@ -35,7 +35,7 @@ public:
 private:
     void Negate(
         bond::ext::gRPC::unary_call<
-            bond::bonded<bond::Box<int32_t>>,
+            bond::Box<int32_t>,
             bond::Box<int32_t>> call) override
     {
         bond::Box<int32_t> request = call.request().Deserialize();
@@ -43,9 +43,9 @@ private:
     }
 
     void Sum(
-         bond::ext::gRPC::unary_call<
-             bond::bonded<bond::Box<std::vector<uint64_t>>>,
-             bond::Box<uint64_t>> call) override
+        bond::ext::gRPC::unary_call<
+            bond::Box<std::vector<uint64_t>>,
+            bond::Box<uint64_t>> call) override
     {
         bond::Box<std::vector<uint64_t>> request = call.request().Deserialize();
 

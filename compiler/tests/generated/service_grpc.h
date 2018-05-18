@@ -47,145 +47,26 @@ struct Foo final
 
         public: struct service
         {
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo11_metadata
-            > foo11;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo12_metadata
-            > foo12;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                void,
-                &s_foo12_impl_metadata
-            > foo12_impl;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                void,
-                &s_foo13_metadata
-            > foo13;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                void,
-                &s_foo14_metadata
-            > foo14;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests2::OtherBasicTypes>,
-                void,
-                &s_foo15_metadata
-            > foo15;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo21_metadata
-            > foo21;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo22_metadata
-            > foo22;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo23_metadata
-            > foo23;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo24_metadata
-            > foo24;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo31_metadata
-            > foo31;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo32_metadata
-            > foo32;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo33_metadata
-            > foo33;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s__rd_foo33_metadata
-            > _rd_foo33;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_foo34_metadata
-            > foo34;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo41_metadata
-            > foo41;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo42_metadata
-            > foo42;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::BasicTypes>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo43_metadata
-            > foo43;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::dummy>,
-                ::bond::bonded< ::tests::dummy>,
-                &s_foo44_metadata
-            > foo44;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded< ::tests::BasicTypes>,
-                &s_cq_metadata
-            > cq;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo11_metadata> {} foo11;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo12_metadata> {} foo12;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo12_impl_metadata> {} foo12_impl;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, void, &s_foo13_metadata> {} foo13;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, void, &s_foo14_metadata> {} foo14;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests2::OtherBasicTypes, void, &s_foo15_metadata> {} foo15;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::bond::Void, &s_foo21_metadata> {} foo21;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::bond::Void, &s_foo22_metadata> {} foo22;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::bond::Void, &s_foo23_metadata> {} foo23;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::bond::Void, &s_foo24_metadata> {} foo24;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_foo31_metadata> {} foo31;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_foo32_metadata> {} foo32;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::BasicTypes, &s_foo33_metadata> {} foo33;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::BasicTypes, &s__rd_foo33_metadata> {} _rd_foo33;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::tests::BasicTypes, &s_foo34_metadata> {} foo34;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::dummy, &s_foo41_metadata> {} foo41;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::dummy, &s_foo42_metadata> {} foo42;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::dummy, &s_foo43_metadata> {} foo43;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::tests::dummy, &s_foo44_metadata> {} foo44;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_cq_metadata> {} cq;
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -502,26 +383,26 @@ struct Foo final
             _data.emplace(*this);
         }
 
-        virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
-        virtual void foo12(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
-        virtual void foo12_impl(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
-        virtual void foo13(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::Void>) = 0;
-        virtual void foo14(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::Void>) = 0;
-        virtual void foo15(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests2::OtherBasicTypes>, ::bond::Void>) = 0;
-        virtual void foo21(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
-        virtual void foo22(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::bond::Void>) = 0;
-        virtual void foo23(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::bond::Void>) = 0;
-        virtual void foo24(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::bond::Void>) = 0;
-        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>) = 0;
-        virtual void foo33(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::tests::BasicTypes>) = 0;
-        virtual void _rd_foo33(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::tests::BasicTypes>) = 0;
-        virtual void foo34(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::tests::BasicTypes>) = 0;
-        virtual void foo41(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::dummy>) = 0;
-        virtual void foo42(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::dummy>) = 0;
-        virtual void foo43(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::BasicTypes>, ::tests::dummy>) = 0;
-        virtual void foo44(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::dummy>, ::tests::dummy>) = 0;
-        virtual void cq(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, ::tests::BasicTypes>) = 0;
+        virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
+        virtual void foo12(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
+        virtual void foo12_impl(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
+        virtual void foo13(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::bond::Void>) = 0;
+        virtual void foo14(::bond::ext::gRPC::unary_call< ::tests::dummy, ::bond::Void>) = 0;
+        virtual void foo15(::bond::ext::gRPC::unary_call< ::tests2::OtherBasicTypes, ::bond::Void>) = 0;
+        virtual void foo21(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
+        virtual void foo22(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
+        virtual void foo23(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::bond::Void>) = 0;
+        virtual void foo24(::bond::ext::gRPC::unary_call< ::tests::dummy, ::bond::Void>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
+        virtual void foo33(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::BasicTypes>) = 0;
+        virtual void _rd_foo33(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::BasicTypes>) = 0;
+        virtual void foo34(::bond::ext::gRPC::unary_call< ::tests::dummy, ::tests::BasicTypes>) = 0;
+        virtual void foo41(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::dummy>) = 0;
+        virtual void foo42(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::dummy>) = 0;
+        virtual void foo43(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::dummy>) = 0;
+        virtual void foo44(::bond::ext::gRPC::unary_call< ::tests::dummy, ::tests::dummy>) = 0;
+        virtual void cq(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
 
     private:
         struct data
