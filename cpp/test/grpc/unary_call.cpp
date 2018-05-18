@@ -27,16 +27,10 @@ BOOST_STATIC_ASSERT(!std::is_copy_constructible<unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<unary_callBox>::value);
 
-BOOST_STATIC_ASSERT(std::is_nothrow_default_constructible<shared_unary_callBox>::value);
+BOOST_STATIC_ASSERT(!std::is_nothrow_default_constructible<shared_unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_copy_constructible<shared_unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<shared_unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<shared_unary_callBox>::value);
-
-BOOST_AUTO_TEST_CASE(Default_shared_unary_call_IsEmpty)
-{
-    shared_unary_callBox c{};
-    BOOST_CHECK(!static_cast<bool>(c));
-}
 
 BOOST_AUTO_TEST_SUITE_END()
 
