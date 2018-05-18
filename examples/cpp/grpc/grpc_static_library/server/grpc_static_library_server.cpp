@@ -43,10 +43,7 @@ public:
     using PingPong::Service::Service;
 
 private:
-    void Ping(
-        bond::ext::gRPC::unary_call<
-        bond::bonded<::examples::grpc_static_library::PingRequest>,
-        ::examples::grpc_static_library::PingResponse> call) override
+    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
