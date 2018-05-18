@@ -51,7 +51,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
     cppType = getTypeName cpp
 
-    payload = maybe "::bond::Void" cppType
+    payload = maybe "void" cppType
 
     bonded mt = bonded' (payload mt)
       where
@@ -167,10 +167,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
           where
             static m = [lt|(void)#{methodMetadataVar m};|]
 
-        methodTemplate m = [lt|typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<#{declName}, #{payload $ methodTypeToMaybe (methodInput m)}, #{result m}, &#{methodMetadataVar m}> {} #{methodName m};|]
-          where
-            result Event{} = "void"
-            result Function{..} = payload (methodTypeToMaybe methodResult)
+        methodTemplate m = [lt|typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<#{declName}, #{payload $ methodTypeToMaybe (methodInput m)}, #{resultType m}, &#{methodMetadataVar m}> {} #{methodName m};|]
 
         proxyName = "Client" :: String
         serviceName = "Service" :: String
@@ -221,9 +218,9 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         serviceDataMember (index,f) = [lt|::bond::ext::gRPC::detail::service::Method<#{typename}Schema::service::#{methodName f}> _m#{index}{ _s, #{index}, ::std::bind(&#{serviceName}::#{methodName f}, &_s, ::std::placeholders::_1) };|]
 
-        serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::gRPC::unary_call< #{payload $ methodTypeToMaybe $ methodInput f}, #{payload $ result f}>) = 0;|]
-          where
-            result Function{..} = methodTypeToMaybe methodResult
-            result Event{..} = Nothing
+        serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::gRPC::unary_call< #{payload $ methodTypeToMaybe $ methodInput f}, #{resultType f}>) = 0;|]
+
+        resultType Function{..} = payload (methodTypeToMaybe methodResult)
+        resultType Event{} = "::bond::reflection::nothing"
 
     grpc _ = mempty

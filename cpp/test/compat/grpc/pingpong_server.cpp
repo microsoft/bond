@@ -77,7 +77,7 @@ public:
         }
     }
 
-    void PingEvent(bond::ext::gRPC::unary_call<PingRequest, bond::Void> call) override
+    void PingEvent(bond::ext::gRPC::unary_call<PingRequest, bond::reflection::nothing> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -86,9 +86,6 @@ public:
 
         NumEventsReceived++;
 
-        // TODO: the current implementation requires that we respond with empty data.
-        // This will be fixed in a later release.
-        call.Finish();
         Countdown.set();
     }
 

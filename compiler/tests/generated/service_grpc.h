@@ -47,26 +47,26 @@ struct Foo final
 
         public: struct service
         {
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo11_metadata> {} foo11;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo12_metadata> {} foo12;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, void, &s_foo12_impl_metadata> {} foo12_impl;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, void, &s_foo13_metadata> {} foo13;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, void, &s_foo14_metadata> {} foo14;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests2::OtherBasicTypes, void, &s_foo15_metadata> {} foo15;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::bond::Void, &s_foo21_metadata> {} foo21;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::bond::Void, &s_foo22_metadata> {} foo22;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::bond::Void, &s_foo23_metadata> {} foo23;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::bond::Void, &s_foo24_metadata> {} foo24;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_foo31_metadata> {} foo31;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_foo32_metadata> {} foo32;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::bond::reflection::nothing, &s_foo11_metadata> {} foo11;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::bond::reflection::nothing, &s_foo12_metadata> {} foo12;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::bond::reflection::nothing, &s_foo12_impl_metadata> {} foo12_impl;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::bond::reflection::nothing, &s_foo13_metadata> {} foo13;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::bond::reflection::nothing, &s_foo14_metadata> {} foo14;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests2::OtherBasicTypes, ::bond::reflection::nothing, &s_foo15_metadata> {} foo15;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, void, &s_foo21_metadata> {} foo21;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, void, &s_foo22_metadata> {} foo22;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, void, &s_foo23_metadata> {} foo23;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, void, &s_foo24_metadata> {} foo24;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::tests::BasicTypes, &s_foo31_metadata> {} foo31;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::tests::BasicTypes, &s_foo32_metadata> {} foo32;
             typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::BasicTypes, &s_foo33_metadata> {} foo33;
             typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::BasicTypes, &s__rd_foo33_metadata> {} _rd_foo33;
             typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::tests::BasicTypes, &s_foo34_metadata> {} foo34;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::dummy, &s_foo41_metadata> {} foo41;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::dummy, &s_foo42_metadata> {} foo42;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::tests::dummy, &s_foo41_metadata> {} foo41;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::tests::dummy, &s_foo42_metadata> {} foo42;
             typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::BasicTypes, ::tests::dummy, &s_foo43_metadata> {} foo43;
             typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::dummy, ::tests::dummy, &s_foo44_metadata> {} foo44;
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, ::tests::BasicTypes, &s_cq_metadata> {} cq;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, void, ::tests::BasicTypes, &s_cq_metadata> {} cq;
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -143,54 +143,54 @@ struct Foo final
             Asyncfoo15(::bond::bonded< ::tests2::OtherBasicTypes>{request}, ::std::move(context));
         }
 
-        void Asyncfoo21(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo21(const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo21, std::move(context), cb);
         }
-        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo21(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        ::std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo21(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo21, std::move(context));
+            return ::bond::ext::gRPC::detail::client::dispatch<void>(_mfoo21, std::move(context));
         }
 
-        void Asyncfoo22(const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo22(const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo22, std::move(context), cb);
         }
-        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo22(::std::shared_ptr< ::grpc::ClientContext> context = {})
+        ::std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo22(::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo22, std::move(context));
+            return ::bond::ext::gRPC::detail::client::dispatch<void>(_mfoo22, std::move(context));
         }
 
-        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo23, std::move(context), cb, request);
         }
-        std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo23(const ::bond::bonded< ::tests::BasicTypes>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo23, std::move(context), request);
+            return ::bond::ext::gRPC::detail::client::dispatch<void>(_mfoo23, std::move(context), request);
         }
-        void Asyncfoo23(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo23(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
         }
-        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo23(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        ::std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo23(const ::tests::BasicTypes& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             return Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
         }
 
-        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             ::bond::ext::gRPC::detail::client::dispatch(_mfoo24, std::move(context), cb, request);
         }
-        std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
-            return ::bond::ext::gRPC::detail::client::dispatch<::bond::Void>(_mfoo24, std::move(context), request);
+            return ::bond::ext::gRPC::detail::client::dispatch<void>(_mfoo24, std::move(context), request);
         }
-        void Asyncfoo24(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::bond::Void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo24(const ::tests::dummy& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< void>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
         }
-        ::std::future<::bond::ext::gRPC::unary_call_result< ::bond::Void>> Asyncfoo24(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        ::std::future<::bond::ext::gRPC::unary_call_result< void>> Asyncfoo24(const ::tests::dummy& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
         {
             return Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
         }
@@ -383,26 +383,26 @@ struct Foo final
             _data.emplace(*this);
         }
 
-        virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
-        virtual void foo12(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
-        virtual void foo12_impl(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
-        virtual void foo13(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::bond::Void>) = 0;
-        virtual void foo14(::bond::ext::gRPC::unary_call< ::tests::dummy, ::bond::Void>) = 0;
-        virtual void foo15(::bond::ext::gRPC::unary_call< ::tests2::OtherBasicTypes, ::bond::Void>) = 0;
-        virtual void foo21(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
-        virtual void foo22(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
-        virtual void foo23(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::bond::Void>) = 0;
-        virtual void foo24(::bond::ext::gRPC::unary_call< ::tests::dummy, ::bond::Void>) = 0;
-        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
+        virtual void foo11(::bond::ext::gRPC::unary_call< void, ::bond::reflection::nothing>) = 0;
+        virtual void foo12(::bond::ext::gRPC::unary_call< void, ::bond::reflection::nothing>) = 0;
+        virtual void foo12_impl(::bond::ext::gRPC::unary_call< void, ::bond::reflection::nothing>) = 0;
+        virtual void foo13(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::bond::reflection::nothing>) = 0;
+        virtual void foo14(::bond::ext::gRPC::unary_call< ::tests::dummy, ::bond::reflection::nothing>) = 0;
+        virtual void foo15(::bond::ext::gRPC::unary_call< ::tests2::OtherBasicTypes, ::bond::reflection::nothing>) = 0;
+        virtual void foo21(::bond::ext::gRPC::unary_call< void, void>) = 0;
+        virtual void foo22(::bond::ext::gRPC::unary_call< void, void>) = 0;
+        virtual void foo23(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, void>) = 0;
+        virtual void foo24(::bond::ext::gRPC::unary_call< ::tests::dummy, void>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call< void, ::tests::BasicTypes>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call< void, ::tests::BasicTypes>) = 0;
         virtual void foo33(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::BasicTypes>) = 0;
         virtual void _rd_foo33(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::BasicTypes>) = 0;
         virtual void foo34(::bond::ext::gRPC::unary_call< ::tests::dummy, ::tests::BasicTypes>) = 0;
-        virtual void foo41(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::dummy>) = 0;
-        virtual void foo42(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::dummy>) = 0;
+        virtual void foo41(::bond::ext::gRPC::unary_call< void, ::tests::dummy>) = 0;
+        virtual void foo42(::bond::ext::gRPC::unary_call< void, ::tests::dummy>) = 0;
         virtual void foo43(::bond::ext::gRPC::unary_call< ::tests::BasicTypes, ::tests::dummy>) = 0;
         virtual void foo44(::bond::ext::gRPC::unary_call< ::tests::dummy, ::tests::dummy>) = 0;
-        virtual void cq(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
+        virtual void cq(::bond::ext::gRPC::unary_call< void, ::tests::BasicTypes>) = 0;
 
     private:
         struct data

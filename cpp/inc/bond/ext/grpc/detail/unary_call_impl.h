@@ -52,7 +52,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     /// the ref count, and allowing the remaining unary_call and
     /// shared_unary_call objects, if any, to control lifetime.
     template <typename Request, typename Response>
-    class unary_call_impl final : io_manager_tag
+    class unary_call_impl : io_manager_tag
     {
     public:
         unary_call_impl() = default;
@@ -87,7 +87,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             return _responder;
         }
 
-        void Finish(const bonded<Response>& msg)
+        void Finish(const bonded<Response>& msg = bonded<Response>{ Response{} })
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
@@ -169,15 +169,162 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         // sent, regardless of whether there are any outstanding user
         // references still alive.
         std::atomic<size_t> _refCount{ 1 };
-
     };
+
+    template <typename T>
+    struct payload
+    {
+        using type = T;
+    };
+
+    template <>
+    struct payload<void>
+    {
+        using type = Void;
+    };
+
+    template <>
+    struct payload<bond::reflection::nothing>
+        : payload<void>
+    {};
+
+
+    template <typename Request, typename Response>
+    class unary_call_base;
+
+    template <typename Base>
+    class unary_call_impl_base;
+
+    template <typename Base>
+    class unary_call_input_base;
+
+    template <typename Base>
+    class unary_call_result_base;
+
+
+    template <template <typename> class Base, typename Request, typename Response>
+    class unary_call_impl_base<Base<unary_call_base<Request, Response>>>
+    {
+    protected:
+        unary_call_base<Request, Response>& impl() noexcept
+        {
+            return static_cast<unary_call_base<Request, Response>&>(
+                static_cast<Base<unary_call_base<Request, Response>>&>(*this));
+        }
+
+        const unary_call_base<Request, Response>& impl() const noexcept
+        {
+            return static_cast<unary_call_base<Request, Response>&>(
+                static_cast<Base<unary_call_base<Request, Response>>&>(*this));
+        }
+    };
+
+
+    template <typename Request, typename Response>
+    class unary_call_input_base<unary_call_base<Request, Response>>
+        : public unary_call_impl_base<unary_call_input_base<unary_call_base<Request, Response>>>
+    {
+    public:
+        /// @brief Get the request message for this call.
+        const bonded<Request>& request() const noexcept
+        {
+            return this->impl().impl().request();
+        }
+
+        /// @brief Get the request message for this call.
+        bonded<Request>& request() noexcept
+        {
+            return this->impl().impl().request();
+        }
+    };
+
+    template <typename Response>
+    class unary_call_input_base<unary_call_base<void, Response>>
+    {};
+
+
+    template <typename Request, typename Response>
+    class unary_call_result_base<unary_call_base<Request, Response>>
+        : public unary_call_impl_base<unary_call_result_base<unary_call_base<Request, Response>>>
+    {
+    public:
+        /// @brief Responds to the client with the given message.
+        ///
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const Response& msg = {})
+        {
+            Finish(bonded<Response>{ msg });
+        }
+
+        /// @brief Responds to the client with the given message.
+        ///
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const bonded<Response>& msg)
+        {
+            this->impl().impl().Finish(msg);
+        }
+
+        /// @brief Responds to the client with the given status and no message.
+        ///
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const grpc::Status& status)
+        {
+            this->impl().impl().Finish(status);
+        }
+
+    protected:
+        void FinishEvent()
+        {}
+    };
+
+    template <typename Request>
+    class unary_call_result_base<unary_call_base<Request, void>>
+        : public unary_call_impl_base<unary_call_result_base<unary_call_base<Request, void>>>
+    {
+    public:
+        /// @brief Responds to the client with empty message.
+        ///
+        /// Only the first call to \p Finish will be honored.
+        void Finish()
+        {
+            this->impl().impl().Finish();
+        }
+
+        /// @brief Responds to the client with the given status and no message.
+        ///
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const grpc::Status& status)
+        {
+            this->impl().impl().Finish(status);
+        }
+
+    protected:
+        void FinishEvent()
+        {}
+    };
+
+    template <typename Request>
+    class unary_call_result_base<unary_call_base<Request, bond::reflection::nothing>>
+        : public unary_call_impl_base<unary_call_result_base<unary_call_base<Request, bond::reflection::nothing>>>
+    {
+    protected:
+        void FinishEvent()
+        {
+            this->impl().impl().Finish();
+        }
+    };
+
 
     /// @brief Detail class that helps implement \ref unary_call and \ref
     /// shared_unary_call.
     template <typename Request, typename Response>
     class unary_call_base
+        : public unary_call_input_base<unary_call_base<Request, Response>>,
+          public unary_call_result_base<unary_call_base<Request, Response>>
     {
-        using impl_type = unary_call_impl<Request, Response>;
+        using impl_type = unary_call_impl<
+            typename payload<Request>::type,
+            typename payload<Response>::type>;
 
     public:
         unary_call_base() = default;
@@ -186,6 +333,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             : _impl(std::move(impl))
         {
             BOOST_ASSERT(_impl);
+            this->FinishEvent();
         }
 
         explicit operator bool() const noexcept
@@ -211,43 +359,10 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             return impl().context();
         }
 
-        /// @brief Get the request message for this call.
-        const bonded<Request>& request() const noexcept
-        {
-            return impl().request();
-        }
-
-        /// @brief Get the request message for this call.
-        bonded<Request>& request() noexcept
-        {
-            return impl().request();
-        }
-
-        /// @brief Responds to the client with the given message.
-        ///
-        /// Only the first call to \p Finish will be honored.
-        void Finish(const Response& msg = {})
-        {
-            Finish(bonded<Response>{ msg });
-        }
-
-        /// @brief Responds to the client with the given message.
-        ///
-        /// Only the first call to \p Finish will be honored.
-        void Finish(const bonded<Response>& msg)
-        {
-            impl().Finish(msg);
-        }
-
-        /// @brief Responds to the client with the given status and no message.
-        ///
-        /// Only the first call to \p Finish will be honored.
-        void Finish(const grpc::Status& status)
-        {
-            impl().Finish(status);
-        }
-
     private:
+        friend class unary_call_input_base<unary_call_base>;
+        friend class unary_call_result_base<unary_call_base>;
+
         impl_type& impl() noexcept
         {
             BOOST_ASSERT(_impl);
