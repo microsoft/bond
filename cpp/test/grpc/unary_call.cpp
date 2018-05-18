@@ -22,7 +22,7 @@ using unary_callBox = unary_call<bond::bonded<bond::Box<int32_t>>,
 using shared_unary_callBox = shared_unary_call<bond::bonded<bond::Box<int32_t>>,
                                                bond::Box<int32_t>>;
 
-BOOST_STATIC_ASSERT(!std::is_default_constructible<unary_callBox>::value);
+BOOST_STATIC_ASSERT(std::is_default_constructible<unary_callBox>::value);
 BOOST_STATIC_ASSERT(!std::is_copy_constructible<unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<unary_callBox>::value);
@@ -32,10 +32,10 @@ BOOST_STATIC_ASSERT(std::is_copy_constructible<shared_unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<shared_unary_callBox>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<shared_unary_callBox>::value);
 
-BOOST_AUTO_TEST_CASE(Default_shared_unary_call_IsEmpty)
+BOOST_AUTO_TEST_CASE(DefaultIsEmpty)
 {
-    shared_unary_callBox c{};
-    BOOST_CHECK(!static_cast<bool>(c));
+    BOOST_CHECK(!static_cast<bool>(unary_callBox{}));
+    BOOST_CHECK(!static_cast<bool>(shared_unary_callBox{}));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
