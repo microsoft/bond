@@ -245,9 +245,7 @@ alphabetical order. -->
 
 <span class="kw">private</span>:
     <span class="dt">void</span> ExampleMethod(
-        bond::ext::gRPC::unary_call&lt;
-            bond::bonded&lt;ExampleRequest&gt;,
-            ExampleResponse&gt; call) <span class="kw">override</span>
+        bond::ext::gRPC::unary_call&lt;ExampleRequest, ExampleResponse&gt; call) <span class="kw">override</span>
     {
         ExampleRequest request = call.request().Deserialize();
         ExampleResponse response;
