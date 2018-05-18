@@ -16,9 +16,6 @@
 #include <string>
 #include <thread>
 
-using grpc::Channel;
-using grpc::Status;
-
 using namespace PingPongNS;
 
 int main()
@@ -27,7 +24,7 @@ int main()
     bond::ext::gRPC::thread_pool threadPool;
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
-    std::shared_ptr<Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
+    auto channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 

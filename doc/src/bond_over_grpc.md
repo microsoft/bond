@@ -180,9 +180,7 @@ public:
 
 private:
     void ExampleMethod(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<ExampleRequest>,
-            ExampleResponse> call) override
+        bond::ext::gRPC::unary_call<ExampleRequest, ExampleResponse> call) override
     {
         ExampleRequest request = call.request().Deserialize();
         ExampleResponse response;

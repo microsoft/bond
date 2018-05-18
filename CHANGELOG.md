@@ -98,6 +98,12 @@ different versioning scheme, following the Haskell community's
     service instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
     Service implementations must now pass a `Scheduler` to the generated `Service` base class which
     is no longer default constructible.
+  - Generated method reflection information no longer uses redundant `bonded<T>` wrapper
+    for `input_type` and `result_type` typedefs.
+  - The `bond::ext::gRPC::unary_call` no longer requires `bonded<T>` wrapper for
+    request type.
+  - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to `Finish`.
+  - The `grpc::Status` second argument has been removed from `bond::ext::gRPC::unary_call::Finish`.
 * gRPC v1.10.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
 * The `bond::ext::gRPC::wait_callback` has been deprecated in favor of additionally

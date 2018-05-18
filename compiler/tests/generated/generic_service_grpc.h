@@ -32,40 +32,11 @@ template <typename Payload>
 
         public: struct service
         {
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded<Payload>,
-                ::bond::bonded< ::bond::Void>,
-                &s_foo31_metadata
-            > foo31;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::bond::Void>,
-                ::bond::bonded<Payload>,
-                &s_foo32_metadata
-            > foo32;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded<Payload>,
-                ::bond::bonded<Payload>,
-                &s_foo33_metadata
-            > foo33;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::SomeBox<int32_t>>,
-                ::bond::bonded< ::bond::Void>,
-                &s_ConsumesGeneric1_metadata
-            > ConsumesGeneric1;
-
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>,
-                ::bond::bonded< ::bond::Void>,
-                &s_ConsumesGeneric2_metadata
-            > ConsumesGeneric2;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, Payload, ::bond::Void, &s_foo31_metadata> {} foo31;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::bond::Void, Payload, &s_foo32_metadata> {} foo32;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, Payload, Payload, &s_foo33_metadata> {} foo33;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::SomeBox<int32_t>, ::bond::Void, &s_ConsumesGeneric1_metadata> {} ConsumesGeneric1;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void, &s_ConsumesGeneric2_metadata> {} ConsumesGeneric2;
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -199,11 +170,11 @@ template <typename Payload>
             _data.emplace(*this);
         }
 
-        virtual void foo31(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, ::bond::Void>) = 0;
-        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::bonded< ::bond::Void>, Payload>) = 0;
-        virtual void foo33(::bond::ext::gRPC::unary_call< ::bond::bonded<Payload>, Payload>) = 0;
-        virtual void ConsumesGeneric1(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::SomeBox<int32_t>>, ::bond::Void>) = 0;
-        virtual void ConsumesGeneric2(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::SomeBox<std::vector<int32_t> >>, ::bond::Void>) = 0;
+        virtual void foo31(::bond::ext::gRPC::unary_call< Payload, ::bond::Void>) = 0;
+        virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::Void, Payload>) = 0;
+        virtual void foo33(::bond::ext::gRPC::unary_call< Payload, Payload>) = 0;
+        virtual void ConsumesGeneric1(::bond::ext::gRPC::unary_call< ::tests::SomeBox<int32_t>, ::bond::Void>) = 0;
+        virtual void ConsumesGeneric2(::bond::ext::gRPC::unary_call< ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void>) = 0;
 
     private:
         struct data

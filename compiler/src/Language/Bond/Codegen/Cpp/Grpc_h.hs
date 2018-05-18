@@ -79,7 +79,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         public: struct service
         {
-            #{doubleLineSep 3 methodTemplate serviceMethods}
+            #{newlineSep 3 methodTemplate serviceMethods}
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -167,15 +167,10 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
           where
             static m = [lt|(void)#{methodMetadataVar m};|]
 
-        methodTemplate m = [lt|typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                #{declName},
-                #{bonded $ methodTypeToMaybe (methodInput m)},
-                #{result m},
-                &#{methodMetadataVar m}
-            > #{methodName m};|]
+        methodTemplate m = [lt|typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<#{declName}, #{payload $ methodTypeToMaybe (methodInput m)}, #{result m}, &#{methodMetadataVar m}> {} #{methodName m};|]
           where
             result Event{} = "void"
-            result Function{..} = bonded (methodTypeToMaybe methodResult)
+            result Function{..} = payload (methodTypeToMaybe methodResult)
 
         proxyName = "Client" :: String
         serviceName = "Service" :: String
@@ -226,7 +221,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         serviceDataMember (index,f) = [lt|::bond::ext::gRPC::detail::service::Method<#{typename}Schema::service::#{methodName f}> _m#{index}{ _s, #{index}, ::std::bind(&#{serviceName}::#{methodName f}, &_s, ::std::placeholders::_1) };|]
 
-        serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::gRPC::unary_call< #{bonded $ methodTypeToMaybe $ methodInput f}, #{payload $ result f}>) = 0;|]
+        serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::gRPC::unary_call< #{payload $ methodTypeToMaybe $ methodInput f}, #{payload $ result f}>) = 0;|]
           where
             result Function{..} = methodTypeToMaybe methodResult
             result Event{..} = Nothing

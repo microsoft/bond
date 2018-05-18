@@ -18,13 +18,10 @@ using namespace helloworld;
 
 class GreeterServiceImpl final : public Greeter::Service
 {
-    using CallType = bond::ext::gRPC::unary_call<bond::bonded<HelloRequest>, HelloReply>;
-    using SharedCallType = bond::ext::gRPC::shared_unary_call<bond::bonded<HelloRequest>, HelloReply>;
-
     class PerRequestState
     {
     public:
-        explicit PerRequestState(CallType call)
+        explicit PerRequestState(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call)
             : _call(std::move(call).share())
         { }
 
@@ -47,7 +44,7 @@ class GreeterServiceImpl final : public Greeter::Service
         // The thread pool implementation that we're using requires its
         // Callbacks to be copyable, so we switch to using
         // shared_unary_call, which is copyable.
-        SharedCallType _call;
+        bond::ext::gRPC::shared_unary_call<HelloRequest, HelloReply> _call;
 
         // Other state could be added as needed.
     };
@@ -59,7 +56,7 @@ public:
         : Greeter::Service(std::move(tp))
     { }
 
-    void SayHello(CallType call) override
+    void SayHello(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call) override
     {
         scheduler()(PerRequestState{ std::move(call) });
     }

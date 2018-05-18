@@ -59,10 +59,7 @@ public:
     std::shared_ptr<event> pingNoResponse_event{ std::make_shared<event>() };
 
 private:
-    void Ping(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<PingRequest>,
-            PingReply> call) override
+    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -72,10 +69,7 @@ private:
         call.Finish(reply);
     }
 
-    void PingNoPayload(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<bond::Void>,
-            PingReply> call) override
+    void PingNoPayload(bond::ext::gRPC::unary_call<bond::Void, PingReply> call) override
     {
         PingReply reply;
         reply.message = "ping pong";
@@ -83,49 +77,37 @@ private:
         // the server context can been accessed to add, for example,
         // additional metadata to the response
         call.context().AddInitialMetadata(metadata_key, "metadata-value");
-        call.Finish(reply, grpc::Status::OK);
+        call.Finish(reply);
     }
 
-    void PingNoResponse(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<PingRequest>,
-            bond::Void> call) override
+    void PingNoResponse(bond::ext::gRPC::unary_call<PingRequest, bond::Void> call) override
     {
         PingRequest request = call.request().Deserialize();
 
-        // TODO: the current implementation requires that we respond with dummy data.
+        // TODO: the current implementation requires that we respond with empty data.
         // This will be fixed in a later release.
-        call.Finish(bond::bonded<bond::Void>{bond::Void()});
+        call.Finish();
 
         pingNoResponse_event->set();
     }
 
-    void PingVoid(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<bond::Void>,
-            bond::Void> call) override
+    void PingVoid(bond::ext::gRPC::unary_call<bond::Void, bond::Void> call) override
     {
-        // TODO: the current implementation requires that we respond with dummy data.
+        // TODO: the current implementation requires that we respond with empty data.
         // This will be fixed in a later release.
-        call.Finish(bond::Void());
+        call.Finish();
     }
 
-    void PingEventVoid(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<bond::Void>,
-            bond::Void> call) override
+    void PingEventVoid(bond::ext::gRPC::unary_call<bond::Void, bond::Void> call) override
     {
-        // TODO: the current implementation requires that we respond with dummy data.
+        // TODO: the current implementation requires that we respond with empty data.
         // This will be fixed in a later release.
-        call.Finish(bond::Void());
+        call.Finish();
     }
 
-    void PingShouldThrow(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<PingRequest>,
-            PingReply> call) override
+    void PingShouldThrow(bond::ext::gRPC::unary_call<PingRequest, PingReply> call) override
     {
-        call.FinishWithError({ grpc::StatusCode::CANCELLED, "do not want to respond" });
+        call.Finish({ StatusCode::CANCELLED, "do not want to respond" });
     }
 };
 
@@ -135,17 +117,14 @@ public:
     using PingPong<PingRequest>::Service::Service;
 
 private:
-    void Ping(
-        bond::ext::gRPC::unary_call<
-            bond::bonded<PingRequest>,
-            PingReply> call) override
+    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingReply> call) override
     {
         PingRequest request = call.request().Deserialize();
 
         PingReply reply;
         reply.message = "ping " + request.name;
 
-        call.Finish(bond::bonded<PingReply>{reply}, grpc::Status::OK);
+        call.Finish(bond::bonded<PingReply>{reply});
         // could also call:
         // call.Finish(reply);
     }

@@ -5,8 +5,9 @@
 
 #include <bond/core/config.h>
 
-#include <bond/core/bonded.h>
 #include "io_manager_tag.h"
+
+#include <bond/core/bonded.h>
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -34,8 +35,8 @@
 #include <atomic>
 #include <utility>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
-
+namespace bond { namespace ext { namespace gRPC { namespace detail
+{
     /// @brief Implementation class that holds the state associated with a
     /// single async, unary call.
     ///
@@ -66,36 +67,36 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
             return _context;
         }
 
-        const Request& request() const noexcept
+        const bonded<Request>& request() const noexcept
         {
             return _request;
         }
 
-        Request& request() noexcept
+        bonded<Request>& request() noexcept
         {
             return _request;
         }
 
-        const grpc::ServerAsyncResponseWriter<bond::bonded<Response>>& responder() const noexcept
+        const grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() const noexcept
         {
             return _responder;
         }
 
-        grpc::ServerAsyncResponseWriter<bond::bonded<Response>>& responder() noexcept
+        grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() noexcept
         {
             return _responder;
         }
 
-        void Finish(const bond::bonded<Response>& msg, const grpc::Status& status)
+        void Finish(const bonded<Response>& msg)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, status, tag());
+                _responder.Finish(msg, grpc::Status::OK, tag());
             }
         }
 
-        void FinishWithError(const grpc::Status& status)
+        void Finish(const grpc::Status& status)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
@@ -133,7 +134,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
                 // The last user reference has just gone away, but Finish was
                 // not called. In this case, we are responsible for sending
                 // an error response and decrementing the final ref
-                // count. FinishWithError will schedule the send of the
+                // count. Finish with grpc::Status will schedule the send of the
                 // error response, and notification of completion of the
                 // send via invoke() will decrement the final ref count.
                 // Since we hold the ref count ourselves, we will not
@@ -142,7 +143,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
                 // Even when multiple threads enter this case, at most one
                 // will succeed in sending error, thanks to _responseSentFlag.
 
-                FinishWithError({ grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
+                Finish({ grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
             }
         }
 
@@ -160,8 +161,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         // A pointer to the context is passed to _responder when
         // constructing it, so this needs to be declared before _responder.
         grpc::ServerContext _context{};
-        Request _request{};
-        grpc::ServerAsyncResponseWriter<bond::bonded<Response>> _responder{ &_context };
+        bonded<Request> _request{};
+        grpc::ServerAsyncResponseWriter<bonded<Response>> _responder{ &_context };
         std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
@@ -176,7 +177,22 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
     template <typename Request, typename Response>
     class unary_call_base
     {
+        using impl_type = unary_call_impl<Request, Response>;
+
     public:
+        unary_call_base() = default;
+
+        explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
+            : _impl(std::move(impl))
+        {
+            BOOST_ASSERT(_impl);
+        }
+
+        explicit operator bool() const noexcept
+        {
+            return static_cast<bool>(_impl);
+        }
+
         void swap(unary_call_base& rhs) noexcept
         {
             using std::swap;
@@ -196,58 +212,39 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         }
 
         /// @brief Get the request message for this call.
-        const Request& request() const noexcept
+        const bonded<Request>& request() const noexcept
         {
             return impl().request();
         }
 
         /// @brief Get the request message for this call.
-        Request& request() noexcept
+        bonded<Request>& request() noexcept
         {
             return impl().request();
         }
 
-        /// @brief Responds to the client with the given message and status.
+        /// @brief Responds to the client with the given message.
         ///
-        /// Only the first call to \p Finish or \p FinishWithError will be
-        /// honored.
-        void Finish(const Response& msg, const grpc::Status& status = grpc::Status::OK)
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const Response& msg = {})
         {
-            Finish(bond::bonded<Response>{ msg }, status);
+            Finish(bonded<Response>{ msg });
         }
 
-        /// @brief Responds to the client with the given message and status.
+        /// @brief Responds to the client with the given message.
         ///
-        /// Only the first call to \p Finish or \p FinishWithError will be
-        /// honored.
-        void Finish(const bond::bonded<Response>& msg, const grpc::Status& status = grpc::Status::OK)
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const bonded<Response>& msg)
         {
-            impl().Finish(msg, status);
+            impl().Finish(msg);
         }
 
         /// @brief Responds to the client with the given status and no message.
         ///
-        /// Only the first call to \p Finish or \p FinishWithError will be
-        /// honored.
-        void FinishWithError(const grpc::Status& status)
+        /// Only the first call to \p Finish will be honored.
+        void Finish(const grpc::Status& status)
         {
-            impl().FinishWithError(status);
-        }
-
-    protected:
-        using impl_type = unary_call_impl<Request, Response>;
-
-        unary_call_base() = default;
-
-        explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
-            : _impl(std::move(impl))
-        {
-            BOOST_ASSERT(_impl);
-        }
-
-        explicit operator bool() const noexcept
-        {
-            return static_cast<bool>(_impl);
+            impl().Finish(status);
         }
 
     private:

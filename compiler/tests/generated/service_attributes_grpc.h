@@ -27,12 +27,7 @@ struct Foo final
 
         public: struct service
         {
-            typedef ::bond::ext::gRPC::reflection::MethodTemplate<
-                Foo,
-                ::bond::bonded< ::tests::Param>,
-                ::bond::bonded< ::tests::Result>,
-                &s_foo_metadata
-            > foo;
+            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::Param, ::tests::Result, &s_foo_metadata> {} foo;
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -85,7 +80,7 @@ struct Foo final
             _data.emplace(*this);
         }
 
-        virtual void foo(::bond::ext::gRPC::unary_call< ::bond::bonded< ::tests::Param>, ::tests::Result>) = 0;
+        virtual void foo(::bond::ext::gRPC::unary_call< ::tests::Param, ::tests::Result>) = 0;
 
     private:
         struct data
