@@ -33,6 +33,8 @@ namespace bond { namespace ext { namespace gRPC
     {
     public:
         /// @brief Creates an empty unary_call.
+        ///
+        /// @since 8.0.0
         unary_call() = default;
 
         using unary_call::unary_call_base::unary_call_base;
