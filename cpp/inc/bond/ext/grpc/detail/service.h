@@ -34,8 +34,29 @@
 
 namespace bond { namespace ext { namespace gRPC
 {
+    class server;
 
-class server;
+    namespace detail
+    {
+        class service;
+
+    } // namespace detail
+
+
+    /// @brief Base public class that all Bond gRPC++ services inherit.
+    class abstract_service
+    {
+    public:
+        virtual ~abstract_service() = default;
+
+        abstract_service(const abstract_service& other) = delete;
+        abstract_service& operator=(const abstract_service& other) = delete;
+
+    private:
+        friend class detail::service;
+
+        abstract_service() = default;
+    };
 
 namespace detail
 {
@@ -45,12 +66,9 @@ namespace detail
     ///
     /// Helper class that codegen uses to generate abstract service classes,
     /// which a bond::ext::gRPC::server then hosts multiple services.
-    class service : private grpc::Service
+    class service : public abstract_service, private grpc::Service
     {
     public:
-        service(const service& other) = delete;
-        service& operator=(const service& other) = delete;
-
         /// @brief Starts the service.
         ///
         /// @note This method is for use by generated and helper code only.
@@ -115,14 +133,14 @@ namespace detail
         template <typename Request, typename Response>
         class unary_call_data;
 
-protected:
-    template <typename MethodT>
-    using Method = unary_call_data<
-        typename MethodT::input_type,
-        typename std::conditional<
-            std::is_void<typename MethodT::result_type>::value,
-            Void,
-            typename MethodT::result_type>::type>;
+    protected:
+        template <typename MethodT>
+        using Method = unary_call_data<
+            typename MethodT::input_type,
+            typename std::conditional<
+                std::is_void<typename MethodT::result_type>::value,
+                Void,
+                typename MethodT::result_type>::type>;
 
         service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
             : _scheduler{ scheduler },
@@ -133,8 +151,8 @@ protected:
             AddMethods(methodNames);
         }
 
-private:
-    friend class gRPC::server;
+    private:
+        friend class gRPC::server;
 
         void AddMethods(std::initializer_list<const char*> names)
         {
@@ -229,5 +247,11 @@ private:
         /// Individual state for one specific call to this method.
         std::unique_ptr<uc_impl> _receivedCall;
     };
+
+
+    inline std::unique_ptr<service> service_cast(std::unique_ptr<abstract_service> s)
+    {
+        return std::unique_ptr<service>{ static_cast<service*>(s.release()) };
+    }
 
 } } } } // namespace bond::ext::gRPC::detail

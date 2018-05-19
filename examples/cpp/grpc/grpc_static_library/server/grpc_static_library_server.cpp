@@ -21,6 +21,7 @@
 #include <bond/core/reflection.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/protocol/compact_binary.h>
 #include <bond/stream/output_buffer.h>

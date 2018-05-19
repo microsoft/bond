@@ -8,6 +8,7 @@
 #include "pingpong_types.h"
 
 #include <bond/ext/grpc/server.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 
 #include "../../grpc/countdown_event.h"

@@ -107,7 +107,7 @@ private:
 
     void PingShouldThrow(bond::ext::gRPC::unary_call<PingRequest, PingReply> call) override
     {
-        call.Finish({ StatusCode::CANCELLED, "do not want to respond" });
+        call.Finish({ grpc::StatusCode::CANCELLED, "do not want to respond" });
     }
 };
 

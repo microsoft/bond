@@ -58,6 +58,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
 namespace bond { namespace ext { namespace gRPC
 {
@@ -67,36 +68,44 @@ namespace bond { namespace ext { namespace gRPC
     class server final
     {
     public:
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
         template <typename... Services>
         static server Start(
             grpc::ServerBuilder& builder,
             std::unique_ptr<Services>... services)
         {
-            std::vector<std::unique_ptr<detail::service>> all;
+            std::vector<std::unique_ptr<abstract_service>> all;
             std::initializer_list<int>{ (all.emplace_back(std::move(services)), 0)... };
             return Start(builder, std::move(all));
         }
 
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
         template <typename... Services>
         static server Start(
             grpc::ServerBuilder& builder,
             std::pair<std::string, std::unique_ptr<Services>>... namedServices)
         {
-            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> all;
+            std::vector<std::pair<std::string, std::unique_ptr<abstract_service>>> all;
             std::initializer_list<int>{ (all.emplace_back(std::move(namedServices)), 0)... };
             return Start(builder, std::move(all));
         }
 
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
         static server Start(
             grpc::ServerBuilder& builder,
-            std::vector<std::unique_ptr<detail::service>> services)
+            std::vector<std::unique_ptr<abstract_service>> services)
         {
             return Build(builder, Register(builder, std::move(services)));
         }
 
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
         static server Start(
             grpc::ServerBuilder& builder,
-            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> namedServices)
+            std::vector<std::pair<std::string, std::unique_ptr<abstract_service>>> namedServices)
         {
             return Build(builder, Register(builder, std::move(namedServices)));
         }
@@ -163,27 +172,33 @@ namespace bond { namespace ext { namespace gRPC
 
         static std::vector<std::unique_ptr<detail::service>> Register(
             grpc::ServerBuilder& builder,
-            std::vector<std::unique_ptr<detail::service>> services)
+            std::vector<std::unique_ptr<abstract_service>> services)
         {
-            for (auto& service : services)
+            std::vector<std::unique_ptr<detail::service>> registered;
+            registered.reserve(services.size());
+
+            for (auto& s : services)
             {
+                auto service = detail::service_cast(std::move(s));
                 builder.RegisterService(service->grpc_service());
+                registered.push_back(std::move(service));
             }
 
-            return services;
+            return registered;
         }
 
         static std::vector<std::unique_ptr<detail::service>> Register(
             grpc::ServerBuilder& builder,
-            std::vector<std::pair<std::string, std::unique_ptr<detail::service>>> services)
+            std::vector<std::pair<std::string, std::unique_ptr<abstract_service>>> services)
         {
             std::vector<std::unique_ptr<detail::service>> registered;
             registered.reserve(services.size());
 
             for (auto& pair : services)
             {
-                builder.RegisterService(pair.first, pair.second->grpc_service());
-                registered.push_back(std::move(pair.second));
+                auto service = detail::service_cast(std::move(pair.second));
+                builder.RegisterService(pair.first, service->grpc_service());
+                registered.push_back(std::move(service));
             }
 
             return registered;
