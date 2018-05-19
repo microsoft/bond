@@ -7,6 +7,7 @@
 
 #include "bond_utils.h"
 #include "io_manager_tag.h"
+#include "payload.h"
 
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/io_manager.h>

@@ -7,6 +7,7 @@
 
 #include "bond_utils.h"
 #include "io_manager_tag.h"
+#include "payload.h"
 
 #include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call.h>

@@ -6,6 +6,7 @@
 #include <bond/core/config.h>
 
 #include "io_manager_tag.h"
+#include "payload.h"
 
 #include <bond/core/bonded.h>
 
@@ -170,23 +171,6 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         // references still alive.
         std::atomic<size_t> _refCount{ 1 };
     };
-
-    template <typename T>
-    struct payload
-    {
-        using type = T;
-    };
-
-    template <>
-    struct payload<void>
-    {
-        using type = Void;
-    };
-
-    template <>
-    struct payload<bond::reflection::nothing>
-        : payload<void>
-    {};
 
 
     template <typename Request, typename Response>
