@@ -46,6 +46,19 @@ BOOST_AUTO_TEST_CASE(SingleServiceStartTest)
             std::unique_ptr<Service1>{ new Service1{ scheduler } }));
 }
 
+BOOST_AUTO_TEST_CASE(SameServiceStartTest)
+{
+    grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+    BOOST_CHECK_THROW(
+        bond::ext::gRPC::server::Start(
+            builder,
+            std::unique_ptr<Service1>{ new Service1{ scheduler } },
+            std::unique_ptr<Service1>{ new Service1{ scheduler } }),
+        bond::ext::gRPC::ServerBuildException);
+}
+
 BOOST_AUTO_TEST_CASE(ServicePackStartTest)
 {
     grpc::ServerBuilder builder;

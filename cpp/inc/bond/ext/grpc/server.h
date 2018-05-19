@@ -42,6 +42,8 @@
 #include "exception.h"
 #include "io_manager.h"
 
+#include <bond/ext/grpc/service_collection.h>
+
 #ifdef _MSC_VER
     #pragma warning (push)
     #pragma warning (disable: 4100 4702)
@@ -54,61 +56,15 @@
 #endif
 
 #include <boost/assert.hpp>
-#include <boost/optional/optional.hpp>
 #include <boost/range/combine.hpp>
 
 #include <memory>
 #include <string>
 #include <thread>
-#include <type_traits>
 #include <vector>
 
 namespace bond { namespace ext { namespace gRPC
 {
-    /// @brief A collection of services that is used to construct a server.
-    class service_collection final
-    {
-    public:
-        template <typename... Service>
-        void Add(std::unique_ptr<Service>... services)
-        {
-            std::initializer_list<int>{ (Add(boost::none, std::move(services)), 0)... };
-        }
-
-        template <typename Service>
-        void Add(const std::string& host, std::unique_ptr<Service> service)
-        {
-            Add(boost::make_optional(host), std::move(service));
-        }
-
-        void Add() = delete;
-
-    private:
-        friend class server;
-
-        std::vector<boost::optional<std::string>>& names()
-        {
-            return _names;
-        }
-
-        std::vector<std::unique_ptr<detail::service>>& services()
-        {
-            return _services;
-        }
-
-        template <typename Service>
-        void Add(const boost::optional<std::string>& host, std::unique_ptr<Service> s)
-        {
-            BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
-            _names.push_back(host);
-            _services.emplace_back(static_cast<detail::service*>(s.release()));
-        }
-
-        std::vector<boost::optional<std::string>> _names;
-        std::vector<std::unique_ptr<detail::service>> _services;
-    };
-
-
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via bond::ext:gRPC::server::Start.

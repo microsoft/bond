@@ -8,6 +8,7 @@
 #include "bond_utils.h"
 #include "io_manager_tag.h"
 
+#include <bond/ext/grpc/abstract_service.h>
 #include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -35,28 +36,6 @@
 namespace bond { namespace ext { namespace gRPC
 {
     class server;
-
-    namespace detail
-    {
-        class service;
-
-    } // namespace detail
-
-
-    /// @brief Base public class that all Bond gRPC++ services inherit.
-    class abstract_service
-    {
-    public:
-        virtual ~abstract_service() = default;
-
-        abstract_service(const abstract_service& other) = delete;
-        abstract_service& operator=(const abstract_service& other) = delete;
-
-    private:
-        friend class detail::service;
-
-        abstract_service() = default;
-    };
 
 namespace detail
 {

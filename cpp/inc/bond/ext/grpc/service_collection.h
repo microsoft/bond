@@ -1,0 +1,62 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+#pragma once
+
+#include <bond/core/config.h>
+
+#include "detail/service.h"
+
+#include <boost/assert.hpp>
+#include <boost/optional/optional.hpp>
+
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace bond { namespace ext { namespace gRPC
+{
+    /// @brief A collection of services that is used to construct a server.
+    class service_collection final
+    {
+    public:
+        template <typename... Service>
+        void Add(std::unique_ptr<Service>... services)
+        {
+            std::initializer_list<int>{ (Add(boost::none, std::move(services)), 0)... };
+        }
+
+        template <typename Service>
+        void Add(const std::string& host, std::unique_ptr<Service> service)
+        {
+            Add(boost::make_optional(host), std::move(service));
+        }
+
+        void Add() = delete;
+
+    private:
+        friend class server;
+
+        std::vector<boost::optional<std::string>>& names()
+        {
+            return _names;
+        }
+
+        std::vector<std::unique_ptr<detail::service>>& services()
+        {
+            return _services;
+        }
+
+        template <typename Service>
+        void Add(const boost::optional<std::string>& host, std::unique_ptr<Service> s)
+        {
+            BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
+            _names.push_back(host);
+            _services.emplace_back(static_cast<detail::service*>(s.release()));
+        }
+
+        std::vector<boost::optional<std::string>> _names;
+        std::vector<std::unique_ptr<detail::service>> _services;
+    };
+
+} } } //namespace bond::ext::gRPC
