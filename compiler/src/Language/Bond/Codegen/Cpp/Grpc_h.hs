@@ -112,14 +112,14 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
                 })
         {}
 
+        #{newlineSep 2 serviceVirtualMethod serviceMethods}
+
+    private:
         void start() override
         {
             _data.emplace(*this);
         }
 
-        #{newlineSep 2 serviceVirtualMethod serviceMethods}
-
-    private:
         struct data
         {
             explicit data(#{serviceName}& s)
