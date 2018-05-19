@@ -57,4 +57,14 @@ namespace bond { namespace ext { namespace gRPC
         const std::shared_ptr<grpc::ClientContext> _context;
     };
 
+
+    /// @brief %Exception thrown when unable to construct a grpc::Server.
+    class ServerBuildException : public Exception
+    {
+    public:
+        ServerBuildException()
+            : Exception{ "Failed to build a grpc::Server." }
+        {}
+    };
+
 } } } // namespace bond::ext::gRPC
