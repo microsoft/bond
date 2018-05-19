@@ -73,18 +73,7 @@ BOOST_AUTO_TEST_CASE(AbstractServicePackStartTest)
 const std::string n1 = "s1";
 const std::string n2 = "s2";
 
-BOOST_AUTO_TEST_CASE(SingleNamedServiceStartTest)
-{
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-
-    bond::ext::gRPC::service_collection services;
-    services.Add(n1, std::unique_ptr<Service1>{ new Service1{ scheduler } });
-
-    BOOST_CHECK_NO_THROW(bond::ext::gRPC::server::Start(builder, std::move(services)));
-}
-
-BOOST_AUTO_TEST_CASE(NamedServicePackStartTest)
+BOOST_AUTO_TEST_CASE(NamedServiceStartTest)
 {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -110,7 +99,7 @@ BOOST_AUTO_TEST_CASE(SameNameServiceStartTest)
         bond::ext::gRPC::ServerBuildException);
 }
 
-BOOST_AUTO_TEST_CASE(AbstractNamedServicePackStartTest)
+BOOST_AUTO_TEST_CASE(AbstractNamedServiceStartTest)
 {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
