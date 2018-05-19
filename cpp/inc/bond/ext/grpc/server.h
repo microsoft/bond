@@ -55,14 +55,60 @@
 
 #include <boost/assert.hpp>
 #include <boost/optional/optional.hpp>
+#include <boost/range/combine.hpp>
 
 #include <memory>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 namespace bond { namespace ext { namespace gRPC
 {
+    /// @brief A collection of services that is used to construct a server.
+    class service_collection final
+    {
+    public:
+        template <typename... Service>
+        void Add(std::unique_ptr<Service>... services)
+        {
+            std::initializer_list<int>{ (Add(boost::none, std::move(services)), 0)... };
+        }
+
+        template <typename Service>
+        void Add(const std::string& host, std::unique_ptr<Service> service)
+        {
+            Add(boost::make_optional(host), std::move(service));
+        }
+
+        void Add() = delete;
+
+    private:
+        friend class server;
+
+        std::vector<boost::optional<std::string>>& names()
+        {
+            return _names;
+        }
+
+        std::vector<std::unique_ptr<detail::service>>& services()
+        {
+            return _services;
+        }
+
+        template <typename Service>
+        void Add(const boost::optional<std::string>& host, std::unique_ptr<Service> s)
+        {
+            BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
+            _names.push_back(host);
+            _services.emplace_back(static_cast<detail::service*>(s.release()));
+        }
+
+        std::vector<boost::optional<std::string>> _names;
+        std::vector<std::unique_ptr<detail::service>> _services;
+    };
+
+
     /// @brief Models a gRPC server powered by Bond services.
     ///
     /// Servers are configured and started via bond::ext:gRPC::server::Start.
@@ -74,31 +120,43 @@ namespace bond { namespace ext { namespace gRPC
         template <typename... Services>
         static server Start(grpc::ServerBuilder& builder, std::unique_ptr<Services>... services)
         {
-            return starter{ builder }.Start(std::move(services)...);
+            service_collection all;
+            all.Add(std::move(services)...);
+            return Start(builder, std::move(all));
         }
 
         /// @brief Builds and returns a running server which is ready to process calls
         /// for the provided services.
-        template <typename Service>
-        static server Start(grpc::ServerBuilder& builder, std::vector<std::unique_ptr<Service>> services)
+        static server Start(grpc::ServerBuilder& builder, service_collection services)
         {
-            return starter{ builder }.Start(std::move(services));
-        }
+            auto cq = builder.AddCompletionQueue();
 
-        /// @brief Builds and returns a running server which is ready to process calls
-        /// for the provided services.
-        template <typename... Services>
-        static server Start(grpc::ServerBuilder& builder, named_service<Services>... namedServices)
-        {
-            return starter{ builder }.Start(std::move(namedServices)...);
-        }
+            for (const auto& item : boost::combine(services.services(), services.names()))
+            {
+                auto& service = item.get<0>();
 
-        /// @brief Builds and returns a running server which is ready to process calls
-        /// for the provided services.
-        template <typename Service>
-        static server Start(grpc::ServerBuilder& builder, std::vector<named_service<Service>> namedServices)
-        {
-            return starter{ builder }.Start(std::move(namedServices));
+                if (const auto& host = item.get<1>())
+                {
+                    builder.RegisterService(host.value(), service->grpc_service());
+                }
+                else
+                {
+                    builder.RegisterService(service->grpc_service());
+                }
+
+                service->SetCompletionQueue(cq.get());
+            }
+
+            if (auto svr = builder.BuildAndStart())
+            {
+                return server{
+                    std::move(svr),
+                    std::move(services.services()),
+                    std::unique_ptr<io_manager>{ new io_manager{
+                        std::thread::hardware_concurrency(), /*delay=*/ false, std::move(cq) } } };
+            }
+
+            throw ServerBuildException{};
         }
 
         static server Start(grpc::ServerBuilder& builder) = delete;
@@ -141,8 +199,6 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     private:
-        class starter;
-
         server(
             std::unique_ptr<grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
@@ -168,119 +224,6 @@ namespace bond { namespace ext { namespace gRPC
         std::unique_ptr<grpc::Server> _server;
         std::vector<std::unique_ptr<detail::service>> _services;
         std::unique_ptr<io_manager> _ioManager;
-    };
-
-
-    class server::starter
-    {
-    public:
-        explicit starter(grpc::ServerBuilder& builder)
-            : _builder{ builder }
-        {}
-
-        template <typename... Services>
-        server Start(std::unique_ptr<Services>... services)
-        {
-            return Build(Register(Convert<std::unique_ptr<detail::service>>(std::move(services)...)));
-        }
-
-        template <typename Service>
-        server Start(std::vector<std::unique_ptr<Service>> services)
-        {
-            return Build(Register(Convert<std::unique_ptr<detail::service>>(std::move(services))));
-        }
-
-        template <typename... Services>
-        server Start(named_service<Services>... services)
-        {
-            return Build(Register(Convert<named_service<detail::service>>(std::move(services)...)));
-        }
-
-        template <typename Service>
-        server Start(std::vector<named_service<Service>> services)
-        {
-            return Build(Register(Convert<named_service<detail::service>>(std::move(services))));
-        }
-
-    private:
-        template <typename ServiceImpl, typename... Services>
-        static std::vector<ServiceImpl> Convert(Services... services)
-        {
-            std::vector<ServiceImpl> converted;
-            std::initializer_list<int>{
-                (converted.emplace_back(detail::service_cast(std::move(services))), 0)... };
-            return converted;
-        }
-
-        template <typename ServiceImpl, typename Service>
-        static std::vector<ServiceImpl> Convert(std::vector<Service> services)
-        {
-            std::vector<ServiceImpl> converted;
-            converted.reserve(services.size());
-
-            for (auto& s : services)
-            {
-                converted.push_back(detail::service_cast(std::move(s)));
-            }
-
-            return converted;
-        }
-
-        template <typename ServiceImpl>
-        static std::vector<ServiceImpl> Convert(std::vector<ServiceImpl> services)
-        {
-            return services;
-        }
-
-        std::vector<std::unique_ptr<detail::service>>
-        Register(std::vector<std::unique_ptr<detail::service>> services)
-        {
-            for (auto& service : services)
-            {
-                _builder.RegisterService(service->grpc_service());
-            }
-
-            return services;
-        }
-
-        std::vector<std::unique_ptr<detail::service>>
-        Register(std::vector<named_service<detail::service>> services)
-        {
-            std::vector<std::unique_ptr<detail::service>> converted;
-            converted.reserve(services.size());
-
-            for (auto& pair : services)
-            {
-                auto service = std::move(pair.second);
-                _builder.RegisterService(pair.first, service->grpc_service());
-                converted.push_back(std::move(service));
-            }
-
-            return converted;
-        }
-
-        server Build(std::vector<std::unique_ptr<detail::service>> services)
-        {
-            auto cq = _builder.AddCompletionQueue();
-
-            for (auto& service : services)
-            {
-                service->SetCompletionQueue(cq.get());
-            }
-
-            if (auto grpc_server = _builder.BuildAndStart())
-            {
-                return server{
-                    std::move(grpc_server),
-                    std::move(services),
-                    std::unique_ptr<io_manager>{ new io_manager{
-                        std::thread::hardware_concurrency(), /*delay=*/ false, std::move(cq) } } };
-            }
-
-            throw ServerBuildException{};
-        }
-
-        grpc::ServerBuilder& _builder;
     };
 
 } } } //namespace bond::ext::gRPC

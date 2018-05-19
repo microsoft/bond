@@ -58,9 +58,6 @@ namespace bond { namespace ext { namespace gRPC
         abstract_service() = default;
     };
 
-    template <typename Service>
-    using named_service = std::pair<std::string, std::unique_ptr<Service>>;
-
 namespace detail
 {
     /// @brief Base class that all Bond gRPC++ services implement.
@@ -250,20 +247,5 @@ namespace detail
         /// Individual state for one specific call to this method.
         std::unique_ptr<uc_impl> _receivedCall;
     };
-
-
-    template <typename Service>
-    inline std::unique_ptr<service> service_cast(std::unique_ptr<Service> s)
-    {
-        BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
-        return std::unique_ptr<service>{ static_cast<service*>(s.release()) };
-    }
-
-    template <typename Service>
-    inline named_service<service> service_cast(named_service<Service> ns)
-    {
-        BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
-        return named_service<service>{ std::move(ns.first), service_cast(std::move(ns.second)) };
-    }
 
 } } } } // namespace bond::ext::gRPC::detail
