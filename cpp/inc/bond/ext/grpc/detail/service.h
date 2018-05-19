@@ -263,7 +263,7 @@ namespace detail
     inline named_service<service> service_cast(named_service<Service> ns)
     {
         BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
-        return named_service<service>{ std::move(ns.first), static_cast<service*>(ns.second.release()) };
+        return named_service<service>{ std::move(ns.first), service_cast(std::move(ns.second)) };
     }
 
 } } } } // namespace bond::ext::gRPC::detail
