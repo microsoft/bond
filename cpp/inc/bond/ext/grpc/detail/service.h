@@ -35,6 +35,7 @@
 namespace bond { namespace ext { namespace gRPC
 {
 
+class server;
 class server_builder;
 
 namespace detail
@@ -50,6 +51,45 @@ namespace detail
     public:
         service(const service& other) = delete;
         service& operator=(const service& other) = delete;
+
+        /// @brief Provides access to the raw grpc::Service type.
+        ///
+        /// @note This method is for use by generated and helper code only.
+        grpc::Service* grpc_service()
+        {
+            return this;
+        }
+
+        Scheduler& scheduler()
+        {
+            return _scheduler;
+        }
+
+    private:
+        template <typename Request, typename Response>
+        class unary_call_data;
+
+    protected:
+        template <typename MethodT>
+        using Method = unary_call_data<
+            typename MethodT::input_type,
+            typename std::conditional<
+                std::is_void<typename MethodT::result_type>::value,
+                Void,
+                typename MethodT::result_type>::type>;
+
+        service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
+            : _scheduler{ scheduler },
+              _cq{ nullptr }
+        {
+            BOOST_ASSERT(_scheduler);
+
+            AddMethods(methodNames);
+        }
+
+    private:
+        friend class gRPC::server;
+        friend class gRPC::server_builder;
 
         /// @brief Starts the service.
         ///
@@ -87,54 +127,8 @@ namespace detail
             io_manager_tag* tag)
         {
             BOOST_ASSERT(_cq);
-
-            RequestAsyncUnary(
-                methodIndex,
-                context,
-                request,
-                responseStream,
-                _cq,
-                _cq,
-                tag);
+            RequestAsyncUnary(methodIndex, context, request, responseStream, _cq, _cq, tag);
         }
-
-        /// @brief Provides access to the raw grpc::Service type.
-        ///
-        /// @note This method is for use by generated and helper code only.
-        grpc::Service* grpc_service()
-        {
-            return this;
-        }
-
-        Scheduler& scheduler()
-        {
-            return _scheduler;
-        }
-
-    private:
-        template <typename Request, typename Response>
-        class unary_call_data;
-
-protected:
-    template <typename MethodT>
-    using Method = unary_call_data<
-        typename MethodT::input_type,
-        typename std::conditional<
-            std::is_void<typename MethodT::result_type>::value,
-            Void,
-            typename MethodT::result_type>::type>;
-
-        service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
-            : _scheduler{ scheduler },
-              _cq{ nullptr }
-        {
-            BOOST_ASSERT(_scheduler);
-
-            AddMethods(methodNames);
-        }
-
-    private:
-        friend class gRPC::server_builder;
 
         void AddMethods(std::initializer_list<const char*> names)
         {
