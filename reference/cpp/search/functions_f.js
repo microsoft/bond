@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['tag',['tag',['../structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html#a0f2e5b825e479417f71ccf6e82e4e793',1,'bond::ext::gRPC::detail::io_manager_tag']]],
-  ['thread_5fpool',['thread_pool',['../classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a489e275f7a462f38ad50d9320a92f081',1,'bond::ext::gRPC::thread_pool::thread_pool()'],['../classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html#a7d9942ec05f07af4582d8992154d7e96',1,'bond::ext::gRPC::thread_pool::thread_pool(unsigned int numThreads)']]]
+  ['unary_5fcall',['unary_call',['../classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#a1333007030f1f3e977411ecf620409c1',1,'bond::ext::gRPC::unary_call']]],
+  ['unary_5fcall_5fresult',['unary_call_result',['../classbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html#a5297da6a58a5d66a799f985a7c9a2995',1,'bond::ext::gRPC::unary_call_result']]],
+  ['unmarshal',['Unmarshal',['../namespacebond.html#af36ea3dea21b0e56bd37c018503f4210',1,'bond::Unmarshal(Buffer input, T &amp;obj)'],['../namespacebond.html#afe51d9bd184a8d8108485380861d8b33',1,'bond::Unmarshal(Buffer input)'],['../namespacebond.html#affc02b3be7b924616e5dbb3b1686960c',1,'bond::Unmarshal(Buffer input, bonded&lt; T &gt; &amp;obj)'],['../namespacebond.html#a95cd3b64329f45595366422ffd163e34',1,'bond::Unmarshal(Buffer input, T &amp;obj, const RuntimeSchema &amp;schema)'],['../namespacebond.html#a6061350106199d74c065cf74364d25e7',1,'bond::Unmarshal(Buffer input, const RuntimeSchema &amp;schema)'],['../namespacebond.html#a3cf518a34fca4473697a0b8880ec7451',1,'bond::Unmarshal(Buffer input, bonded&lt; T &gt; &amp;obj, const RuntimeSchema &amp;schema)']]]
 ];
