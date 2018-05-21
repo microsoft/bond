@@ -53,7 +53,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     /// the ref count, and allowing the remaining unary_call and
     /// shared_unary_call objects, if any, to control lifetime.
     template <typename Request, typename Response>
-    class unary_call_impl : io_manager_tag
+    class unary_call_impl final : io_manager_tag
     {
     public:
         unary_call_impl() = default;
@@ -198,8 +198,8 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         const unary_call_base<Request, Response>& impl() const noexcept
         {
-            return static_cast<unary_call_base<Request, Response>&>(
-                static_cast<Base<unary_call_base<Request, Response>>&>(*this));
+            return static_cast<const unary_call_base<Request, Response>&>(
+                static_cast<const Base<unary_call_base<Request, Response>>&>(*this));
         }
     };
 
