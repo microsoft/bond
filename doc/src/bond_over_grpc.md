@@ -231,7 +231,8 @@ ExampleRequest request;
 // Blocking version using std::future
 try
 {
-    ExampleResponse response = client.AsyncExampleMethod(request).get().response().Deserialize();
+    ExampleResponse response = client.AsyncExampleMethod(request)
+        .get().response().Deserialize();
     // Examine response here
 }
 catch (const bond::ext::gRPC::UnaryCallException& e)
