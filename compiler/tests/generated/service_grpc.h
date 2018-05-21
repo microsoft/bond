@@ -378,11 +378,6 @@ struct Foo final
                 })
         {}
 
-        void start() override
-        {
-            _data.emplace(*this);
-        }
-
         virtual void foo11(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
         virtual void foo12(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
         virtual void foo12_impl(::bond::ext::gRPC::unary_call< ::bond::Void, ::bond::Void>) = 0;
@@ -405,6 +400,11 @@ struct Foo final
         virtual void cq(::bond::ext::gRPC::unary_call< ::bond::Void, ::tests::BasicTypes>) = 0;
 
     private:
+        void start() override
+        {
+            _data.emplace(*this);
+        }
+
         struct data
         {
             explicit data(Service& s)

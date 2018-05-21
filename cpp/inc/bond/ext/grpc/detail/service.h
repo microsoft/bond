@@ -48,53 +48,6 @@ namespace detail
     class service : public abstract_service, private grpc::Service
     {
     public:
-        /// @brief Starts the service.
-        ///
-        /// @note This method is for use by generated and helper code only.
-        ///
-        /// Typical implementations call queue_receive on all the methods in the
-        /// service to kick of the process of receiving messages.
-        virtual void start() = 0;
-
-        /// @brief Starts the receive process for a method.
-        ///
-        /// @note This method is for use by generated and helper code only.
-        ///
-        /// When a request for the method has been received, \p tag will be
-        /// added to \p cq.
-        ///
-        /// @param methodIndex the index of the method (indices are assigned by
-        /// the order in which the methods are registered via calls to
-        /// AddMethod)
-        ///
-        /// @param context a fresh grpc::ServerContext for the call to populate
-        ///
-        /// @param request pointer to a request object to populate
-        ///
-        /// @param responseStream pointer to a response stream to populate
-        ///
-        /// @param tag the io_manager_tag to include with the completion queue
-        /// notification
-        template <typename Request>
-        void queue_receive(
-            int methodIndex,
-            grpc::ServerContext* context,
-            Request* request,
-            grpc::internal::ServerAsyncStreamingInterface* responseStream,
-            io_manager_tag* tag)
-        {
-            BOOST_ASSERT(_cq);
-
-            RequestAsyncUnary(
-                methodIndex,
-                context,
-                request,
-                responseStream,
-                _cq,
-                _cq,
-                tag);
-        }
-
         /// @brief Provides access to the raw grpc::Service type.
         ///
         /// @note This method is for use by generated and helper code only.
@@ -132,6 +85,45 @@ namespace detail
 
     private:
         friend class gRPC::server;
+
+        /// @brief Starts the service.
+        ///
+        /// @note This method is for use by generated and helper code only.
+        ///
+        /// Typical implementations call queue_receive on all the methods in the
+        /// service to kick of the process of receiving messages.
+        virtual void start() = 0;
+
+        /// @brief Starts the receive process for a method.
+        ///
+        /// @note This method is for use by generated and helper code only.
+        ///
+        /// When a request for the method has been received, \p tag will be
+        /// added to \p cq.
+        ///
+        /// @param methodIndex the index of the method (indices are assigned by
+        /// the order in which the methods are registered via calls to
+        /// AddMethod)
+        ///
+        /// @param context a fresh grpc::ServerContext for the call to populate
+        ///
+        /// @param request pointer to a request object to populate
+        ///
+        /// @param responseStream pointer to a response stream to populate
+        ///
+        /// @param tag the io_manager_tag to include with the completion queue
+        /// notification
+        template <typename Request>
+        void queue_receive(
+            int methodIndex,
+            grpc::ServerContext* context,
+            Request* request,
+            grpc::internal::ServerAsyncStreamingInterface* responseStream,
+            io_manager_tag* tag)
+        {
+            BOOST_ASSERT(_cq);
+            RequestAsyncUnary(methodIndex, context, request, responseStream, _cq, _cq, tag);
+        }
 
         void AddMethods(std::initializer_list<const char*> names)
         {

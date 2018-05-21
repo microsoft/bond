@@ -175,14 +175,6 @@ public:
 
 bool init_unit_test()
 {
-    // grpc allocates a bunch of stuff on-demand caused the leak tracker to
-    // report leaks. Disable it for this test.
-    boost::debug::detect_memory_leaks(false);
-
-    // Initialize the gRPC++ library
-    grpc::internal::GrpcLibraryInitializer initializer;
-    initializer.summon();
-
     io_managerTests::Initialize();
     return true;
 }

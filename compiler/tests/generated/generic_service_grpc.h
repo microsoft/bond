@@ -165,11 +165,6 @@ template <typename Payload>
                 })
         {}
 
-        void start() override
-        {
-            _data.emplace(*this);
-        }
-
         virtual void foo31(::bond::ext::gRPC::unary_call< Payload, ::bond::Void>) = 0;
         virtual void foo32(::bond::ext::gRPC::unary_call< ::bond::Void, Payload>) = 0;
         virtual void foo33(::bond::ext::gRPC::unary_call< Payload, Payload>) = 0;
@@ -177,6 +172,11 @@ template <typename Payload>
         virtual void ConsumesGeneric2(::bond::ext::gRPC::unary_call< ::tests::SomeBox<std::vector<int32_t> >, ::bond::Void>) = 0;
 
     private:
+        void start() override
+        {
+            _data.emplace(*this);
+        }
+
         struct data
         {
             explicit data(Service& s)

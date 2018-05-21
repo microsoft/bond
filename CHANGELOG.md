@@ -104,8 +104,9 @@ different versioning scheme, following the Haskell community's
     request type.
   - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to `Finish`.
   - The `grpc::Status` second argument has been removed from `bond::ext::gRPC::unary_call::Finish`.
-* gRPC v1.10.0 is now required to use Bond-over-gRPC.
+* gRPC v1.12.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
+    * This version include some Windows-specific performance improvements for loopback connections.
 * The `bond::ext::gRPC::wait_callback` has been deprecated in favor of additionally
   generated client functions that return `std::future`.
 * Fixed includes for gRPC services with events or parameterless methods.
@@ -162,8 +163,9 @@ different versioning scheme, following the Haskell community's
 * Bond Attributes on service methods are now present on all the client
   overloads for the methods. Previously, just the "friendly" method had the
   attributes.
-* Grpc.Core v1.10.0 is now required to use Bond-over-gRPC.
+* Grpc.Core v1.12.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
+    * This version include some Windows-specific performance improvements for loopback connections.
 * `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
   Core projects.
 * The .NET Standard assemblies are fully strong-name signed. Previously,
