@@ -15,16 +15,11 @@
 
 #include <boost/optional.hpp>
 
+#include <windows.h>        // TODO: Avoid including windows.h in public ones
+
 #include <memory>
 #include <system_error>
 #include <type_traits>
-
-// TODO: Avoid including windows headers in public ones
-#if _WIN32_WINNT >= 0x0602
-#include <threadpoolapiset.h>
-#else
-#include <windows.h>
-#endif
 
 namespace bond { namespace ext { namespace gRPC
 {
@@ -38,7 +33,6 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     } // namespace detail
-
 
     /// @brief Thread pool implementation based on Windows API.
     class win_thread_pool
