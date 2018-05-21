@@ -48,11 +48,23 @@ namespace bond { namespace ext { namespace gRPC
         }
 
         template <typename Service>
-        void Add(const boost::optional<std::string>& host, std::unique_ptr<Service> s)
+        void Add(const boost::optional<std::string>& host, std::unique_ptr<Service> svc)
         {
             BOOST_STATIC_ASSERT(std::is_base_of<abstract_service, Service>::value);
-            _names.push_back(host);
-            _services.emplace_back(static_cast<detail::service*>(s.release()));
+            BOOST_ASSERT(svc);
+
+            _services.emplace_back(static_cast<detail::service*>(svc.get()));
+            svc.release();
+
+            try
+            {
+                _names.push_back(host);
+            }
+            catch (...)
+            {
+                _services.pop_back();
+                throw;
+            }
         }
 
         std::vector<boost::optional<std::string>> _names;
