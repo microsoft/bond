@@ -200,10 +200,10 @@ const std::string server_address{ Host + ":" + Port };
 
 std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{ threadPool } };
 
-bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
-    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-    .RegisterService(std::move(service))
-    .BuildAndStart();
+grpc::ServerBuilder builder;
+builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
 ```
 
 At this point the server is ready to receive requests and route them to the
@@ -231,7 +231,8 @@ ExampleRequest request;
 // Blocking version using std::future
 try
 {
-    ExampleResponse response = client.AsyncExampleMethod(request).get().response().Deserialize();
+    ExampleResponse response = client.AsyncExampleMethod(request)
+        .get().response().Deserialize();
     // Examine response here
 }
 catch (const bond::ext::gRPC::UnaryCallException& e)

@@ -8,7 +8,7 @@
 #include "pingpong_types.h"
 
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
+#include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 
 #include "../../grpc/countdown_event.h"
@@ -99,10 +99,10 @@ int main()
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
 
-    auto server = bond::ext::gRPC::server_builder{}
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(std::move(service))
-        .BuildAndStart();
+    grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+    auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
 
     printf("Server ready\n");
     fflush(stdout);

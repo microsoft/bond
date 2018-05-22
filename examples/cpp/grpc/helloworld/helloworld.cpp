@@ -3,7 +3,6 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -12,10 +11,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
-using grpc::Channel;
-using grpc::ServerBuilder;
-using grpc::Status;
 
 using namespace helloworld;
 
@@ -46,10 +41,10 @@ int main()
 
     const std::string server_address("127.0.0.1:50051");
 
-    auto server = bond::ext::gRPC::server_builder{}
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(std::move(service))
-        .BuildAndStart();
+    grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+    auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
 
     Greeter::Client greeter(
         grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),

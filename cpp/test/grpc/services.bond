@@ -16,3 +16,13 @@ service SimpleService
 
     nothing NothingToNothing();
 }
+
+service Service1
+{
+    nothing Tick();
+}
+
+service Service2
+{
+    nothing Tick();
+}

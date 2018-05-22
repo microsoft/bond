@@ -9,6 +9,7 @@
 #include "io_manager_tag.h"
 #include "payload.h"
 
+#include <bond/ext/grpc/abstract_service.h>
 #include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -35,8 +36,7 @@
 
 namespace bond { namespace ext { namespace gRPC
 {
-
-class server_builder;
+    class server;
 
 namespace detail
 {
@@ -46,11 +46,43 @@ namespace detail
     ///
     /// Helper class that codegen uses to generate abstract service classes,
     /// which a bond::ext::gRPC::server then hosts multiple services.
-    class service : private grpc::Service
+    class service : public abstract_service, private grpc::Service
     {
     public:
-        service(const service& other) = delete;
-        service& operator=(const service& other) = delete;
+        /// @brief Provides access to the raw grpc::Service type.
+        ///
+        /// @note This method is for use by generated and helper code only.
+        grpc::Service* grpc_service()
+        {
+            return this;
+        }
+
+        Scheduler& scheduler()
+        {
+            return _scheduler;
+        }
+
+    private:
+        template <typename Request, typename Response>
+        class unary_call_data;
+
+    protected:
+        template <typename MethodT>
+        using Method = unary_call_data<
+            typename MethodT::input_type,
+            typename MethodT::result_type>;
+
+        service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
+            : _scheduler{ scheduler },
+              _cq{ nullptr }
+        {
+            BOOST_ASSERT(_scheduler);
+
+            AddMethods(methodNames);
+        }
+
+    private:
+        friend class gRPC::server;
 
         /// @brief Starts the service.
         ///
@@ -88,51 +120,8 @@ namespace detail
             io_manager_tag* tag)
         {
             BOOST_ASSERT(_cq);
-
-            RequestAsyncUnary(
-                methodIndex,
-                context,
-                request,
-                responseStream,
-                _cq,
-                _cq,
-                tag);
+            RequestAsyncUnary(methodIndex, context, request, responseStream, _cq, _cq, tag);
         }
-
-        /// @brief Provides access to the raw grpc::Service type.
-        ///
-        /// @note This method is for use by generated and helper code only.
-        grpc::Service* grpc_service()
-        {
-            return this;
-        }
-
-        Scheduler& scheduler()
-        {
-            return _scheduler;
-        }
-
-    private:
-        template <typename Request, typename Response>
-        class unary_call_data;
-
-protected:
-    template <typename MethodT>
-    using Method = unary_call_data<
-        typename MethodT::input_type,
-        typename MethodT::result_type>;
-
-        service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
-            : _scheduler{ scheduler },
-              _cq{ nullptr }
-        {
-            BOOST_ASSERT(_scheduler);
-
-            AddMethods(methodNames);
-        }
-
-    private:
-        friend class gRPC::server_builder;
 
         void AddMethods(std::initializer_list<const char*> names)
         {
