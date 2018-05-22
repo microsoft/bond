@@ -104,6 +104,11 @@ different versioning scheme, following the Haskell community's
     request type.
   - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to `Finish`.
   - The `grpc::Status` second argument has been removed from `bond::ext::gRPC::unary_call::Finish`.
+  - Fixed `bond::ext::gRPC::unary_call`, `bond::ext::gRPC::shared_unary_call` and
+    `bond::ext::gRPC::unary_call_result` types to properly use `void` and
+    `bond::reflection::nothing` instead of `bond::Void` empty struct. Also removed unnecessary
+    functions from `unary_call` and `shared_unary_call` for those cases when they are not applicable
+    (e.g. `Finish` is not available when return type is `nothing`).
 * gRPC v1.12.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
     * This version include some Windows-specific performance improvements for loopback connections.

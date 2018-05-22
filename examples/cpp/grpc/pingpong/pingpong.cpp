@@ -69,7 +69,7 @@ private:
         call.Finish(reply);
     }
 
-    void PingNoPayload(bond::ext::gRPC::unary_call<bond::Void, PingReply> call) override
+    void PingNoPayload(bond::ext::gRPC::unary_call<void, PingReply> call) override
     {
         PingReply reply;
         reply.message = "ping pong";
@@ -80,34 +80,28 @@ private:
         call.Finish(reply);
     }
 
-    void PingNoResponse(bond::ext::gRPC::unary_call<PingRequest, bond::Void> call) override
+    void PingNoResponse(bond::ext::gRPC::unary_call<PingRequest, bond::reflection::nothing> call) override
     {
         PingRequest request = call.request().Deserialize();
-
-        // TODO: the current implementation requires that we respond with empty data.
-        // This will be fixed in a later release.
-        call.Finish();
-
         pingNoResponse_event->set();
     }
 
-    void PingVoid(bond::ext::gRPC::unary_call<bond::Void, bond::Void> call) override
+    void PingVoid(bond::ext::gRPC::unary_call<void, void> call) override
     {
-        // TODO: the current implementation requires that we respond with empty data.
-        // This will be fixed in a later release.
         call.Finish();
     }
 
-    void PingEventVoid(bond::ext::gRPC::unary_call<bond::Void, bond::Void> call) override
-    {
-        // TODO: the current implementation requires that we respond with empty data.
-        // This will be fixed in a later release.
-        call.Finish();
-    }
+    void PingEventVoid(bond::ext::gRPC::unary_call<void, bond::reflection::nothing> call) override
+    {}
 
     void PingShouldThrow(bond::ext::gRPC::unary_call<PingRequest, PingReply> call) override
     {
         call.Finish({ grpc::StatusCode::CANCELLED, "do not want to respond" });
+    }
+
+    void PingEmpty(bond::ext::gRPC::unary_call<bond::Void, bond::Void> call) override
+    {
+        call.Finish(call.request());
     }
 };
 
@@ -141,8 +135,15 @@ void assertResponseContents(const bond::ext::gRPC::unary_call_result<PingReply>&
     }
 }
 
-void assertResponseContents(const bond::ext::gRPC::unary_call_result<bond::Void>&, size_t)
-{}
+void assertResponseContents(const bond::ext::gRPC::unary_call_result<void>& result, size_t)
+{
+    (void)result.context(), result.status();
+}
+
+void assertResponseContents(const bond::ext::gRPC::unary_call_result<bond::Void>& result, size_t)
+{
+    (void)result.context(), result.status(), result.response();
+}
 
 template <typename T>
 boost::optional<T> getResponse(grpc::StatusCode expected, std::future<T> result, size_t line)
@@ -270,6 +271,8 @@ int main()
     assertResponseCanceled(doublePing.AsyncPingShouldThrow(request), __LINE__);
 
     assertResponseReceived(pingPong.AsyncPing(request), __LINE__);
+
+    assertResponseReceived(doublePing.AsyncPingEmpty(bond::Void{}), __LINE__);
 
     return 0;
 }

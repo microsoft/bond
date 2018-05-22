@@ -7,6 +7,7 @@
 
 #include "bond_utils.h"
 #include "io_manager_tag.h"
+#include "payload.h"
 
 #include <bond/ext/grpc/abstract_service.h>
 #include <bond/ext/grpc/scheduler.h>
@@ -69,10 +70,7 @@ namespace detail
         template <typename MethodT>
         using Method = unary_call_data<
             typename MethodT::input_type,
-            typename std::conditional<
-                std::is_void<typename MethodT::result_type>::value,
-                Void,
-                typename MethodT::result_type>::type>;
+            typename MethodT::result_type>;
 
         service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
             : _scheduler{ scheduler },
@@ -189,7 +187,9 @@ namespace detail
         }
 
     private:
-        using uc_impl = unary_call_impl<Request, Response>;
+        using uc_impl = unary_call_impl<
+            typename payload<Request>::type,
+            typename payload<Response>::type>;
 
         boost::intrusive_ptr<uc_impl> queue_receive()
         {

@@ -28,19 +28,13 @@ public:
     using ScalarMethods::Service::Service;
 
 private:
-    void Negate(
-        bond::ext::gRPC::unary_call<
-            bond::Box<int32_t>,
-            bond::Box<int32_t>> call) override
+    void Negate(bond::ext::gRPC::unary_call<bond::Box<int32_t>, bond::Box<int32_t>> call) override
     {
         bond::Box<int32_t> request = call.request().Deserialize();
         call.Finish(bond::make_box(-request.value));
     }
 
-    void Sum(
-        bond::ext::gRPC::unary_call<
-            bond::Box<std::vector<uint64_t>>,
-            bond::Box<uint64_t>> call) override
+    void Sum(bond::ext::gRPC::unary_call<bond::Box<std::vector<uint64_t>>, bond::Box<uint64_t>> call) override
     {
         bond::Box<std::vector<uint64_t>> request = call.request().Deserialize();
 

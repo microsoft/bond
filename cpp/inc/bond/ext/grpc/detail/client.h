@@ -7,6 +7,7 @@
 
 #include "bond_utils.h"
 #include "io_manager_tag.h"
+#include "payload.h"
 
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/io_manager.h>
@@ -84,14 +85,18 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             return Method{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
         }
 
-        template <typename Request = Void, typename Response = bonded<Void>>
+        template <typename Response = void, typename Request = Void>
         void dispatch(
             const grpc::internal::RpcMethod& method,
             std::shared_ptr<grpc::ClientContext> context,
             const std::function<void(unary_call_result<Response>)>& cb,
             const bonded<Request>& request = bonded<Request>{ Request{} })
         {
-            new unary_call_data<Request, Response>{
+            using call_data = unary_call_data<
+                typename payload<Request>::type,
+                typename payload<Response>::type>;
+
+            new call_data{
                 method,
                 request,
                 _ioManager->shared_cq(),
