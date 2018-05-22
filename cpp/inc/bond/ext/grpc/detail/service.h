@@ -8,6 +8,7 @@
 #include "bond_utils.h"
 #include "io_manager_tag.h"
 
+#include <bond/ext/grpc/abstract_service.h>
 #include <bond/ext/grpc/scheduler.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -34,9 +35,7 @@
 
 namespace bond { namespace ext { namespace gRPC
 {
-
-class server;
-class server_builder;
+    class server;
 
 namespace detail
 {
@@ -46,12 +45,9 @@ namespace detail
     ///
     /// Helper class that codegen uses to generate abstract service classes,
     /// which a bond::ext::gRPC::server then hosts multiple services.
-    class service : private grpc::Service
+    class service : public abstract_service, private grpc::Service
     {
     public:
-        service(const service& other) = delete;
-        service& operator=(const service& other) = delete;
-
         /// @brief Provides access to the raw grpc::Service type.
         ///
         /// @note This method is for use by generated and helper code only.
@@ -89,7 +85,6 @@ namespace detail
 
     private:
         friend class gRPC::server;
-        friend class gRPC::server_builder;
 
         /// @brief Starts the service.
         ///

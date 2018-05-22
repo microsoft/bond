@@ -85,24 +85,19 @@ different versioning scheme, following the Haskell community's
   - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool` implementation
     now use `operator()` instead of a `schedule()` member function.
   - The `bond::ext::gRPC::server_core` class template and the `bond::ext::gRPC::server`
-    convenience typedef have been replaced with the normal classes bond::ext::gRPC::server.
-  - The `bond::ext::gRPC::server_builder_core` class template and the
-    `bond::ext::gRPC::server_builder` convenience typedef have been replaced
-    with the normal class `bond::ext::gRPC::server_builder`.
+    convenience typedef have been replaced with the normal classes `bond::ext::gRPC::server`.
   - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
     as the last parameter instead of as the first.
   - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
     (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
     read-only getters rather than fields.
   - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
-  - The `bond::ext::gRPC::server_builder::BuildAndStart` now returns a plain
-    `bond::ext::gRPC::server` object.
-  - The `bond::ext::gRPC::server_builder::RegisterService` now only accepts service
-    instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
-  - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
-    implementations must now pass a `Scheduler` to the generated `Service` base class which
-    is no longer default constructible.
   - The `client_callback.h` header file has been renamed to `unary_call_result.h`.
+  - The `bond::ext::gRPC::server_builder` has been replaced by `bond::ext::gRPC::server::Start`
+    factory function which now returns plain `bond::ext::gRPC::server` object and accepts
+    service instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
+    Service implementations must now pass a `Scheduler` to the generated `Service` base class which
+    is no longer default constructible.
   - Generated method reflection information no longer uses redundant `bonded<T>` wrapper
     for `input_type` and `result_type` typedefs.
   - The `bond::ext::gRPC::unary_call` no longer requires `bonded<T>` wrapper for

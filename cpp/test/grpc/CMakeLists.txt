@@ -57,3 +57,8 @@ add_unit_test (unary_call.cpp)
 
 add_unit_test (wait_callback.cpp)
 target_link_libraries(wait_callback PRIVATE bond_apply)
+
+add_unit_test (server.cpp)
+target_include_directories(server
+    PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+add_dependencies(server grpc_test_services_codegen)
