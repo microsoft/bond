@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['abstract_5fservice',['abstract_service',['../classbond_1_1ext_1_1g_r_p_c_1_1abstract__service.html',1,'bond::ext::gRPC']]],
+  ['abstract_5fservice',['abstract_service',['../classbond_1_1ext_1_1grpc_1_1abstract__service.html',1,'bond::ext::grpc']]],
   ['allocator_5fholder',['allocator_holder',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20alloc_20_3e',['allocator_holder&lt; Alloc &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],
   ['allocator_5fholder_3c_20detail_3a_3aallocator_5ftype_3c_20t_20_3e_3a_3atype_20_3e',['allocator_holder&lt; detail::allocator_type&lt; T &gt;::type &gt;',['../classbond_1_1detail_1_1allocator__holder.html',1,'bond::detail']]],

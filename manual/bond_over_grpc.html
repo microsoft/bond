@@ -245,7 +245,7 @@ alphabetical order. -->
 
 <span class="kw">private</span>:
     <span class="dt">void</span> ExampleMethod(
-        bond::ext::gRPC::unary_call&lt;ExampleRequest, ExampleResponse&gt; call) <span class="kw">override</span>
+        bond::ext::grpc::unary_call&lt;ExampleRequest, ExampleResponse&gt; call) <span class="kw">override</span>
     {
         ExampleRequest request = call.request().Deserialize();
         ExampleResponse response;
@@ -256,7 +256,7 @@ alphabetical order. -->
     }
 }</code></pre></div>
 <p>This service implementation is hooked up to a gRPC server as follows:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bond::ext::gRPC::thread_pool threadPool;
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp">bond::ext::grpc::thread_pool threadPool;
 <span class="at">const</span> <span class="bu">std::</span>string server_address{ Host + <span class="st">&quot;:&quot;</span> + Port };
 
 <span class="bu">std::</span>unique_ptr&lt;ExampleServiceImpl&gt; service{ <span class="kw">new</span> ExampleServiceImpl{ threadPool } };
@@ -264,11 +264,11 @@ alphabetical order. -->
 grpc::ServerBuilder builder;
 builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 
-<span class="kw">auto</span> server = bond::ext::gRPC::server::Start(builder, <span class="bu">std::</span>move(service));</code></pre></div>
+<span class="kw">auto</span> server = bond::ext::grpc::server::Start(builder, <span class="bu">std::</span>move(service));</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
-<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
-bond::ext::gRPC::thread_pool threadPool;
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::grpc::io_manager&gt;();
+bond::ext::grpc::thread_pool threadPool;
 <span class="at">const</span> <span class="bu">std::</span>string server_address{ Host + <span class="st">&quot;:&quot;</span> + Port };
 
 Example::Client client{
@@ -286,7 +286,7 @@ Example::Client client{
         .get().response().Deserialize();
     <span class="co">// Examine response here</span>
 }
-<span class="cf">catch</span> (<span class="at">const</span> bond::ext::gRPC::UnaryCallException&amp; e)
+<span class="cf">catch</span> (<span class="at">const</span> bond::ext::grpc::UnaryCallException&amp; e)
 {
     <span class="co">// Examine e.status()</span>
 }
@@ -294,7 +294,7 @@ Example::Client client{
 <span class="co">// Async version with a callback</span>
 client.AsyncExampleMethod(
     request,
-    [](bond::ext::gRPC::unary_call_result&lt;ExampleResponse&gt; result)
+    [](bond::ext::grpc::unary_call_result&lt;ExampleResponse&gt; result)
     {
         <span class="cf">if</span> (result.status().ok())
         {

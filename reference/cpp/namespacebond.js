@@ -19,31 +19,31 @@ var namespacebond =
         [ "counter_base", "classbond_1_1ext_1_1detail_1_1counter__base.html", null ],
         [ "value_or_reference", "classbond_1_1ext_1_1detail_1_1value__or__reference.html", null ]
       ] ],
-      [ "gRPC", null, [
+      [ "grpc", null, [
         [ "detail", null, [
-          [ "client", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1client.html", null ],
-          [ "io_manager_tag", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1g_r_p_c_1_1detail_1_1io__manager__tag" ],
-          [ "service", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1service" ],
-          [ "unary_call_base", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base" ],
-          [ "unary_call_impl", "classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__impl.html", null ]
+          [ "client", "classbond_1_1ext_1_1grpc_1_1detail_1_1client.html", null ],
+          [ "io_manager_tag", "structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag" ],
+          [ "service", "classbond_1_1ext_1_1grpc_1_1detail_1_1service.html", "classbond_1_1ext_1_1grpc_1_1detail_1_1service" ],
+          [ "unary_call_base", "classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__base.html", "classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__base" ],
+          [ "unary_call_impl", "classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl.html", null ]
         ] ],
         [ "reflection", null, [
-          [ "MethodTemplate", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template" ]
+          [ "MethodTemplate", "structbond_1_1ext_1_1grpc_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1grpc_1_1reflection_1_1_method_template" ]
         ] ],
-        [ "abstract_service", "classbond_1_1ext_1_1g_r_p_c_1_1abstract__service.html", null ],
-        [ "InvalidThreadCount", "classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html", null ],
-        [ "io_manager", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager" ],
-        [ "MultipleInvocationException", "classbond_1_1ext_1_1g_r_p_c_1_1_multiple_invocation_exception.html", null ],
-        [ "scheduler", "classbond_1_1ext_1_1g_r_p_c_1_1scheduler.html", null ],
-        [ "server", "classbond_1_1ext_1_1g_r_p_c_1_1server.html", "classbond_1_1ext_1_1g_r_p_c_1_1server" ],
-        [ "ServerBuildException", "classbond_1_1ext_1_1g_r_p_c_1_1_server_build_exception.html", null ],
-        [ "service_collection", "classbond_1_1ext_1_1g_r_p_c_1_1service__collection.html", null ],
-        [ "shared_unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call" ],
-        [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
-        [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],
-        [ "unary_call_result", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call__result.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call__result" ],
-        [ "UnaryCallException", "classbond_1_1ext_1_1g_r_p_c_1_1_unary_call_exception.html", null ],
-        [ "wait_callback", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback.html", "classbond_1_1ext_1_1g_r_p_c_1_1wait__callback" ]
+        [ "abstract_service", "classbond_1_1ext_1_1grpc_1_1abstract__service.html", null ],
+        [ "InvalidThreadCount", "classbond_1_1ext_1_1grpc_1_1_invalid_thread_count.html", null ],
+        [ "io_manager", "classbond_1_1ext_1_1grpc_1_1io__manager.html", "classbond_1_1ext_1_1grpc_1_1io__manager" ],
+        [ "MultipleInvocationException", "classbond_1_1ext_1_1grpc_1_1_multiple_invocation_exception.html", null ],
+        [ "scheduler", "classbond_1_1ext_1_1grpc_1_1scheduler.html", null ],
+        [ "server", "classbond_1_1ext_1_1grpc_1_1server.html", "classbond_1_1ext_1_1grpc_1_1server" ],
+        [ "ServerBuildException", "classbond_1_1ext_1_1grpc_1_1_server_build_exception.html", null ],
+        [ "service_collection", "classbond_1_1ext_1_1grpc_1_1service__collection.html", null ],
+        [ "shared_unary_call", "classbond_1_1ext_1_1grpc_1_1shared__unary__call.html", "classbond_1_1ext_1_1grpc_1_1shared__unary__call" ],
+        [ "thread_pool", "classbond_1_1ext_1_1grpc_1_1thread__pool.html", "classbond_1_1ext_1_1grpc_1_1thread__pool" ],
+        [ "unary_call", "classbond_1_1ext_1_1grpc_1_1unary__call.html", "classbond_1_1ext_1_1grpc_1_1unary__call" ],
+        [ "unary_call_result", "classbond_1_1ext_1_1grpc_1_1unary__call__result.html", "classbond_1_1ext_1_1grpc_1_1unary__call__result" ],
+        [ "UnaryCallException", "classbond_1_1ext_1_1grpc_1_1_unary_call_exception.html", null ],
+        [ "wait_callback", "classbond_1_1ext_1_1grpc_1_1wait__callback.html", "classbond_1_1ext_1_1grpc_1_1wait__callback" ]
       ] ],
       [ "capped_allocator", "classbond_1_1ext_1_1capped__allocator.html", "classbond_1_1ext_1_1capped__allocator" ],
       [ "multi_threaded_counter", "classbond_1_1ext_1_1multi__threaded__counter.html", "classbond_1_1ext_1_1multi__threaded__counter" ],
