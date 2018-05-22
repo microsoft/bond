@@ -5,13 +5,14 @@
 
 #include <bond/core/config.h>
 
+#include "detail/lazy_bonded.h"
+
 #include <bond/core/bonded.h>
 
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/client_context.h>
 
 #include <memory>
-
 
 namespace bond { namespace ext { namespace grpc
 {
@@ -31,7 +32,7 @@ namespace bond { namespace ext { namespace grpc
         /// @param status The status.
         /// @param context the context under which the request is being executed.
         unary_call_result(
-            bonded<Void> /*response*/,
+            const ::grpc::ByteBuffer& /*responseBuffer*/,
             const ::grpc::Status& status,
             std::shared_ptr<::grpc::ClientContext> context)
             : _status(status),
@@ -64,18 +65,17 @@ namespace bond { namespace ext { namespace grpc
 #ifdef _MSC_VER
         unary_call_result() = default; // Workaround for a buggy std::promise in MSVC.
 #endif
-
         /// @brief Create a unary_call_result with the given values.
         ///
         /// @param response The response.
         /// @param status The status.
         /// @param context the context under which the request is being executed.
         unary_call_result(
-            bonded<Response> response,
+            const ::grpc::ByteBuffer& responseBuffer,
             const ::grpc::Status& status,
             std::shared_ptr<::grpc::ClientContext> context)
-            : unary_call_result<void>({}, status, std::move(context)),
-              _response(std::move(response))
+            : unary_call_result<void>(responseBuffer, status, std::move(context)),
+              _response{ responseBuffer }
         {}
 
         /// @brief The response received from the service.
@@ -84,13 +84,13 @@ namespace bond { namespace ext { namespace grpc
         /// may not contain an actual response. Consult the documentation for
         /// the service to determine under what conditions it sends back a
         /// response.
-        const bonded<Response>& response() const noexcept
+        const bonded<Response>& response() const
         {
-            return _response;
+            return _response.get();
         }
 
     private:
-        bonded<Response> _response;
+        detail::lazy_bonded<Response> _response;
     };
 
 } } } // namespace bond::ext::grpc

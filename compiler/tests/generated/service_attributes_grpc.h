@@ -53,11 +53,11 @@ struct Foo final
         }
         void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::Result>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::Result>> Asyncfoo(const ::tests::Param& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo(::bond::bonded< ::tests::Param>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::Result>(_mfoo, std::move(context), request);
         }
 
     private:
@@ -90,7 +90,7 @@ struct Foo final
             {}
 
             Service& _s;
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo> _m0{ _s, 0, ::std::bind(&Service::foo, &_s, ::std::placeholders::_1) };
+            ::bond::ext::grpc::detail::service::Method _m0{ _s, 0, ::bond::ext::grpc::detail::service::make_callback(&Service::foo, _s) };
         };
 
         ::boost::optional<data> _data;

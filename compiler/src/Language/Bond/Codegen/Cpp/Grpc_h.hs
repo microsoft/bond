@@ -193,11 +193,11 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<#{payload (methodTypeToMaybe methodResult)}>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_m#{methodName}, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<#{payload (methodTypeToMaybe methodResult)}>> Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<#{payload (methodTypeToMaybe methodResult)}>(_m#{methodName}, std::move(context), request);
         }|]
         publicProxyMethodDecl Event{methodInput = Void, ..} = [lt|void Async#{methodName}(::std::shared_ptr<::grpc::ClientContext> context = {})
         {
@@ -209,14 +209,14 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
         }
         void Async#{methodName}(const #{payload (methodTypeToMaybe methodInput)}& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Async#{methodName}(#{bonded (methodTypeToMaybe methodInput)}{request}, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_m#{methodName}, std::move(context), {}, request);
         }|]
 
         privateProxyMethodDecl f = [lt|const ::bond::ext::grpc::detail::client::Method _m#{methodName f}{ ::bond::ext::grpc::detail::client::make_method("/#{getDeclTypeName idl s}/#{methodName f}") };|]
 
         serviceMethodName f = [lt|"/#{getDeclTypeName idl s}/#{methodName f}"|]
 
-        serviceDataMember (index,f) = [lt|::bond::ext::grpc::detail::service::Method<#{typename}Schema::service::#{methodName f}> _m#{index}{ _s, #{index}, ::std::bind(&#{serviceName}::#{methodName f}, &_s, ::std::placeholders::_1) };|]
+        serviceDataMember (index,f) = [lt|::bond::ext::grpc::detail::service::Method _m#{index}{ _s, #{index}, ::bond::ext::grpc::detail::service::make_callback(&#{serviceName}::#{methodName f}, _s) };|]
 
         serviceVirtualMethod f = [lt|virtual void #{methodName f}(::bond::ext::grpc::unary_call<#{payload $ methodTypeToMaybe $ methodInput f}, #{resultType f}>) = 0;|]
 

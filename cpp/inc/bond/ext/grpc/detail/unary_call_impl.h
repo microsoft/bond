@@ -6,7 +6,8 @@
 #include <bond/core/config.h>
 
 #include "io_manager_tag.h"
-#include "payload.h"
+#include "lazy_bonded.h"
+#include "serialization.h"
 
 #include <bond/core/bonded.h>
 
@@ -52,7 +53,6 @@ namespace bond { namespace ext { namespace grpc { namespace detail
     /// completion queue, %invoke() calls %Release() on itself, decrementing
     /// the ref count, and allowing the remaining unary_call and
     /// shared_unary_call objects, if any, to control lifetime.
-    template <typename Request, typename Response>
     class unary_call_impl final : io_manager_tag
     {
     public:
@@ -68,32 +68,29 @@ namespace bond { namespace ext { namespace grpc { namespace detail
             return _context;
         }
 
-        const bonded<Request>& request() const noexcept
+        ::grpc::ByteBuffer& request_buffer() noexcept
         {
-            return _request;
+            return _requestBuffer;
         }
 
-        bonded<Request>& request() noexcept
-        {
-            return _request;
-        }
-
-        const ::grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() const noexcept
+        ::grpc::ServerAsyncResponseWriter<::grpc::ByteBuffer>& responder() noexcept
         {
             return _responder;
         }
 
-        ::grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() noexcept
+        template <typename T = Void>
+        void Finish(const T& response = {})
         {
-            return _responder;
+            Finish(bonded<T>{ boost::ref(response) });
         }
 
-        void Finish(const bonded<Response>& msg = bonded<Response>{ Response{} })
+        template <typename T>
+        void Finish(const bonded<T>& response)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, ::grpc::Status::OK, tag());
+                _responder.Finish(Serialize(response), ::grpc::Status::OK, tag());
             }
         }
 
@@ -162,8 +159,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         // A pointer to the context is passed to _responder when
         // constructing it, so this needs to be declared before _responder.
         ::grpc::ServerContext _context{};
-        bonded<Request> _request{};
-        ::grpc::ServerAsyncResponseWriter<bonded<Response>> _responder{ &_context };
+        ::grpc::ServerAsyncResponseWriter<::grpc::ByteBuffer> _responder{ &_context };
+        ::grpc::ByteBuffer _requestBuffer;
         std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
@@ -210,21 +207,33 @@ namespace bond { namespace ext { namespace grpc { namespace detail
     {
     public:
         /// @brief Get the request message for this call.
-        const bonded<Request>& request() const noexcept
+        const bonded<Request>& request() const
         {
-            return this->as_ucb().impl().request();
+            return _request.get();
         }
 
         /// @brief Get the request message for this call.
-        bonded<Request>& request() noexcept
+        bonded<Request>& request()
         {
-            return this->as_ucb().impl().request();
+            return _request.get();
         }
+
+    protected:
+        explicit unary_call_input_base(unary_call_impl& impl)
+            : _request{ impl.request_buffer() }
+        {}
+
+    private:
+        lazy_bonded<Request> _request;
     };
 
     template <typename Response>
     class unary_call_input_base<unary_call_base<void, Response>>
-    {};
+    {
+    protected:
+        explicit unary_call_input_base(unary_call_impl& /*impl*/)
+        {}
+    };
 
 
     template <typename Request, typename Response>
@@ -237,7 +246,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         /// Only the first call to \p Finish will be honored.
         void Finish(const Response& msg = {})
         {
-            Finish(bonded<Response>{ msg });
+            this->as_ucb().impl().Finish(msg);
         }
 
         /// @brief Responds to the client with the given message.
@@ -257,7 +266,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     protected:
-        void FinishEvent()
+        explicit unary_call_result_base(unary_call_impl& /*impl*/)
         {}
     };
 
@@ -283,7 +292,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     protected:
-        void FinishEvent()
+        explicit unary_call_result_base(unary_call_impl& /*impl*/)
         {}
     };
 
@@ -292,9 +301,9 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         : public unary_call_impl_base<unary_call_result_base<unary_call_base<Request, bond::reflection::nothing>>>
     {
     protected:
-        void FinishEvent()
+        explicit unary_call_result_base(unary_call_impl& impl)
         {
-            this->as_ucb().impl().Finish();
+            impl.Finish();
         }
     };
 
@@ -306,19 +315,14 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         : public unary_call_input_base<unary_call_base<Request, Response>>,
           public unary_call_result_base<unary_call_base<Request, Response>>
     {
-        using impl_type = unary_call_impl<
-            typename payload<Request>::type,
-            typename payload<Response>::type>;
-
     public:
         unary_call_base() = default;
 
-        explicit unary_call_base(boost::intrusive_ptr<impl_type> impl) noexcept
-            : _impl(std::move(impl))
-        {
-            BOOST_ASSERT(_impl);
-            this->FinishEvent();
-        }
+        explicit unary_call_base(boost::intrusive_ptr<unary_call_impl> impl) noexcept
+            : unary_call_base::unary_call_input_base(*impl),
+              unary_call_base::unary_call_result_base(*impl),
+              _impl(std::move(impl))
+        {}
 
         explicit operator bool() const noexcept
         {
@@ -347,19 +351,19 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         friend class unary_call_input_base<unary_call_base>;
         friend class unary_call_result_base<unary_call_base>;
 
-        impl_type& impl() noexcept
+        unary_call_impl& impl() noexcept
         {
             BOOST_ASSERT(_impl);
             return *_impl;
         }
 
-        const impl_type& impl() const noexcept
+        const unary_call_impl& impl() const noexcept
         {
             BOOST_ASSERT(_impl);
             return *_impl;
         }
 
-        boost::intrusive_ptr<impl_type> _impl;
+        boost::intrusive_ptr<unary_call_impl> _impl;
     };
 
 } } } } //namespace bond::ext::grpc::detail
