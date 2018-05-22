@@ -13,7 +13,7 @@ namespace bond
         struct nothing;
 
     } // namespace reflection
-    
+
 namespace ext { namespace gRPC { namespace detail
 {
     template <typename T>

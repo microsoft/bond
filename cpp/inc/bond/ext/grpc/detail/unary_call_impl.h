@@ -190,13 +190,13 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     class unary_call_impl_base<Base<unary_call_base<Request, Response>>>
     {
     protected:
-        unary_call_base<Request, Response>& impl() noexcept
+        unary_call_base<Request, Response>& as_ucb() noexcept
         {
             return static_cast<unary_call_base<Request, Response>&>(
                 static_cast<Base<unary_call_base<Request, Response>>&>(*this));
         }
 
-        const unary_call_base<Request, Response>& impl() const noexcept
+        const unary_call_base<Request, Response>& as_ucb() const noexcept
         {
             return static_cast<const unary_call_base<Request, Response>&>(
                 static_cast<const Base<unary_call_base<Request, Response>>&>(*this));
@@ -212,13 +212,13 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// @brief Get the request message for this call.
         const bonded<Request>& request() const noexcept
         {
-            return this->impl().impl().request();
+            return this->as_ucb().impl().request();
         }
 
         /// @brief Get the request message for this call.
         bonded<Request>& request() noexcept
         {
-            return this->impl().impl().request();
+            return this->as_ucb().impl().request();
         }
     };
 
@@ -245,7 +245,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// Only the first call to \p Finish will be honored.
         void Finish(const bonded<Response>& msg)
         {
-            this->impl().impl().Finish(msg);
+            this->as_ucb().impl().Finish(msg);
         }
 
         /// @brief Responds to the client with the given status and no message.
@@ -253,7 +253,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// Only the first call to \p Finish will be honored.
         void Finish(const grpc::Status& status)
         {
-            this->impl().impl().Finish(status);
+            this->as_ucb().impl().Finish(status);
         }
 
     protected:
@@ -271,7 +271,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// Only the first call to \p Finish will be honored.
         void Finish()
         {
-            this->impl().impl().Finish();
+            this->as_ucb().impl().Finish();
         }
 
         /// @brief Responds to the client with the given status and no message.
@@ -279,7 +279,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// Only the first call to \p Finish will be honored.
         void Finish(const grpc::Status& status)
         {
-            this->impl().impl().Finish(status);
+            this->as_ucb().impl().Finish(status);
         }
 
     protected:
@@ -294,7 +294,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     protected:
         void FinishEvent()
         {
-            this->impl().impl().Finish();
+            this->as_ucb().impl().Finish();
         }
     };
 
