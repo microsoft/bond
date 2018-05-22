@@ -19,7 +19,7 @@
 #include <mutex>
 
 
-namespace bond { namespace ext { namespace gRPC {
+namespace bond { namespace ext { namespace grpc {
 
 /// @brief A callback type that can be manually waited upon.
 ///
@@ -91,7 +91,7 @@ public:
     /// @brief Gets the status.
     ///
     /// @warning Blocks until this has been invoked.
-    const grpc::Status& status() const
+    const ::grpc::Status& status() const
     {
         wait();
         return _state->result->status();
@@ -100,7 +100,7 @@ public:
     /// @brief Gets the context.
     ///
     /// @warning Blocks until this has been invoked.
-    const std::shared_ptr<grpc::ClientContext>& context() const
+    const std::shared_ptr<::grpc::ClientContext>& context() const
     {
         wait();
         return _state->result->context();
@@ -120,4 +120,4 @@ private:
 /// This is a brief example showing how wait_callback can be used to
 /// synchronously get the result of invoking an async proxy method.
 
-} } } // bond::ext::gRPC
+} } } // bond::ext::grpc

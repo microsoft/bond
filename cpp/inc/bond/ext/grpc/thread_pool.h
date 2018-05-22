@@ -27,7 +27,7 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
 
 /// @brief Basic thread pool implementation.
@@ -95,4 +95,4 @@ private:
     std::shared_ptr<service> _service{ std::make_shared<service>() };
 };
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc

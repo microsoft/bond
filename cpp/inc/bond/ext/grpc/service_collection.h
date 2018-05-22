@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     /// @brief A collection of services that is used to construct a server.
     class service_collection final
@@ -71,4 +71,4 @@ namespace bond { namespace ext { namespace gRPC
         std::vector<std::unique_ptr<detail::service>> _services;
     };
 
-} } } //namespace bond::ext::gRPC
+} } } //namespace bond::ext::grpc

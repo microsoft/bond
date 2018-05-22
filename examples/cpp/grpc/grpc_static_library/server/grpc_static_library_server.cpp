@@ -36,7 +36,7 @@ public:
     using PingPong::Service::Service;
 
 private:
-    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingResponse> call) override
+    void Ping(bond::ext::grpc::unary_call<PingRequest, PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -71,15 +71,15 @@ int main()
     }
 
     { // Create and start a service
-        bond::ext::gRPC::thread_pool threadPool;
+        bond::ext::grpc::thread_pool threadPool;
         std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{ threadPool } };
 
         const std::string server_address("127.0.0.1:50051");
 
-        grpc::ServerBuilder builder;
-        builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+        ::grpc::ServerBuilder builder;
+        builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-        auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
+        auto server = bond::ext::grpc::server::Start(builder, std::move(service));
     }
 
     return 0;

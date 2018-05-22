@@ -27,7 +27,7 @@ struct Foo final
 
         public: struct service
         {
-            typedef struct : ::bond::ext::gRPC::reflection::MethodTemplate<Foo, ::tests::Param, ::tests::Result, &s_foo_metadata> {} foo;
+            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::Param, ::tests::Result, &s_foo_metadata> {} foo;
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -38,44 +38,44 @@ struct Foo final
         
     };
 
-    class Client : public ::bond::ext::gRPC::detail::client
+    class Client : public ::bond::ext::grpc::detail::client
     {
     public:
-        using ::bond::ext::gRPC::detail::client::client;
+        using ::bond::ext::grpc::detail::client::client;
 
-        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo(const ::bond::bonded< ::tests::Param>& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::Result>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            ::bond::ext::gRPC::detail::client::dispatch(_mfoo, std::move(context), cb, request);
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo, std::move(context), cb, request);
         }
-        std::future<::bond::ext::gRPC::unary_call_result< ::tests::Result>> Asyncfoo(const ::bond::bonded< ::tests::Param>& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        std::future<::bond::ext::grpc::unary_call_result<::tests::Result>> Asyncfoo(const ::bond::bonded< ::tests::Param>& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return ::bond::ext::gRPC::detail::client::dispatch<::tests::Result>(_mfoo, std::move(context), request);
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::Result>(_mfoo, std::move(context), request);
         }
-        void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::gRPC::unary_call_result< ::tests::Result>)>& cb, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        void Asyncfoo(const ::tests::Param& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::Result>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
             Asyncfoo(::bond::bonded< ::tests::Param>{request}, cb, ::std::move(context));
         }
-        ::std::future<::bond::ext::gRPC::unary_call_result< ::tests::Result>> Asyncfoo(const ::tests::Param& request, ::std::shared_ptr< ::grpc::ClientContext> context = {})
+        ::std::future<::bond::ext::grpc::unary_call_result<::tests::Result>> Asyncfoo(const ::tests::Param& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
             return Asyncfoo(::bond::bonded< ::tests::Param>{request}, ::std::move(context));
         }
 
     private:
-        const ::bond::ext::gRPC::detail::client::Method _mfoo{ ::bond::ext::gRPC::detail::client::make_method("/tests.Foo/foo") };
+        const ::bond::ext::grpc::detail::client::Method _mfoo{ ::bond::ext::grpc::detail::client::make_method("/tests.Foo/foo") };
     };
 
-    class Service : public ::bond::ext::gRPC::detail::service
+    class Service : public ::bond::ext::grpc::detail::service
     {
     public:
-        explicit Service(const ::bond::ext::gRPC::Scheduler& scheduler)
-            : ::bond::ext::gRPC::detail::service(
+        explicit Service(const ::bond::ext::grpc::Scheduler& scheduler)
+            : ::bond::ext::grpc::detail::service(
                 scheduler,
                 {
                     "/tests.Foo/foo"
                 })
         {}
 
-        virtual void foo(::bond::ext::gRPC::unary_call< ::tests::Param, ::tests::Result>) = 0;
+        virtual void foo(::bond::ext::grpc::unary_call<::tests::Param, ::tests::Result>) = 0;
 
     private:
         void start() override
@@ -90,7 +90,7 @@ struct Foo final
             {}
 
             Service& _s;
-            ::bond::ext::gRPC::detail::service::Method<Schema::service::foo> _m0{ _s, 0, ::std::bind(&Service::foo, &_s, ::std::placeholders::_1) };
+            ::bond::ext::grpc::detail::service::Method<Schema::service::foo> _m0{ _s, 0, ::std::bind(&Service::foo, &_s, ::std::placeholders::_1) };
         };
 
         ::boost::optional<data> _data;

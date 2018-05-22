@@ -10,7 +10,7 @@
 
 #include <utility>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     /// @brief A shared owner of the details of a single async, unary call.
     ///
@@ -56,4 +56,4 @@ namespace bond { namespace ext { namespace gRPC
         lhs.swap(rhs);
     }
 
-} } } //namespace bond::ext::gRPC
+} } } //namespace bond::ext::grpc

@@ -39,16 +39,16 @@
 #include <future>
 #include <memory>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail
+namespace bond { namespace ext { namespace grpc { namespace detail
 {
-    /// @brief Helper base class Bond gRPC++ clients.
+    /// @brief Helper base class Bond grpc++ clients.
     ///
     /// @note This class is for use by generated and helper code only.
     class client
     {
     public:
         client(
-            std::shared_ptr<grpc::ChannelInterface> channel,
+            std::shared_ptr<::grpc::ChannelInterface> channel,
             std::shared_ptr<io_manager> ioManager,
             const Scheduler& scheduler)
             : _channel{ std::move(channel) },
@@ -70,25 +70,25 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
     protected:
 #if !defined(__GNUC__) || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
-        using Method = grpc::internal::RpcMethod;
+        using Method = ::grpc::internal::RpcMethod;
 #else
         // Workaround for a bug in GCC < 7.2: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67054.
-        struct Method : grpc::internal::RpcMethod
+        struct Method : ::grpc::internal::RpcMethod
         {
-            using grpc::internal::RpcMethod::RpcMethod;
+            using ::grpc::internal::RpcMethod::RpcMethod;
             Method();
         };
 #endif
 
         Method make_method(const char* name) const
         {
-            return Method{ name, grpc::internal::RpcMethod::NORMAL_RPC, _channel };
+            return Method{ name, ::grpc::internal::RpcMethod::NORMAL_RPC, _channel };
         }
 
         template <typename Response = void, typename Request = Void>
         void dispatch(
-            const grpc::internal::RpcMethod& method,
-            std::shared_ptr<grpc::ClientContext> context,
+            const ::grpc::internal::RpcMethod& method,
+            std::shared_ptr<::grpc::ClientContext> context,
             const std::function<void(unary_call_result<Response>)>& cb,
             const bonded<Request>& request = bonded<Request>{ Request{} })
         {
@@ -101,15 +101,15 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
                 request,
                 _ioManager->shared_cq(),
                 _channel,
-                context ? std::move(context) : std::make_shared<grpc::ClientContext>(),
+                context ? std::move(context) : std::make_shared<::grpc::ClientContext>(),
                 _scheduler,
                 cb };
         }
 
         template <typename Response, typename Request = Void>
         std::future<unary_call_result<Response>> dispatch(
-            const grpc::internal::RpcMethod& method,
-            std::shared_ptr<grpc::ClientContext> context,
+            const ::grpc::internal::RpcMethod& method,
+            std::shared_ptr<::grpc::ClientContext> context,
             const bonded<Request>& request = bonded<Request>{ Request{} })
         {
             auto callback = std::make_shared<std::packaged_task<unary_call_result<Response>(unary_call_result<Response>)>>(
@@ -134,7 +134,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         }
 
     private:
-        std::shared_ptr<grpc::ChannelInterface> _channel;
+        std::shared_ptr<::grpc::ChannelInterface> _channel;
         std::shared_ptr<io_manager> _ioManager;
         Scheduler _scheduler;
     };
@@ -149,11 +149,11 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     public:
         template <typename Callback>
         unary_call_data(
-            const grpc::internal::RpcMethod& method,
+            const ::grpc::internal::RpcMethod& method,
             const bonded<Request>& request,
-            std::shared_ptr<grpc::CompletionQueue> cq,
-            std::shared_ptr<grpc::ChannelInterface> channel,
-            std::shared_ptr<grpc::ClientContext> context,
+            std::shared_ptr<::grpc::CompletionQueue> cq,
+            std::shared_ptr<::grpc::ChannelInterface> channel,
+            std::shared_ptr<::grpc::ClientContext> context,
             const Scheduler& scheduler,
             Callback&& cb)
             : _cq(std::move(cq)),
@@ -196,19 +196,19 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         }
 
         /// The completion port to post IO operations to.
-        std::shared_ptr<grpc::CompletionQueue> _cq;
+        std::shared_ptr<::grpc::CompletionQueue> _cq;
         /// The channel to send the request on.
-        std::shared_ptr<grpc::ChannelInterface> _channel;
+        std::shared_ptr<::grpc::ChannelInterface> _channel;
         /// @brief The client context under which the request was executed.
-        std::shared_ptr<grpc::ClientContext> _context;
+        std::shared_ptr<::grpc::ClientContext> _context;
         /// A response reader.
-        std::unique_ptr<grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+        std::unique_ptr<::grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
         /// The scheduler in which to invoke the callback.
         Scheduler _scheduler;
         /// @brief The response received from the service.
         bonded<Response> _response;
         /// @brief The status of the request.
-        grpc::Status _status;
+        ::grpc::Status _status;
         /// The user code to invoke when a response is received.
         std::function<void(unary_call_result<Response>)> _cb;
         /// A pointer to ourselves used to keep us alive while waiting to
@@ -216,4 +216,4 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         boost::intrusive_ptr<unary_call_data> _self;
     };
 
-} } } } // namespace bond::ext::gRPC::detail
+} } } } // namespace bond::ext::grpc::detail

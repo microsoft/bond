@@ -29,7 +29,7 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     namespace detail
     {
@@ -38,7 +38,7 @@ namespace bond { namespace ext { namespace gRPC
     } // namespace detail
 
     /// @brief Manages a pool of threads polling for work from the same
-    /// %grpc::CompletionQueue
+    /// %::grpc::CompletionQueue
     ///
     /// All of the tags enqueued in this completion queue must inherit from
     /// \ref detail::io_manager_tag. If not, the behavior is undefined.
@@ -62,8 +62,8 @@ namespace bond { namespace ext { namespace gRPC
         /// @param cq the completion queue to poll.
         ///
         /// @throws InvalidThreadCount when std::thread::hardware_concurrency returns 0.
-        explicit io_manager(unsigned int numThreads, bool delay = false, std::unique_ptr<grpc::CompletionQueue> cq = {})
-            : _cq{ cq ? std::move(cq) : std::unique_ptr<grpc::CompletionQueue>{ new grpc::CompletionQueue{} } },
+        explicit io_manager(unsigned int numThreads, bool delay = false, std::unique_ptr<::grpc::CompletionQueue> cq = {})
+            : _cq{ cq ? std::move(cq) : std::unique_ptr<::grpc::CompletionQueue>{ new ::grpc::CompletionQueue{} } },
               _threads{ numThreads }
         {
             if (_threads.empty())
@@ -88,7 +88,7 @@ namespace bond { namespace ext { namespace gRPC
         ///
         /// @note Ownership of the completion queue remains with the
         /// io_manager.
-        grpc::CompletionQueue* cq()
+        ::grpc::CompletionQueue* cq()
         {
             return _cq.get();
         }
@@ -117,7 +117,7 @@ namespace bond { namespace ext { namespace gRPC
         /// @brief Requests that the io_manager shutdown.
         ///
         /// @remarks If the io_manager is being used for by a
-        /// bond::ext::gRPC::server, that server needs to be shutdown first.
+        /// bond::ext::grpc::server, that server needs to be shutdown first.
         ///
         /// @remarks Can be called from multiple threads concurrently.
         void shutdown()
@@ -149,7 +149,7 @@ namespace bond { namespace ext { namespace gRPC
     private:
         friend class detail::client;
 
-        const std::shared_ptr<grpc::CompletionQueue>& shared_cq() const
+        const std::shared_ptr<::grpc::CompletionQueue>& shared_cq() const
         {
             return _cq;
         }
@@ -165,11 +165,11 @@ namespace bond { namespace ext { namespace gRPC
             }
         }
 
-        std::shared_ptr<grpc::CompletionQueue> _cq;
+        std::shared_ptr<::grpc::CompletionQueue> _cq;
         std::vector<boost::scoped_thread<>> _threads;
 
         std::atomic_flag _isShutdownRequested = ATOMIC_FLAG_INIT;
         bond::detail::once_flag _waitFlag{};
     };
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc

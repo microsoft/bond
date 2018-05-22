@@ -63,18 +63,18 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
-    /// @brief Models a gRPC server powered by Bond services.
+    /// @brief Models a grpc server powered by Bond services.
     ///
-    /// Servers are configured and started via bond::ext:gRPC::server::Start.
+    /// Servers are configured and started via bond::ext:grpc::server::Start.
     class server final
     {
     public:
         /// @brief Builds and returns a running server which is ready to process calls
         /// for the provided services.
         template <typename... Services>
-        static server Start(grpc::ServerBuilder& builder, std::unique_ptr<Services>... services)
+        static server Start(::grpc::ServerBuilder& builder, std::unique_ptr<Services>... services)
         {
             service_collection all;
             all.Add(std::move(services)...);
@@ -83,7 +83,7 @@ namespace bond { namespace ext { namespace gRPC
 
         /// @brief Builds and returns a running server which is ready to process calls
         /// for the provided services.
-        static server Start(grpc::ServerBuilder& builder, service_collection services)
+        static server Start(::grpc::ServerBuilder& builder, service_collection services)
         {
             auto cq = builder.AddCompletionQueue();
 
@@ -115,7 +115,7 @@ namespace bond { namespace ext { namespace gRPC
             throw ServerBuildException{};
         }
 
-        static server Start(grpc::ServerBuilder& builder) = delete;
+        static server Start(::grpc::ServerBuilder& builder) = delete;
 
         server(server&&) = default;
         server & operator=(server&&) = default;
@@ -156,7 +156,7 @@ namespace bond { namespace ext { namespace gRPC
 
     private:
         server(
-            std::unique_ptr<grpc::Server> server,
+            std::unique_ptr<::grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
             std::unique_ptr<io_manager> ioManager)
             : _server{ std::move(server) },
@@ -177,9 +177,9 @@ namespace bond { namespace ext { namespace gRPC
             }
         }
 
-        std::unique_ptr<grpc::Server> _server;
+        std::unique_ptr<::grpc::Server> _server;
         std::vector<std::unique_ptr<detail::service>> _services;
         std::unique_ptr<io_manager> _ioManager;
     };
 
-} } } //namespace bond::ext::gRPC
+} } } //namespace bond::ext::grpc

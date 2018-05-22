@@ -23,9 +23,9 @@
 #include <limits>
 #include <stdint.h>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail
+namespace bond { namespace ext { namespace grpc { namespace detail
 {
-    inline grpc::ByteBuffer to_byte_buffer(const OutputBuffer& output)
+    inline ::grpc::ByteBuffer to_byte_buffer(const OutputBuffer& output)
     {
         struct Buffers
             : boost::intrusive_ref_counter<Buffers>,
@@ -35,7 +35,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         boost::intrusive_ptr<Buffers> buffers{ new Buffers };
         output.GetBuffers(*buffers);
 
-        boost::container::small_vector<grpc::Slice, 8> slices;
+        boost::container::small_vector<::grpc::Slice, 8> slices;
         slices.reserve(buffers->size());
 
         for (blob& data : *buffers)
@@ -44,7 +44,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
             slices.emplace_back(
                 const_cast<void*>(data.data()), // The buffer is not expected to be modified, but
-                                                // we have to const_cast because grpc::Slice ctor
+                                                // we have to const_cast because ::grpc::Slice ctor
                                                 // only takes void*.
                 data.size(),
                 [](void* arg) { intrusive_ptr_release(static_cast<Buffers*>(arg)); },
@@ -53,11 +53,11 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             intrusive_ptr_add_ref(buffers.get());
         }
 
-        return grpc::ByteBuffer{ slices.data(), slices.size() };
+        return ::grpc::ByteBuffer{ slices.data(), slices.size() };
     }
 
     template <typename T>
-    inline grpc::Status Serialize(const bonded<T>& msg, grpc::ByteBuffer& buffer, bool& own_buffer)
+    inline ::grpc::Status Serialize(const bonded<T>& msg, ::grpc::ByteBuffer& buffer, bool& own_buffer)
     {
         OutputBuffer output;
         CompactBinaryWriter<OutputBuffer> writer(output);
@@ -67,17 +67,17 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         buffer = to_byte_buffer(output);
         own_buffer = true;
 
-        return grpc::Status::OK;
+        return ::grpc::Status::OK;
     }
 
     template <typename T>
-    inline grpc::Status Deserialize(grpc_byte_buffer* buffer, bonded<T>& msg)
+    inline ::grpc::Status Deserialize(grpc_byte_buffer* buffer, bonded<T>& msg)
     {
         const size_t bufferSize = grpc_byte_buffer_length(buffer);
         if (bufferSize > (std::numeric_limits<uint32_t>::max)())
         {
             grpc_byte_buffer_destroy(buffer);
-            return { grpc::StatusCode::INTERNAL, "Buffer is too large" };
+            return { ::grpc::StatusCode::INTERNAL, "Buffer is too large" };
         }
 
         auto buff = boost::make_shared_noinit<char[]>(bufferSize);
@@ -88,12 +88,12 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         if (!grpc_byte_buffer_reader_init(&reader, buffer))
         {
             grpc_byte_buffer_destroy(buffer);
-            return { grpc::StatusCode::INTERNAL, "Failed to init buffer reader" };
+            return { ::grpc::StatusCode::INTERNAL, "Failed to init buffer reader" };
         }
 
         for (grpc_slice grpc_s; grpc_byte_buffer_reader_next(&reader, &grpc_s) != 0;)
         {
-            grpc::Slice s{ grpc_s, grpc::Slice::STEAL_REF };
+            ::grpc::Slice s{ grpc_s, ::grpc::Slice::STEAL_REF };
             std::memcpy(dest, s.begin(), s.size());
             dest += s.size();
         }
@@ -103,16 +103,16 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         grpc_byte_buffer_reader_destroy(&reader);
         grpc_byte_buffer_destroy(buffer);
 
-        // TODO: create a Bond input stream over grpc::ByteBuffer to avoid
+        // TODO: create a Bond input stream over ::grpc::ByteBuffer to avoid
         // having to make this copy into a blob.
         blob data(buff, static_cast<uint32_t>(bufferSize));
         CompactBinaryReader<InputBuffer> cbreader(data);
         msg = bonded<T>(cbreader);
 
-        return grpc::Status::OK;
+        return ::grpc::Status::OK;
     }
 
-} } } } //namespace bond::ext::gRPC::detail
+} } } } //namespace bond::ext::grpc::detail
 
 namespace grpc
 {
@@ -125,10 +125,10 @@ namespace grpc
             BOOST_ASSERT(buffer);
             BOOST_ASSERT(own_buffer);
 
-            return bond::ext::gRPC::detail::Serialize(msg, *buffer, *own_buffer);
+            return bond::ext::grpc::detail::Serialize(msg, *buffer, *own_buffer);
         }
 
-        // TODO: Use grpc::ByteBuffer after https://github.com/grpc/grpc/issues/14880 is fixed.
+        // TODO: Use ::grpc::ByteBuffer after https://github.com/grpc/grpc/issues/14880 is fixed.
         static Status Deserialize(grpc_byte_buffer* buffer, bond::bonded<T>* msg)
         {
             BOOST_ASSERT(msg);
@@ -138,7 +138,7 @@ namespace grpc
                 return { StatusCode::INTERNAL, "No payload" };
             }
 
-            return bond::ext::gRPC::detail::Deserialize(buffer, *msg);
+            return bond::ext::grpc::detail::Deserialize(buffer, *msg);
         }
     };
 

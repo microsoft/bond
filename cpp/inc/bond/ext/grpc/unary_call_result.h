@@ -13,7 +13,7 @@
 #include <memory>
 
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     /// @brief The client-side results of a unary call.
     template <typename Response>
@@ -32,27 +32,27 @@ namespace bond { namespace ext { namespace gRPC
         /// @param context the context under which the request is being executed.
         unary_call_result(
             bonded<Void> /*response*/,
-            const grpc::Status& status,
-            std::shared_ptr<grpc::ClientContext> context)
+            const ::grpc::Status& status,
+            std::shared_ptr<::grpc::ClientContext> context)
             : _status(status),
               _context(std::move(context))
         {}
 
         /// @brief The status of the request.
-        const grpc::Status& status() const noexcept
+        const ::grpc::Status& status() const noexcept
         {
             return _status;
         }
 
         /// @brief The client context under which the request was executed.
-        const std::shared_ptr<grpc::ClientContext>& context() const noexcept
+        const std::shared_ptr<::grpc::ClientContext>& context() const noexcept
         {
             return _context;
         }
 
     private:
-        grpc::Status _status;
-        std::shared_ptr<grpc::ClientContext> _context;
+        ::grpc::Status _status;
+        std::shared_ptr<::grpc::ClientContext> _context;
     };
 
 
@@ -72,8 +72,8 @@ namespace bond { namespace ext { namespace gRPC
         /// @param context the context under which the request is being executed.
         unary_call_result(
             bonded<Response> response,
-            const grpc::Status& status,
-            std::shared_ptr<grpc::ClientContext> context)
+            const ::grpc::Status& status,
+            std::shared_ptr<::grpc::ClientContext> context)
             : unary_call_result<void>({}, status, std::move(context)),
               _response(std::move(response))
         {}
@@ -93,4 +93,4 @@ namespace bond { namespace ext { namespace gRPC
         bonded<Response> _response;
     };
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc
