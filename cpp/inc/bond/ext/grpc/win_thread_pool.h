@@ -28,7 +28,7 @@ namespace bond { namespace ext { namespace gRPC
         BOND_NORETURN void Win32Exception(const char* message)
         {
             throw std::system_error{
-                std::error_code{ static_cast<int>(GetLastError()), std::system_category() },
+                std::error_code{ static_cast<int>(::GetLastError()), std::system_category() },
                 message };
         }
 
@@ -81,45 +81,42 @@ namespace bond { namespace ext { namespace gRPC
         {
         public:
             impl(pool_type type, boost::optional<std::pair<uint32_t, uint32_t>> numThreads)
-                : _pool{ nullptr, CloseThreadpool },
-                  _group{ nullptr, CloseThreadpoolCleanupGroup }
+                : _env{ nullptr, ::DestroyThreadpoolEnvironment },
+                  _pool{ nullptr, ::CloseThreadpool },
+                  _group{ nullptr, ::CloseThreadpoolCleanupGroup }
             {
-                InitializeThreadpoolEnvironment(&_env);
+                ::InitializeThreadpoolEnvironment(&_envInst);
+                _env.reset(&_envInst);
 
                 if (type == pool_type::new_instance)
                 {
-                    _pool.reset(CreateThreadpool(nullptr));
+                    _pool.reset(::CreateThreadpool(nullptr));
                     if (!_pool)
                     {
                         detail::Win32Exception("Failed to create thread pool.");
                     }
 
-                    SetThreadpoolCallbackPool(&_env, _pool.get());
+                    ::SetThreadpoolCallbackPool(_env.get(), _pool.get());
                 }
 
-                _group.reset(CreateThreadpoolCleanupGroup());
+                _group.reset(::CreateThreadpoolCleanupGroup());
                 if (!_group)
                 {
                     detail::Win32Exception("Failed to create thread pool cleanup group.");
                 }
 
-                SetThreadpoolCallbackCleanupGroup(&_env, _group.get(), nullptr);
+                ::SetThreadpoolCallbackCleanupGroup(_env.get(), _group.get(), nullptr);
 
                 if (numThreads)
                 {
-                    if (!SetThreadpoolThreadMinimum(_pool.get(), static_cast<DWORD>(numThreads->first)))
-                    {
-                        detail::Win32Exception("Failed to set thread pool minimum number of threads.");
-                    }
-
-                    SetThreadpoolThreadMaximum(_pool.get(), static_cast<DWORD>(numThreads->second));
+                    SetThreadCount(static_cast<DWORD>(numThreads->first), static_cast<DWORD>(numThreads->second));
                 }
             }
 
             ~impl()
             {
-                CloseThreadpoolCleanupGroupMembers(_group.get(), FALSE, nullptr);
-                DestroyThreadpoolEnvironment(&_env);
+                // Wait for all callbacks to return without canceling pending once.
+                ::CloseThreadpoolCleanupGroupMembers(_group.get(), FALSE, nullptr);
             }
 
             impl(const impl& other) = delete;
@@ -132,13 +129,13 @@ namespace bond { namespace ext { namespace gRPC
 
                 std::unique_ptr<Func> func{ new Func{ std::forward<Callback>(callback) } };
 
-                if (!TrySubmitThreadpoolCallback(
-                        static_cast<PTP_SIMPLE_CALLBACK>([](PTP_CALLBACK_INSTANCE, PVOID context)
+                if (!::TrySubmitThreadpoolCallback(
+                        static_cast<::PTP_SIMPLE_CALLBACK>([](::PTP_CALLBACK_INSTANCE, PVOID context)
                         {
                             (*std::unique_ptr<Func>{ static_cast<Func*>(context) })();
                         }),
                         func.get(),
-                        &_env))
+                        _env.get()))
                 {
                     detail::Win32Exception("Failed to submit thread pool callback.");
                 }
@@ -147,9 +144,20 @@ namespace bond { namespace ext { namespace gRPC
             }
 
         private:
-            TP_CALLBACK_ENVIRON _env;
-            std::unique_ptr<TP_POOL, decltype(&CloseThreadpool)> _pool;
-            std::unique_ptr<TP_CLEANUP_GROUP, decltype(&CloseThreadpoolCleanupGroup)> _group;
+            void SetThreadCount(DWORD minThreads, DWORD maxThreads)
+            {
+                if (!::SetThreadpoolThreadMinimum(_pool.get(), static_cast<DWORD>(minThreads)))
+                {
+                    detail::Win32Exception("Failed to set thread pool minimum number of threads.");
+                }
+
+                ::SetThreadpoolThreadMaximum(_pool.get(), static_cast<DWORD>(maxThreads));
+            }
+
+            ::TP_CALLBACK_ENVIRON _envInst;
+            std::unique_ptr<::TP_CALLBACK_ENVIRON, decltype(&::DestroyThreadpoolEnvironment)> _env;
+            std::unique_ptr<::TP_POOL, decltype(&::CloseThreadpool)> _pool;
+            std::unique_ptr<::TP_CLEANUP_GROUP, decltype(&::CloseThreadpoolCleanupGroup)> _group;
         };
 
         explicit win_thread_pool(
