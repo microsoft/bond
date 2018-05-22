@@ -123,28 +123,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeecda7fa7777f1225a84fc175f0e21b3"><td class="memItemLeft" align="right" valign="top">grpc::ServerContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#aeecda7fa7777f1225a84fc175f0e21b3">context</a> () noexcept</td></tr>
 <tr class="memdesc:aeecda7fa7777f1225a84fc175f0e21b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the server context for this call.  <a href="#aeecda7fa7777f1225a84fc175f0e21b3">More...</a><br /></td></tr>
 <tr class="separator:aeecda7fa7777f1225a84fc175f0e21b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a5719abe1414f953ea16a358da38700"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classbond_1_1bonded.html">bonded</a>&lt; Request &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a1a5719abe1414f953ea16a358da38700">request</a> () const noexcept</td></tr>
-<tr class="memdesc:a1a5719abe1414f953ea16a358da38700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the request message for this call.  <a href="#a1a5719abe1414f953ea16a358da38700">More...</a><br /></td></tr>
-<tr class="separator:a1a5719abe1414f953ea16a358da38700"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9434279269a134bdce3026a4240d1713"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbond_1_1bonded.html">bonded</a>&lt; Request &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a9434279269a134bdce3026a4240d1713">request</a> () noexcept</td></tr>
-<tr class="memdesc:a9434279269a134bdce3026a4240d1713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the request message for this call.  <a href="#a9434279269a134bdce3026a4240d1713">More...</a><br /></td></tr>
-<tr class="separator:a9434279269a134bdce3026a4240d1713"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29f3272258dca569beb8c2e7a689cb20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a29f3272258dca569beb8c2e7a689cb20">Finish</a> (const Response &amp;msg={})</td></tr>
-<tr class="memdesc:a29f3272258dca569beb8c2e7a689cb20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Responds to the client with the given message.  <a href="#a29f3272258dca569beb8c2e7a689cb20">More...</a><br /></td></tr>
-<tr class="separator:a29f3272258dca569beb8c2e7a689cb20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32bbb61b082e295405435397b7be5edb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a32bbb61b082e295405435397b7be5edb">Finish</a> (const <a class="el" href="classbond_1_1bonded.html">bonded</a>&lt; Response &gt; &amp;msg)</td></tr>
-<tr class="memdesc:a32bbb61b082e295405435397b7be5edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Responds to the client with the given message.  <a href="#a32bbb61b082e295405435397b7be5edb">More...</a><br /></td></tr>
-<tr class="separator:a32bbb61b082e295405435397b7be5edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45817429e3c9fb998a61630c4e922987"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a45817429e3c9fb998a61630c4e922987">Finish</a> (const grpc::Status &amp;status)</td></tr>
-<tr class="memdesc:a45817429e3c9fb998a61630c4e922987"><td class="mdescLeft">&#160;</td><td class="mdescRight">Responds to the client with the given status and no message.  <a href="#a45817429e3c9fb998a61630c4e922987">More...</a><br /></td></tr>
-<tr class="separator:a45817429e3c9fb998a61630c4e922987"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename Request, typename Response&gt;<br />
 class bond::ext::gRPC::unary_call&lt; Request, Response &gt;</h3>
 
 <p>Exclusive owner of the details of a single async, unary call. </p>
-<p>Call <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html#a29f3272258dca569beb8c2e7a689cb20">Finish</a> or FinishWithError to send a response back to the client.</p>
+<p>Call Finish or FinishWithError to send a response back to the client.</p>
 <p>If no explicit call to <code>Finish</code> or <code>FinishWithError</code> has been made before this <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> instance is destroyed or moved from, a generic internal server error is sent.</p>
 <dl class="section note"><dt>Note</dt><dd>This class can only be moved. If shared ownership semantics are needed, convert this to a <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html">shared_unary_call</a> with the <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html#aeb8cc4dd80466daf09bd0e516ce5349f">share</a> function. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -234,157 +219,6 @@ template&lt;typename Request , typename Response &gt; </div>
 </div><div class="memdoc">
 
 <p>Get the server context for this call. </p>
-
-</div>
-</div>
-<a id="a29f3272258dca569beb8c2e7a689cb20"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29f3272258dca569beb8c2e7a689cb20">&#9670;&nbsp;</a></span>Finish() <span class="overload">[1/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Request , typename Response &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; Request, Response &gt;::Finish </td>
-          <td>(</td>
-          <td class="paramtype">const Response &amp;&#160;</td>
-          <td class="paramname"><em>msg</em> = <code>{}</code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Responds to the client with the given message. </p>
-<p>Only the first call to <code>Finish</code> will be honored. </p>
-
-</div>
-</div>
-<a id="a32bbb61b082e295405435397b7be5edb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32bbb61b082e295405435397b7be5edb">&#9670;&nbsp;</a></span>Finish() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Request , typename Response &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; Request, Response &gt;::Finish </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classbond_1_1bonded.html">bonded</a>&lt; Response &gt; &amp;&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Responds to the client with the given message. </p>
-<p>Only the first call to <code>Finish</code> will be honored. </p>
-
-</div>
-</div>
-<a id="a45817429e3c9fb998a61630c4e922987"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45817429e3c9fb998a61630c4e922987">&#9670;&nbsp;</a></span>Finish() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Request , typename Response &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; Request, Response &gt;::Finish </td>
-          <td>(</td>
-          <td class="paramtype">const grpc::Status &amp;&#160;</td>
-          <td class="paramname"><em>status</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Responds to the client with the given status and no message. </p>
-<p>Only the first call to <code>Finish</code> will be honored. </p>
-
-</div>
-</div>
-<a id="a1a5719abe1414f953ea16a358da38700"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a5719abe1414f953ea16a358da38700">&#9670;&nbsp;</a></span>request() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Request , typename Response &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classbond_1_1bonded.html">bonded</a>&lt;Request&gt;&amp; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; Request, Response &gt;::request </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the request message for this call. </p>
-
-</div>
-</div>
-<a id="a9434279269a134bdce3026a4240d1713"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9434279269a134bdce3026a4240d1713">&#9670;&nbsp;</a></span>request() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Request , typename Response &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classbond_1_1bonded.html">bonded</a>&lt;Request&gt;&amp; <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1detail_1_1unary__call__base.html">bond::ext::gRPC::detail::unary_call_base</a>&lt; Request, Response &gt;::request </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the request message for this call. </p>
 
 </div>
 </div>
