@@ -17,7 +17,7 @@ public:
     using Service1::Service::Service;
 
 private:
-    void Tick(bond::ext::gRPC::unary_call<bond::Void, bond::Void>) override
+    void Tick(bond::ext::gRPC::unary_call<void, bond::reflection::nothing>) override
     {}
 };
 
@@ -27,7 +27,7 @@ public:
     using Service2::Service::Service;
 
 private:
-    void Tick(bond::ext::gRPC::unary_call<bond::Void, bond::Void>) override
+    void Tick(bond::ext::gRPC::unary_call<void, bond::reflection::nothing>) override
     {}
 };
 
