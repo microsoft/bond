@@ -21,7 +21,7 @@ public:
     using Greeter::Service::Service;
 
 private:
-    void SayHello(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call) override
+    void SayHello(bond::ext::grpc::unary_call<HelloRequest, HelloReply> call) override
     {
         HelloRequest request = call.request().Deserialize();
 
@@ -34,20 +34,20 @@ private:
 
 int main()
 {
-    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    bond::ext::gRPC::thread_pool threadPool;
+    auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+    bond::ext::grpc::thread_pool threadPool;
 
     std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-    auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
+    auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 
     Greeter::Client greeter(
-        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+        ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials()),
         ioManager,
         threadPool);
 
@@ -68,7 +68,7 @@ int main()
     {
         result.get().response().Deserialize(reply);
     }
-    catch (const bond::ext::gRPC::UnaryCallException& e)
+    catch (const bond::ext::grpc::UnaryCallException& e)
     {
         std::cout << "request failed: " << e.status().error_message();
         return 1;

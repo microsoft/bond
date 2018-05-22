@@ -29,7 +29,7 @@ class BasicThreadPoolTests
 
     static void UseStdFunction()
     {
-        bond::ext::gRPC::thread_pool threads(1);
+        bond::ext::grpc::thread_pool threads(1);
         int sum = 0;
         unit_test::event sum_event;
 
@@ -45,7 +45,7 @@ class BasicThreadPoolTests
 
     static void UseLambda()
     {
-        bond::ext::gRPC::thread_pool threads(1);
+        bond::ext::grpc::thread_pool threads(1);
         int sum = 0;
         unit_test::event sum_event;
 
@@ -63,7 +63,7 @@ class BasicThreadPoolTests
 
     static void FinishAllTasksAfterDelete()
     {
-        boost::optional<bond::ext::gRPC::thread_pool> threads;
+        boost::optional<bond::ext::grpc::thread_pool> threads;
         threads.emplace(2);
 
         std::atomic<int> sum(0);

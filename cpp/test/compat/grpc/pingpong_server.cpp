@@ -32,7 +32,7 @@ class PingPongServiceImpl final : public PingPong::Service
 public:
     using PingPong::Service::Service;
 
-    void Ping(bond::ext::gRPC::unary_call<PingRequest, PingResponse> call) override
+    void Ping(bond::ext::grpc::unary_call<PingRequest, PingResponse> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -60,7 +60,7 @@ public:
 
                 NumErrorsReceived++;
 
-                call.Finish({ grpc::StatusCode::UNIMPLEMENTED, "Application Exception" });
+                call.Finish({ ::grpc::StatusCode::UNIMPLEMENTED, "Application Exception" });
                 Countdown.set();
                 break;
             }
@@ -70,14 +70,14 @@ public:
                 printf("Received unknown request \"%s\"\n", request.Payload.c_str());
                 fflush(stdout);
 
-                call.Finish({ grpc::StatusCode::UNIMPLEMENTED, "Unknown PingAction" });
+                call.Finish({ ::grpc::StatusCode::UNIMPLEMENTED, "Unknown PingAction" });
                 Countdown.set();
                 break;
             }
         }
     }
 
-    void PingEvent(bond::ext::gRPC::unary_call<PingRequest, bond::reflection::nothing> call) override
+    void PingEvent(bond::ext::grpc::unary_call<PingRequest, bond::reflection::nothing> call) override
     {
         PingRequest request = call.request().Deserialize();
 
@@ -93,16 +93,16 @@ public:
 
 int main()
 {
-    bond::ext::gRPC::thread_pool threadPool;
+    bond::ext::grpc::thread_pool threadPool;
 
     std::unique_ptr<PingPongServiceImpl> service{ new PingPongServiceImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
 
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-    auto server = bond::ext::gRPC::server::Start(builder, std::move(service));
+    auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 
     printf("Server ready\n");
     fflush(stdout);

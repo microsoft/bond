@@ -36,7 +36,7 @@
 #include <atomic>
 #include <utility>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail
+namespace bond { namespace ext { namespace grpc { namespace detail
 {
     /// @brief Implementation class that holds the state associated with a
     /// single async, unary call.
@@ -58,12 +58,12 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
     public:
         unary_call_impl() = default;
 
-        const grpc::ServerContext& context() const noexcept
+        const ::grpc::ServerContext& context() const noexcept
         {
             return _context;
         }
 
-        grpc::ServerContext& context() noexcept
+        ::grpc::ServerContext& context() noexcept
         {
             return _context;
         }
@@ -78,12 +78,12 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             return _request;
         }
 
-        const grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() const noexcept
+        const ::grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() const noexcept
         {
             return _responder;
         }
 
-        grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() noexcept
+        ::grpc::ServerAsyncResponseWriter<bonded<Response>>& responder() noexcept
         {
             return _responder;
         }
@@ -93,11 +93,11 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
             {
-                _responder.Finish(msg, grpc::Status::OK, tag());
+                _responder.Finish(msg, ::grpc::Status::OK, tag());
             }
         }
 
-        void Finish(const grpc::Status& status)
+        void Finish(const ::grpc::Status& status)
         {
             bool wasResponseSent = _responseSentFlag.test_and_set();
             if (!wasResponseSent)
@@ -135,7 +135,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
                 // The last user reference has just gone away, but Finish was
                 // not called. In this case, we are responsible for sending
                 // an error response and decrementing the final ref
-                // count. Finish with grpc::Status will schedule the send of the
+                // count. Finish with ::grpc::Status will schedule the send of the
                 // error response, and notification of completion of the
                 // send via invoke() will decrement the final ref count.
                 // Since we hold the ref count ourselves, we will not
@@ -144,7 +144,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
                 // Even when multiple threads enter this case, at most one
                 // will succeed in sending error, thanks to _responseSentFlag.
 
-                Finish({ grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
+                Finish({ ::grpc::StatusCode::INTERNAL, "An internal server error has occurred." });
             }
         }
 
@@ -161,9 +161,9 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
 
         // A pointer to the context is passed to _responder when
         // constructing it, so this needs to be declared before _responder.
-        grpc::ServerContext _context{};
+        ::grpc::ServerContext _context{};
         bonded<Request> _request{};
-        grpc::ServerAsyncResponseWriter<bonded<Response>> _responder{ &_context };
+        ::grpc::ServerAsyncResponseWriter<bonded<Response>> _responder{ &_context };
         std::atomic_flag _responseSentFlag = ATOMIC_FLAG_INIT; // Tracks whether any response has been sent yet.
         // The ref count intentionally starts at 1, because this instance
         // needs to keep itself alive until the response has finished being
@@ -251,7 +251,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// @brief Responds to the client with the given status and no message.
         ///
         /// Only the first call to \p Finish will be honored.
-        void Finish(const grpc::Status& status)
+        void Finish(const ::grpc::Status& status)
         {
             this->as_ucb().impl().Finish(status);
         }
@@ -277,7 +277,7 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         /// @brief Responds to the client with the given status and no message.
         ///
         /// Only the first call to \p Finish will be honored.
-        void Finish(const grpc::Status& status)
+        void Finish(const ::grpc::Status& status)
         {
             this->as_ucb().impl().Finish(status);
         }
@@ -332,13 +332,13 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         }
 
         /// @brief Get the server context for this call.
-        const grpc::ServerContext& context() const noexcept
+        const ::grpc::ServerContext& context() const noexcept
         {
             return impl().context();
         }
 
         /// @brief Get the server context for this call.
-        grpc::ServerContext& context() noexcept
+        ::grpc::ServerContext& context() noexcept
         {
             return impl().context();
         }
@@ -362,4 +362,4 @@ namespace bond { namespace ext { namespace gRPC { namespace detail
         boost::intrusive_ptr<impl_type> _impl;
     };
 
-} } } } //namespace bond::ext::gRPC::detail
+} } } } //namespace bond::ext::grpc::detail

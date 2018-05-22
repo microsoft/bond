@@ -20,11 +20,11 @@ using namespace PingPongNS;
 
 int main()
 {
-    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    bond::ext::gRPC::thread_pool threadPool;
+    auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+    bond::ext::grpc::thread_pool threadPool;
 
     const std::string server_address("127.0.0.1:" + std::to_string(Port));
-    auto channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
+    auto channel = ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials());
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -65,7 +65,7 @@ int main()
                     exit(1);
                 }
             }
-            catch (const bond::ext::gRPC::UnaryCallException& e)
+            catch (const bond::ext::grpc::UnaryCallException& e)
             {
                 printf("Error response received: %d\n", e.status().error_code());
                 printf("Client failed\n");
@@ -113,7 +113,7 @@ int main()
                 fflush(stdout);
                 exit(1);
             }
-            catch (const bond::ext::gRPC::UnaryCallException&)
+            catch (const bond::ext::grpc::UnaryCallException&)
             {}
         }
     }

@@ -14,7 +14,7 @@ namespace bond
 
     } // namespace reflection
 
-namespace ext { namespace gRPC { namespace detail
+namespace ext { namespace grpc { namespace detail
 {
     template <typename T>
     struct payload
@@ -33,4 +33,4 @@ namespace ext { namespace gRPC { namespace detail
         : payload<void>
     {};
 
-} } } } // namespace bond::ext::gRPC::detail
+} } } } // namespace bond::ext::grpc::detail

@@ -5,7 +5,7 @@
 
 #include <bond/core/config.h>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     namespace detail
     {
@@ -13,7 +13,7 @@ namespace bond { namespace ext { namespace gRPC
 
     } // namespace detail
 
-    /// @brief Base public class that all Bond gRPC++ services inherit.
+    /// @brief Base public class that all Bond grpc++ services inherit.
     class abstract_service
     {
     public:
@@ -28,4 +28,4 @@ namespace bond { namespace ext { namespace gRPC
         abstract_service() = default;
     };
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc

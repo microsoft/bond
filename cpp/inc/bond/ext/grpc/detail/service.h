@@ -34,25 +34,25 @@
 #include <functional>
 #include <memory>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     class server;
 
 namespace detail
 {
-    /// @brief Base class that all Bond gRPC++ services implement.
+    /// @brief Base class that all Bond grpc++ services implement.
     ///
     /// @note This class is for use by generated and helper code only.
     ///
     /// Helper class that codegen uses to generate abstract service classes,
-    /// which a bond::ext::gRPC::server then hosts multiple services.
-    class service : public abstract_service, private grpc::Service
+    /// which a bond::ext::grpc::server then hosts multiple services.
+    class service : public abstract_service, private ::grpc::Service
     {
     public:
-        /// @brief Provides access to the raw grpc::Service type.
+        /// @brief Provides access to the raw ::grpc::Service type.
         ///
         /// @note This method is for use by generated and helper code only.
-        grpc::Service* grpc_service()
+        ::grpc::Service* grpc_service()
         {
             return this;
         }
@@ -82,7 +82,7 @@ namespace detail
         }
 
     private:
-        friend class gRPC::server;
+        friend class grpc::server;
 
         /// @brief Starts the service.
         ///
@@ -103,7 +103,7 @@ namespace detail
         /// the order in which the methods are registered via calls to
         /// AddMethod)
         ///
-        /// @param context a fresh grpc::ServerContext for the call to populate
+        /// @param context a fresh ::grpc::ServerContext for the call to populate
         ///
         /// @param request pointer to a request object to populate
         ///
@@ -114,9 +114,9 @@ namespace detail
         template <typename Request>
         void queue_receive(
             int methodIndex,
-            grpc::ServerContext* context,
+            ::grpc::ServerContext* context,
             Request* request,
-            grpc::internal::ServerAsyncStreamingInterface* responseStream,
+            ::grpc::internal::ServerAsyncStreamingInterface* responseStream,
             io_manager_tag* tag)
         {
             BOOST_ASSERT(_cq);
@@ -129,23 +129,23 @@ namespace detail
             {
                 BOOST_ASSERT(name);
 
-                // ownership of the service method is transfered to grpc::Service
-                grpc::Service::AddMethod(
-                    new grpc::internal::RpcServiceMethod(
+                // ownership of the service method is transfered to ::grpc::Service
+                ::grpc::Service::AddMethod(
+                    new ::grpc::internal::RpcServiceMethod(
                         name,
-                        grpc::internal::RpcMethod::NORMAL_RPC,
+                        ::grpc::internal::RpcMethod::NORMAL_RPC,
                         nullptr)); // nullptr indicates async handler
             }
         }
 
-        void SetCompletionQueue(grpc::ServerCompletionQueue* cq)
+        void SetCompletionQueue(::grpc::ServerCompletionQueue* cq)
         {
             BOOST_ASSERT(!_cq);
             _cq = cq;
         }
 
         Scheduler _scheduler;
-        grpc::ServerCompletionQueue* _cq;
+        ::grpc::ServerCompletionQueue* _cq;
     };
 
     /// @brief Implementation class that hold the state associated with
@@ -219,4 +219,4 @@ namespace detail
         std::unique_ptr<uc_impl> _receivedCall;
     };
 
-} } } } // namespace bond::ext::gRPC::detail
+} } } } // namespace bond::ext::grpc::detail

@@ -17,7 +17,7 @@ public:
     using Service1::Service::Service;
 
 private:
-    void Tick(bond::ext::gRPC::unary_call<void, bond::reflection::nothing>) override
+    void Tick(bond::ext::grpc::unary_call<void, bond::reflection::nothing>) override
     {}
 };
 
@@ -27,7 +27,7 @@ public:
     using Service2::Service::Service;
 
 private:
-    void Tick(bond::ext::gRPC::unary_call<void, bond::reflection::nothing>) override
+    void Tick(bond::ext::grpc::unary_call<void, bond::reflection::nothing>) override
     {}
 };
 
@@ -37,35 +37,35 @@ const std::string server_address = "127.0.0.1:50051";
 
 BOOST_AUTO_TEST_CASE(SingleServiceStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
     BOOST_CHECK_NO_THROW(
-        bond::ext::gRPC::server::Start(
+        bond::ext::grpc::server::Start(
             builder,
             std::unique_ptr<Service1>{ new Service1{ scheduler } }));
 }
 
 BOOST_AUTO_TEST_CASE(SameServiceStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
     BOOST_CHECK_THROW(
-        bond::ext::gRPC::server::Start(
+        bond::ext::grpc::server::Start(
             builder,
             std::unique_ptr<Service1>{ new Service1{ scheduler } },
             std::unique_ptr<Service1>{ new Service1{ scheduler } }),
-        bond::ext::gRPC::ServerBuildException);
+        bond::ext::grpc::ServerBuildException);
 }
 
 BOOST_AUTO_TEST_CASE(ServicePackStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
     BOOST_CHECK_NO_THROW(
-        bond::ext::gRPC::server::Start(
+        bond::ext::grpc::server::Start(
             builder,
             std::unique_ptr<Service1>{ new Service1{ scheduler } },
             std::unique_ptr<Service2>{ new Service2{ scheduler } }));
@@ -73,14 +73,14 @@ BOOST_AUTO_TEST_CASE(ServicePackStartTest)
 
 BOOST_AUTO_TEST_CASE(AbstractServicePackStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
     BOOST_CHECK_NO_THROW(
-        bond::ext::gRPC::server::Start(
+        bond::ext::grpc::server::Start(
             builder,
-            std::unique_ptr<bond::ext::gRPC::abstract_service>{ new Service1{ scheduler } },
-            std::unique_ptr<bond::ext::gRPC::abstract_service>{ new Service2{ scheduler } }));
+            std::unique_ptr<bond::ext::grpc::abstract_service>{ new Service1{ scheduler } },
+            std::unique_ptr<bond::ext::grpc::abstract_service>{ new Service2{ scheduler } }));
 }
 
 const std::string n1 = "s1";
@@ -88,40 +88,40 @@ const std::string n2 = "s2";
 
 BOOST_AUTO_TEST_CASE(NamedServiceStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-    bond::ext::gRPC::service_collection services;
+    bond::ext::grpc::service_collection services;
     services.Add(n1, std::unique_ptr<Service1>{ new Service1{ scheduler } });
     services.Add(n2, std::unique_ptr<Service2>{ new Service2{ scheduler } });
 
-    BOOST_CHECK_NO_THROW(bond::ext::gRPC::server::Start(builder, std::move(services)));
+    BOOST_CHECK_NO_THROW(bond::ext::grpc::server::Start(builder, std::move(services)));
 }
 
 BOOST_AUTO_TEST_CASE(SameNameServiceStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-    bond::ext::gRPC::service_collection services;
+    bond::ext::grpc::service_collection services;
     services.Add(n1, std::unique_ptr<Service1>{ new Service1{ scheduler } });
     services.Add(n1, std::unique_ptr<Service1>{ new Service1{ scheduler } });
 
     BOOST_CHECK_THROW(
-        bond::ext::gRPC::server::Start(builder, std::move(services)),
-        bond::ext::gRPC::ServerBuildException);
+        bond::ext::grpc::server::Start(builder, std::move(services)),
+        bond::ext::grpc::ServerBuildException);
 }
 
 BOOST_AUTO_TEST_CASE(AbstractNamedServiceStartTest)
 {
-    grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 
-    bond::ext::gRPC::service_collection services;
-    services.Add(n1, std::unique_ptr<bond::ext::gRPC::abstract_service>{ new Service1{ scheduler } });
-    services.Add(n2, std::unique_ptr<bond::ext::gRPC::abstract_service>{ new Service2{ scheduler } });
+    bond::ext::grpc::service_collection services;
+    services.Add(n1, std::unique_ptr<bond::ext::grpc::abstract_service>{ new Service1{ scheduler } });
+    services.Add(n2, std::unique_ptr<bond::ext::grpc::abstract_service>{ new Service2{ scheduler } });
 
-    BOOST_CHECK_NO_THROW(bond::ext::gRPC::server::Start(builder, std::move(services)));
+    BOOST_CHECK_NO_THROW(bond::ext::grpc::server::Start(builder, std::move(services)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

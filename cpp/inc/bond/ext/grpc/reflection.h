@@ -7,7 +7,7 @@
 
 #include <bond/core/reflection.h>
 
-namespace bond { namespace ext { namespace gRPC { namespace reflection {
+namespace bond { namespace ext { namespace grpc { namespace reflection {
 
 
 /// @brief Method description in compile-time schema
@@ -41,4 +41,4 @@ const bond::Metadata&
     MethodTemplate<Service, Input, Result, metadata_ptr>::metadata = *metadata_ptr;
 
 
-} } } } // namespace bond::ext::gRPC::reflection
+} } } } // namespace bond::ext::grpc::reflection

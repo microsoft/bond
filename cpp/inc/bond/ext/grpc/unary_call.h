@@ -11,7 +11,7 @@
 
 #include <utility>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     template <typename Request, typename Response>
     class shared_unary_call;
@@ -62,4 +62,4 @@ namespace bond { namespace ext { namespace gRPC
         lhs.swap(rhs);
     }
 
-} } } //namespace bond::ext::gRPC
+} } } //namespace bond::ext::grpc

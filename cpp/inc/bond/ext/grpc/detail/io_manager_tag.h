@@ -5,7 +5,7 @@
 
 #include <bond/core/config.h>
 
-namespace bond { namespace ext { namespace gRPC { namespace detail {
+namespace bond { namespace ext { namespace grpc { namespace detail {
 
     /// @brief Interface for completion queue tag types that \ref io_manager
     /// expects.
@@ -35,4 +35,4 @@ namespace bond { namespace ext { namespace gRPC { namespace detail {
         }
     };
 
-} } } } // namespace bond::ext::gRPC::detail
+} } } } // namespace bond::ext::grpc::detail

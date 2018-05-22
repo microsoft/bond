@@ -145,6 +145,8 @@ different versioning scheme, following the Haskell community's
 * The use of `bond::check_method` has been replaced with less restricting expression
   SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
 * Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
+* The preferred namespace for Bond-over-gRPC is now `bond::ext::grpc`. The previous
+  namespace, `bond::ext::gRPC`, continues to work.
 
 ### C# ###
 

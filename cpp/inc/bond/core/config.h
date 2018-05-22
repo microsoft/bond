@@ -74,3 +74,11 @@
 #else
 #error BOND_DETAIL_HEADER_ONLY_INLINE is already defined
 #endif
+
+namespace bond { namespace ext
+{
+    namespace grpc {}
+
+    namespace gRPC = grpc;
+
+} } //namespace bond::ext
