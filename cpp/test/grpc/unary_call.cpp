@@ -14,8 +14,8 @@
 
 BOOST_AUTO_TEST_SUITE(UnaryCallTests)
 
-using bond::ext::gRPC::unary_call;
-using bond::ext::gRPC::shared_unary_call;
+using bond::ext::grpc::unary_call;
+using bond::ext::grpc::shared_unary_call;
 
 using unary_callBox = unary_call<bond::bonded<bond::Box<int32_t>>,
                                  bond::Box<int32_t>>;

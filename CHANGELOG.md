@@ -85,30 +85,30 @@ different versioning scheme, following the Haskell community's
   - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool` implementation
     now use `operator()` instead of a `schedule()` member function.
   - The `bond::ext::gRPC::server_core` class template and the `bond::ext::gRPC::server`
-    convenience typedef have been replaced with the normal classes bond::ext::gRPC::server.
-  - The `bond::ext::gRPC::server_builder_core` class template and the
-    `bond::ext::gRPC::server_builder` convenience typedef have been replaced
-    with the normal class `bond::ext::gRPC::server_builder`.
+    convenience typedef have been replaced with the normal classes `bond::ext::gRPC::server`.
   - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
     as the last parameter instead of as the first.
   - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
     (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
     read-only getters rather than fields.
   - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
-  - The `bond::ext::gRPC::server_builder::BuildAndStart` now returns a plain
-    `bond::ext::gRPC::server` object.
-  - The `bond::ext::gRPC::server_builder::RegisterService` now only accepts service
-    instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
-  - The `bond::ext::gRPC::server_builder::SetThreadPool` has been removed. Instead, service
-    implementations must now pass a `Scheduler` to the generated `Service` base class which
-    is no longer default constructible.
   - The `client_callback.h` header file has been renamed to `unary_call_result.h`.
+  - The `bond::ext::gRPC::server_builder` has been replaced by `bond::ext::gRPC::server::Start`
+    factory function which now returns plain `bond::ext::gRPC::server` object and accepts
+    service instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
+    Service implementations must now pass a `Scheduler` to the generated `Service` base class which
+    is no longer default constructible.
   - Generated method reflection information no longer uses redundant `bonded<T>` wrapper
     for `input_type` and `result_type` typedefs.
   - The `bond::ext::gRPC::unary_call` no longer requires `bonded<T>` wrapper for
     request type.
   - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to `Finish`.
   - The `grpc::Status` second argument has been removed from `bond::ext::gRPC::unary_call::Finish`.
+  - Fixed `bond::ext::gRPC::unary_call`, `bond::ext::gRPC::shared_unary_call` and
+    `bond::ext::gRPC::unary_call_result` types to properly use `void` and
+    `bond::reflection::nothing` instead of `bond::Void` empty struct. Also removed unnecessary
+    functions from `unary_call` and `shared_unary_call` for those cases when they are not applicable
+    (e.g. `Finish` is not available when return type is `nothing`).
 * gRPC v1.12.0 is now required to use Bond-over-gRPC.
     * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
     * This version include some Windows-specific performance improvements for loopback connections.
@@ -145,6 +145,8 @@ different versioning scheme, following the Haskell community's
 * The use of `bond::check_method` has been replaced with less restricting expression
   SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
 * Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
+* The preferred namespace for Bond-over-gRPC is now `bond::ext::grpc`. The previous
+  namespace, `bond::ext::gRPC`, continues to work.
 * Added Windows-specific implementation of a [thread pool](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686766(v=vs.85).aspx).
 
 ### C# ###

@@ -8,7 +8,7 @@
 // that the DLL and the programs that consume it have to use the same
 // version of Bond.
 //
-// This program tests the use of the gRPC client and service code.
+// This program tests the use of the grpc client and service code.
 
 // Must include the _apply.h file to use the pre-compiled routines;
 // otherwise they'll be expanded again in this compilation unit.
@@ -24,7 +24,6 @@
 #include <bond/core/reflection.h>
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 #include <bond/protocol/compact_binary.h>
@@ -35,12 +34,6 @@
 
 #include <boost/mpl/list.hpp>
 
-using grpc::Channel;
-
-using grpc::Server;
-using grpc::ServerBuilder;
-using grpc::ServerContext;
-
 using namespace examples::grpc_dll;
 
 class TestServiceImpl : public TestService<uint32_t>::Service
@@ -49,7 +42,7 @@ public:
     using TestService<uint32_t>::Service::Service;
 
 private:
-    void TestMethod(bond::ext::gRPC::unary_call<MyStruct, Item<uint32_t>> call) override
+    void TestMethod(bond::ext::grpc::unary_call<MyStruct, Item<uint32_t>> call) override
     {
         MyStruct request = call.request().Deserialize();
 
@@ -112,22 +105,23 @@ int main()
         boost::mpl::for_each<TestService<uint32_t>::Schema::methods>(print_metadata());
     }
 
-    { // Exercise gRPC facilities
-        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-        bond::ext::gRPC::thread_pool threadPool;
+    { // Exercise grpc facilities
+        auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+        bond::ext::grpc::thread_pool threadPool;
 
         const std::string server_address("127.0.0.1:50051");
 
         // Create and start a service instance
         std::unique_ptr<TestServiceImpl> service{ new TestServiceImpl{ threadPool } };
-        auto server = bond::ext::gRPC::server_builder{}
-            .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-            .RegisterService(std::move(service))
-            .BuildAndStart();
+
+        ::grpc::ServerBuilder builder;
+        builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+
+        auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 
         // Create a proxy
         TestService<uint32_t>::Client proxy(
-            grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+            ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials()),
             ioManager,
             threadPool);
     }

@@ -65,7 +65,7 @@ list (APPEND headers
     ${protocol_detail_headers}
     ${stream_headers})
 
-# gRPC-specific headers
+# grpc-specific headers
 if (BOND_ENABLE_GRPC)
     file (GLOB ext_grpc_headers "inc/bond/ext/grpc/*.h")
     source_group ("ext\\grpc" FILES ${ext_grpc_headers})

@@ -22,14 +22,14 @@ namespace wait_callback_tests
 {
     using test_struct_type = bond::Box<int>;
 
-    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::gRPC::unary_call_result<test_struct_type>>::value);
-    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::gRPC::unary_call_result<test_struct_type>>::value);
+    BOOST_STATIC_ASSERT(std::is_copy_constructible<bond::ext::grpc::unary_call_result<test_struct_type>>::value);
+    BOOST_STATIC_ASSERT(std::is_move_constructible<bond::ext::grpc::unary_call_result<test_struct_type>>::value);
 
-    using test_wait_callback = bond::ext::gRPC::wait_callback<test_struct_type>;
+    using test_wait_callback = bond::ext::grpc::wait_callback<test_struct_type>;
 
     static const int ANY_INT_VALUE = 100;
     static bond::bonded<test_struct_type> anyBondedValue;
-    static grpc::Status anyStatus;
+    static ::grpc::Status anyStatus;
 
     bond::bonded<test_struct_type> MakeAnyBonded()
     {
@@ -48,17 +48,17 @@ namespace wait_callback_tests
         return bond::bonded<test_struct_type>(reader);
     }
 
-    bond::ext::gRPC::unary_call_result<test_struct_type> MakeCallbackArg(
+    bond::ext::grpc::unary_call_result<test_struct_type> MakeCallbackArg(
         const bond::bonded<test_struct_type>& response,
-        const grpc::Status& status)
+        const ::grpc::Status& status)
     {
         // We don't want to create a real context to test against. When
         // there's a real context, it has to be cleaned up, but to properly
-        // clean it up, some globals in gRPC++ need to still be alive.
+        // clean it up, some globals in grpc++ need to still be alive.
         // However, we don't want to deal with making sure that the test
-        // globals and the gRPC++ globals are destroyed in the right order.
+        // globals and the grpc++ globals are destroyed in the right order.
         // Thus, we test with nullptr.
-        return bond::ext::gRPC::unary_call_result<test_struct_type>(response, status, nullptr);
+        return bond::ext::grpc::unary_call_result<test_struct_type>(response, status, nullptr);
     }
 
     void CallbackCapturesValues()
@@ -75,9 +75,9 @@ namespace wait_callback_tests
         test_wait_callback cb;
         cb(MakeCallbackArg(anyBondedValue, anyStatus));
 
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        auto args2 = MakeCallbackArg(anyBondedValue, ::grpc::Status::CANCELLED);
 
-        UT_AssertThrows(cb(std::move(args2)), bond::ext::gRPC::MultipleInvocationException);
+        UT_AssertThrows(cb(std::move(args2)), bond::ext::grpc::MultipleInvocationException);
 
         UT_AssertIsTrue(cb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(cb.status().ok());
@@ -90,9 +90,9 @@ namespace wait_callback_tests
 
         cb(MakeCallbackArg(anyBondedValue, anyStatus));
 
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        auto args2 = MakeCallbackArg(anyBondedValue, ::grpc::Status::CANCELLED);
 
-        UT_AssertThrows(otherCb(std::move(args2)), bond::ext::gRPC::MultipleInvocationException);
+        UT_AssertThrows(otherCb(std::move(args2)), bond::ext::grpc::MultipleInvocationException);
 
         UT_AssertIsTrue(otherCb.response().Deserialize().value == ANY_INT_VALUE);
         UT_AssertIsTrue(otherCb.status().ok());
@@ -101,7 +101,7 @@ namespace wait_callback_tests
     void CanBeConvertedToStdFunction()
     {
         test_wait_callback cb;
-        std::function<void(bond::ext::gRPC::unary_call_result<test_struct_type>)> f = cb;
+        std::function<void(bond::ext::grpc::unary_call_result<test_struct_type>)> f = cb;
 
         f(MakeCallbackArg(anyBondedValue, anyStatus));
 
@@ -126,7 +126,7 @@ namespace wait_callback_tests
         cb(MakeCallbackArg(anyBondedValue, anyStatus));
 
         test_wait_callback otherCb;
-        auto args2 = MakeCallbackArg(anyBondedValue, grpc::Status::CANCELLED);
+        auto args2 = MakeCallbackArg(anyBondedValue, ::grpc::Status::CANCELLED);
         otherCb(std::move(args2));
 
         UT_AssertIsTrue(!otherCb.status().ok());
@@ -174,7 +174,7 @@ namespace wait_callback_tests
     void Initialize()
     {
         anyBondedValue = MakeAnyBonded();
-        anyStatus = grpc::Status::OK;
+        anyStatus = ::grpc::Status::OK;
 
         UnitTestSuite suite("wait_callback");
         suite.AddTestCase(&CallbackCapturesValues, "CallbackCapturesValues");

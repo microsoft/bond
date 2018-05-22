@@ -26,8 +26,6 @@
 
 #include <memory>
 
-using grpc::Channel;
-
 using namespace examples::grpc_static_library;
 
 int main()
@@ -54,13 +52,13 @@ int main()
     }
 
     { // Initialize proxy
-        auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-        bond::ext::gRPC::thread_pool threadPool;
+        auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+        bond::ext::grpc::thread_pool threadPool;
 
         const std::string server_address("127.0.0.1:50051");
 
         PingPong::Client client(
-            grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+            ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials()),
             ioManager,
             threadPool);
     }

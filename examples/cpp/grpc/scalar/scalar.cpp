@@ -6,7 +6,6 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
 
@@ -20,10 +19,6 @@
 #include <memory>
 #include <string>
 
-using grpc::Channel;
-using grpc::ServerBuilder;
-using grpc::Status;
-
 using namespace scalar;
 
 // Logic and data behind the server's behavior.
@@ -33,19 +28,13 @@ public:
     using ScalarMethods::Service::Service;
 
 private:
-    void Negate(
-        bond::ext::gRPC::unary_call<
-            bond::Box<int32_t>,
-            bond::Box<int32_t>> call) override
+    void Negate(bond::ext::grpc::unary_call<bond::Box<int32_t>, bond::Box<int32_t>> call) override
     {
         bond::Box<int32_t> request = call.request().Deserialize();
         call.Finish(bond::make_box(-request.value));
     }
 
-    void Sum(
-        bond::ext::gRPC::unary_call<
-            bond::Box<std::vector<uint64_t>>,
-            bond::Box<uint64_t>> call) override
+    void Sum(bond::ext::grpc::unary_call<bond::Box<std::vector<uint64_t>>, bond::Box<uint64_t>> call) override
     {
         bond::Box<std::vector<uint64_t>> request = call.request().Deserialize();
 
@@ -63,7 +52,7 @@ template <typename T>
 void ValidateResponseOrDie(
     const char* what,
     const T& expected,
-    std::future<bond::ext::gRPC::unary_call_result<bond::Box<T>>> result)
+    std::future<bond::ext::grpc::unary_call_result<bond::Box<T>>> result)
 {
     if (result.wait_for(std::chrono::seconds(10)) == std::future_status::timeout)
     {
@@ -76,7 +65,7 @@ void ValidateResponseOrDie(
     {
         result.get().response().Deserialize(reply);
     }
-    catch (const bond::ext::gRPC::UnaryCallException& e)
+    catch (const bond::ext::grpc::UnaryCallException& e)
     {
         std::cout << "request failed: " << e.status().error_message();
         exit(1);
@@ -103,20 +92,20 @@ static void MakeSumRequest(ScalarMethods::Client& client)
 
 int main()
 {
-    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    bond::ext::gRPC::thread_pool threadPool;
+    auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+    bond::ext::grpc::thread_pool threadPool;
 
     std::unique_ptr<ScalarMethodsImpl> service{ new ScalarMethodsImpl{ threadPool } };
 
     const std::string server_address("127.0.0.1:50051");
 
-    auto server = bond::ext::gRPC::server_builder{}
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(std::move(service))
-        .BuildAndStart();
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+
+    auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 
     ScalarMethods::Client client(
-        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+        ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials()),
         ioManager,
         threadPool);
 

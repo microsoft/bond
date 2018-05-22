@@ -3,7 +3,6 @@
 
 #include <bond/ext/grpc/io_manager.h>
 #include <bond/ext/grpc/server.h>
-#include <bond/ext/grpc/server_builder.h>
 #include <bond/ext/grpc/shared_unary_call.h>
 #include <bond/ext/grpc/thread_pool.h>
 #include <bond/ext/grpc/unary_call.h>
@@ -22,7 +21,7 @@ class GreeterServiceImpl final : public Greeter::Service
     class PerRequestState
     {
     public:
-        explicit PerRequestState(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call)
+        explicit PerRequestState(bond::ext::grpc::unary_call<HelloRequest, HelloReply> call)
             : _call(std::move(call).share())
         { }
 
@@ -45,7 +44,7 @@ class GreeterServiceImpl final : public Greeter::Service
         // The thread pool implementation that we're using requires its
         // Callbacks to be copyable, so we switch to using
         // shared_unary_call, which is copyable.
-        bond::ext::gRPC::shared_unary_call<HelloRequest, HelloReply> _call;
+        bond::ext::grpc::shared_unary_call<HelloRequest, HelloReply> _call;
 
         // Other state could be added as needed.
     };
@@ -53,11 +52,11 @@ class GreeterServiceImpl final : public Greeter::Service
 public:
     // In this example, we use the same thread pool to perform asynchronous
     // processing of requests as is used in the rest of the program.
-    explicit GreeterServiceImpl(bond::ext::gRPC::thread_pool tp)
+    explicit GreeterServiceImpl(bond::ext::grpc::thread_pool tp)
         : Greeter::Service(std::move(tp))
     { }
 
-    void SayHello(bond::ext::gRPC::unary_call<HelloRequest, HelloReply> call) override
+    void SayHello(bond::ext::grpc::unary_call<HelloRequest, HelloReply> call) override
     {
         scheduler()(PerRequestState{ std::move(call) });
     }
@@ -67,18 +66,18 @@ int main()
 {
     const std::string server_address("127.0.0.1:50051");
 
-    auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-    bond::ext::gRPC::thread_pool threadPool;
+    auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+    bond::ext::grpc::thread_pool threadPool;
 
     std::unique_ptr<GreeterServiceImpl> service{ new GreeterServiceImpl{ threadPool } };
 
-    auto server = bond::ext::gRPC::server_builder{}
-        .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-        .RegisterService(std::move(service))
-        .BuildAndStart();
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+
+    auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 
     Greeter::Client greeter(
-        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()),
+        ::grpc::CreateChannel(server_address, ::grpc::InsecureChannelCredentials()),
         ioManager,
         threadPool);
 
@@ -99,7 +98,7 @@ int main()
     {
         result.get().response().Deserialize(reply);
     }
-    catch (const bond::ext::gRPC::UnaryCallException& e)
+    catch (const bond::ext::grpc::UnaryCallException& e)
     {
         std::cout << "request failed: " << e.status().error_message();
         return 1;

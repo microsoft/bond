@@ -33,8 +33,8 @@
 #include <memory>
 #include <utility>
 
-using namespace bond::ext::gRPC::detail;
-using namespace bond::ext::gRPC;
+using namespace bond::ext::grpc::detail;
+using namespace bond::ext::grpc;
 
 template <typename TEvent>
 struct alarm_completion_tag : io_manager_tag
@@ -60,7 +60,7 @@ class io_managerTests
 
         alarm_completion_tag<unit_test::event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
-        grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
+        ::grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
 
         bool wasSet = act.completion_event.wait_for(std::chrono::seconds(30));
         UT_AssertIsTrue(wasSet);
@@ -76,7 +76,7 @@ class io_managerTests
 
         const gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
 
-        std::vector<grpc::Alarm> alarms;
+        std::vector<::grpc::Alarm> alarms;
         alarms.reserve(numItems);
         for (size_t i = 0; i < numItems; ++i)
         {
@@ -102,7 +102,7 @@ class io_managerTests
             1,
             false,
             // also tests that we can pass an explicit completion queue
-            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+            std::unique_ptr<::grpc::CompletionQueue>(new ::grpc::CompletionQueue));
 
         const size_t numConcurrentShutdowns = 5;
         unit_test::barrier threadsStarted(numConcurrentShutdowns);
@@ -141,11 +141,11 @@ class io_managerTests
             1,
             true,
             // also tests that we can pass an explicit completion queue
-            std::unique_ptr<grpc::CompletionQueue>(new grpc::CompletionQueue));
+            std::unique_ptr<::grpc::CompletionQueue>(new ::grpc::CompletionQueue));
 
         alarm_completion_tag<unit_test::event> act;
         gpr_timespec deadline = gpr_time_0(GPR_CLOCK_MONOTONIC);
-        grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
+        ::grpc::Alarm alarm(ioManager.cq(), deadline, act.tag());
 
         bool wasSet = act.completion_event.wait_for(std::chrono::milliseconds(1250));
         UT_AssertIsTrue(!wasSet);
@@ -175,14 +175,6 @@ public:
 
 bool init_unit_test()
 {
-    // grpc allocates a bunch of stuff on-demand caused the leak tracker to
-    // report leaks. Disable it for this test.
-    boost::debug::detect_memory_leaks(false);
-
-    // Initialize the gRPC++ library
-    grpc::internal::GrpcLibraryInitializer initializer;
-    initializer.summon();
-
     io_managerTests::Initialize();
     return true;
 }

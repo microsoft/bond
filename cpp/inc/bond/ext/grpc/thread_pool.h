@@ -9,20 +9,20 @@
 
 #include "win_thread_pool.h"
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     using thread_pool = win_thread_pool;
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc
 
 #else // defined(_WIN32) || defined(WIN32)
 
 #include "basic_thread_pool.h"
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     using thread_pool = basic_thread_pool;
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc
 
 #endif

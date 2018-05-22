@@ -180,7 +180,7 @@ public:
 
 private:
     void ExampleMethod(
-        bond::ext::gRPC::unary_call<ExampleRequest, ExampleResponse> call) override
+        bond::ext::grpc::unary_call<ExampleRequest, ExampleResponse> call) override
     {
         ExampleRequest request = call.request().Deserialize();
         ExampleResponse response;
@@ -195,15 +195,15 @@ private:
 This service implementation is hooked up to a gRPC server as follows:
 
 ```cpp
-bond::ext::gRPC::thread_pool threadPool;
+bond::ext::grpc::thread_pool threadPool;
 const std::string server_address{ Host + ":" + Port };
 
 std::unique_ptr<ExampleServiceImpl> service{ new ExampleServiceImpl{ threadPool } };
 
-bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
-    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-    .RegisterService(std::move(service))
-    .BuildAndStart();
+grpc::ServerBuilder builder;
+builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+auto server = bond::ext::grpc::server::Start(builder, std::move(service));
 ```
 
 At this point the server is ready to receive requests and route them to the
@@ -212,8 +212,8 @@ service implementation.
 On the client side, the proxy stub establishes a connection to the server like this:
 
 ```cpp
-auto ioManager = std::make_shared<bond::ext::gRPC::io_manager>();
-bond::ext::gRPC::thread_pool threadPool;
+auto ioManager = std::make_shared<bond::ext::grpc::io_manager>();
+bond::ext::grpc::thread_pool threadPool;
 const std::string server_address{ Host + ":" + Port };
 
 Example::Client client{
@@ -231,10 +231,11 @@ ExampleRequest request;
 // Blocking version using std::future
 try
 {
-    ExampleResponse response = client.AsyncExampleMethod(request).get().response().Deserialize();
+    ExampleResponse response = client.AsyncExampleMethod(request)
+        .get().response().Deserialize();
     // Examine response here
 }
-catch (const bond::ext::gRPC::UnaryCallException& e)
+catch (const bond::ext::grpc::UnaryCallException& e)
 {
     // Examine e.status()
 }
@@ -242,7 +243,7 @@ catch (const bond::ext::gRPC::UnaryCallException& e)
 // Async version with a callback
 client.AsyncExampleMethod(
     request,
-    [](bond::ext::gRPC::unary_call_result<ExampleResponse> result)
+    [](bond::ext::grpc::unary_call_result<ExampleResponse> result)
     {
         if (result.status().ok())
         {

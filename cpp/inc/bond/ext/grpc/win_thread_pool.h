@@ -21,7 +21,7 @@
 #include <system_error>
 #include <type_traits>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     namespace detail
     {
@@ -169,16 +169,16 @@ namespace bond { namespace ext { namespace gRPC
         std::shared_ptr<impl> _impl;
     };
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc
 
 #else // _WIN32_WINNT < 0x0600
 
 #include "basic_thread_pool.h"
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
     using win_thread_pool = basic_thread_pool;
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc
 
 #endif

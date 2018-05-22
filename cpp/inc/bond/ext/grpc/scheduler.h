@@ -7,7 +7,7 @@
 
 #include <functional>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
 
 #ifdef BOND_DOXYGEN_ONLY
@@ -30,4 +30,4 @@ class scheduler
 
 using Scheduler = std::function<void(const std::function<void()>& func)>;
 
-} } } // namespace bond::ext::gRPC
+} } } // namespace bond::ext::grpc

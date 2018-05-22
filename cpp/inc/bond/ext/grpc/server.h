@@ -38,8 +38,11 @@
 
 #include <bond/core/config.h>
 
+#include "detail/service.h"
+#include "exception.h"
 #include "io_manager.h"
-#include "thread_pool.h"
+
+#include <bond/ext/grpc/service_collection.h>
 
 #ifdef _MSC_VER
     #pragma warning (push)
@@ -53,20 +56,67 @@
 #endif
 
 #include <boost/assert.hpp>
-#include <boost/optional/optional.hpp>
+#include <boost/range/combine.hpp>
 
 #include <memory>
+#include <string>
 #include <thread>
+#include <vector>
 
-namespace bond { namespace ext { namespace gRPC
+namespace bond { namespace ext { namespace grpc
 {
-    /// @brief Models a gRPC server powered by Bond services.
+    /// @brief Models a grpc server powered by Bond services.
     ///
-    /// Servers are configured and started via
-    /// bond::ext:gRPC::server_builder.
+    /// Servers are configured and started via bond::ext:grpc::server::Start.
     class server final
     {
     public:
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
+        template <typename... Services>
+        static server Start(::grpc::ServerBuilder& builder, std::unique_ptr<Services>... services)
+        {
+            service_collection all;
+            all.Add(std::move(services)...);
+            return Start(builder, std::move(all));
+        }
+
+        /// @brief Builds and returns a running server which is ready to process calls
+        /// for the provided services.
+        static server Start(::grpc::ServerBuilder& builder, service_collection services)
+        {
+            auto cq = builder.AddCompletionQueue();
+
+            for (const auto& item : boost::combine(services.services(), services.names()))
+            {
+                auto& service = item.get<0>();
+
+                if (const auto& host = item.get<1>())
+                {
+                    builder.RegisterService(host.value(), service->grpc_service());
+                }
+                else
+                {
+                    builder.RegisterService(service->grpc_service());
+                }
+
+                service->SetCompletionQueue(cq.get());
+            }
+
+            if (auto svr = builder.BuildAndStart())
+            {
+                return server{
+                    std::move(svr),
+                    std::move(services.services()),
+                    std::unique_ptr<io_manager>{ new io_manager{
+                        std::thread::hardware_concurrency(), /*delay=*/ false, std::move(cq) } } };
+            }
+
+            throw ServerBuildException{};
+        }
+
+        static server Start(::grpc::ServerBuilder& builder) = delete;
+
         server(server&&) = default;
         server & operator=(server&&) = default;
 
@@ -105,10 +155,8 @@ namespace bond { namespace ext { namespace gRPC
         }
 
     private:
-        friend class server_builder;
-
         server(
-            std::unique_ptr<grpc::Server> server,
+            std::unique_ptr<::grpc::Server> server,
             std::vector<std::unique_ptr<detail::service>> services,
             std::unique_ptr<io_manager> ioManager)
             : _server{ std::move(server) },
@@ -118,15 +166,20 @@ namespace bond { namespace ext { namespace gRPC
             BOOST_ASSERT(_server);
             BOOST_ASSERT(_ioManager);
 
+            start();
+        }
+
+        void start()
+        {
             for (auto& service : _services)
             {
                 service->start();
             }
         }
 
-        std::unique_ptr<grpc::Server> _server;
+        std::unique_ptr<::grpc::Server> _server;
         std::vector<std::unique_ptr<detail::service>> _services;
         std::unique_ptr<io_manager> _ioManager;
     };
 
-} } } //namespace bond::ext::gRPC
+} } } //namespace bond::ext::grpc
