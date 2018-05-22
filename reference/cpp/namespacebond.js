@@ -30,12 +30,14 @@ var namespacebond =
         [ "reflection", null, [
           [ "MethodTemplate", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1g_r_p_c_1_1reflection_1_1_method_template" ]
         ] ],
+        [ "abstract_service", "classbond_1_1ext_1_1g_r_p_c_1_1abstract__service.html", null ],
         [ "InvalidThreadCount", "classbond_1_1ext_1_1g_r_p_c_1_1_invalid_thread_count.html", null ],
         [ "io_manager", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager.html", "classbond_1_1ext_1_1g_r_p_c_1_1io__manager" ],
         [ "MultipleInvocationException", "classbond_1_1ext_1_1g_r_p_c_1_1_multiple_invocation_exception.html", null ],
         [ "scheduler", "classbond_1_1ext_1_1g_r_p_c_1_1scheduler.html", null ],
         [ "server", "classbond_1_1ext_1_1g_r_p_c_1_1server.html", "classbond_1_1ext_1_1g_r_p_c_1_1server" ],
-        [ "server_builder", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html", "classbond_1_1ext_1_1g_r_p_c_1_1server__builder" ],
+        [ "ServerBuildException", "classbond_1_1ext_1_1g_r_p_c_1_1_server_build_exception.html", null ],
+        [ "service_collection", "classbond_1_1ext_1_1g_r_p_c_1_1service__collection.html", null ],
         [ "shared_unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1shared__unary__call" ],
         [ "thread_pool", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool.html", "classbond_1_1ext_1_1g_r_p_c_1_1thread__pool" ],
         [ "unary_call", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call.html", "classbond_1_1ext_1_1g_r_p_c_1_1unary__call" ],

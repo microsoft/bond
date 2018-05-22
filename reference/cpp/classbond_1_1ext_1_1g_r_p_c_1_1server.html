@@ -91,6 +91,7 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1g_r_p_c_1_1server.
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classbond_1_1ext_1_1g_r_p_c_1_1server-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">bond::ext::gRPC::server Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -112,10 +113,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a032ef65ed42e1cae6729fba896795e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html#a2a032ef65ed42e1cae6729fba896795e">Wait</a> ()</td></tr>
 <tr class="memdesc:a2a032ef65ed42e1cae6729fba896795e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block waiting for all work to complete.  <a href="#a2a032ef65ed42e1cae6729fba896795e">More...</a><br /></td></tr>
 <tr class="separator:a2a032ef65ed42e1cae6729fba896795e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ae5a4cbdcc0972bdfdd807e3dee16646e"><td class="memTemplParams" colspan="2">template&lt;typename... Services&gt; </td></tr>
+<tr class="memitem:ae5a4cbdcc0972bdfdd807e3dee16646e"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html#ae5a4cbdcc0972bdfdd807e3dee16646e">Start</a> (grpc::ServerBuilder &amp;builder, std::unique_ptr&lt; Services &gt;... services)</td></tr>
+<tr class="memdesc:ae5a4cbdcc0972bdfdd807e3dee16646e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds and returns a running server which is ready to process calls for the provided services.  <a href="#ae5a4cbdcc0972bdfdd807e3dee16646e">More...</a><br /></td></tr>
+<tr class="separator:ae5a4cbdcc0972bdfdd807e3dee16646e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f835a553f9bec4269fe741a82d761bf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html#a7f835a553f9bec4269fe741a82d761bf">Start</a> (grpc::ServerBuilder &amp;builder, <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1service__collection.html">service_collection</a> services)</td></tr>
+<tr class="memdesc:a7f835a553f9bec4269fe741a82d761bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds and returns a running server which is ready to process calls for the provided services.  <a href="#a7f835a553f9bec4269fe741a82d761bf">More...</a><br /></td></tr>
+<tr class="separator:a7f835a553f9bec4269fe741a82d761bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Models a gRPC server powered by Bond services. </p>
-<p>Servers are configured and started via bond::ext:gRPC::<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server__builder.html" title="A builder class for the creation and startup of bond::ext::gRPC::server instances. ">server_builder</a>. </p>
+<p>Servers are configured and started via bond::ext:gRPC::<a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html#ae5a4cbdcc0972bdfdd807e3dee16646e" title="Builds and returns a running server which is ready to process calls for the provided services...">server::Start</a>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5552fb7c017e78110402387297050484"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5552fb7c017e78110402387297050484">&#9670;&nbsp;</a></span>Shutdown() <span class="overload">[1/2]</span></h2>
@@ -162,6 +173,84 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Shutdown the server, waiting for all rpc processing to finish. </p>
+
+</div>
+</div>
+<a id="ae5a4cbdcc0972bdfdd807e3dee16646e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5a4cbdcc0972bdfdd807e3dee16646e">&#9670;&nbsp;</a></span>Start() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Services&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a> bond::ext::gRPC::server::Start </td>
+          <td>(</td>
+          <td class="paramtype">grpc::ServerBuilder &amp;&#160;</td>
+          <td class="paramname"><em>builder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; Services &gt;...&#160;</td>
+          <td class="paramname"><em>services</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds and returns a running server which is ready to process calls for the provided services. </p>
+
+</div>
+</div>
+<a id="a7f835a553f9bec4269fe741a82d761bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f835a553f9bec4269fe741a82d761bf">&#9670;&nbsp;</a></span>Start() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1server.html">server</a> bond::ext::gRPC::server::Start </td>
+          <td>(</td>
+          <td class="paramtype">grpc::ServerBuilder &amp;&#160;</td>
+          <td class="paramname"><em>builder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classbond_1_1ext_1_1g_r_p_c_1_1service__collection.html">service_collection</a>&#160;</td>
+          <td class="paramname"><em>services</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds and returns a running server which is ready to process calls for the provided services. </p>
 
 </div>
 </div>

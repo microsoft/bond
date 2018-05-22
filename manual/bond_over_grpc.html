@@ -261,10 +261,10 @@ alphabetical order. -->
 
 <span class="bu">std::</span>unique_ptr&lt;ExampleServiceImpl&gt; service{ <span class="kw">new</span> ExampleServiceImpl{ threadPool } };
 
-bond::ext::gRPC::server server = bond::ext::gRPC::server_builder{}
-    .AddListeningPort(server_address, grpc::InsecureServerCredentials())
-    .RegisterService(<span class="bu">std::</span>move(service))
-    .BuildAndStart();</code></pre></div>
+grpc::ServerBuilder builder;
+builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+
+<span class="kw">auto</span> server = bond::ext::gRPC::server::Start(builder, <span class="bu">std::</span>move(service));</code></pre></div>
 <p>At this point the server is ready to receive requests and route them to the service implementation.</p>
 <p>On the client side, the proxy stub establishes a connection to the server like this:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">auto</span> ioManager = <span class="bu">std::</span>make_shared&lt;bond::ext::gRPC::io_manager&gt;();
@@ -282,7 +282,8 @@ Example::Client client{
 <span class="co">// Blocking version using std::future</span>
 <span class="cf">try</span>
 {
-    ExampleResponse response = client.AsyncExampleMethod(request).get().response().Deserialize();
+    ExampleResponse response = client.AsyncExampleMethod(request)
+        .get().response().Deserialize();
     <span class="co">// Examine response here</span>
 }
 <span class="cf">catch</span> (<span class="at">const</span> bond::ext::gRPC::UnaryCallException&amp; e)
