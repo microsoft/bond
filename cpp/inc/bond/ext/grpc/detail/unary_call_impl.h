@@ -219,6 +219,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     protected:
+        unary_call_input_base() = default;
+
         explicit unary_call_input_base(unary_call_impl& impl)
             : _request{ impl.request_buffer() }
         {}
@@ -231,6 +233,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
     class unary_call_input_base<unary_call_base<void, Response>>
     {
     protected:
+        unary_call_input_base() = default;
+
         explicit unary_call_input_base(unary_call_impl& /*impl*/)
         {}
     };
@@ -266,6 +270,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     protected:
+        unary_call_result_base() = default;
+
         explicit unary_call_result_base(unary_call_impl& /*impl*/)
         {}
     };
@@ -292,6 +298,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     protected:
+        unary_call_result_base() = default;
+
         explicit unary_call_result_base(unary_call_impl& /*impl*/)
         {}
     };
@@ -301,6 +309,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         : public unary_call_impl_base<unary_call_result_base<unary_call_base<Request, bond::reflection::nothing>>>
     {
     protected:
+        unary_call_result_base() = default;
+
         explicit unary_call_result_base(unary_call_impl& impl)
         {
             impl.Finish();
