@@ -115,7 +115,7 @@ namespace bond { namespace ext { namespace grpc
 
             ~impl()
             {
-                // Wait for all callbacks to return without canceling pending once.
+                // Wait for all callbacks to return without canceling pending ones.
                 ::CloseThreadpoolCleanupGroupMembers(_group.get(), FALSE, nullptr);
             }
 
