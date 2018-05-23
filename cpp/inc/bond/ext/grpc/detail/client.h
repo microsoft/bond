@@ -236,7 +236,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         /// The scheduler in which to invoke the callback.
         Scheduler _scheduler;
         /// @brief The response buffer received from the service.
-        ::grpc::ByteBuffer _responseBuffer;
+        /*::grpc::*/ByteBuffer _responseBuffer;
         /// @brief The status of the request.
         ::grpc::Status _status;
         /// @brief Type-erased function to invoke user-callback for a response.

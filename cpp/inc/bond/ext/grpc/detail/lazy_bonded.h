@@ -52,7 +52,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
         mutable boost::optional<bonded<T>> _value;
-        ::grpc::ByteBuffer _buffer;
+        /*::grpc::*/ByteBuffer _buffer;
     };
 
 } } } } //namespace bond::ext::grpc::detail

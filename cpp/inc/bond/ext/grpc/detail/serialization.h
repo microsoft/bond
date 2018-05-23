@@ -18,6 +18,40 @@
 
 namespace bond { namespace ext { namespace grpc { namespace detail
 {
+    // @brief A helper wrapper to fix crashing copy .ctor in ::grpc::ByteBuffer
+    class ByteBuffer
+    {
+    public:
+        ByteBuffer() = default;
+
+        ByteBuffer(const ::grpc::ByteBuffer& buffer)
+        {
+            _buffer = buffer;   // The operator= is fine.
+        }
+
+        ByteBuffer(const ByteBuffer& other)
+            : ByteBuffer{ other._buffer }
+        {}
+
+        ::grpc::ByteBuffer* operator&()
+        {
+            return &_buffer;
+        }
+
+        operator ::grpc::ByteBuffer&()
+        {
+            return _buffer;
+        }
+
+        operator const ::grpc::ByteBuffer&() const
+        {
+            return _buffer;
+        }
+
+    private:
+        ::grpc::ByteBuffer _buffer;
+    };
+
     inline ::grpc::ByteBuffer to_byte_buffer(const OutputBuffer& output)
     {
         struct Buffers
@@ -60,7 +94,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         return to_byte_buffer(output);
     }
 
-    inline CompactBinaryReader<InputBuffer> from_byte_buffer(const ::grpc::ByteBuffer& buffer)
+    inline InputBuffer from_byte_buffer(const ::grpc::ByteBuffer& buffer)
     {
         std::vector<::grpc::Slice> slices;
 
@@ -83,13 +117,13 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         // TODO: create a Bond input stream over ::grpc::ByteBuffer to avoid
         // having to make this copy into a blob.
         blob data{ buff, static_cast<uint32_t>(length) };
-        return CompactBinaryReader<InputBuffer>{ data };
+        return InputBuffer{ data };
     }
 
     template <typename T>
     inline bonded<T> Deserialize(const ::grpc::ByteBuffer& buffer)
     {
-        return bonded<T>{ from_byte_buffer(buffer) };
+        return bonded<T>{ CompactBinaryReader<InputBuffer>{ from_byte_buffer(buffer) } };
     }
 
 } } } } //namespace bond::ext::grpc::detail
