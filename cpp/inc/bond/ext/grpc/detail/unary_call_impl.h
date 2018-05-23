@@ -328,7 +328,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
     public:
         unary_call_base() = default;
 
-        explicit unary_call_base(boost::intrusive_ptr<unary_call_impl> impl) noexcept
+        explicit unary_call_base(boost::intrusive_ptr<unary_call_impl> impl)
             : unary_call_base::unary_call_input_base(*impl),
               unary_call_base::unary_call_result_base(*impl),
               _impl(std::move(impl))
