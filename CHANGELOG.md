@@ -147,6 +147,7 @@ different versioning scheme, following the Haskell community's
 * Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
 * The preferred namespace for Bond-over-gRPC is now `bond::ext::grpc`. The previous
   namespace, `bond::ext::gRPC`, continues to work.
+* Added Windows-specific implementation of a [thread pool](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686766(v=vs.85).aspx).
 
 ### C# ###
 
