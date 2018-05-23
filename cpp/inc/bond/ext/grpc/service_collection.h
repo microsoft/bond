@@ -23,7 +23,7 @@ namespace bond { namespace ext { namespace grpc
         template <typename... Service>
         void Add(std::unique_ptr<Service>... services)
         {
-            std::initializer_list<int>{ (Add(boost::none, std::move(services)), 0)... };
+            (void)std::initializer_list<int>{ (Add(boost::none, std::move(services)), 0)... };
         }
 
         template <typename Service>
