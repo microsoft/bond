@@ -31,6 +31,7 @@ var namespacebond =
           [ "MethodTemplate", "structbond_1_1ext_1_1grpc_1_1reflection_1_1_method_template.html", "structbond_1_1ext_1_1grpc_1_1reflection_1_1_method_template" ]
         ] ],
         [ "abstract_service", "classbond_1_1ext_1_1grpc_1_1abstract__service.html", null ],
+        [ "basic_thread_pool", "classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html", "classbond_1_1ext_1_1grpc_1_1basic__thread__pool" ],
         [ "InvalidThreadCount", "classbond_1_1ext_1_1grpc_1_1_invalid_thread_count.html", null ],
         [ "io_manager", "classbond_1_1ext_1_1grpc_1_1io__manager.html", "classbond_1_1ext_1_1grpc_1_1io__manager" ],
         [ "MultipleInvocationException", "classbond_1_1ext_1_1grpc_1_1_multiple_invocation_exception.html", null ],
@@ -39,7 +40,6 @@ var namespacebond =
         [ "ServerBuildException", "classbond_1_1ext_1_1grpc_1_1_server_build_exception.html", null ],
         [ "service_collection", "classbond_1_1ext_1_1grpc_1_1service__collection.html", null ],
         [ "shared_unary_call", "classbond_1_1ext_1_1grpc_1_1shared__unary__call.html", "classbond_1_1ext_1_1grpc_1_1shared__unary__call" ],
-        [ "thread_pool", "classbond_1_1ext_1_1grpc_1_1thread__pool.html", "classbond_1_1ext_1_1grpc_1_1thread__pool" ],
         [ "unary_call", "classbond_1_1ext_1_1grpc_1_1unary__call.html", "classbond_1_1ext_1_1grpc_1_1unary__call" ],
         [ "unary_call_result", "classbond_1_1ext_1_1grpc_1_1unary__call__result.html", "classbond_1_1ext_1_1grpc_1_1unary__call__result" ],
         [ "UnaryCallException", "classbond_1_1ext_1_1grpc_1_1_unary_call_exception.html", null ],

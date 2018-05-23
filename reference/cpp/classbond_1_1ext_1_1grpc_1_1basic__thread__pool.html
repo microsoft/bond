@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bond: bond::ext::grpc::thread_pool Class Reference</title>
+<title>Bond: bond::ext::grpc::basic_thread_pool Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classbond_1_1ext_1_1grpc_1_1thread__pool.html','');});
+$(document).ready(function(){initNavTree('classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -91,42 +91,42 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1grpc_1_1thread__po
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classbond_1_1ext_1_1grpc_1_1thread__pool-members.html">List of all members</a>  </div>
+<a href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::ext::grpc::thread_pool Class Reference</div>  </div>
+<div class="title">bond::ext::grpc::basic_thread_pool Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Basic thread pool implementation.  
- <a href="classbond_1_1ext_1_1grpc_1_1thread__pool.html#details">More...</a></p>
+ <a href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aed6cf0b521baf20148cf68bb6134a966"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1thread__pool.html#aed6cf0b521baf20148cf68bb6134a966">thread_pool</a> ()</td></tr>
-<tr class="memdesc:aed6cf0b521baf20148cf68bb6134a966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with number of threads equal to CPU/cores available.  <a href="#aed6cf0b521baf20148cf68bb6134a966">More...</a><br /></td></tr>
-<tr class="separator:aed6cf0b521baf20148cf68bb6134a966"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0186e33ad5b9bd18ccd33b3be8a1232b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1thread__pool.html#a0186e33ad5b9bd18ccd33b3be8a1232b">thread_pool</a> (unsigned int numThreads)</td></tr>
-<tr class="memdesc:a0186e33ad5b9bd18ccd33b3be8a1232b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with the specified number of threads.  <a href="#a0186e33ad5b9bd18ccd33b3be8a1232b">More...</a><br /></td></tr>
-<tr class="separator:a0186e33ad5b9bd18ccd33b3be8a1232b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba36618077c7619c3a27af5f5d2fd0a1"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
-<tr class="memitem:aba36618077c7619c3a27af5f5d2fd0a1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1thread__pool.html#aba36618077c7619c3a27af5f5d2fd0a1">operator()</a> (Callback &amp;&amp;callback)</td></tr>
-<tr class="memdesc:aba36618077c7619c3a27af5f5d2fd0a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules a callback for execution.  <a href="#aba36618077c7619c3a27af5f5d2fd0a1">More...</a><br /></td></tr>
-<tr class="separator:aba36618077c7619c3a27af5f5d2fd0a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a322a5f4ed123c2ba7441bcc7e67641f8"><td class="memItemLeft" align="right" valign="top">boost::asio::io_service &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1thread__pool.html#a322a5f4ed123c2ba7441bcc7e67641f8">get_io_service</a> ()</td></tr>
-<tr class="memdesc:a322a5f4ed123c2ba7441bcc7e67641f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying boost::asio::io_service.  <a href="#a322a5f4ed123c2ba7441bcc7e67641f8">More...</a><br /></td></tr>
-<tr class="separator:a322a5f4ed123c2ba7441bcc7e67641f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b2fe0071e2a720827b8781728a9359"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html#a31b2fe0071e2a720827b8781728a9359">basic_thread_pool</a> ()</td></tr>
+<tr class="memdesc:a31b2fe0071e2a720827b8781728a9359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with number of threads equal to CPU/cores available.  <a href="#a31b2fe0071e2a720827b8781728a9359">More...</a><br /></td></tr>
+<tr class="separator:a31b2fe0071e2a720827b8781728a9359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27647fdcf3ecd4fda1eefd034b973646"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html#a27647fdcf3ecd4fda1eefd034b973646">basic_thread_pool</a> (unsigned int numThreads)</td></tr>
+<tr class="memdesc:a27647fdcf3ecd4fda1eefd034b973646"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and starts a thread pool with the specified number of threads.  <a href="#a27647fdcf3ecd4fda1eefd034b973646">More...</a><br /></td></tr>
+<tr class="separator:a27647fdcf3ecd4fda1eefd034b973646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52e91f86880a95bfd20718b253438237"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
+<tr class="memitem:a52e91f86880a95bfd20718b253438237"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html#a52e91f86880a95bfd20718b253438237">operator()</a> (Callback &amp;&amp;callback)</td></tr>
+<tr class="memdesc:a52e91f86880a95bfd20718b253438237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules a callback for execution.  <a href="#a52e91f86880a95bfd20718b253438237">More...</a><br /></td></tr>
+<tr class="separator:a52e91f86880a95bfd20718b253438237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13aba2624cd62fa1d78426e478ec3104"><td class="memItemLeft" align="right" valign="top">boost::asio::io_service &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html#a13aba2624cd62fa1d78426e478ec3104">get_io_service</a> ()</td></tr>
+<tr class="memdesc:a13aba2624cd62fa1d78426e478ec3104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying boost::asio::io_service.  <a href="#a13aba2624cd62fa1d78426e478ec3104">More...</a><br /></td></tr>
+<tr class="separator:a13aba2624cd62fa1d78426e478ec3104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Basic thread pool implementation. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aed6cf0b521baf20148cf68bb6134a966"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed6cf0b521baf20148cf68bb6134a966">&#9670;&nbsp;</a></span>thread_pool() <span class="overload">[1/2]</span></h2>
+<a id="a31b2fe0071e2a720827b8781728a9359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b2fe0071e2a720827b8781728a9359">&#9670;&nbsp;</a></span>basic_thread_pool() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bond::ext::grpc::thread_pool::thread_pool </td>
+          <td class="memname">bond::ext::grpc::basic_thread_pool::basic_thread_pool </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -144,8 +144,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0186e33ad5b9bd18ccd33b3be8a1232b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0186e33ad5b9bd18ccd33b3be8a1232b">&#9670;&nbsp;</a></span>thread_pool() <span class="overload">[2/2]</span></h2>
+<a id="a27647fdcf3ecd4fda1eefd034b973646"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27647fdcf3ecd4fda1eefd034b973646">&#9670;&nbsp;</a></span>basic_thread_pool() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,7 +154,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bond::ext::grpc::thread_pool::thread_pool </td>
+          <td class="memname">bond::ext::grpc::basic_thread_pool::basic_thread_pool </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>numThreads</em></td><td>)</td>
@@ -179,14 +179,14 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a322a5f4ed123c2ba7441bcc7e67641f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a322a5f4ed123c2ba7441bcc7e67641f8">&#9670;&nbsp;</a></span>get_io_service()</h2>
+<a id="a13aba2624cd62fa1d78426e478ec3104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13aba2624cd62fa1d78426e478ec3104">&#9670;&nbsp;</a></span>get_io_service()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">boost::asio::io_service&amp; bond::ext::grpc::thread_pool::get_io_service </td>
+          <td class="memname">boost::asio::io_service&amp; bond::ext::grpc::basic_thread_pool::get_io_service </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -198,8 +198,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aba36618077c7619c3a27af5f5d2fd0a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba36618077c7619c3a27af5f5d2fd0a1">&#9670;&nbsp;</a></span>operator()()</h2>
+<a id="a52e91f86880a95bfd20718b253438237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52e91f86880a95bfd20718b253438237">&#9670;&nbsp;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -207,7 +207,7 @@ Public Member Functions</h2></td></tr>
 template&lt;typename Callback &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void bond::ext::grpc::thread_pool::operator() </td>
+          <td class="memname">void bond::ext::grpc::basic_thread_pool::operator() </td>
           <td>(</td>
           <td class="paramtype">Callback &amp;&amp;&#160;</td>
           <td class="paramname"><em>callback</em></td><td>)</td>
@@ -231,7 +231,7 @@ template&lt;typename Callback &gt; </div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>grpc</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1grpc_1_1thread__pool.html">thread_pool</a></li>
+    <li class="navelem"><a class="el" href="namespacebond.html">bond</a></li><li class="navelem"><b>ext</b></li><li class="navelem"><b>grpc</b></li><li class="navelem"><a class="el" href="classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html">basic_thread_pool</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
