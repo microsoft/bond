@@ -18,7 +18,10 @@
 
 namespace bond { namespace ext { namespace grpc { namespace detail
 {
-    // @brief A helper wrapper to fix crashing copy .ctor in ::grpc::ByteBuffer
+    /// @brief A helper wrapper to fix crashing copy .ctor in ::grpc::ByteBuffer
+    //
+    // After https://github.com/grpc/grpc/pull/15517 is merged and released, we can
+    // retire this class.
     class ByteBuffer
     {
     public:
