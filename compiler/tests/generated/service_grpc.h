@@ -122,7 +122,7 @@ struct Foo final
         }
         void Asyncfoo13(const ::tests::BasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo13(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo13, std::move(context), {}, request);
         }
 
         void Asyncfoo14(const ::bond::bonded< ::tests::dummy>& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -131,7 +131,7 @@ struct Foo final
         }
         void Asyncfoo14(const ::tests::dummy& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo14(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo14, std::move(context), {}, request);
         }
 
         void Asyncfoo15(const ::bond::bonded< ::tests2::OtherBasicTypes>& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -140,7 +140,7 @@ struct Foo final
         }
         void Asyncfoo15(const ::tests2::OtherBasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo15(::bond::bonded< ::tests2::OtherBasicTypes>{request}, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo15, std::move(context), {}, request);
         }
 
         void Asyncfoo21(const ::std::function<void(::bond::ext::grpc::unary_call_result<void>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -171,11 +171,11 @@ struct Foo final
         }
         void Asyncfoo23(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<void>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo23, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<void>> Asyncfoo23(const ::tests::BasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo23(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<void>(_mfoo23, std::move(context), request);
         }
 
         void Asyncfoo24(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<void>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -188,11 +188,11 @@ struct Foo final
         }
         void Asyncfoo24(const ::tests::dummy& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<void>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo24, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<void>> Asyncfoo24(const ::tests::dummy& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo24(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<void>(_mfoo24, std::move(context), request);
         }
 
         void Asyncfoo31(const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -223,11 +223,11 @@ struct Foo final
         }
         void Asyncfoo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo33, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::BasicTypes>> Asyncfoo33(const ::tests::BasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo33(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::BasicTypes>(_mfoo33, std::move(context), request);
         }
 
         void Async_rd_foo33(const ::bond::bonded< ::tests::BasicTypes>& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -240,11 +240,11 @@ struct Foo final
         }
         void Async_rd_foo33(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Async_rd_foo33(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_m_rd_foo33, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::BasicTypes>> Async_rd_foo33(const ::tests::BasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Async_rd_foo33(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::BasicTypes>(_m_rd_foo33, std::move(context), request);
         }
 
         void Asyncfoo34(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -257,11 +257,11 @@ struct Foo final
         }
         void Asyncfoo34(const ::tests::dummy& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo34(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo34, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::BasicTypes>> Asyncfoo34(const ::tests::dummy& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo34(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::BasicTypes>(_mfoo34, std::move(context), request);
         }
 
         void Asyncfoo41(const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::dummy>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -292,11 +292,11 @@ struct Foo final
         }
         void Asyncfoo43(const ::tests::BasicTypes& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::dummy>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo43(::bond::bonded< ::tests::BasicTypes>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo43, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::dummy>> Asyncfoo43(const ::tests::BasicTypes& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo43(::bond::bonded< ::tests::BasicTypes>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::dummy>(_mfoo43, std::move(context), request);
         }
 
         void Asyncfoo44(const ::bond::bonded< ::tests::dummy>& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::dummy>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -309,11 +309,11 @@ struct Foo final
         }
         void Asyncfoo44(const ::tests::dummy& request, const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::dummy>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            Asyncfoo44(::bond::bonded< ::tests::dummy>{request}, cb, ::std::move(context));
+            ::bond::ext::grpc::detail::client::dispatch(_mfoo44, std::move(context), cb, request);
         }
         ::std::future<::bond::ext::grpc::unary_call_result<::tests::dummy>> Asyncfoo44(const ::tests::dummy& request, ::std::shared_ptr<::grpc::ClientContext> context = {})
         {
-            return Asyncfoo44(::bond::bonded< ::tests::dummy>{request}, ::std::move(context));
+            return ::bond::ext::grpc::detail::client::dispatch<::tests::dummy>(_mfoo44, std::move(context), request);
         }
 
         void Asynccq(const ::std::function<void(::bond::ext::grpc::unary_call_result<::tests::BasicTypes>)>& cb, ::std::shared_ptr<::grpc::ClientContext> context = {})
@@ -412,26 +412,26 @@ struct Foo final
             {}
 
             Service& _s;
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo11> _m0{ _s, 0, ::std::bind(&Service::foo11, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo12> _m1{ _s, 1, ::std::bind(&Service::foo12, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo12_impl> _m2{ _s, 2, ::std::bind(&Service::foo12_impl, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo13> _m3{ _s, 3, ::std::bind(&Service::foo13, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo14> _m4{ _s, 4, ::std::bind(&Service::foo14, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo15> _m5{ _s, 5, ::std::bind(&Service::foo15, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo21> _m6{ _s, 6, ::std::bind(&Service::foo21, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo22> _m7{ _s, 7, ::std::bind(&Service::foo22, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo23> _m8{ _s, 8, ::std::bind(&Service::foo23, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo24> _m9{ _s, 9, ::std::bind(&Service::foo24, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo31> _m10{ _s, 10, ::std::bind(&Service::foo31, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo32> _m11{ _s, 11, ::std::bind(&Service::foo32, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo33> _m12{ _s, 12, ::std::bind(&Service::foo33, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::_rd_foo33> _m13{ _s, 13, ::std::bind(&Service::_rd_foo33, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo34> _m14{ _s, 14, ::std::bind(&Service::foo34, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo41> _m15{ _s, 15, ::std::bind(&Service::foo41, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo42> _m16{ _s, 16, ::std::bind(&Service::foo42, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo43> _m17{ _s, 17, ::std::bind(&Service::foo43, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::foo44> _m18{ _s, 18, ::std::bind(&Service::foo44, &_s, ::std::placeholders::_1) };
-            ::bond::ext::grpc::detail::service::Method<Schema::service::cq> _m19{ _s, 19, ::std::bind(&Service::cq, &_s, ::std::placeholders::_1) };
+            ::bond::ext::grpc::detail::service::Method _m0{ _s, 0, ::bond::ext::grpc::detail::service::make_callback(&Service::foo11, _s) };
+            ::bond::ext::grpc::detail::service::Method _m1{ _s, 1, ::bond::ext::grpc::detail::service::make_callback(&Service::foo12, _s) };
+            ::bond::ext::grpc::detail::service::Method _m2{ _s, 2, ::bond::ext::grpc::detail::service::make_callback(&Service::foo12_impl, _s) };
+            ::bond::ext::grpc::detail::service::Method _m3{ _s, 3, ::bond::ext::grpc::detail::service::make_callback(&Service::foo13, _s) };
+            ::bond::ext::grpc::detail::service::Method _m4{ _s, 4, ::bond::ext::grpc::detail::service::make_callback(&Service::foo14, _s) };
+            ::bond::ext::grpc::detail::service::Method _m5{ _s, 5, ::bond::ext::grpc::detail::service::make_callback(&Service::foo15, _s) };
+            ::bond::ext::grpc::detail::service::Method _m6{ _s, 6, ::bond::ext::grpc::detail::service::make_callback(&Service::foo21, _s) };
+            ::bond::ext::grpc::detail::service::Method _m7{ _s, 7, ::bond::ext::grpc::detail::service::make_callback(&Service::foo22, _s) };
+            ::bond::ext::grpc::detail::service::Method _m8{ _s, 8, ::bond::ext::grpc::detail::service::make_callback(&Service::foo23, _s) };
+            ::bond::ext::grpc::detail::service::Method _m9{ _s, 9, ::bond::ext::grpc::detail::service::make_callback(&Service::foo24, _s) };
+            ::bond::ext::grpc::detail::service::Method _m10{ _s, 10, ::bond::ext::grpc::detail::service::make_callback(&Service::foo31, _s) };
+            ::bond::ext::grpc::detail::service::Method _m11{ _s, 11, ::bond::ext::grpc::detail::service::make_callback(&Service::foo32, _s) };
+            ::bond::ext::grpc::detail::service::Method _m12{ _s, 12, ::bond::ext::grpc::detail::service::make_callback(&Service::foo33, _s) };
+            ::bond::ext::grpc::detail::service::Method _m13{ _s, 13, ::bond::ext::grpc::detail::service::make_callback(&Service::_rd_foo33, _s) };
+            ::bond::ext::grpc::detail::service::Method _m14{ _s, 14, ::bond::ext::grpc::detail::service::make_callback(&Service::foo34, _s) };
+            ::bond::ext::grpc::detail::service::Method _m15{ _s, 15, ::bond::ext::grpc::detail::service::make_callback(&Service::foo41, _s) };
+            ::bond::ext::grpc::detail::service::Method _m16{ _s, 16, ::bond::ext::grpc::detail::service::make_callback(&Service::foo42, _s) };
+            ::bond::ext::grpc::detail::service::Method _m17{ _s, 17, ::bond::ext::grpc::detail::service::make_callback(&Service::foo43, _s) };
+            ::bond::ext::grpc::detail::service::Method _m18{ _s, 18, ::bond::ext::grpc::detail::service::make_callback(&Service::foo44, _s) };
+            ::bond::ext::grpc::detail::service::Method _m19{ _s, 19, ::bond::ext::grpc::detail::service::make_callback(&Service::cq, _s) };
         };
 
         ::boost::optional<data> _data;

@@ -58,7 +58,8 @@ namespace wait_callback_tests
         // However, we don't want to deal with making sure that the test
         // globals and the grpc++ globals are destroyed in the right order.
         // Thus, we test with nullptr.
-        return bond::ext::grpc::unary_call_result<test_struct_type>(response, status, nullptr);
+        return bond::ext::grpc::unary_call_result<test_struct_type>(
+            bond::ext::grpc::detail::Serialize(response), status, nullptr);
     }
 
     void CallbackCapturesValues()

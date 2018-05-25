@@ -5,9 +5,7 @@
 
 #include <bond/core/config.h>
 
-#include "bond_utils.h"
 #include "io_manager_tag.h"
-#include "payload.h"
 
 #include <bond/ext/grpc/abstract_service.h>
 #include <bond/ext/grpc/scheduler.h>
@@ -48,6 +46,8 @@ namespace detail
     /// which a bond::ext::grpc::server then hosts multiple services.
     class service : public abstract_service, private ::grpc::Service
     {
+        class unary_call_data;
+
     public:
         /// @brief Provides access to the raw ::grpc::Service type.
         ///
@@ -62,22 +62,22 @@ namespace detail
             return _scheduler;
         }
 
-    private:
-        template <typename Request, typename Response>
-        class unary_call_data;
+        template <typename ServiceT, typename Request, typename Response>
+        std::function<void(unary_call<Request, Response>)>
+        static make_callback(void (ServiceT::*callback)(unary_call<Request, Response>), ServiceT& svc)
+        {
+            BOOST_STATIC_ASSERT(std::is_base_of<service, ServiceT>::value);
+            return std::bind(callback, &svc, std::placeholders::_1);
+        }
 
     protected:
-        template <typename MethodT>
-        using Method = unary_call_data<
-            typename MethodT::input_type,
-            typename MethodT::result_type>;
+        using Method = unary_call_data;
 
         service(const Scheduler& scheduler, std::initializer_list<const char*> methodNames)
             : _scheduler{ scheduler },
               _cq{ nullptr }
         {
             BOOST_ASSERT(_scheduler);
-
             AddMethods(methodNames);
         }
 
@@ -156,52 +156,57 @@ namespace detail
     /// is created for each individual call to hold the call-specific data. Once
     /// the invocation of the user callback along with the call-specific data
     /// has been scheduled, unary_call_data re-enqueues itself to get the next call.
-    template <typename Request, typename Response>
     class service::unary_call_data : io_manager_tag
     {
     public:
-        template <typename Callback>
-        unary_call_data(service& service, int methodIndex, Callback&& cb)
-            : _service(service),
-              _methodIndex(methodIndex),
-              _cb(std::forward<Callback>(cb)),
-              _receivedCall()
+        template <typename Request, typename Response>
+        unary_call_data(
+            service& service,
+            int methodIndex,
+            const std::function<void(unary_call<Request, Response>)>& cb)
+            : _service{ service },
+              _methodIndex{ methodIndex },
+              _invoke{ std::bind(&unary_call_data::invoke<Request, Response>, this, cb) },
+              _receivedCall{}
         {
-            BOOST_ASSERT(_cb);
+            BOOST_ASSERT(cb);
             queue_receive();
+        }
+
+    private:
+        template <typename Request, typename Response>
+        void invoke(const std::function<void(unary_call<Request, Response>)>& callback)
+        {
+            // TODO: Use lambda with move-capture when allowed to use C++14.
+            _service.scheduler()(std::bind(
+                [](const decltype(callback)& cb, boost::intrusive_ptr<unary_call_impl>& receivedCall)
+                {
+                    cb(unary_call<Request, Response>{ std::move(receivedCall) });
+                },
+                callback,
+                queue_receive()));
         }
 
         void invoke(bool ok) override
         {
             if (ok)
             {
-                // TODO: Use lambda with move-capture when allowed to use C++14.
-                _service.scheduler()(std::bind(
-                    [](const decltype(_cb)& cb, boost::intrusive_ptr<uc_impl>& receivedCall)
-                    {
-                        cb(unary_call<Request, Response>{ std::move(receivedCall) });
-                    },
-                    _cb,
-                    queue_receive()));
+                BOOST_ASSERT(_invoke);
+                _invoke();
             }
         }
 
-    private:
-        using uc_impl = unary_call_impl<
-            typename payload<Request>::type,
-            typename payload<Response>::type>;
-
-        boost::intrusive_ptr<uc_impl> queue_receive()
+        boost::intrusive_ptr<unary_call_impl> queue_receive()
         {
-            boost::intrusive_ptr<uc_impl> receivedCall{ _receivedCall.release() };
+            boost::intrusive_ptr<unary_call_impl> receivedCall{ _receivedCall.release() };
 
             // create new state for the next request that will be received
-            _receivedCall.reset(new uc_impl);
+            _receivedCall.reset(new unary_call_impl{});
 
             _service.queue_receive(
                 _methodIndex,
                 &_receivedCall->context(),
-                &_receivedCall->request(),
+                &_receivedCall->request_buffer(),
                 &_receivedCall->responder(),
                 tag());
 
@@ -213,10 +218,10 @@ namespace detail
         /// The index of the method. Method indices correspond to the order in
         /// which they were registered with detail::service::AddMethod
         const int _methodIndex;
-        /// The user code to invoke when a call to this method is received.
-        std::function<void(unary_call<Request, Response>)> _cb;
+        /// @brief Type-erased function to invoke user-callback for a response.
+        std::function<void()> _invoke;
         /// Individual state for one specific call to this method.
-        std::unique_ptr<uc_impl> _receivedCall;
+        std::unique_ptr<unary_call_impl> _receivedCall;
     };
 
 } } } } // namespace bond::ext::grpc::detail

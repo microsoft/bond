@@ -32,31 +32,41 @@ namespace bond { namespace ext { namespace grpc
         {}
     };
 
-    /// @brief %Exception thrown when proxy invocation returns failure status.
-    class UnaryCallException : public Exception
+    /// @brief %Exception thrown when gRPC APIs return failure.
+    class GrpcException : public Exception
     {
     public:
-        UnaryCallException(const ::grpc::Status& status, std::shared_ptr<::grpc::ClientContext> context)
+        explicit GrpcException(const ::grpc::Status& status)
             : Exception{ status.error_message().c_str() },
-              _status{ status },
-              _context{ std::move(context) }
+              _status{ status }
         {}
 
-        const ::grpc::Status& status() const BOND_NOEXCEPT
+        const ::grpc::Status& status() const noexcept
         {
             return _status;
         }
 
-        const std::shared_ptr<::grpc::ClientContext>& context() const BOND_NOEXCEPT
+    private:
+        const ::grpc::Status _status;
+    };
+
+    /// @brief %Exception thrown when proxy invocation returns failure status.
+    class UnaryCallException : public GrpcException
+    {
+    public:
+        UnaryCallException(const ::grpc::Status& status, std::shared_ptr<::grpc::ClientContext> context)
+            : GrpcException{ status },
+              _context{ std::move(context) }
+        {}
+
+        const std::shared_ptr<::grpc::ClientContext>& context() const noexcept
         {
             return _context;
         }
 
     private:
-        const ::grpc::Status _status;
         const std::shared_ptr<::grpc::ClientContext> _context;
     };
-
 
     /// @brief %Exception thrown when unable to construct a ::grpc::Server.
     class ServerBuildException : public Exception

@@ -5,9 +5,8 @@
 
 #include <bond/core/config.h>
 
-#include "bond_utils.h"
 #include "io_manager_tag.h"
-#include "payload.h"
+#include "serialization.h"
 
 #include <bond/core/bonded.h>
 #include <bond/ext/grpc/io_manager.h>
@@ -65,7 +64,6 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         client& operator=(client&& other) = default;
 
     private:
-        template <typename Request, typename Response>
         class unary_call_data;
 
     protected:
@@ -79,7 +77,6 @@ namespace bond { namespace ext { namespace grpc { namespace detail
             Method();
         };
 #endif
-
         Method make_method(const char* name) const
         {
             return Method{ name, ::grpc::internal::RpcMethod::NORMAL_RPC, _channel };
@@ -90,15 +87,11 @@ namespace bond { namespace ext { namespace grpc { namespace detail
             const ::grpc::internal::RpcMethod& method,
             std::shared_ptr<::grpc::ClientContext> context,
             const std::function<void(unary_call_result<Response>)>& cb,
-            const bonded<Request>& request = bonded<Request>{ Request{} })
+            const bonded<Request>& request)
         {
-            using call_data = unary_call_data<
-                typename payload<Request>::type,
-                typename payload<Response>::type>;
-
-            new call_data{
+            new unary_call_data{
                 method,
-                request,
+                Serialize(request),
                 _ioManager->shared_cq(),
                 _channel,
                 context ? std::move(context) : std::make_shared<::grpc::ClientContext>(),
@@ -106,11 +99,21 @@ namespace bond { namespace ext { namespace grpc { namespace detail
                 cb };
         }
 
+        template <typename Response = void, typename Request = Void>
+        void dispatch(
+            const ::grpc::internal::RpcMethod& method,
+            std::shared_ptr<::grpc::ClientContext> context,
+            const std::function<void(unary_call_result<Response>)>& cb,
+            const Request& request = {})
+        {
+            dispatch(method, std::move(context), cb, bonded<Request>{ boost::ref(request) });
+        }
+
         template <typename Response, typename Request = Void>
         std::future<unary_call_result<Response>> dispatch(
             const ::grpc::internal::RpcMethod& method,
             std::shared_ptr<::grpc::ClientContext> context,
-            const bonded<Request>& request = bonded<Request>{ Request{} })
+            const bonded<Request>& request)
         {
             auto callback = std::make_shared<std::packaged_task<unary_call_result<Response>(unary_call_result<Response>)>>(
                 [](unary_call_result<Response> response)
@@ -133,63 +136,90 @@ namespace bond { namespace ext { namespace grpc { namespace detail
             return result;
         }
 
+        template <typename Response, typename Request = Void>
+        std::future<unary_call_result<Response>> dispatch(
+            const ::grpc::internal::RpcMethod& method,
+            std::shared_ptr<::grpc::ClientContext> context,
+            const Request& request = {})
+        {
+            return dispatch<Response>(method, std::move(context), bonded<Request>{ boost::ref(request) });
+        }
+
     private:
         std::shared_ptr<::grpc::ChannelInterface> _channel;
         std::shared_ptr<io_manager> _ioManager;
         Scheduler _scheduler;
     };
 
+
     /// @brief Implementation class that hold the state associated with
     /// outgoing unary calls.
-    template <typename Request, typename Response>
     class client::unary_call_data
-        : public boost::intrusive_ref_counter<unary_call_data<Request, Response>>,
+        : public boost::intrusive_ref_counter<unary_call_data>,
           io_manager_tag
     {
     public:
-        template <typename Callback>
+        template <typename Response>
         unary_call_data(
             const ::grpc::internal::RpcMethod& method,
-            const bonded<Request>& request,
+            const ::grpc::ByteBuffer& requestBuffer,
             std::shared_ptr<::grpc::CompletionQueue> cq,
             std::shared_ptr<::grpc::ChannelInterface> channel,
             std::shared_ptr<::grpc::ClientContext> context,
             const Scheduler& scheduler,
-            Callback&& cb)
+            const std::function<void(unary_call_result<Response>)>& cb)
             : _cq(std::move(cq)),
               _channel(std::move(channel)),
               _context(std::move(context)),
               _responseReader(
-                  ::grpc::internal::ClientAsyncResponseReaderFactory<bonded<Response>>::Create(
+                  ::grpc::internal::ClientAsyncResponseReaderFactory<::grpc::ByteBuffer>::Create(
                       _channel.get(),
                       _cq.get(),
                       method,
                       _context.get(),
-                      request,
+                      requestBuffer,
                       /* start */ true)),
               _scheduler(scheduler),
-              _response(),
+              _responseBuffer(),
               _status(),
-              _cb(std::forward<Callback>(cb)),
               _self(this)
         {
             BOOST_ASSERT(_scheduler);
 
+            if (cb)
+            {
+                _invoke = std::bind(&unary_call_data::invoke<Response>, this, cb);
+            }
+
             auto self = _self; // Make sure `this` will outlive the below call.
-            _responseReader->Finish(&_response, &_status, tag());
+            _responseReader->Finish(&_responseBuffer, &_status, tag());
         }
 
     private:
+        template <typename Response>
+        void invoke(const std::function<void(unary_call_result<Response>)>& callback)
+        {
+            // TODO: Use lambda with move-capture when allowed to use C++14.
+            _scheduler(std::bind(
+                [](decltype(callback)& cb,
+                    ::grpc::ByteBuffer& responseBuffer,
+                    ::grpc::Status& status,
+                    std::shared_ptr<::grpc::ClientContext>& context)
+                {
+                    cb(unary_call_result<Response>{ std::move(responseBuffer), status, std::move(context) });
+                },
+                callback,
+                std::move(_responseBuffer),
+                std::move(_status),
+                std::move(_context)));
+        }
+
         /// @brief Invoked after the response has been received.
         void invoke(bool ok) override
         {
-            if (ok && _cb)
+            if (ok && _invoke)
             {
-                // TODO: Use lambda with move-capture when allowed to use C++14.
-                _scheduler(std::bind(
-                    [](decltype(_cb)& cb, unary_call_result<Response>& result) { cb(std::move(result)); },
-                    std::move(_cb),
-                    unary_call_result<Response>{ std::move(_response), _status, std::move(_context) }));
+                _invoke();
             }
 
             _self.reset();
@@ -202,15 +232,15 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         /// @brief The client context under which the request was executed.
         std::shared_ptr<::grpc::ClientContext> _context;
         /// A response reader.
-        std::unique_ptr<::grpc::ClientAsyncResponseReader<bonded<Response>>> _responseReader;
+        std::unique_ptr<::grpc::ClientAsyncResponseReader<::grpc::ByteBuffer>> _responseReader;
         /// The scheduler in which to invoke the callback.
         Scheduler _scheduler;
-        /// @brief The response received from the service.
-        bonded<Response> _response;
+        /// @brief The response buffer received from the service.
+        /*::grpc::*/ByteBuffer _responseBuffer;
         /// @brief The status of the request.
         ::grpc::Status _status;
-        /// The user code to invoke when a response is received.
-        std::function<void(unary_call_result<Response>)> _cb;
+        /// @brief Type-erased function to invoke user-callback for a response.
+        std::function<void()> _invoke;
         /// A pointer to ourselves used to keep us alive while waiting to
         /// receive the response.
         boost::intrusive_ptr<unary_call_data> _self;
