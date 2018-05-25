@@ -37,7 +37,7 @@ namespace bond { namespace ext { namespace grpc
         /// @since 8.0.0
         unary_call() = default;
 
-        using unary_call::unary_call_base::unary_call_base;
+        using detail::unary_call_base<Request, Response>::unary_call_base;
 
         unary_call(const unary_call&) = delete;
         unary_call& operator=(const unary_call&) = delete;
