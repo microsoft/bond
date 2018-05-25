@@ -21,7 +21,8 @@ var namespacebond =
       ] ],
       [ "grpc", null, [
         [ "detail", null, [
-          [ "client", "classbond_1_1ext_1_1grpc_1_1detail_1_1client.html", null ],
+          [ "ByteBuffer", "classbond_1_1ext_1_1grpc_1_1detail_1_1_byte_buffer.html", null ],
+          [ "client", "classbond_1_1ext_1_1grpc_1_1detail_1_1client.html", "classbond_1_1ext_1_1grpc_1_1detail_1_1client" ],
           [ "io_manager_tag", "structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag.html", "structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag" ],
           [ "service", "classbond_1_1ext_1_1grpc_1_1detail_1_1service.html", "classbond_1_1ext_1_1grpc_1_1detail_1_1service" ],
           [ "unary_call_base", "classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__base.html", "classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__base" ],
@@ -32,6 +33,7 @@ var namespacebond =
         ] ],
         [ "abstract_service", "classbond_1_1ext_1_1grpc_1_1abstract__service.html", null ],
         [ "basic_thread_pool", "classbond_1_1ext_1_1grpc_1_1basic__thread__pool.html", "classbond_1_1ext_1_1grpc_1_1basic__thread__pool" ],
+        [ "GrpcException", "classbond_1_1ext_1_1grpc_1_1_grpc_exception.html", null ],
         [ "InvalidThreadCount", "classbond_1_1ext_1_1grpc_1_1_invalid_thread_count.html", null ],
         [ "io_manager", "classbond_1_1ext_1_1grpc_1_1io__manager.html", "classbond_1_1ext_1_1grpc_1_1io__manager" ],
         [ "MultipleInvocationException", "classbond_1_1ext_1_1grpc_1_1_multiple_invocation_exception.html", null ],

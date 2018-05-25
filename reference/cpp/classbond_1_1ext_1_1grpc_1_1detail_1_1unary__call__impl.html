@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bond: bond::ext::grpc::detail::unary_call_impl&lt; Request, Response &gt; Class Template Reference</title>
+<title>Bond: bond::ext::grpc::detail::unary_call_impl Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,19 +93,19 @@ $(document).ready(function(){initNavTree('classbond_1_1ext_1_1grpc_1_1detail_1_1
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bond::ext::grpc::detail::unary_call_impl&lt; Request, Response &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">bond::ext::grpc::detail::unary_call_impl Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Implementation class that holds the state associated with a single async, unary call.  
  <a href="classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl.html#details">More...</a></p>
 <div class="dynheader">
-Inheritance diagram for bond::ext::grpc::detail::unary_call_impl&lt; Request, Response &gt;:</div>
+Inheritance diagram for bond::ext::grpc::detail::unary_call_impl:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl.png" usemap="#bond::ext::grpc::detail::unary_5Fcall_5Fimpl_3C_20Request_2C_20Response_20_3E_map" alt=""/>
-  <map id="bond::ext::grpc::detail::unary_5Fcall_5Fimpl_3C_20Request_2C_20Response_20_3E_map" name="bond::ext::grpc::detail::unary_5Fcall_5Fimpl_3C_20Request_2C_20Response_20_3E_map">
-<area href="structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag.html" title="Interface for completion queue tag types that io_manager expects. " alt="bond::ext::grpc::detail::io_manager_tag" shape="rect" coords="0,0,357,24"/>
+  <img src="classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl.png" usemap="#bond::ext::grpc::detail::unary_5Fcall_5Fimpl_map" alt=""/>
+  <map id="bond::ext::grpc::detail::unary_5Fcall_5Fimpl_map" name="bond::ext::grpc::detail::unary_5Fcall_5Fimpl_map">
+<area href="structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag.html" title="Interface for completion queue tag types that io_manager expects. " alt="bond::ext::grpc::detail::io_manager_tag" shape="rect" coords="0,0,226,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -115,10 +115,7 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:ab73405cfea3ea91a41703dca9323622d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Request, typename Response&gt;<br />
-class bond::ext::grpc::detail::unary_call_impl&lt; Request, Response &gt;</h3>
-
-<p>Implementation class that holds the state associated with a single async, unary call. </p>
+<div class="textblock"><p>Implementation class that holds the state associated with a single async, unary call. </p>
 <p>Potentually three different objects participate in shared ownership of instances of this class: the user-facing <a class="el" href="classbond_1_1ext_1_1grpc_1_1unary__call.html">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1grpc_1_1shared__unary__call.html">shared_unary_call</a> objects, as well as this object itself.</p>
 <p>To ensure that this instance stays alive while sending a response, <a class="el" href="classbond_1_1ext_1_1grpc_1_1detail_1_1unary__call__impl.html" title="Implementation class that holds the state associated with a single async, unary call. ">unary_call_impl</a> creates itself with a ref count of 1, opposed to the usual 0 that many boost::intrusive_ptr implementations use. When the notification that the response has been sent is dequeued from the completion queue, invoke() calls Release() on itself, decrementing the ref count, and allowing the remaining <a class="el" href="classbond_1_1ext_1_1grpc_1_1unary__call.html" title="Exclusive owner of the details of a single async, unary call. ">unary_call</a> and <a class="el" href="classbond_1_1ext_1_1grpc_1_1shared__unary__call.html" title="A shared owner of the details of a single async, unary call. ">shared_unary_call</a> objects, if any, to control lifetime. </p>
 </div></div><!-- contents -->
