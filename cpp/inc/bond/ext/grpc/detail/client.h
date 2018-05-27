@@ -63,9 +63,6 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         client(client&& other) = default;
         client& operator=(client&& other) = default;
 
-    private:
-        class unary_call_data;
-
     protected:
 #if !defined(__GNUC__) || (__GNUC__ > 7) || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2)
         using Method = ::grpc::internal::RpcMethod;
@@ -87,17 +84,7 @@ namespace bond { namespace ext { namespace grpc { namespace detail
             const ::grpc::internal::RpcMethod& method,
             std::shared_ptr<::grpc::ClientContext> context,
             const std::function<void(unary_call_result<Response>)>& cb,
-            const bonded<Request>& request)
-        {
-            new unary_call_data{
-                method,
-                Serialize(request),
-                _ioManager->shared_cq(),
-                _channel,
-                context ? std::move(context) : std::make_shared<::grpc::ClientContext>(),
-                _scheduler,
-                cb };
-        }
+            const bonded<Request>& request);
 
         template <typename Response = void, typename Request = Void>
         void dispatch(
@@ -146,6 +133,8 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         }
 
     private:
+        class unary_call_data;
+
         std::shared_ptr<::grpc::ChannelInterface> _channel;
         std::shared_ptr<io_manager> _ioManager;
         Scheduler _scheduler;
@@ -245,5 +234,23 @@ namespace bond { namespace ext { namespace grpc { namespace detail
         /// receive the response.
         boost::intrusive_ptr<unary_call_data> _self;
     };
+
+
+    template <typename Response, typename Request>
+    void client::dispatch(
+        const ::grpc::internal::RpcMethod& method,
+        std::shared_ptr<::grpc::ClientContext> context,
+        const std::function<void(unary_call_result<Response>)>& cb,
+        const bonded<Request>& request)
+    {
+        new unary_call_data{
+            method,
+            Serialize(request),
+            _ioManager->shared_cq(),
+            _channel,
+            context ? std::move(context) : std::make_shared<::grpc::ClientContext>(),
+            _scheduler,
+            cb };
+    }
 
 } } } } // namespace bond::ext::grpc::detail
