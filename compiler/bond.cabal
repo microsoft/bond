@@ -31,6 +31,10 @@ copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language, Compiler, Code Generation
 build-type:         Simple
 
+flag warningsAsErrors
+  default: False
+  manual: True
+
 source-repository head
   type:             git
   location:         git@github.com:Microsoft/bond.git
@@ -47,7 +51,8 @@ library
                     shakespeare >= 2.0,
                     text >= 0.11,
                     unordered-containers >= 0.2.3.0
-  ghc-options:      -Wall -Werror
+  if flag(warningsAsErrors)
+    ghc-options:      -Wall -Werror
   exposed-modules:  Language.Bond.Parser
                     Language.Bond.Util
                     Language.Bond.Syntax.Types
@@ -88,7 +93,10 @@ test-suite gbc-tests
                     Tests.Codegen.Util
                     Tests.Syntax
                     Tests.Syntax.JSON
-  ghc-options:      -threaded -Wall -Werror
+
+  ghc-options:      -threaded
+  if flag(warningsAsErrors)
+    ghc-options:    -threaded -Wall -Werror
 
   if os(windows) && arch(i386)
     ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
@@ -121,7 +129,10 @@ executable gbc
   main-is:          Main.hs
   other-modules:    IO
                     Options
-  ghc-options:      -threaded -Wall -Werror
+
+  ghc-options:      -threaded
+  if flag(warningsAsErrors)
+    ghc-options:    -threaded -Wall -Werror
 
   if os(windows) && arch(i386)
     ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
