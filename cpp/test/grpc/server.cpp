@@ -5,6 +5,7 @@
 
 #include <bond/ext/grpc/server.h>
 
+#include <boost/optional.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/debug.hpp>
@@ -34,6 +35,17 @@ private:
 auto scheduler = [](const std::function<void()>& f) { f(); };
 
 const std::string server_address = "127.0.0.1:50051";
+
+BOOST_AUTO_TEST_CASE(ServerMoveTest)
+{
+    ::grpc::ServerBuilder builder;
+    builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+
+    std::unique_ptr<Service1> service{ new Service1{ scheduler } };
+    boost::optional<bond::ext::grpc::server> server;
+
+    BOOST_CHECK_NO_THROW(server = bond::ext::grpc::server::Start(builder, std::move(service)));
+}
 
 BOOST_AUTO_TEST_CASE(SingleServiceStartTest)
 {

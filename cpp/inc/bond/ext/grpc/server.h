@@ -122,8 +122,11 @@ namespace bond { namespace ext { namespace grpc
 
         ~server()
         {
-            Shutdown();
-            Wait();
+            if (_server)
+            {
+                Shutdown();
+                Wait();
+            }
         }
 
         /// @brief Shutdown the server, blocking until all rpc processing
