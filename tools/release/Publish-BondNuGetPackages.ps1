@@ -8,7 +8,7 @@
     .PARAMETER PackageFeed
         The feed to publish to.
 
-    .PARAMETER SkipSymbols
+    .PARAMETER OmitSymbols
         Whether to skip pushing ".symbols.nupkg" packages and just push
         ".nupkg" pakages. Defaults to false
 
@@ -32,7 +32,7 @@ param
     [string]
     $PackageFeed,
     [switch]
-    $SkipSymbols = $false,
+    $OmitSymbols = $false,
     [string]
     $NuGetPath = $null,
     [string]
@@ -76,7 +76,7 @@ function UploadPackages
 
         $pushPackage = $normalPackage
 
-        if (-not $SkipSymbols)
+        if (-not $OmitSymbols)
         {
             if (Test-Path -PathType Leaf -Path $symbolPackage)
             {
