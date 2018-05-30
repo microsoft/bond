@@ -11,41 +11,44 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
-* `gbc` & compiler library: (major bump already done in bond.cabal)
-* IDL core version: (major bump needed)
-* C++ version: (major bump needed)
-  - BOND_VERSION: (major bump needed)
-  - BOND_MIN_CODEGEN_VERSION: (major bump needed)
-* C# NuGet version: (major bump needed)
+## 8.0.0: 2018-05-30 ##
+* `gbc` & compiler library: 0.11.0.0
+* IDL core version: 3.0
+* C++ version: 8.0
+* C# NuGet version: 8.0
 
 ### `gbc` and Bond compiler library ###
 
-* **Breaking change** The deprecated Bond Comm functionality has been
-  removed. This includes all gbc options realted to Comm and the Comm
-  codegen templates in the Haskell library. [Issue
+* **Breaking change** The deprecated Bond Comm functionality has been removed.
+  This includes all gbc options realted to Comm and the Comm codegen templates
+  in the Haskell library. [Issue
   #824](https://github.com/Microsoft/bond/issues/824)
-* C++ codegen now properly generates move assignment operator which was broken
-  for some cases.
-* C++ codegen no longer generates checks for C++11, except for MSVC 2013 workarounds.
-* C++ codegen no longer generates data member initialization that invokes a constructor
-  accepting `Comparer` for associative containers.
-* C++ codegen now can generate copy and move constructors with an allocator argument
-  when a custom allocator is used and `--alloc-ctors` is passed to `gbc`.
-* C++ codegen now can generate [type aliases](http://en.cppreference.com/w/cpp/language/type_alias)
-  that correspond to ones in IDL when `--type-aliases` flag is passed to `gbc`.
-* C++ codegen now can use [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor)
-  for strings and containers when custom allocator is used and `--scoped-alloc` flag
-  is passed to `gbc`.
-* C++ codegen now generates lazily constructed enum name-to-value and value-to-name maps.
-  Additionally, a user-defined map type can now be provided to `GetNameToValueMap` and
-  `GetValueToNameMap`.
+* C++ codegen now properly generates move assignment operators. Previously,
+  this was broken for some cases.
+* C++ codegen no longer generates checks for C++11, except for MSVC 2013
+  workarounds.
+* C++ codegen no longer generates data member initialization that invokes a
+  constructor accepting `Comparer` for associative containers.
+* C++ codegen can now cenerate copy and move constructors with an allocator
+  argument when a custom allocator is used and `--alloc-ctors` is passed to
+  `gbc`.
+* C++ codegen can now generate [type
+  aliases](http://en.cppreference.com/w/cpp/language/type_alias) that
+  correspond to ones in IDL when the `--type-aliases` flag is passed to `gbc`.
+* C++ codegen can now use
+  [`std::scoped_allocator_adaptor`](http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor)
+  for strings and containers when a custom allocator is used and the
+  `--scoped-alloc` flag is passed to `gbc`.
+* C++ codegen now generates lazily constructed enum name-to-value and
+  value-to-name maps. Additionally, a user-defined map type can now be
+  provided to `GetNameToValueMap` and `GetValueToNameMap`.
 * C++ codegen now applies the `--export-attribute` to the `ToString`,
   `FromString`, `ToEnum` and `FromEnum` functions.
-* Fixed a bug in C++ codegen that incorrectly applied the export attribute
-  to generic gRPC services.
+* Fixed a bug in C++ codegen that incorrectly applied the export attribute to
+  generic gRPC services.
 * C++ codegen now generates an `allocator_type` typedef for a struct when the
-  `--allocator` option is passed to `gbc`, instead of specializing `std::uses_allocator`.
+  `--allocator` option is passed to `gbc`, instead of specializing
+  `std::uses_allocator`.
 * `import` statements can now end with an optional semicolon.
 * File and directory paths on the command line, in response files, or in
   `import` statements can now use a mix of forward and backslashes. [Issue
@@ -53,139 +56,166 @@ different versioning scheme, following the Haskell community's
 
 ### C++ ###
 
-* **Breaking change** The deprecated Bond Comm functionality has been
-  removed. This includes all gbc options related to Comm and all Comm APIs
-  and header files. [Issue
-  #824](https://github.com/Microsoft/bond/issues/824)
+* **Breaking change** The deprecated Bond Comm functionality has been removed.
+  This includes all gbc options related to Comm and all Comm APIs and header
+  files. [Issue #824](https://github.com/Microsoft/bond/issues/824)
 * **Breaking change** Only versions of Boost released in the past two years
   (1.61 and newer) are supported. Bond will *likely* continue to work with
   older versions, but it is no longer tested with anything older than 1.61.
   Test coverage for Boost versions 1.61&ndash;1.66 has been improved. [Issue
   #771](https://github.com/Microsoft/bond/issues/771)
-* **Breaking change** Constructors accepting a `Comparer` have been removed from
-  `bond::maybe` and `bond::nullable` types.
-* **Breaking change** The `bond::is_blob` and `bond::is_nullable` traits
-  have been removed. The `blob` and `nullable` types are not customizable,
-  so these where never needed or used. The related functionality provided by
+* **Breaking change** Constructors accepting a `Comparer` have been removed
+  from the `bond::maybe` and `bond::nullable` types.
+* **Breaking change** The `bond::is_blob` and `bond::is_nullable` traits have
+  been removed. The `blob` and `nullable` types are not customizable, so these
+  where never needed or used. The related functionality provided by
   `bond::get_list_sub_type_id` remains.
 * **Breaking change** Removed a dangerous implicit conversion operator from
-  `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use
-  one of the `bond::maybe<T>::value` functions.
+  `bond::maybe<T>` to `const T&`. To access a `bond::maybe<T>` value, use one
+  of the `bond::maybe<T>::value` functions.
 * **Breaking change** The nested `pointer`, `const_pointer`, `reference` and
   `const_reference` typedefs have been removed from `bond::nullable<T>`.
-* **Breaking change** The `Allocator` (second) type parameter has be removed from
-  `bond::nullable<T>` and now it is always deduced from `T`.
+* **Breaking change** The `Allocator` (second) type parameter has be removed
+  from `bond::nullable<T>` and now it is always deduced from `T`.
 * **Breaking change** The `bond::capped_allocator` and related types have been
   moved to the `bond::ext` namespace and the "bond/ext" include directory.
-* **Breaking changes** in Bond-over-gRPC (based on real-world use and feedback):
+* **Breaking changes** in Bond-over-gRPC (based on real-world use and
+  feedback). Check the updated
+  [examples](https://github.com/Microsoft/bond/tree/master/examples/cpp/grpc)
+  to see how to use the changed APIs.
   - The generated `ClientCore` and `ServiceCore` class templates and the
     `Client` and `Service` convenience typedefs have all been replaced with
-    normal classes named `Client` and `Service`. The `ThreadPool` type parameter
-    has been removed in favor of simplified runtime representation of a `Scheduler`.
-  - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool` implementation
-    now use `operator()` instead of a `schedule()` member function.
-  - The `bond::ext::gRPC::server_core` class template and the `bond::ext::gRPC::server`
-    convenience typedef have been replaced with the normal classes `bond::ext::gRPC::server`.
-  - The generated `Client::Async*` functions now accept `std::shared_ptr<grpc::ClientContext>`
-    as the last parameter instead of as the first.
-  - The client callback now directly accepts `bond::ext::gRPC::unary_call_result<Response>`
-    (drops the `std::shared_ptr`). Also the `unary_call_result` now exposes
-    read-only getters rather than fields.
+    normal classes named `Client` and `Service`. The `ThreadPool` type
+    parameter has been removed in favor of a simplified runtime representation
+    of a `Scheduler`.
+  - The `Scheduler` concept and the `bond::ext::gRPC::thread_pool`
+    implementation now use `operator()` instead of a `schedule()` member
+    function.
+  - The `bond::ext::gRPC::server_core` class template and the
+    `bond::ext::gRPC::server` convenience typedef have been replaced with the
+    normal class `bond::ext::gRPC::server`.
+  - The generated `Client::Async*` functions now accept the
+    `std::shared_ptr<grpc::ClientContext>` argument as the last parameter
+    instead of as the first. This makes is easier to omit this parameter when
+    no context customization is needed.
+  - The client callback now directly accepts
+    `bond::ext::gRPC::unary_call_result<Response>` (drops the
+    `std::shared_ptr`). Also the `unary_call_result` now exposes read-only
+    getters rather than fields. This simplified the type that clients need to
+    deal with.
   - The `bond::ext::gRPC::wait_callback::arg_type` has been removed.
-  - The `client_callback.h` header file has been renamed to `unary_call_result.h`.
-  - The `bond::ext::gRPC::server_builder` has been replaced by `bond::ext::gRPC::server::Start`
-    factory function which now returns plain `bond::ext::gRPC::server` object and accepts
-    service instances managed by `std::unique_ptr`. This properly models the lifetime requirements.
-    Service implementations must now pass a `Scheduler` to the generated `Service` base class which
-    is no longer default constructible.
-  - Generated method reflection information no longer uses redundant `bonded<T>` wrapper
-    for `input_type` and `result_type` typedefs.
-  - The `bond::ext::gRPC::unary_call` no longer requires `bonded<T>` wrapper for
-    request type.
-  - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to `Finish`.
-  - The `grpc::Status` second argument has been removed from `bond::ext::gRPC::unary_call::Finish`.
-  - Fixed `bond::ext::gRPC::unary_call`, `bond::ext::gRPC::shared_unary_call` and
-    `bond::ext::gRPC::unary_call_result` types to properly use `void` and
-    `bond::reflection::nothing` instead of `bond::Void` empty struct. Also removed unnecessary
-    functions from `unary_call` and `shared_unary_call` for those cases when they are not applicable
-    (e.g. `Finish` is not available when return type is `nothing`).
+  - The `client_callback.h` header file has been renamed to
+    `unary_call_result.h` to align with its contents.
+  - The `bond::ext::gRPC::server_builder` has been replaced by the
+    `bond::ext::gRPC::server::Start` factory function which now returns a
+    plain `bond::ext::gRPC::server` object and accepts service instances
+    managed by `std::unique_ptr`. This properly models the lifetime
+    requirements. Service implementations must now pass a `Scheduler` to the
+    generated `Service` base class which is no longer default constructible.
+  - The generated method reflection information no longer uses a redundant
+    `bonded<T>` wrapper for `input_type` and `result_type` typedefs.
+  - The `bond::ext::gRPC::unary_call` no longer requires `bonded<T>` wrapper
+    for request type.
+  - The `bond::ext::gRPC::unary_call::FinishWithError` has been renamed to
+    `Finish`. Overloads that take a status can be used to signal an error.
+  - The `grpc::Status` second argument has been removed from
+    `bond::ext::gRPC::unary_call::Finish`. gRPC does not support sending a
+    response with a non-OK status, so the payload was being droped anyway.
+  - Fixed `bond::ext::gRPC::unary_call`, `bond::ext::gRPC::shared_unary_call`
+    and `bond::ext::gRPC::unary_call_result` types to properly use `void` and
+    `bond::reflection::nothing` instead of the `bond::Void` empty struct. Also
+    removed unnecessary functions from `unary_call` and `shared_unary_call`
+    for those cases when they are not applicable (e.g. `Finish` is not
+    available when return type is `nothing`).
 * gRPC v1.12.0 is now required to use Bond-over-gRPC.
-    * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
-    * This version include some Windows-specific performance improvements for loopback connections.
-* The `bond::ext::gRPC::wait_callback` has been deprecated in favor of additionally
-  generated client functions that return `std::future`.
+    * This version include a number of memory leak fixes that users of
+      Bond-over-gRPC were encountering. [Issue
+      #810](https://github.com/Microsoft/bond/issues/810)
+    * This version include some Windows-specific performance
+      improvements for loopback connections.
+* The `bond::ext::gRPC::wait_callback` has been deprecated in favor of
+  additionally generated client functions that return `std::future`.
 * Fixed includes for gRPC services with events or parameterless methods.
   [Issue #735](https://github.com/Microsoft/bond/issues/735)
-* Fixed a bug which would read an unrelated struct's field(s) when deserializing a
-  base struct. [Issue #742](https://github.com/Microsoft/bond/issues/742)
-* Fixed a bug in `bond::MapTo<T>::Field` where `Protocols` type parameter was
-  not passed to `bond::Apply`.
+* Fixed a bug which would read an unrelated struct's field(s) when
+  deserializing a base struct. [Issue
+  #742](https://github.com/Microsoft/bond/issues/742)
+* Fixed a bug in `bond::MapTo<T>::Field` that failed to pass the `Protocols`
+  type parameter to `bond::Apply`.
 * Fixed a race condition when `bond::ext::gRPC::io_manager::shutdown` and
   `bond::ext::gRPC::io_manager::wait` are called concurrently.
 * Fixed a race condition during `bond::ext::gRPC::unary_call` destruction.
 * Fixed the broken move constructor of `bond::bonded<T, Reader&>`.
 * Fixed the move constructor of `bond::value` to actually move the underlying reader.
-* Added `bond::blob_prolong` helper function that will return a `bond::blob` with
-  a copied data if the original one does not own the memory.
-* The `bond::OutputBuffer::GetBuffers` now can accept arbitrary STL-like containers.
+* Added the `bond::blob_prolong` helper function that will return a
+  `bond::blob` with a copied data if the original one does not own the memory.
+* The `bond::OutputBuffer::GetBuffers` now can accept arbitrary STL-like
+  containers.
 * `bond::maybe<T>` has been overhauled.
-    * Fixed a bug that default initialized an instance of `T` even when a maybe held nothing.
+    * Fixed a bug that default initialized an instance of `T` even when a
+      maybe held nothing.
     * Added `noexcept` variants of `bond::maybe<T>::value`.
     * Added `bond::maybe<T>::emplace` to construct a maybe's value in place.
     * Added various rvalue-reference and allocator-aware constructors and
       assignment operators.
-    * Added `operator==(const bond::maybe<T>&, const T&)` and `operator==(const
-      T&, const bond::maybe<T>&)` to compare directly to instances of `T`.
-* Fixed an issue with the `ToString`, `FromString`, `ToEnum` and `FromEnum` functions
-  that were previously not exported from a DLL when the `--export-attribute` option was
-  passed to `gbc`. [Issue #861](https://github.com/Microsoft/bond/issues/861)
-* Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an allocator
-  to `T` when `allocator_type` was not explicitly defined.
+    * Added `operator==(const bond::maybe<T>&, const T&)` and
+      `operator==(const T&, const bond::maybe<T>&)` to compare directly to
+      instances of `T`.
+* Fixed an issue with the `ToString`, `FromString`, `ToEnum` and `FromEnum`
+  functions that were previously not exported from a DLL when the
+  `--export-attribute` option was passed to `gbc`. [Issue
+  #861](https://github.com/Microsoft/bond/issues/861)
+* Fixed a bug in `bond::nullable<T, Alloc>` where it was not propagating an
+  allocator to `T` when `allocator_type` was not explicitly defined.
 * Fixed a bug in `bond::make_box` where `const T&` was not handled correctly.
-* The use of `bond::check_method` has been replaced with less restricting expression
-  SFINAE checks on supported compilers. [Issue #896](https://github.com/Microsoft/bond/issues/896)
-* Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join itself.
-* The preferred namespace for Bond-over-gRPC is now `bond::ext::grpc`. The previous
-  namespace, `bond::ext::gRPC`, continues to work.
-* Added Windows-specific implementation of a [thread pool](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686766(v=vs.85).aspx).
+* The use of `bond::check_method` has been replaced with less restricting
+  expression SFINAE checks on supported compilers. [Issue
+  #896](https://github.com/Microsoft/bond/issues/896)
+* Fixed a bug where `bond::ext::gRPC::io_manager` could cause a thread to join
+  itself.
+* The preferred namespace for Bond-over-gRPC is now `bond::ext::grpc`. The
+  previous namespace, `bond::ext::gRPC`, continues to work.
+* Added a Windows-specific implementation of a [thread
+  pool](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686766(v=vs.85).aspx).
 
 ### C# ###
 
-* **Breaking change** The deprecated Bond Comm functionality has been
-  removed. This includes all gbc options related to Comm and all Comm APIs,
-  assemblies, and NuGet packages. [Issue
+* **Breaking change** The deprecated Bond Comm functionality has been removed.
+  This includes all gbc options related to Comm and all Comm APIs, assemblies,
+  and NuGet packages. [Issue
   #824](https://github.com/Microsoft/bond/issues/824)
-* **Breaking change** The Bond.CSharp and Bond.Compiler.CSharp NuGet
-  packages perform implicit codegen when the simplified .NET Core `.csproj`
-  format is used. This breaking change *does not* affect projects using the
-  classic `.csproj` format. Any .NET Core projects that encounter the build
-  error "Duplicate BondCodegen items were included." and were explicitly
-  listing `BondCodegen` items will either need to rely on implicit codegen
-  or [disable all implicit inclusion](https://aka.ms/sdkimplicititems). To
-  set per-item metadata, use the [item update
+* **Breaking change** The Bond.CSharp and Bond.Compiler.CSharp NuGet packages
+  perform implicit codegen when the simplified .NET Core `.csproj` format is
+  used. This breaking change *does not* affect projects using the classic
+  `.csproj` format. Any .NET Core projects that encounter the build error
+  "Duplicate BondCodegen items were included." and were explicitly listing
+  `BondCodegen` items will either need to rely on implicit codegen or [disable
+  all implicit inclusion](https://aka.ms/sdkimplicititems). To set per-item
+  metadata, use the [item update
   syntax](https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).
   [Issue #636](https://github.com/Microsoft/bond/issues/636)
-* The C# attribute `Bond.Attribute` can now be applied to methods. This
-  fixes broken codegen when attributes are used on service methods.
-  [Issue #617](https://github.com/Microsoft/bond/issues/617)
+* The C# attribute `Bond.Attribute` can now be applied to methods. This fixes
+  broken codegen when attributes are used on service methods. [Issue
+  #617](https://github.com/Microsoft/bond/issues/617)
 * Bond Attributes on service methods are now present on all the client
   overloads for the methods. Previously, just the "friendly" method had the
   attributes.
 * Grpc.Core v1.12.0 is now required to use Bond-over-gRPC.
-    * This version include a number of memory leak fixes that users of Bond-over-gRPC were encountering. [Issue #810](https://github.com/Microsoft/bond/issues/810)
-    * This version include some Windows-specific performance improvements for loopback connections.
+    * This version include a number of memory leak fixes that users of
+      Bond-over-gRPC were encountering. [Issue
+      #810](https://github.com/Microsoft/bond/issues/810)
+    * This version include some Windows-specific performance improvements for
+      loopback connections.
 * `BondCodegen` items will now appear in the Visual Studio 2017+ UI in .NET
   Core projects.
-* The .NET Standard assemblies are fully strong-name signed. Previously,
-  they were inadvertently only public strong-name signed.
-* Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS
-  and Linux that prevented the C# compiler from finding the generated C#
-  files.
-* *Preview*: Added preliminary support for generating types with
-  constructors with parameters for each field. This functionality will
-  change in the future and may be removed. [Pull request
+* The .NET Standard assemblies are fully strong-name signed. Previously, they
+  were inadvertently only public strong-name signed.
+* Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS and
+  Linux that prevented the C# compiler from finding the generated C# files.
+* *Preview*: Added preliminary support for generating types with constructors
+  with parameters for each field. This functionality will change in the future
+  and may be removed. [Pull request
   #857](https://github.com/Microsoft/bond/pull/857)
-
 
 ## 7.0.2: 2017-10-30 ##
 * `gbc` & compiler library: 0.10.1.0
