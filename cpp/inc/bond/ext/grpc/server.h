@@ -118,7 +118,7 @@ namespace bond { namespace ext { namespace grpc
         static server Start(::grpc::ServerBuilder& builder) = delete;
 
         server(server&&) = default;
-        server & operator=(server&&) = default;
+        server& operator=(server&&) = default;
 
         ~server()
         {
