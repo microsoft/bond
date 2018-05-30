@@ -17,14 +17,8 @@ function (add_stack_build target)
         set (options "--test")
     endif()
 
-    # If unspecified, turn off optimizations
-    list (APPEND options $<$<CONFIG:>:--fast>)
-
-    list (APPEND options $<$<CONFIG:Debug>:--fast>)
-    list (APPEND options $<$<CONFIG:Debug>:--no-executable-stripping>)
-    list (APPEND options $<$<CONFIG:Debug>:--no-library-stripping>)
-    list (APPEND options $<$<CONFIG:Debug>:--no-strip>)
-
+    # These command line arguments override what's in stack.yaml for
+    # specific configurations.
     list (APPEND options $<$<CONFIG:MinSizeRel>:--executable-stripping>)
     list (APPEND options $<$<CONFIG:MinSizeRel>:--ghc-options=-O2>)
     list (APPEND options $<$<CONFIG:MinSizeRel>:--library-stripping>)
