@@ -29,7 +29,7 @@ different versioning scheme, following the Haskell community's
   workarounds.
 * C++ codegen no longer generates data member initialization that invokes a
   constructor accepting `Comparer` for associative containers.
-* C++ codegen can now cenerate copy and move constructors with an allocator
+* C++ codegen can now generate copy and move constructors with an allocator
   argument when a custom allocator is used and `--alloc-ctors` is passed to
   `gbc`.
 * C++ codegen can now generate [type
@@ -53,6 +53,7 @@ different versioning scheme, following the Haskell community's
 * File and directory paths on the command line, in response files, or in
   `import` statements can now use a mix of forward and backslashes. [Issue
   #869](https://github.com/Microsoft/bond/issues/869)
+* gbc is now Authenticode dual-signed with both SHA1 and SHA2.
 
 ### C++ ###
 
@@ -210,6 +211,8 @@ different versioning scheme, following the Haskell community's
   Core projects.
 * The .NET Standard assemblies are fully strong-name signed. Previously, they
   were inadvertently only public strong-name signed.
+* The .NET assemblies are now Authenticode dual-signed with both SHA1 and
+  SHA2.
 * Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS and
   Linux that prevented the C# compiler from finding the generated C# files.
 * *Preview*: Added preliminary support for generating types with constructors
