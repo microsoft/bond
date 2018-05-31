@@ -118,12 +118,15 @@ namespace bond { namespace ext { namespace grpc
         static server Start(::grpc::ServerBuilder& builder) = delete;
 
         server(server&&) = default;
-        server & operator=(server&&) = default;
+        server& operator=(server&&) = default;
 
         ~server()
         {
-            Shutdown();
-            Wait();
+            if (_server)
+            {
+                Shutdown();
+                Wait();
+            }
         }
 
         /// @brief Shutdown the server, blocking until all rpc processing

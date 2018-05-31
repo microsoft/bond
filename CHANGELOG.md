@@ -11,6 +11,16 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased  ##
+* `gbc` & compiler library: TBD
+* IDL core version: TBD
+* C++ version: TBD
+* C# NuGet version: TBD
+
+### C++ ###
+* Fixed a crash in `bond::ext::grpc::server`'s destructor when invoked on
+  a moved-from object instance.
+
 ## 8.0.0: 2018-05-30 ##
 * `gbc` & compiler library: 0.11.0.0
 * IDL core version: 3.0
