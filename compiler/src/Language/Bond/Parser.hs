@@ -21,7 +21,7 @@ module Language.Bond.Parser
     )
     where
 
-import Control.Applicative
+import Control.Applicative hiding (some)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Data.Function

@@ -12,7 +12,7 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased  ##
-* `gbc` & compiler library: TBD
+* `gbc` & compiler library: 0.11.0.3
 * IDL core version: TBD
 * C++ version: TBD
 * C# NuGet version: TBD

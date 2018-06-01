@@ -17,7 +17,7 @@ namespace tests
 {
     using System.Collections.Generic;
 
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.3")]
     public enum EnumType1
     {
         EnumValue1 = unchecked((int)5),
@@ -36,7 +36,7 @@ namespace tests
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.3")]
     public partial class Foo
     {
         [global::Bond.Id(0)]

@@ -19,7 +19,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Attribute("FooAttribute", "Bar")]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.11.0.3")]
     public static class Foo 
     {
         static readonly string ServiceName = "tests.Foo";
