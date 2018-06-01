@@ -11,7 +11,7 @@ module Language.Bond.Codegen.CustomMapping
     , parseNamespaceMapping
     ) where
 
-import Control.Applicative
+import Control.Applicative hiding (some)
 import Data.Void (Void)
 import Language.Bond.Syntax.Types
 import Prelude
