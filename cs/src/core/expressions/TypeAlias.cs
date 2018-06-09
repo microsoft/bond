@@ -46,8 +46,8 @@ namespace Bond.Expressions
                 type = typeof(string);
 
             if (type != value.Type &&
-                value.Type.IsGenericType() &&
-                value.Type.GetGenericTypeDefinition() == typeof (Nullable<>))
+                !(type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>)) &&
+                value.Type.IsGenericType() && value.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 value = Expression.Convert(value, value.Type.GetTypeInfo().GenericTypeArguments[0]);
             }

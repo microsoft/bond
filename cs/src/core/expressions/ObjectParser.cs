@@ -143,26 +143,32 @@ namespace Bond.Expressions
                         processField);
                 }
             }
+            else if (fieldSchemaType.IsBondBlob())
+            {
+                var notEqual = Expression.NotEqual(
+                    convertedBlob,
+                    Expression.Default(typeof(ArraySegment<byte>)));
+
+                return Expression.Block(
+                    new[] { convertedBlob },
+                    Expression.Assign(convertedBlob, blob),
+                    PrunedExpression.IfThenElse(notEqual, processField, omitField));
+            }
             else
             {
                 var defaultValue = schemaField.GetDefaultValue();
 
-                if (fieldSchemaType.IsBondBlob())
+                if (defaultValue == null)
                 {
-                    var notEqual = Expression.NotEqual(
-                        convertedBlob,
-                        Expression.Default(typeof(ArraySegment<byte>)));
-
-                    return Expression.Block(
-                        new[] { convertedBlob },
-                        Expression.Assign(convertedBlob, blob),
-                        PrunedExpression.IfThenElse(notEqual, processField, omitField));
+                    cannotOmit = Expression.NotEqual(fieldValue, Expression.Constant(null));
                 }
                 else if (fieldSchemaType.IsBondContainer())
                 {
-                    cannotOmit = defaultValue == null
-                        ? Expression.NotEqual(fieldValue, Expression.Constant(null))
-                        : Expression.NotEqual(ContainerCount(fieldValue), Expression.Constant(0));
+                    cannotOmit = Expression.NotEqual(ContainerCount(fieldValue), Expression.Constant(0));
+                }
+                else if (defaultValue.GetType() != fieldValue.Type)
+                {
+                    cannotOmit = Expression.NotEqual(fieldValue, typeAlias.Convert(Expression.Constant(defaultValue), fieldValue.Type));
                 }
                 else
                 {

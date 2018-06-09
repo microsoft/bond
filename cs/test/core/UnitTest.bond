@@ -612,6 +612,7 @@ struct Generics
     11: GenericScalar<float> sf;
     12: GenericScalar<uint64> sui64;
     13: GenericScalar<EnumType1> se;
+    14: GenericScalar<DateTime> sdt;
 
     20: GenericClass<set<int32>> ci32;
     21: GenericClass<blob> cblob;
@@ -637,6 +638,7 @@ struct GenericsWithNothing
     11: GenericNothingScalar<float> sf;
     12: GenericNothingScalar<uint64> sui64;
     13: GenericNothingScalar<EnumType1> se;
+    14: GenericNothingScalar<DateTime> sdt;
 
     20: GenericNothingClass<set<int32>> ci32;
     21: GenericNothingClass<blob> cblob;
