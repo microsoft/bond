@@ -12,6 +12,17 @@ struct Nested
     0: double _double;
 }
 
+struct Generic<T : value>
+{
+    0: T value;
+}
+
+struct GenericNothing<T : value>
+{
+    0: T value = nothing;
+}
+
+using DateTime = int64;
 using decimal = blob;
 using reference = blob;
 
@@ -44,4 +55,6 @@ struct Example : Base
     82: vector<reference> _refVector;
     83: map<int32, reference> _refMap;
     84: nullable<reference> _refNullable;
+    85: Generic<DateTime> _dt;
+    86: GenericNothing<DateTime> _dt2;
 };

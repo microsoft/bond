@@ -1094,6 +1094,80 @@
                 .Call $writer.WriteFieldEnd()
             }
         };
+        .If (
+            .Call $reader.ReadFieldOmitted()
+        ) {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_STRUCT),
+                .Constant<System.UInt16>(85),
+                .Constant<Bond.Metadata>(_dt))
+        } .Else {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_STRUCT),
+                    .Constant<System.UInt16>(85),
+                    .Constant<Bond.Metadata>(_dt));
+                .Block() {
+                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Generic<int64>));
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_INT64),
+                            .Constant<System.UInt16>(0),
+                            .Constant<Bond.Metadata>(value))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_INT64),
+                                .Constant<System.UInt16>(0),
+                                .Constant<Bond.Metadata>(value));
+                            .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .Call $writer.WriteStructEnd()
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        };
+        .If (
+            .Call $reader.ReadFieldOmitted()
+        ) {
+            .Call $writer.WriteFieldOmitted(
+                .Constant<Bond.BondDataType>(BT_STRUCT),
+                .Constant<System.UInt16>(86),
+                .Constant<Bond.Metadata>(_dt2))
+        } .Else {
+            .Block() {
+                .Call $writer.WriteFieldBegin(
+                    .Constant<Bond.BondDataType>(BT_STRUCT),
+                    .Constant<System.UInt16>(86),
+                    .Constant<Bond.Metadata>(_dt2));
+                .Block() {
+                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GenericNothing<int64>));
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_INT64),
+                            .Constant<System.UInt16>(0),
+                            .Constant<Bond.Metadata>(value))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_INT64),
+                                .Constant<System.UInt16>(0),
+                                .Constant<Bond.Metadata>(value));
+                            .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .Call $writer.WriteStructEnd()
+                };
+                .Call $writer.WriteFieldEnd()
+            }
+        };
         .Call $writer.WriteStructEnd()
     }
 }
