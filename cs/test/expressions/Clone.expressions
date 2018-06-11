@@ -838,9 +838,9 @@
                             .Default(System.Void);
                             .If ($GenericNothing`1_obj.value != null) {
                                 ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                    (System.Int64).Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                        $GenericNothing`1_obj.value,
-                                        .Default(System.Nullable`1[System.Int64])),
+                                    (System.Int64)((System.Nullable`1[System.Int64]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                        (System.DateTime)$GenericNothing`1_obj.value,
+                                        .Default(System.Int64))),
                                     .Default(System.DateTime))
                             } .Else {
                                 .Default(System.Void)

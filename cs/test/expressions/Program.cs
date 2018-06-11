@@ -210,11 +210,6 @@
 
             return default(DateTime);
         }
-
-        public static long? Convert(DateTime? value, long? unused)
-        {
-            return value?.Ticks;
-        }
     }
 
     static class Program

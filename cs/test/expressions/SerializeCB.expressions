@@ -1249,9 +1249,9 @@
                                 .Constant<Bond.BondDataType>(BT_INT64),
                                 .Constant<System.UInt16>(0),
                                 .Constant<Bond.Metadata>(value));
-                            .Call $writer.WriteInt64((System.Int64).Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                    $GenericNothing`1_obj.value,
-                                    .Default(System.Nullable`1[System.Int64])));
+                            .Call $writer.WriteInt64(.Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                    (System.DateTime)$GenericNothing`1_obj.value,
+                                    .Default(System.Int64)));
                             .Call $writer.WriteFieldEnd()
                         }
                     } .Else {
