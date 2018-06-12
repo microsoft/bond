@@ -128,7 +128,13 @@
                                                                                                         .Block() {
                                                                                                             .Block() {
                                                                                                                 .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
-                                                                                                                    $Convert(Example_result).vvb_item_item = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                    .If (
+                                                                                                                        $reader.Value .Is System.Int64
+                                                                                                                    ) {
+                                                                                                                        $Convert(Example_result).vvb_item_item = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                    } .Else {
+                                                                                                                        $Convert(Example_result).vvb_item_item = (System.UInt64)((System.Numerics.BigInteger)$reader.Value)
+                                                                                                                    }
                                                                                                                 } .Else {
                                                                                                                     .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
                                                                                                                             System.Globalization.CultureInfo.InvariantCulture,
@@ -3103,7 +3109,13 @@
                                                                                                                                                                                         .Call $reader.Read();
                                                                                                                                                                                         .Block() {
                                                                                                                                                                                             .If ($reader.TokenType == .Constant<Newtonsoft.Json.JsonToken>(Integer)) {
-                                                                                                                                                                                                ($Example_result.guid).Data4 = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                                                                                                .If (
+                                                                                                                                                                                                    $reader.Value .Is System.Int64
+                                                                                                                                                                                                ) {
+                                                                                                                                                                                                    ($Example_result.guid).Data4 = (System.UInt64)((System.Int64)$reader.Value)
+                                                                                                                                                                                                } .Else {
+                                                                                                                                                                                                    ($Example_result.guid).Data4 = (System.UInt64)((System.Numerics.BigInteger)$reader.Value)
+                                                                                                                                                                                                }
                                                                                                                                                                                             } .Else {
                                                                                                                                                                                                 .Invoke (.Lambda #Lambda2<System.Action`1[System.String]>)(.Call System.String.Format(
                                                                                                                                                                                                         System.Globalization.CultureInfo.InvariantCulture,
