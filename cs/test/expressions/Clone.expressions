@@ -815,9 +815,7 @@
                         .Block(ExpressionsTest.Generic`1[System.DateTime] $Generic`1_obj) {
                             $Generic`1_obj = (ExpressionsTest.Generic`1[System.DateTime])$obj;
                             .Default(System.Void);
-                            .If ($Generic`1_obj.value != .Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                                0L,
-                                .Default(System.DateTime))) {
+                            .If ($Generic`1_obj.value != .Default(System.DateTime)) {
                                 ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                     .Call ExpressionsTest.BondTypeAliasConverter.Convert(
                                         $Generic`1_obj.value,

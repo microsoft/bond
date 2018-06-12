@@ -1209,9 +1209,7 @@
                 .Block(ExpressionsTest.Generic`1[System.DateTime] $Generic`1_obj) {
                     $Generic`1_obj = (ExpressionsTest.Generic`1[System.DateTime])$obj;
                     .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Generic<int64>));
-                    .If ($Generic`1_obj.value != .Call ExpressionsTest.BondTypeAliasConverter.Convert(
-                        0L,
-                        .Default(System.DateTime))) {
+                    .If ($Generic`1_obj.value != .Default(System.DateTime)) {
                         .Block() {
                             .Call $writer.WriteFieldBegin(
                                 .Constant<Bond.BondDataType>(BT_INT64),

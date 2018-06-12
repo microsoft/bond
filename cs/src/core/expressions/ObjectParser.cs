@@ -166,13 +166,13 @@ namespace Bond.Expressions
                 {
                     cannotOmit = Expression.NotEqual(ContainerCount(fieldValue), Expression.Constant(0));
                 }
-                else if (defaultValue.GetType() != fieldValue.Type)
-                {
-                    cannotOmit = Expression.NotEqual(fieldValue, typeAlias.Convert(Expression.Constant(defaultValue), fieldValue.Type));
-                }
                 else
                 {
-                    cannotOmit = Expression.NotEqual(fieldValue, Expression.Constant(defaultValue));
+                    cannotOmit = Expression.NotEqual(
+                        fieldValue,
+                        defaultValue.GetType() != fieldValue.Type
+                            ? (Expression)Expression.Default(fieldValue.Type)
+                            : Expression.Constant(defaultValue));
                 }
             }
 
