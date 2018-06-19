@@ -129,7 +129,8 @@ install (FILES ${output}
     DESTINATION bin)
 
 if(EXISTS "${completion_dir}" AND IS_DIRECTORY "${completion_dir}")
-    install (FILES ${completion}
-        RENAME gbc
-        DESTINATION ${completion_dir})
+    install(CODE "execute_process(COMMAND bash -c \"[[ ! -w ${completion_dir} ]] ||
+        (cp -p ${completion} ${completion_dir}/gbc && 
+         chmod 644 ${completion_dir}/gbc && 
+         echo '-- Installing: ${completion_dir}/gbc')\")")
 endif()
