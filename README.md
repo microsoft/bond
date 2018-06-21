@@ -29,7 +29,7 @@ For a discussion how Bond compares to similar frameworks see [Why Bond](https://
 
 ## Dependencies
 
-The Bond repository uses Git submodules and should be cloned with the
+The Bond repository uses Git submodules for its RapidJSON and gRPC dependencies. It should be cloned with the
 `--recursive` flag:
 
 ```bash
@@ -41,6 +41,8 @@ supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
+
+If you already have RapidJSON and would like to build against it, you may add argument `-DBOND_FIND_RAPIDJSON=TRUE` to cmake. It will use find_package(RapidJSON). Otherwise, Bond will also install RapidJSON.
 
 Following are specific instructions for building on various platforms.
 
