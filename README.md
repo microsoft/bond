@@ -42,7 +42,7 @@ to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
 
-If you already have RapidJSON and would like to build against it, you may add argument `-DBOND_FIND_RAPIDJSON=TRUE` to cmake. It will use find_package(RapidJSON). Otherwise, Bond will also install RapidJSON.
+If you already have RapidJSON and would like to build against it, you may add argument `-DBOND_FIND_RAPIDJSON=TRUE` to CMake. It will use find_package(RapidJSON). Otherwise, Bond will also install RapidJSON.
 
 Following are specific instructions for building on various platforms.
 
