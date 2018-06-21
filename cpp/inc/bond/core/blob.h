@@ -116,6 +116,17 @@ public:
         that._length = 0;
     }
 
+    blob& operator=(blob&& that) BOND_NOEXCEPT_IF(
+        std::is_nothrow_move_assignable<boost::shared_ptr<const char[]> >::value)
+    {
+        _buffer = std::move(that._buffer);
+        _content = std::move(that._content);
+        _length = std::move(that._length);
+        that._content = 0;
+        that._length = 0;
+        return *this;
+    }
+
     blob(const blob& that) = default;
     blob& operator=(const blob& that) = default;
 
