@@ -104,7 +104,7 @@ set (test_sources
     tests/TestMain.hs
     ${tests})
 
-set (completion_dir /etc/bash_completion.d)
+set (completion_dir etc/bash_completion.d)
 set (completion ${CMAKE_CURRENT_BINARY_DIR}/gbc.comp)
 set (output ${CMAKE_CURRENT_BINARY_DIR}/build/gbc/gbc${CMAKE_EXECUTABLE_SUFFIX})
 set (GBC_EXECUTABLE ${output} PARENT_SCOPE)
@@ -128,9 +128,6 @@ install (FILES ${output}
     PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE
     DESTINATION bin)
 
-if(EXISTS "${completion_dir}" AND IS_DIRECTORY "${completion_dir}")
-    install(CODE "execute_process(COMMAND bash -c \"[[ ! -w ${completion_dir} ]] ||
-        (cp -p ${completion} ${completion_dir}/gbc && 
-         chmod 644 ${completion_dir}/gbc && 
-         echo '-- Installing: ${completion_dir}/gbc')\")")
-endif()
+install (FILES ${completion}
+         RENAME gbc
+         DESTINATION ${completion_dir})
