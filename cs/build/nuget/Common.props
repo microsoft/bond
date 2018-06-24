@@ -22,6 +22,16 @@
       <_bond_common_props_imported>true</_bond_common_props_imported>
   </PropertyGroup>
 
+  <!-- For some reason, properties such as EnableDefaultItems are not defined
+       when .props/.targets are imported through a NuGet package. Therefore we
+       manually define EnableDefaultItems for SDK projects.
+       
+       For more info look at the discussion at https://github.com/Microsoft/bond/issues/936 -->
+
+  <PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' ">
+    <EnableDefaultItems Condition=" '$(EnableDefaultItems)' == '' ">true</EnableDefaultItems>
+  </PropertyGroup>
+  
   <!-- When EnableDefaultItems is turned on, the expectation is that all
        files in the project directory and below will automatically be
        included.
