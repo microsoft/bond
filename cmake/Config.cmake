@@ -183,7 +183,7 @@ include_directories (
     ${Boost_INCLUDE_DIRS})
 
 if (BOND_FIND_RAPIDJSON)
-    find_package(RapidJSON)
+    find_package(RapidJSON REQUIRED)
     include_directories (
         ${RapidJSON_INCLUDE_DIRS})
       
