@@ -33,6 +33,80 @@ TEST_CASE_BEGIN(LargeBlob)
 }
 TEST_CASE_END
 
+void check_blob_is_empty(const bond::blob& b)
+{
+    // workaround: old compilers won't let us print nullptr, while new ones won't
+    // compare nullptrs to ints
+
+    void* null = 0;
+    UT_AssertAreEqual(b.data(), null);
+    UT_AssertAreEqual(b.size(), 0u);
+    UT_AssertAreEqual(b.content(), null);
+    UT_AssertIsTrue(b.empty());
+}
+
+TEST_CASE_BEGIN(BlobMoveAssign)
+{
+    using bond::blob;
+
+    const uint32_t size = 32;
+
+    // move default-constructed blob
+    {
+        auto data = boost::make_shared<std::array<char,size>>();
+        blob a{data, size};
+        blob b;
+
+        UT_AssertAreEqual(data.use_count(), 2);
+
+        a = std::move(b);
+        
+        check_blob_is_empty(a);
+        check_blob_is_empty(b);
+
+        UT_AssertAreEqual(data.use_count(), 1);
+    }
+    // move from instance with shared ptr
+    {
+        // move from other instance
+        auto data = boost::make_shared<std::array<char, size>>();
+        blob a;
+        blob b{data, size};
+
+        UT_AssertAreEqual(data.use_count(), 2);
+
+        a = std::move(b);
+
+        UT_AssertAreEqual(a.data(), data.get());
+        UT_AssertAreEqual(a.size(), size);
+
+        check_blob_is_empty(b);
+
+        UT_AssertAreEqual(data.use_count(), 2);
+    }
+    // move from raw memory
+    {
+        std::array<char, size> p1;
+        std::array<char, size> p2;
+        blob a{&p1, size};
+        blob b{&p2, size};
+        blob c;
+
+        a = std::move(b);
+        UT_AssertAreEqual(a.data(), &p2);
+        UT_AssertAreEqual(a.size(), size);
+
+        check_blob_is_empty(b);
+
+        // move to empty blob
+        c = std::move(a);
+        UT_AssertAreEqual(c.data(), &p2);
+        UT_AssertAreEqual(c.size(), size);
+
+        check_blob_is_empty(a);
+    }
+}
+TEST_CASE_END
 
 template <typename Reader, typename Writer>
 TEST_CASE_BEGIN(OutputBufferBlobs)
@@ -107,6 +181,9 @@ void BlobTests(const char* name)
 
     AddTestCase<TEST_ID(N),
         OutputBufferBlobs, Reader, Writer>(suite, "OutputBuffer blobs");
+
+    AddTestCase<TEST_ID(N),
+        BlobMoveAssign>(suite, "BlobMoveAssign");
 }
 
 
