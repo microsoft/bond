@@ -180,8 +180,16 @@ cxx_add_compile_options(GNU
 include_directories (
     ${BOND_INCLUDE}
     ${BOND_GENERATED}
-    ${Boost_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
+    ${Boost_INCLUDE_DIRS})
+
+if (BOND_FIND_RAPIDJSON)
+    find_package(RapidJSON REQUIRED)
+    include_directories (
+        ${RapidJSON_INCLUDE_DIRS})
+else()
+    include_directories (
+        ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include)
+endif()
 
 set (BOND_LIBRARIES_ONLY
     "FALSE"

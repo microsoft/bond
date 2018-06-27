@@ -29,18 +29,21 @@ For a discussion how Bond compares to similar frameworks see [Why Bond](https://
 
 ## Dependencies
 
-The Bond repository uses Git submodules and should be cloned with the
-`--recursive` flag:
-
-```bash
-git clone --recursive https://github.com/Microsoft/bond.git
-```
-
 Bond C++ library requires some C++11 features (currently limited to those
 supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
+
+Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the `--recursive` flag:
+
+```bash
+git clone --recursive https://github.com/Microsoft/bond.git
+```
+
+If you already have RapidJSON and would like to build against it, add argument `-DBOND_FIND_RAPIDJSON=TRUE` to the CMake invocation. It will use find_package(RapidJSON). If you do not provide a RapidJSON library, Bond will also install RapidJSON.
+
+If you do not wish to build the gRPC component, add argument `-DBOND_ENABLE_GRPC=FALSE` to the CMake invocation.
 
 Following are specific instructions for building on various platforms.
 
