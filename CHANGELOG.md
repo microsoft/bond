@@ -12,16 +12,26 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased  ##
-* `gbc` & compiler library: 0.11.0.3
+* `gbc` & compiler library: TBD
 * IDL core version: TBD
 * C++ version: TBD
 * C# NuGet version: TBD
 
+## 8.0.1: 2018-06-29 ##
+* `gbc` & compiler library: 0.11.0.3
+* IDL core version: 3.0
+* C++ version: 8.0.1
+* C# NuGet version: 8.0
+
 ### C++ ###
 * Fixed a crash in `bond::ext::grpc::server`'s destructor when invoked on
   a moved-from object instance.
-* Added move-assignment operator to `bond::blob`
-* Added cmake variable BOND_FIND_RAPIDJSON to allow for external RapidJSON installations.
+* Added move-assignment operator to `bond::blob`.
+* Added cmake variable `BOND_FIND_RAPIDJSON` to allow for external RapidJSON installations.
+
+### C# ###
+
+* There were no C# changes in this release.
 
 ## 8.0.0: 2018-05-30 ##
 * `gbc` & compiler library: 0.11.0.0
