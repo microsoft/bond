@@ -168,11 +168,10 @@ namespace Bond.Expressions
                 }
                 else
                 {
-                    cannotOmit = Expression.NotEqual(
-                        fieldValue,
-                        defaultValue.GetType() != fieldValue.Type
-                            ? (Expression)Expression.Default(fieldValue.Type)
-                            : Expression.Constant(defaultValue));
+                    var comparand = defaultValue.GetType() != fieldValue.Type
+                                        ? (Expression)Expression.Default(fieldValue.Type)
+                                        : Expression.Constant(defaultValue);
+                    cannotOmit = Expression.NotEqual(fieldValue, comparand);
                 }
             }
 
