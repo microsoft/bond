@@ -809,6 +809,44 @@
                 } .Else {
                     .Default(System.Void)
                 };
+                .Block(System.Object $obj) {
+                    $obj = (System.Object)$Example_obj._dt;
+                    .Block() {
+                        .Block(ExpressionsTest.Generic`1[System.DateTime] $Generic`1_obj) {
+                            $Generic`1_obj = (ExpressionsTest.Generic`1[System.DateTime])$obj;
+                            .Default(System.Void);
+                            .If ($Generic`1_obj.value != .Default(System.DateTime)) {
+                                ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                    .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                        $Generic`1_obj.value,
+                                        .Default(System.Int64)),
+                                    .Default(System.DateTime))
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
+                .Block(System.Object $obj) {
+                    $obj = (System.Object)$Example_obj._dt2;
+                    .Block() {
+                        .Block(ExpressionsTest.GenericNothing`1[System.DateTime] $GenericNothing`1_obj) {
+                            $GenericNothing`1_obj = (ExpressionsTest.GenericNothing`1[System.DateTime])$obj;
+                            .Default(System.Void);
+                            .If ($GenericNothing`1_obj.value != null) {
+                                ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                    (System.Int64)((System.Nullable`1[System.Int64]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                        (System.DateTime)$GenericNothing`1_obj.value,
+                                        .Default(System.Int64))),
+                                    .Default(System.DateTime))
+                            } .Else {
+                                .Default(System.Void)
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
                 .Default(System.Void)
             }
         };

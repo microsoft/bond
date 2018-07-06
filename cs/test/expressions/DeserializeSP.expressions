@@ -688,6 +688,48 @@
                         .Call $reader.ReadContainerEnd()
                     }
                 };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block() {
+                        .Block() {
+                            .Default(System.Void);
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                    .Call $reader.ReadInt64(),
+                                    .Default(System.DateTime))
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
+                .If (
+                    .Call $reader.ReadFieldOmitted()
+                ) {
+                    .Default(System.Void)
+                } .Else {
+                    .Block() {
+                        .Block() {
+                            .Default(System.Void);
+                            .If (
+                                .Call $reader.ReadFieldOmitted()
+                            ) {
+                                .Default(System.Void)
+                            } .Else {
+                                ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                    (System.Int64)((System.Nullable`1[System.Int64]).Call $reader.ReadInt64()),
+                                    .Default(System.DateTime))
+                            };
+                            .Default(System.Void)
+                        }
+                    }
+                };
                 .Default(System.Void)
             }
         };

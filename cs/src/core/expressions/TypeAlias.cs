@@ -50,6 +50,11 @@ namespace Bond.Expressions
                 value.Type.GetGenericTypeDefinition() == typeof (Nullable<>))
             {
                 value = Expression.Convert(value, value.Type.GetTypeInfo().GenericTypeArguments[0]);
+
+                if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    type = type.GetTypeInfo().GenericTypeArguments[0];
+                }
             }
 
             if (type != value.Type)

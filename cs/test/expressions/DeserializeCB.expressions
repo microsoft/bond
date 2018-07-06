@@ -2950,6 +2950,296 @@
                 }
                 .LabelTarget end:;
                 .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(85)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_STRUCT)) {
+                                        .Block() {
+                                            .Block(
+                                                Bond.BondDataType $fieldType,
+                                                System.UInt16 $fieldId) {
+                                                .Call $reader.ReadStructBegin();
+                                                .Default(System.Void);
+                                                .Default(System.Void);
+                                                .Call $reader.ReadFieldBegin(
+                                                    $fieldType,
+                                                    $fieldId);
+                                                .Loop  {
+                                                    .If ((System.Int32)$fieldType > 1) {
+                                                        .Block() {
+                                                            .If ($fieldId == .Constant<System.UInt16>(0)) {
+                                                                .Block() {
+                                                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT64)) {
+                                                                        ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            .Call $reader.ReadInt64(),
+                                                                            .Default(System.DateTime))
+                                                                    } .Else {
+                                                                        .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT32)) {
+                                                                            ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                (System.Int64).Call $reader.ReadInt32(),
+                                                                                .Default(System.DateTime))
+                                                                        } .Else {
+                                                                            .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT16)) {
+                                                                                ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    (System.Int64).Call $reader.ReadInt16(),
+                                                                                    .Default(System.DateTime))
+                                                                            } .Else {
+                                                                                .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                    ($Example_result._dt).value = .Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                        (System.Int64).Call $reader.ReadInt8(),
+                                                                                        .Default(System.DateTime))
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                        .Constant<Bond.BondDataType>(BT_INT64),
+                                                                                        $fieldType)
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    };
+                                                                    .Call $reader.ReadFieldEnd();
+                                                                    .Call $reader.ReadFieldBegin(
+                                                                        $fieldType,
+                                                                        $fieldId);
+                                                                    .Break end { }
+                                                                }
+                                                            } .Else {
+                                                                .If ($fieldId > .Constant<System.UInt16>(0)) {
+                                                                    .Block() {
+                                                                        .Default(System.Void);
+                                                                        .Break end { }
+                                                                    }
+                                                                } .Else {
+                                                                    .Call $reader.Skip($fieldType)
+                                                                }
+                                                            };
+                                                            .Call $reader.ReadFieldEnd();
+                                                            .Call $reader.ReadFieldBegin(
+                                                                $fieldType,
+                                                                $fieldId);
+                                                            .If ($fieldId > .Constant<System.UInt16>(0)) {
+                                                                .Break end { }
+                                                            } .Else {
+                                                                .Default(System.Void)
+                                                            }
+                                                        }
+                                                    } .Else {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Loop  {
+                                                    .If ($fieldType != .Constant<Bond.BondDataType>(BT_STOP)) {
+                                                        .Block() {
+                                                            .If ($fieldType == .Constant<Bond.BondDataType>(BT_STOP_BASE)) {
+                                                                .Default(System.Void)
+                                                            } .Else {
+                                                                .Block() {
+                                                                    .Call $reader.Skip($fieldType);
+                                                                    .Call $reader.ReadFieldEnd()
+                                                                }
+                                                            };
+                                                            .Call $reader.ReadFieldBegin(
+                                                                $fieldType,
+                                                                $fieldId)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $reader.ReadStructEnd();
+                                                .Default(System.Void)
+                                            }
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_STRUCT),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(85)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(85)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
+                    .If ((System.Int32)$fieldType > 1) {
+                        .Block() {
+                            .If ($fieldId == .Constant<System.UInt16>(86)) {
+                                .Block() {
+                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_STRUCT)) {
+                                        .Block() {
+                                            .Block(
+                                                Bond.BondDataType $fieldType,
+                                                System.UInt16 $fieldId) {
+                                                .Call $reader.ReadStructBegin();
+                                                .Default(System.Void);
+                                                .Default(System.Void);
+                                                .Call $reader.ReadFieldBegin(
+                                                    $fieldType,
+                                                    $fieldId);
+                                                .Loop  {
+                                                    .If ((System.Int32)$fieldType > 1) {
+                                                        .Block() {
+                                                            .If ($fieldId == .Constant<System.UInt16>(0)) {
+                                                                .Block() {
+                                                                    .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT64)) {
+                                                                        ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                            (System.Int64)((System.Nullable`1[System.Int64]).Call $reader.ReadInt64()),
+                                                                            .Default(System.DateTime))
+                                                                    } .Else {
+                                                                        .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT32)) {
+                                                                            ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                (System.Int64)((System.Nullable`1[System.Int64]).Call $reader.ReadInt32()),
+                                                                                .Default(System.DateTime))
+                                                                        } .Else {
+                                                                            .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT16)) {
+                                                                                ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                    (System.Int64)((System.Nullable`1[System.Int64]).Call $reader.ReadInt16()),
+                                                                                    .Default(System.DateTime))
+                                                                            } .Else {
+                                                                                .If ($fieldType == .Constant<Bond.BondDataType>(BT_INT8)) {
+                                                                                    ($Example_result._dt2).value = (System.Nullable`1[System.DateTime]).Call ExpressionsTest.BondTypeAliasConverter.Convert(
+                                                                                        (System.Int64)((System.Nullable`1[System.Int64]).Call $reader.ReadInt8()),
+                                                                                        .Default(System.DateTime))
+                                                                                } .Else {
+                                                                                    .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                                                                        .Constant<Bond.BondDataType>(BT_INT64),
+                                                                                        $fieldType)
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    };
+                                                                    .Call $reader.ReadFieldEnd();
+                                                                    .Call $reader.ReadFieldBegin(
+                                                                        $fieldType,
+                                                                        $fieldId);
+                                                                    .Break end { }
+                                                                }
+                                                            } .Else {
+                                                                .If ($fieldId > .Constant<System.UInt16>(0)) {
+                                                                    .Block() {
+                                                                        .Default(System.Void);
+                                                                        .Break end { }
+                                                                    }
+                                                                } .Else {
+                                                                    .Call $reader.Skip($fieldType)
+                                                                }
+                                                            };
+                                                            .Call $reader.ReadFieldEnd();
+                                                            .Call $reader.ReadFieldBegin(
+                                                                $fieldType,
+                                                                $fieldId);
+                                                            .If ($fieldId > .Constant<System.UInt16>(0)) {
+                                                                .Break end { }
+                                                            } .Else {
+                                                                .Default(System.Void)
+                                                            }
+                                                        }
+                                                    } .Else {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Break end { }
+                                                        }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Loop  {
+                                                    .If ($fieldType != .Constant<Bond.BondDataType>(BT_STOP)) {
+                                                        .Block() {
+                                                            .If ($fieldType == .Constant<Bond.BondDataType>(BT_STOP_BASE)) {
+                                                                .Default(System.Void)
+                                                            } .Else {
+                                                                .Block() {
+                                                                    .Call $reader.Skip($fieldType);
+                                                                    .Call $reader.ReadFieldEnd()
+                                                                }
+                                                            };
+                                                            .Call $reader.ReadFieldBegin(
+                                                                $fieldType,
+                                                                $fieldId)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $reader.ReadStructEnd();
+                                                .Default(System.Void)
+                                            }
+                                        }
+                                    } .Else {
+                                        .Invoke (.Lambda #Lambda2<System.Action`2[Bond.BondDataType,Bond.BondDataType]>)(
+                                            .Constant<Bond.BondDataType>(BT_STRUCT),
+                                            $fieldType)
+                                    };
+                                    .Call $reader.ReadFieldEnd();
+                                    .Call $reader.ReadFieldBegin(
+                                        $fieldType,
+                                        $fieldId);
+                                    .Break end { }
+                                }
+                            } .Else {
+                                .If ($fieldId > .Constant<System.UInt16>(86)) {
+                                    .Block() {
+                                        .Default(System.Void);
+                                        .Break end { }
+                                    }
+                                } .Else {
+                                    .Call $reader.Skip($fieldType)
+                                }
+                            };
+                            .Call $reader.ReadFieldEnd();
+                            .Call $reader.ReadFieldBegin(
+                                $fieldType,
+                                $fieldId);
+                            .If ($fieldId > .Constant<System.UInt16>(86)) {
+                                .Break end { }
+                            } .Else {
+                                .Default(System.Void)
+                            }
+                        }
+                    } .Else {
+                        .Block() {
+                            .Default(System.Void);
+                            .Break end { }
+                        }
+                    }
+                }
+                .LabelTarget end:;
+                .Loop  {
                     .If ($fieldType != .Constant<Bond.BondDataType>(BT_STOP)) {
                         .Block() {
                             .If ($fieldType == .Constant<Bond.BondDataType>(BT_STOP_BASE)) {

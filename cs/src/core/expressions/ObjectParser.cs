@@ -143,30 +143,35 @@ namespace Bond.Expressions
                         processField);
                 }
             }
+            else if (fieldSchemaType.IsBondBlob())
+            {
+                var notEqual = Expression.NotEqual(
+                    convertedBlob,
+                    Expression.Default(typeof(ArraySegment<byte>)));
+
+                return Expression.Block(
+                    new[] { convertedBlob },
+                    Expression.Assign(convertedBlob, blob),
+                    PrunedExpression.IfThenElse(notEqual, processField, omitField));
+            }
             else
             {
                 var defaultValue = schemaField.GetDefaultValue();
 
-                if (fieldSchemaType.IsBondBlob())
+                if (defaultValue == null)
                 {
-                    var notEqual = Expression.NotEqual(
-                        convertedBlob,
-                        Expression.Default(typeof(ArraySegment<byte>)));
-
-                    return Expression.Block(
-                        new[] { convertedBlob },
-                        Expression.Assign(convertedBlob, blob),
-                        PrunedExpression.IfThenElse(notEqual, processField, omitField));
+                    cannotOmit = Expression.NotEqual(fieldValue, Expression.Constant(null));
                 }
                 else if (fieldSchemaType.IsBondContainer())
                 {
-                    cannotOmit = defaultValue == null
-                        ? Expression.NotEqual(fieldValue, Expression.Constant(null))
-                        : Expression.NotEqual(ContainerCount(fieldValue), Expression.Constant(0));
+                    cannotOmit = Expression.NotEqual(ContainerCount(fieldValue), Expression.Constant(0));
                 }
                 else
                 {
-                    cannotOmit = Expression.NotEqual(fieldValue, Expression.Constant(defaultValue));
+                    var comparand = defaultValue.GetType() != fieldValue.Type
+                                        ? (Expression)Expression.Default(fieldValue.Type)
+                                        : Expression.Constant(defaultValue);
+                    cannotOmit = Expression.NotEqual(fieldValue, comparand);
                 }
             }
 

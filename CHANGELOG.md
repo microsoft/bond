@@ -33,6 +33,10 @@ different versioning scheme, following the Haskell community's
 
 * There were no C# changes in this release.
 
+### C# ###
+* Fixed alias conversion issue for generic fields [Issue
+  #928](https://github.com/Microsoft/bond/issues/928).
+
 ## 8.0.0: 2018-05-30 ##
 * `gbc` & compiler library: 0.11.0.0
 * IDL core version: 3.0
