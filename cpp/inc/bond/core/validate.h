@@ -83,7 +83,7 @@ inline bool Validate(const RuntimeSchema& src,
 template <typename Protocols = BuiltInProtocols, typename T1, typename T2>
 inline bool ValidateTwoWay(const T1& s1, const T2& s2)
 {
-    return Validate<Protocols>(s1, s2) & Validate<Protocols>(s2, s1);
+    return Validate<Protocols>(s1, s2) && Validate<Protocols>(s2, s1);
 }
 
 } // namespace bond
