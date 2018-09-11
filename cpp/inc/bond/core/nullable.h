@@ -44,6 +44,19 @@ use_value
         || is_wstring<T>::value
         || !std::is_class<T>::value> {};
 
+template<class T>
+BOND_CONSTEXPR inline T* to_address(T* ptr) BOND_NOEXCEPT
+{
+    return ptr;
+}
+
+template<class Ptr>
+inline typename std::pointer_traits<Ptr>::element_type*
+to_address(const Ptr& ptr) BOND_NOEXCEPT
+{
+    return bond::detail::to_address(ptr.operator->());
+}
+
 } // namespace detail
 
 
@@ -458,7 +471,7 @@ private:
     void delete_value()
     {
         rebind_alloc alloc(allocator_holder::get());
-        std::allocator_traits<rebind_alloc>::destroy(alloc, std::addressof(*_value));
+        std::allocator_traits<rebind_alloc>::destroy(alloc, bond::detail::to_address(_value));
         alloc.deallocate(_value, 1);
     }
 
@@ -470,7 +483,7 @@ private:
         try
         {
             std::allocator_traits<rebind_alloc>::construct(
-                alloc, std::addressof(*p), std::forward<Args>(args)...);
+                alloc, bond::detail::to_address(p), std::forward<Args>(args)...);
             return p;
         }
         catch (...)
