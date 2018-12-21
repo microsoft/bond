@@ -95,6 +95,10 @@ namespace tests
             {
             }
 
+            public FooClient(global::Grpc.Core.CallInvoker callInvoker) : base(callInvoker)
+            {
+            }
+
             protected FooClient() : base()
             {
             }
@@ -232,6 +236,10 @@ namespace tests
         public class BarClient : global::Grpc.Core.ClientBase<BarClient>
         {
             public BarClient(global::Grpc.Core.Channel channel) : base(channel)
+            {
+            }
+
+            public BarClient(global::Grpc.Core.CallInvoker callInvoker) : base(callInvoker)
             {
             }
 

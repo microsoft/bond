@@ -77,6 +77,10 @@ namespace #{csNamespace}
             {
             }
 
+            public #{declName}Client(global::Grpc.Core.CallInvoker callInvoker) : base(callInvoker)
+            {
+            }
+
             protected #{declName}Client() : base()
             {
             }

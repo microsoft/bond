@@ -77,6 +77,10 @@ namespace tests
             {
             }
 
+            public FooClient(global::Grpc.Core.CallInvoker callInvoker) : base(callInvoker)
+            {
+            }
+
             protected FooClient() : base()
             {
             }
