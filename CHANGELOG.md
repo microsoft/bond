@@ -14,8 +14,16 @@ different versioning scheme, following the Haskell community's
 ## Unreleased  ##
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
-* C++ version: TBD
-* C# NuGet version: TBD
+* C++ version: minor bump needed
+* C# NuGet version: minor bump needed
+
+### C++ ###
+
+* gRPC v1.17.1 is now required to use Bond-over-gRPC.
+
+### C# ###
+
+* Updated to gRPC v1.17.1.
 
 ## 8.0.1: 2018-06-29 ##
 * `gbc` & compiler library: 0.11.0.3
