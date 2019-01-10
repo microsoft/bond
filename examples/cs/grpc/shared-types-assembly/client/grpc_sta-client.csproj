@@ -8,7 +8,7 @@
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="1.12.0" />
+    <PackageReference Include="Grpc.Core" Version="1.17.1" />
   </ItemGroup>
   <ItemGroup>
     <!-- This import is not needed when consuming Bond via NuGet packages.

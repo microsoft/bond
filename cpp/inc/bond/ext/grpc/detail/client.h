@@ -14,8 +14,15 @@
 #include <bond/ext/grpc/unary_call_result.h>
 
 #ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4100 4702)
+    #pragma warning (push)
+    // warning C4100: unreferenced formal parameter
+    //
+    // warning C4127: conditional expression is constant
+    //
+    // warning C4702: unreachable code
+    //
+    // warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+    #pragma warning (disable: 4100 4127 4702 4800)
 #endif
 
 #include <grpcpp/grpcpp.h>
@@ -27,7 +34,7 @@
 #include <grpcpp/impl/codegen/status.h>
 
 #ifdef _MSC_VER
-#pragma warning (pop)
+    #pragma warning (pop)
 #endif
 
 #include <boost/assert.hpp>

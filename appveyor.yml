@@ -78,6 +78,9 @@
               BOND_BOOST: "1.63.0"
               BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
     install:
+          # Installing .NET Core needs Windows Update enabled.
+        - sc config wuauserv start= auto
+        - net start wuauserv
         - ps: >-
             if (-not $env:BOND_VS_VERSION)
             {
