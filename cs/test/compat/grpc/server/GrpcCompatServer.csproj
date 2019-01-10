@@ -9,7 +9,7 @@
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="1.12.0" />
+    <PackageReference Include="Grpc.Core" Version="1.17.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\core\Bond.csproj" />

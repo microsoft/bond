@@ -2,9 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #ifdef _MSC_VER
-    #pragma warning(push)
-    #pragma warning(disable : 4100) // disable "unreferenced formal parameter" warning
-    #pragma warning(disable : 4505) // disable "unreferenced local function has been removed" warning
+    #pragma warning (push)
+    // warning C4100: unreferenced formal parameter
+    //
+    // warning C4127: conditional expression is constant
+    //
+    // warning C4505: unreferenced local function has been removed
+    //
+    // warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+    #pragma warning (disable: 4100 4127 4505 4800)
 #endif
 
 #include <grpc/grpc.h>
