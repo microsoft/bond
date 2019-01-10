@@ -24,6 +24,11 @@ different versioning scheme, following the Haskell community's
 ### C# ###
 
 * Updated to gRPC v1.17.1.
+* Add a constructor that accepts a `CallInvoker` instance to the generated
+  gRPC clients to support client-side interceptors. For more details about
+  C# interceptors, see the [proposal in the gRPC
+  project](https://github.com/grpc/proposal/blob/master/L12-csharp-interceptors.md).
+  [Issue #950](https://github.com/Microsoft/bond/issues/950)
 
 ## 8.0.1: 2018-06-29 ##
 * `gbc` & compiler library: 0.11.0.3
