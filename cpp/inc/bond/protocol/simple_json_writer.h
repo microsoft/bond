@@ -195,10 +195,10 @@ private:
     void WriteUnicode(wchar_t c)
     {
         char u[6] = "\\u";
-        u[2] = detail::HexDigit(c >> 12);
-        u[3] = detail::HexDigit(c >> 8);
-        u[4] = detail::HexDigit(c >> 4);
-        u[5] = detail::HexDigit(c >> 0);
+        u[2] = detail::HexDigit(static_cast<int>(c >> 12));
+        u[3] = detail::HexDigit(static_cast<int>(c >> 8));
+        u[4] = detail::HexDigit(static_cast<int>(c >> 4));
+        u[5] = detail::HexDigit(static_cast<int>(c >> 0));
         _output.Write(u, sizeof(u));
     }
 
