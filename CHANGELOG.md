@@ -20,6 +20,9 @@ different versioning scheme, following the Haskell community's
 ### C++ ###
 
 * gRPC v1.17.1 is now required to use Bond-over-gRPC.
+* Fixed an ambigious `HexDigit` overload compilation error when
+  compiling with some versions of GCC. ([Pull request
+  #954](https://github.com/Microsoft/bond/pull/954))
 
 ### C# ###
 
