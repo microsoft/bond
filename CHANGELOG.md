@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * C++ version: minor bump needed
-* C# NuGet version: minor bump needed
+* C# NuGet version: TBD
 
 ### C++ ###
 
@@ -23,6 +23,12 @@ different versioning scheme, following the Haskell community's
 * Fixed an ambigious `HexDigit` overload compilation error when
   compiling with some versions of GCC. ([Pull request
   #954](https://github.com/Microsoft/bond/pull/954))
+
+## 8.1.0: 2019-03-27 ##
+
+### C++ ###
+
+* C# / Nuget release only
 
 ### C# ###
 
