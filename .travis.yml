@@ -49,7 +49,6 @@ script:
     - if [ "$CRON_ONLY" = "true" ] && [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then echo "Skipping cron-only job"; exit 0; fi
     - CI_BUILD_IMAGE=bondciimages.azurecr.io/ubuntu-1604:build-21070065
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then echo "Hardware:"; grep model\ name /proc/cpuinfo | uniq -c; free -m; fi
-    - docker logout bondciimages.azurecr.io
     - time travis_retry docker pull $CI_BUILD_IMAGE
     - docker images # Dump the image ID
     - docker run -v $HOME/.ccache:/root/.ccache -v $HOME/.stack:/root/.stack -v `pwd`:/root/bond $CI_BUILD_IMAGE $HOME $FLAVOR $BOOST $COMPILER
