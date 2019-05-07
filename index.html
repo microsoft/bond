@@ -148,29 +148,29 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 </div>
 <div id="main">
-<img src="https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png" alt="The Bond logo: a stylized glue gun" />
+<img src="https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png" alt="The Bond logo: a stylized glue gun" />
 <hr />
-<p><a href="https://travis-ci.org/Microsoft/bond"><img src="https://travis-ci.org/Microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://Microsoft.github.io/bond/manual/bond_cs.html#nuget-packages"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a></p>
+<p><a href="https://travis-ci.org/microsoft/bond"><img src="https://travis-ci.org/microsoft/bond.svg?branch=master" alt="Build Status" /></a> <a href="https://microsoft.github.io/bond/manual/bond_cs.html#nuget-packages"><img src="https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat" alt="Bond.CSharp NuGet package" /></a></p>
 <h1 id="bond">Bond</h1>
 <p>Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data. Bond is broadly used at Microsoft in high scale services.</p>
-<p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond/" class="uri">https://github.com/Microsoft/bond/</a>.</p>
+<p>Bond is published on GitHub at <a href="https://github.com/microsoft/bond/" class="uri">https://github.com/microsoft/bond/</a>.</p>
 <p>For details, see the User’s Manuals:</p>
 <ul>
-<li><a href="https://Microsoft.github.io/bond/manual/bond_cpp.html">C++</a></li>
-<li><a href="https://Microsoft.github.io/bond/manual/bond_cs.html">C#</a></li>
-<li><a href="https://Microsoft.github.io/bond/manual/bond_java.html">Java</a></li>
-<li><a href="https://Microsoft.github.io/bond/manual/bond_py.html">Python</a></li>
-<li><a href="https://Microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/bond_cpp.html">C++</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/bond_cs.html">C#</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/bond_java.html">Java</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/bond_py.html">Python</a></li>
+<li><a href="https://microsoft.github.io/bond/manual/bond_over_grpc.html">Bond-over-gRPC</a></li>
 <li><a href="https://microsoft.github.io/bond/manual/compiler.html"><code>gbc</code>, the Bond compiler/codegen tool</a>
 <ul>
 <li>See also <a href="https://hackage.haskell.org/package/bond">the compiler library</a> that powers <code>gbc</code>.</li>
 </ul></li>
 </ul>
-<p>For a discussion how Bond compares to similar frameworks see <a href="https://Microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
+<p>For a discussion how Bond compares to similar frameworks see <a href="https://microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Bond C++ library requires some C++11 features (currently limited to those supported bv Visual C++ 2013); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> (1.5.1+) and Boost (1.61+).</p>
 <p>Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the <code>--recursive</code> flag:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/Microsoft/bond.git</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/microsoft/bond.git</code></pre></div>
 <p>If you already have RapidJSON and would like to build against it, add argument <code>-DBOND_FIND_RAPIDJSON=TRUE</code> to the CMake invocation. It will use find_package(RapidJSON). If you do not provide a RapidJSON library, Bond will also install RapidJSON.</p>
 <p>If you do not wish to build the gRPC component, add argument <code>-DBOND_ENABLE_GRPC=FALSE</code> to the CMake invocation.</p>
 <p>Following are specific instructions for building on various platforms.</p>
@@ -278,7 +278,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>You will also need to enable gRPC in the <code>cmake</code> configuration step by running the following in the <code>build</code> directory from above and then following the other <code>cmake</code> commands above:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -DBOND_ENABLE_GRPC=TRUE -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <h2 id="contributing">Contributing</h2>
-<p>Interested in contributing to Bond? Take a look at our <a href="https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md">contribution guidelines</a> to get started.</p>
+<p>Interested in contributing to Bond? Take a look at our <a href="https://github.com/microsoft/bond/blob/master/CONTRIBUTING.md">contribution guidelines</a> to get started.</p>
 </div>
 </div>
 </body>

@@ -201,7 +201,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond is an extensible framework for working with schematized data. It is suitable for scenarios ranging from service communications to Big Data storage and processing.</p>
 <p>Bond defines a rich type system and <a href="#schema-evolution">schema evolution rules</a> which allow forward and backward compatibility. The core Bond features include high performance serialization/deserialization and a very powerful, generic data transform mechanism. The framework is highly extensible via pluggable serialization protocols, data streams, user defined type aliases and more.</p>
 <p>By design Bond is language and platform independent and is currently supported for C++, C#, Java, and Python on Linux, macOS, and Windows.</p>
-<p>Bond is published on GitHub at <a href="https://github.com/Microsoft/bond">https://github.com/Microsoft/bond/</a>.</p>
+<p>Bond is published on GitHub at <a href="https://github.com/microsoft/bond">https://github.com/microsoft/bond/</a>.</p>
 <h1 id="basic-example">Basic example</h1>
 <p>In Bond data schemas are defined using idl-like <a href="compiler.html#idl-syntax">syntax</a>:</p>
 <pre><code>namespace example
@@ -1151,11 +1151,11 @@ enum Color
 <h1 id="integrating-bond-into-your-build">Integrating Bond into your build</h1>
 <p>To consume Bond, you will need to integrate it into your build somehow. If you are using one of these C++ package managers, Bond is available as a package that you can consume:</p>
 <ul>
-<li><a href="https://github.com/Microsoft/vcpkg">Vcpkg</a>’s <code>bond</code> package</li>
+<li><a href="https://github.com/microsoft/vcpkg">Vcpkg</a>’s <code>bond</code> package</li>
 </ul>
 <p>What follows are build-system agnostic instructions for consuming C++ Bond.</p>
-<p>These instructions assume that you have used <a href="https://github.com/Microsoft/bond/README.md">Bond’s CMake-based build</a> to compile and <em>install</em> (<code>make install</code>/<code>cmake --build . --target INSTALL</code>) Bond into your development environment somewhere. The CMake variable <code>CMAKE_INSTALL_PREFIX</code> can be used to control where the install target places the output files.</p>
-<p>(The Bond CMake files can’t currently be consumed by another CMake project via <code>add_directory</code>. <a href="https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md">Contributions encouraged</a> to help improve this situation.)</p>
+<p>These instructions assume that you have used <a href="https://github.com/microsoft/bond/README.md">Bond’s CMake-based build</a> to compile and <em>install</em> (<code>make install</code>/<code>cmake --build . --target INSTALL</code>) Bond into your development environment somewhere. The CMake variable <code>CMAKE_INSTALL_PREFIX</code> can be used to control where the install target places the output files.</p>
+<p>(The Bond CMake files can’t currently be consumed by another CMake project via <code>add_directory</code>. <a href="https://github.com/microsoft/bond/blob/master/CONTRIBUTING.md">Contributions encouraged</a> to help improve this situation.)</p>
 <p>After you’ve built and installed Bond, you can use whatever build system you need by</p>
 <ol style="list-style-type: decimal">
 <li>teaching it how to automatically run code generation on .bond files;</li>
