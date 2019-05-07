@@ -126,7 +126,7 @@ by design.
 For more information about gRPC in C#, take a look at the
 [gRPC C# tutorial](http://www.grpc.io/docs/tutorials/basic/csharp.html).
 
-There is a [Bond-over-gRPC standalone example project](https://github.com/Microsoft/bond-grpc-examples).
+There is a [Bond-over-gRPC standalone example project](https://github.com/microsoft/bond-grpc-examples).
 
 See also the following example:
 

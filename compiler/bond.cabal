@@ -21,12 +21,12 @@ description:        Bond is a cross-platform framework for handling schematized
                     tool, named gbc, which is primarily used to generate code
                     for C++ and C# programs using Bond.
 
-homepage:           https://github.com/Microsoft/bond
+homepage:           https://github.com/microsoft/bond
 license:            MIT
 license-file:       LICENSE
 author:             Adam Sapek <adamsap@microsoft.com>
 maintainer:         Bond Development Team <bond-dev@microsoft.com>
-bug-reports:        https://github.com/Microsoft/bond/issues
+bug-reports:        https://github.com/microsoft/bond/issues
 copyright:          Copyright (c) Microsoft. All rights reserved.
 category:           Language, Compiler, Code Generation
 build-type:         Simple
@@ -37,7 +37,7 @@ flag warningsAsErrors
 
 source-repository head
   type:             git
-  location:         git@github.com:Microsoft/bond.git
+  location:         git@github.com:microsoft/bond.git
 
 library
   hs-source-dirs:   src

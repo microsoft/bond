@@ -279,7 +279,7 @@
 
                     git config --global user.name "Appveyor"
 
-                    git clone -b gh-pages "https://${env:BOND_TOKEN}@github.com/Microsoft/bond.git" gh-pages 2>&1 | out-null
+                    git clone -b gh-pages "https://${env:BOND_TOKEN}@github.com/microsoft/bond.git" gh-pages 2>&1 | out-null
 
                     cd gh-pages
 

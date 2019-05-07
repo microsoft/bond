@@ -17,7 +17,7 @@ By design Bond is language and platform independent and is currently supported
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
 Bond is published on GitHub at
-[https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+[https://github.com/microsoft/bond/](https://github.com/microsoft/bond/).
 
 Basic example
 =============
@@ -688,19 +688,19 @@ Input and output streams
 ========================
 
 The input and output for binary protocols is provided by the
-[`IInputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/IInputStream.cs)
+[`IInputStream`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/IInputStream.cs)
 and
-[`IOutputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/IOutputStream.cs)
+[`IOutputStream`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/IOutputStream.cs)
 interfaces. Bond comes with standard implementations of these interfaces for
 memory buffers and `System.IO.Stream`. Applications can also provide their
 own custom implementations.
 
 The `OutputBuffer` class implements the `IOutputStream` interface on top of
 a memory buffer. It comes in two variants.
-[`Bond.IO.Safe.OutputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/OutputBuffer.cs)
+[`Bond.IO.Safe.OutputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/safe/OutputBuffer.cs)
 uses only safe managed code and is included in the `Bond.dll` assembly which
 is a Portable Class Library.
-[`Bond.IO.Unsafe.OutputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/OutputBuffer.cs)
+[`Bond.IO.Unsafe.OutputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/io/unsafe/OutputBuffer.cs)
 uses unsafe code to optimize for performance. It is included in the
 `Bond.IO.dll` assembly, which requires a full .NET runtime. Both
 implementations have identical class names and APIs; the only difference is
@@ -718,12 +718,12 @@ ArraySegment<byte> data = output.Data;
 ```
 
 The
-[`InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs)
+[`InputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs)
 class implements the `IInputStream` interface on top of a memory buffer.
 Like `OutputBuffer` it comes in two flavors, the safe and portable
-[`Bond.IO.Safe.InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs),
+[`Bond.IO.Safe.InputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/safe/InputBuffer.cs),
 and the performance optimized via use of unsafe code
-[`Bond.IO.Unsafe.InputBuffer`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputBuffer.cs).
+[`Bond.IO.Unsafe.InputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/io/unsafe/InputBuffer.cs).
 
 ```csharp
 // Create an input buffer on top of a byte[]
@@ -732,9 +732,9 @@ var reader = new CompactBinaryReader<InputBuffer>(input);
 ```
 
 The
-[`InputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/InputStream.cs)
+[`InputStream`](https://github.com/microsoft/bond/blob/master/cs/src/io/unsafe/InputStream.cs)
 and
-[`OutputStream`](https://github.com/Microsoft/bond/blob/master/cs/src/io/unsafe/OutputStream.cs)
+[`OutputStream`](https://github.com/microsoft/bond/blob/master/cs/src/io/unsafe/OutputStream.cs)
 classes provide implementations of `IInputStream` and `IOutputStream` on top
 of `System.IO.Stream`. These classes are included in `Bond.IO.dll` and thus
 are only available to applications using a full .NET runtime and allowing
@@ -1641,7 +1641,7 @@ Bond.Compiler.CSharp and Bond.Core.CSharp packages together.
 ## Platform limitations ##
 
 The pre-compiled gbc that is included in these packages is Windows-only. See
-the [README](https://github.com/Microsoft/bond/blob/master/README.md) for
+the [README](https://github.com/microsoft/bond/blob/master/README.md) for
 instructions to build gbc for other platforms.
 
 Bond.IO.dll (which provides the types in the Bond.IO.Unsafe namespace) is

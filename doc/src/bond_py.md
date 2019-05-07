@@ -16,7 +16,7 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported 
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
-Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+Bond is published on GitHub at [https://github.com/microsoft/bond/](https://github.com/microsoft/bond/).
 
 Introduction
 ============
