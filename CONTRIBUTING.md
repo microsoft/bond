@@ -25,7 +25,7 @@ potential pitfalls before too much time is spent.
 * Fork the repository on GitHub.
 * Start on a new topic branch off of master.
 * Instructions for getting Bond building and running the tests are in the
-  [README](https://github.com/Microsoft/bond/blob/master/README.md).
+  [README](https://github.com/microsoft/bond/blob/master/README.md).
 * Aim for each pull request to have one commit. If the commit starts to get
   too large, consider splitting it into multiple, independent pull requests.
     * Some changes are more naturally authored in multiple commits. This is
@@ -34,9 +34,9 @@ potential pitfalls before too much time is spent.
 * Make sure that all the tests continue to pass.
     * The CMake `check` target will run the C++ tests for you.
     * The C# unit tests can be run from
-      [the command line](https://github.com/Microsoft/bond/blob/56b5914a5bb41178521e01f6ce078d429e3e6b71/appveyor.yml#L214)
+      [the command line](https://github.com/microsoft/bond/blob/56b5914a5bb41178521e01f6ce078d429e3e6b71/appveyor.yml#L214)
       or from within Visual Studio.
-* Update the [changelog](https://github.com/Microsoft/bond/blob/master/CHANGELOG.md).
+* Update the [changelog](https://github.com/microsoft/bond/blob/master/CHANGELOG.md).
 
 ### Squash commits
 
@@ -77,9 +77,9 @@ commit --amend` or `git rebase --interactive` with *reword* command.
 ### Pull request
 
 Start a GitHub pull request to merge your topic branch into the
-[main repository's master branch](https://github.com/Microsoft/bond/tree/master).
+[main repository's master branch](https://github.com/microsoft/bond/tree/master).
 (If you are a Microsoft employee and are not a member of the
-[Microsoft organization on GitHub](https://github.com/Microsoft) yet, please
+[Microsoft organization on GitHub](https://github.com/microsoft) yet, please
 contact the Bond Development team via e-mail for instructions before
 starting your pull request. There's some process stuff you'll need to do
 ahead of time.)

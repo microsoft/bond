@@ -16,7 +16,7 @@ serialization protocols, data streams, user defined type aliases and more.
 By design Bond is language and platform independent and is currently supported
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
-Bond is published on GitHub at [https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond/).
+Bond is published on GitHub at [https://github.com/microsoft/bond/](https://github.com/microsoft/bond/).
 
 Basic example
 =============
@@ -601,7 +601,7 @@ Build instructions
 Bond for Java is currently only available in source form. You will need to clone
 the Bond repository, install the appropriate dependencies for your platform, and
 build and install the Bond compiler. Follow the instructions in the top-level
-[README.md](https://github.com/Microsoft/bond/blob/master/README.md) to do all
+[README.md](https://github.com/microsoft/bond/blob/master/README.md) to do all
 of this.
 
 Java has two additional requirements:
@@ -643,7 +643,7 @@ cd java/core; gradle build install
 ```
 
 To consume either component from your local maven repository, see the
-[`build.gradle`](https://github.com/Microsoft/bond/blob/master/examples/java/core/serialization/build.gradle)
+[`build.gradle`](https://github.com/microsoft/bond/blob/master/examples/java/core/serialization/build.gradle)
 in any of our Java example projects.
 
 Build tooling
@@ -657,7 +657,7 @@ add the generated code as production and test sources, respectively. You can
 specify Bond files outside those directories and pass options to `gbc` by adding
 an explicit `compileBond` or `compileTestBond` container to your build file. You
 can see an example of this in the
-[`build.gradle`](https://github.com/Microsoft/bond/blob/master/java/core/build.gradle)
+[`build.gradle`](https://github.com/microsoft/bond/blob/master/java/core/build.gradle)
 of the Bond Core library itself.
 
 References

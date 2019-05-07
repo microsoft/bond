@@ -56,10 +56,10 @@ three-step process:
 * GitHub issue about [adding a custom item with automatic globbing][add-custom-item-query]
 
 [add-custom-item-query]: https://github.com/dotnet/project-system/issues/2875
-[add-xaml-rules]: https://github.com/Microsoft/VSProjectSystem/blob/master/doc/extensibility/adding_xaml_rules.md
-[build-action]: https://github.com/Microsoft/VSProjectSystem/issues/244#issuecomment-327268174
-[cps]: https://github.com/Microsoft/VSProjectSystem
-[custom-item-types]: https://github.com/Microsoft/VSProjectSystem/blob/master/doc/extensibility/custom_item_types.md
+[add-xaml-rules]: https://github.com/microsoft/VSProjectSystem/blob/master/doc/extensibility/adding_xaml_rules.md
+[build-action]: https://github.com/microsoft/VSProjectSystem/issues/244#issuecomment-327268174
+[cps]: https://github.com/microsoft/VSProjectSystem
+[custom-item-types]: https://github.com/microsoft/VSProjectSystem/blob/master/doc/extensibility/custom_item_types.md
 [implicit-items]: https://aka.ms/sdkimplicititems
 [msbuild-item-update]: https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#attributes-and-elements
-[none-xaml]: https://github.com/Microsoft/VSProjectSystem/blob/1c0a47aba5a22d3eb071dc097b73851bdeaf68db/samples/WindowsScript/WindowsScript/WindowsScript.ProjectType/BuildSystem/Rules/none.xaml
+[none-xaml]: https://github.com/microsoft/VSProjectSystem/blob/1c0a47aba5a22d3eb071dc097b73851bdeaf68db/samples/WindowsScript/WindowsScript/WindowsScript.ProjectType/BuildSystem/Rules/none.xaml

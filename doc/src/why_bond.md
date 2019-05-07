@@ -1,6 +1,6 @@
 % Why Bond?
 
-Bond is an [open source framework](https://github.com/Microsoft/bond/) which
+Bond is an [open source framework](https://github.com/microsoft/bond/) which
 addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this 
 document we try to address similarities and differences between Bond and other 
 solutions. We try to keep it objective and uncolored by opinions but inevitably 

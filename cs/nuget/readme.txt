@@ -4,11 +4,11 @@ About
 Bond is an open source, cross-platform, cross-language framework for working 
 with schematized data.
 
-Bond is published on GitHub at https://github.com/Microsoft/bond/
+Bond is published on GitHub at https://github.com/microsoft/bond/
 
 The C# documentation is available at http://microsoft.github.io/bond/manual/bond_cs.html
 
-The C# examples are at https://github.com/Microsoft/bond/tree/master/examples/cs/core
+The C# examples are at https://github.com/microsoft/bond/tree/master/examples/cs/core
 
 Bond codegen
 ============
