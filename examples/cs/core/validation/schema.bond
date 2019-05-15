@@ -1,0 +1,28 @@
+﻿namespace Examples
+
+struct Example1
+{
+    0: bool Enabled;
+    1: string Name;
+}
+
+struct Example2
+{
+    0: bool Enabled;
+    1: string Name;
+    2: int32 Number;
+}
+
+struct Example3
+{
+    0: required bool Enabled;
+    1: required string Name;
+    2: required int32 Number;
+}
+
+struct Example4
+{
+    0: required_optional bool Enabled;
+    1: required_optional string Name;
+    2: required_optional int32 Number;
+}

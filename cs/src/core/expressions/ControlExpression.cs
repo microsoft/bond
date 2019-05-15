@@ -8,7 +8,7 @@ namespace Bond.Expressions
     /// <summary>
     /// Helpers for creating loop expression trees
     /// </summary>
-    internal static class ControlExpression
+    public static class ControlExpression
     {
         public static Expression While(Expression whileCondition, Expression body)
         {

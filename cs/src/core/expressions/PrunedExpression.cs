@@ -8,7 +8,7 @@ namespace Bond.Expressions
     using System.Linq;
     using System.Linq.Expressions;
 
-    internal class DeferredSwitchCase
+    public class DeferredSwitchCase
     {
         public SwitchCase SwitchCase { get { return Expression.SwitchCase(Body(), TestValues); } }
         public Func<Expression> Body { get; private set; }
@@ -21,7 +21,7 @@ namespace Bond.Expressions
         }
     }
     
-    internal static class PrunedExpression
+    public static class PrunedExpression
     {
         public static Expression IfThenElse(Expression test, Expression ifTrue, Expression ifFalse)
         {

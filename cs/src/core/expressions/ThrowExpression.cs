@@ -13,7 +13,7 @@ namespace Bond.Expressions
     /// <summary>
     /// ThrowExpression is a utility that makes it easy to create expressions that throw exceptions.
     /// </summary>
-    internal static class ThrowExpression
+    public static class ThrowExpression
     {
         static readonly Expression<Action<BondDataType>> throwInvalidTypeException = 
             t => ThrowInvalidTypeException(t);

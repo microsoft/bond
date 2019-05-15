@@ -7,15 +7,15 @@ namespace Bond.Expressions
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    internal delegate Expression BeginHandler();
-    internal delegate Expression EndHandler();
-    internal delegate Expression BaseHandler(IParser parser);
-    internal delegate Expression UnknownEndHandler();
-    internal delegate Expression KnownFieldHandler(IParser parser, Expression fieldType);
-    internal delegate Expression UnknownFieldHandler(IParser parser, Expression fieldType, Expression fieldId);
-    internal delegate Expression OmittedFieldHandler();
+    public delegate Expression BeginHandler();
+    public delegate Expression EndHandler();
+    public delegate Expression BaseHandler(IParser parser);
+    public delegate Expression UnknownEndHandler();
+    public delegate Expression KnownFieldHandler(IParser parser, Expression fieldType);
+    public delegate Expression UnknownFieldHandler(IParser parser, Expression fieldType, Expression fieldId);
+    public delegate Expression OmittedFieldHandler();
 
-    internal class Field : IField
+    public class Field : IField
     {
         readonly ushort id;
         readonly KnownFieldHandler value;
@@ -44,7 +44,7 @@ namespace Bond.Expressions
         }
     }
 
-    internal class Transform : ITransform
+    public class Transform : ITransform
     {
         readonly BeginHandler begin;
         readonly EndHandler end;

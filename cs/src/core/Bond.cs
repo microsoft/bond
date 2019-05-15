@@ -82,7 +82,7 @@ namespace Bond
         }
     }
 
-    internal class TypeDefComparer : IEqualityComparer<RuntimeSchema>
+    public class TypeDefComparer : IEqualityComparer<RuntimeSchema>
     {
         public bool Equals(RuntimeSchema x, RuntimeSchema y)
         {
