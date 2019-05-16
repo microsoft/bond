@@ -334,6 +334,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreNS10", "test\coreNS10\C
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "validation", "..\examples\cs\core\validation\validation.csproj", "{57A8A0DD-0B89-421E-852C-8E6ABC82FFA0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E6E238C-9017-445C-9611-66DA780609BE} = {2E6E238C-9017-445C-9611-66DA780609BE}
+		{43CBBA9B-C4BC-4E64-8733-7B72562D2E91} = {43CBBA9B-C4BC-4E64-8733-7B72562D2E91}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
