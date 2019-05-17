@@ -29,7 +29,7 @@ namespace Examples
     class ValidatorTransform<R>
     {
         static readonly Expression<Action<string, ushort>> throwUnknownFieldException =
-    (s, f) => ThrowUnknownFieldException(s, f);
+            (s, f) => ThrowUnknownFieldException(s, f);
 
         public static Expression UnknownFieldException(string schema, Expression tag)
         {
@@ -111,10 +111,6 @@ namespace Examples
 
             return body;
         }
-        Expression Struct(IParser parser)
-        {
-            return Struct(parser, RuntimeSchema.Empty);
-        }
 
         Expression Struct(IParser parser, RuntimeSchema schema)
         {
@@ -141,65 +137,12 @@ namespace Examples
                 ));
         }
 
-
-        Expression Value(IParser parser, Expression valueType)
-        {
-            if (parser.IsBonded)
-            {
-                return parser.Bonded(value => value);
-            }
-
-            var switchCases = new List<DeferredSwitchCase>
-            {
-                PrunedExpression.SwitchCase(
-                    () => GenerateValidate(Container, parser),
-                    BondDataType.BT_LIST,
-                    BondDataType.BT_SET),
-                PrunedExpression.SwitchCase(
-                    () => GenerateValidate(Map, parser),
-                    BondDataType.BT_MAP),
-                PrunedExpression.SwitchCase(
-                    () => GenerateValidate(Struct, parser),
-                    BondDataType.BT_STRUCT)
-            };
-
-            switchCases.AddRange(
-                from type in new[]
-                {
-                    BondDataType.BT_BOOL,
-                    BondDataType.BT_UINT8,
-                    BondDataType.BT_UINT16,
-                    BondDataType.BT_UINT32,
-                    BondDataType.BT_UINT64,
-                    BondDataType.BT_FLOAT,
-                    BondDataType.BT_DOUBLE,
-                    BondDataType.BT_STRING,
-                    BondDataType.BT_INT8,
-                    BondDataType.BT_INT16,
-                    BondDataType.BT_INT32,
-                    BondDataType.BT_INT64,
-                    BondDataType.BT_WSTRING
-                }
-                select
-                    PrunedExpression.SwitchCase(
-                        () => parser.Scalar(Expression.Constant(type), type,
-                            value => value),
-                        type));
-
-            return PrunedExpression.Switch(
-                valueType,
-                ThrowExpression.InvalidTypeException(valueType),
-                switchCases);
-        }
-
         Expression Value(IParser parser, Expression valueType, RuntimeSchema schema)
         {
             Debug.Assert(schema.HasValue);
 
             if (parser.IsBonded /*|| (untaggedWriter && schema.IsBonded)*/)
                 return parser.Bonded(value => value);
-            // writer.WriteBonded(PrunedExpression.Convert(value, typeof(IBonded))));
-
 
             if (schema.IsStruct)
                 return GenerateValidate(Struct, parser, schema);
@@ -214,11 +157,6 @@ namespace Examples
                 value => value);
         }
 
-        Expression Map(IParser parser)
-        {
-            return Map(parser, RuntimeSchema.Empty);
-        }
-
         Expression Map(IParser parser, RuntimeSchema schema)
         {
             var expectedValueType = schema.HasValue ? schema.TypeDef.element.id : (BondDataType?)null;
@@ -229,20 +167,11 @@ namespace Examples
                 Expression.Block(
                         ControlExpression.While(nextKey,
                             Expression.Block(
-                                schema.HasValue ?
-                                    Value(keyParser, keyType, schema.GetKeySchema()) :
-                                    Value(keyParser, keyType),
+                                    Value(keyParser, keyType, schema.GetKeySchema()),
                                 nextValue,
-                                schema.HasValue ?
-                                    Value(valueParser, valueType, schema.GetElementSchema()) :
-                                    Value(valueParser, valueType)
+                                    Value(valueParser, valueType, schema.GetElementSchema())
                                 ))
                     ));
-        }
-
-        Expression Container(IParser parser)
-        {
-            return Container(parser, RuntimeSchema.Empty);
         }
 
         Expression Container(IParser parser, RuntimeSchema schema)
@@ -254,27 +183,8 @@ namespace Examples
                 {
                     var body = ControlExpression.While(next,
                         Expression.Block(
-                            schema.HasValue ?
-                                Value(valueParser, elementType, schema.GetElementSchema()) :
-                                Value(valueParser, elementType)
+                                Value(valueParser, elementType, schema.GetElementSchema())
                             ));
-
-                    //                    var blob = parser.Blob(count);
-                    //                    if ((blob != null) || (arraySegment != null))
-                    {
-                        //body = PrunedExpression.IfThenElse(
-                        //    Expression.Equal(elementType, Expression.Constant(BondDataType.BT_INT8)),
-                        //    body);
-
-                        // For binary protocols we can write blob directly using protocols's WriteBytes
-                        // even if the container is not a blob (blob is BT_LIST of BT_INT8).
-                        // if (binaryWriter)
-                        {
-                            //    body = PrunedExpression.IfThenElse(
-                            //        Expression.Equal(elementType, Expression.Constant(BondDataType.BT_UINT8)),
-                            //        body);
-                        }
-                    }
 
                     return body;
                 });
