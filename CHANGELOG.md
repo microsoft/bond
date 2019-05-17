@@ -24,6 +24,11 @@ different versioning scheme, following the Haskell community's
   compiling with some versions of GCC. ([Pull request
   #954](https://github.com/microsoft/bond/pull/954))
 
+### C# ###
+
+* Promoted several classes in Bond.Expression from internal to public to enable writing custom transformations outside Bond.
+* Added example/cs/core/valiation demonstrating how to do runtime validation of a serialized tagged message against a RuntimeSchema.
+
 ## 8.1.0: 2019-03-27 ##
 
 ### C++ ###
