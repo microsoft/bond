@@ -15,6 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * C++ version: minor bump needed
+* Fixed ambiguous call to maybe::operator== that breaks GCC 9 build
 * C# NuGet version: TBD
 
 ### C++ ###
