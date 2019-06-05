@@ -6,17 +6,17 @@
     <version>$version$</version>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
-    <projectUrl>https://github.com/Microsoft/bond/</projectUrl>
-    <licenseUrl>https://github.com/Microsoft/bond/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/microsoft/bond/</projectUrl>
+    <licenseUrl>https://github.com/microsoft/bond/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://raw.githubusercontent.com/Microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
     <summary>The Bond project's code generation C# MSBuild targets</summary>
     <description>
       Includes the Bond compiler (gbc) and C# MSBuild targets for easy integration into project builds.
 
       Bond is an open source, cross-platform framework for working with schematized data. It supports cross-language serialization/deserialization and powerful generic mechanisms for efficiently manipulating data.
 
-      Bond is published on GitHub at https://github.com/Microsoft/bond/
+      Bond is published on GitHub at https://github.com/microsoft/bond/
     </description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>Bond .NET C# serialization</tags>

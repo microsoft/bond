@@ -17,7 +17,7 @@ By design Bond is language and platform independent and is currently supported
 for C++, C#, Java, and Python on Linux, macOS, and Windows.
 
 Bond is published on GitHub at
-[https://github.com/Microsoft/bond/](https://github.com/Microsoft/bond).
+[https://github.com/microsoft/bond/](https://github.com/microsoft/bond).
 
 Basic example
 =============
@@ -1839,12 +1839,12 @@ To consume Bond, you will need to integrate it into your build somehow. If
 you are using one of these C++ package managers, Bond is available as a
 package that you can consume:
 
-* [Vcpkg](https://github.com/Microsoft/vcpkg)'s `bond` package
+* [Vcpkg](https://github.com/microsoft/vcpkg)'s `bond` package
 
 What follows are build-system agnostic instructions for consuming C++ Bond.
 
 These instructions assume that you have used
-[Bond's CMake-based build](https://github.com/Microsoft/bond/README.md) to
+[Bond's CMake-based build](https://github.com/microsoft/bond/README.md) to
 compile and *install* (`make install`/`cmake --build . --target INSTALL`)
 Bond into your development environment somewhere. The CMake variable
 `CMAKE_INSTALL_PREFIX` can be used to control where the install target
@@ -1852,7 +1852,7 @@ places the output files.
 
 (The Bond CMake files can't currently be consumed by another CMake project
 via `add_directory`.
-[Contributions encouraged](https://github.com/Microsoft/bond/blob/master/CONTRIBUTING.md)
+[Contributions encouraged](https://github.com/microsoft/bond/blob/master/CONTRIBUTING.md)
 to help improve this situation.)
 
 After you've built and installed Bond, you can use whatever build system you

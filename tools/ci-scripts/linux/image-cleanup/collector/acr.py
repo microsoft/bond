@@ -92,11 +92,11 @@ def get_image_manifests() -> Iterable[ImageManifest]:
     return [ImageManifest(**o) for o in manifests]
 
 def delete_image_by_manifest(manifest: ImageManifest) -> None:
-    """Delete a ACR image (and all its tags)."""
+    """Delete an ACR image (and all its tags)."""
+    image_name = '{}@{}'.format(REPOSITORY_NAME, manifest.digest)
     az_delete_cmd_line = ['az', 'acr', 'repository', 'delete',
                           '--name', REGISTRY_NAME,
-                          '--repository', REPOSITORY_NAME,
-                          '--manifest', manifest.digest,
+                          '--image', image_name,
                           '--yes']
     _LOGGER.debug('Invoking %s', az_delete_cmd_line)
     p = subprocess.run(az_delete_cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
