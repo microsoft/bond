@@ -22,5 +22,7 @@ var classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1
     [ "value", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#aa7a47be25f2a5df3637986685a216698", null ],
     [ "value", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#ab6daaec272fcf1c38268570a4e594088", null ],
     [ "value", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#a995d445348649db7f2beb254fdfda2e6", null ],
-    [ "value", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#a2f34664332217756a1d15b67fb37beeb", null ]
+    [ "value", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#a2f34664332217756a1d15b67fb37beeb", null ],
+    [ "operator!=", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#a79b9e58163c3ced09c23139b041af730", null ],
+    [ "operator==", "classbond_1_1maybe_3_01_t_00_01typename_01boost_1_1enable__if_3_01detail_1_1has__allocator_3_01_t_01_4_01_4_1_1type_01_4.html#a1e4e790922ed92445bb04882b9a02388", null ]
 ];
