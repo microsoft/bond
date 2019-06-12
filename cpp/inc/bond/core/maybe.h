@@ -185,29 +185,6 @@ public:
     maybe_common& operator=(maybe_common&&) = default;
     #endif
 
-    /// @brief Compares two maybes for value equality.
-    ///
-    /// @return true if both maybes hold nothing; returns false if one maybe
-    /// holds nothing and the other holds a values; otherwise, calls
-    /// operator== with the two values.
-    ///
-    /// @since 8.0.0 (was a member function prior)
-    friend bool operator==(const maybe_common& lhs, const maybe_common& rhs)
-    {
-        return lhs._value == rhs._value;
-    }
-
-    /// @brief Compares two maybes for value inequality.
-    ///
-    /// See operator==(const maybe_common&,const maybe_common&) for details
-    /// about how maybes holding nothing are handled.
-    ///
-    /// @since 8.0.0 (was a member function prior)
-    friend bool operator!=(const maybe_common& lhs, const maybe_common& rhs)
-    {
-        return !(lhs == rhs);
-    }
-
     /// @brief Compares a maybe and a value for equality.
     ///
     /// @return false if the maybe holds nothing; otherwise, calls
@@ -368,6 +345,27 @@ public:
     {
         this->emplace(std::move(value));
         return *this;
+    }
+
+    /// @brief Compares two maybes for value equality.
+    ///
+    /// @return true if both maybes hold nothing; returns false if one maybe
+    /// holds nothing and the other holds a values; otherwise, calls
+    /// operator== with the two values.
+    ///
+    friend bool operator==(const maybe& lhs, const maybe& rhs)
+    {
+        return lhs._value == rhs._value;
+    }
+
+    /// @brief Compares two maybes for value inequality.
+    ///
+    /// See operator==(const maybe_common&,const maybe_common&) for details
+    /// about how maybes holding nothing are handled.
+    ///
+    friend bool operator!=(const maybe& lhs, const maybe& rhs)
+    {
+        return lhs._value != rhs._value;
     }
 
     /// @brief Set the maybe to hold a value, if needed.
@@ -558,6 +556,27 @@ public:
     // allocator_holder so the friend free functions from maybe_common don't
     // have any competition.
     bool operator==(const alloc_holder&) = delete;
+
+    /// @brief Compares two maybes for value equality.
+    ///
+    /// @return true if both maybes hold nothing; returns false if one maybe
+    /// holds nothing and the other holds a values; otherwise, calls
+    /// operator== with the two values.
+    ///
+    friend bool operator==(const maybe& lhs, const maybe& rhs)
+    {
+        return lhs._value == rhs._value;
+    }
+
+    /// @brief Compares two maybes for value inequality.
+    ///
+    /// See operator==(const maybe_common&,const maybe_common&) for details
+    /// about how maybes holding nothing are handled.
+    ///
+    friend bool operator!=(const maybe& lhs, const maybe& rhs)
+    {
+        return lhs._value != rhs._value;
+    }
 
     /// @brief Set to non-empty, if needed.
     ///

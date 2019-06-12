@@ -22,7 +22,10 @@ different versioning scheme, following the Haskell community's
 * gRPC v1.17.1 is now required to use Bond-over-gRPC.
 * Fixed an ambigious `HexDigit` overload compilation error when
   compiling with some versions of GCC. ([Pull request
-  #954](https://github.com/microsoft/bond/pull/954))
+  #954](https://github.com/Microsoft/bond/pull/954))
+* Fixed ambiguous call to `maybe::operator==` that breaks GCC 9
+  build. ([Pull request
+  #975](https://github.com/microsoft/bond/pull/975))
 
 ## 8.1.0: 2019-03-27 ##
 
