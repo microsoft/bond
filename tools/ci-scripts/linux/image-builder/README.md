@@ -31,9 +31,9 @@ maintainers from Microsoft can get you the details.
 
 Not all of the images built automatically are used by CI builds. We have
 another VSTS build that runs a cleanup script to delete unused images. It
-keeps images that are referenced in `.travis.yml` in the past two week's of
-commits in the main GitHub repository or any tags on that repository. It
-also keeps any image younger than seven days.
+keeps images that are referenced in `.travis.yml` in the last 10 commits of
+the master branch, the past two week's of commits, and any tags in the main
+GitHub repository. It also keeps any image younger than seven days.
 
 # Manual Builds
 
