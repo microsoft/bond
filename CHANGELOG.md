@@ -26,6 +26,9 @@ different versioning scheme, following the Haskell community's
 * Fixed ambiguous call to `maybe::operator==` that breaks GCC 9
   build. ([Pull request
   #975](https://github.com/microsoft/bond/pull/975))
+* Fixed MSVC warning C4296: "'<': expression is always false" in protocol.h.
+  ([Issue
+  #981](https://github.com/microsoft/bond/issues/981))
 
 ## 8.1.0: 2019-03-27 ##
 
