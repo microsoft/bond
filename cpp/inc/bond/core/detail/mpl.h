@@ -114,7 +114,7 @@ inline auto try_apply(F&& f, const list<T, U, R...>&)
 {
     if (auto&& result = f(identity<T>{}))
     {
-        return result;
+        return std::move(result);
     }
 
     return try_apply(std::forward<F>(f), list<U, R...>{});
