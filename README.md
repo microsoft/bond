@@ -111,7 +111,7 @@ cd build # or wherever you ran CMake before
 cmake -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package ..
 ```
 
-Running the following command in the build directory will build and execute all
+Running the following command in the `build` directory will build and execute all
 the tests and examples:
 
 ```bash
@@ -156,7 +156,7 @@ cmake -DBOND_ENABLE_GRPC=FALSE -G Xcode ..
 ```
 
 You can build and run unit tests by building the `check` target in Xcode or by
-running make in the build directory:
+running make in the `build` directory:
 
 ```bash
 make --jobs 8 check
