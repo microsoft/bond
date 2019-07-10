@@ -232,9 +232,6 @@ namespace Bond.IO.Safe
             {
                 length = minLength;
             }
-                length = ArrayIndexMaxValue;
-            if (length < minLength)
-                length = minLength;
 
             Array.Resize(ref buffer, length);
         }
