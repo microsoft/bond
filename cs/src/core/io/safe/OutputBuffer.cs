@@ -225,6 +225,13 @@ namespace Bond.IO.Safe
 
             const int ArrayIndexMaxValue = 0x7FFFFFC7;
             if ((uint)length > ArrayIndexMaxValue)
+            {
+                length = ArrayIndexMaxValue;
+            }
+            else if (length < minLength)
+            {
+                length = minLength;
+            }
                 length = ArrayIndexMaxValue;
             if (length < minLength)
                 length = minLength;
