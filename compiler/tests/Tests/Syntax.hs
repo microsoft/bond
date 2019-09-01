@@ -16,8 +16,8 @@ import Control.Exception
 import Data.Maybe
 import Data.List
 import Data.Aeson (encode, decode)
-import Data.Aeson.Encode.Pretty (Config(..), encodePretty')
-import Data.DeriveTH
+import Data.Aeson.Encode.Pretty (Config(..), NumberFormat(..), Indent(..), encodePretty')
+import Test.QuickCheck.TH.Generators
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
 import System.FilePath
@@ -30,20 +30,65 @@ import Language.Bond.Syntax.Util
 import Language.Bond.Syntax.SchemaDef
 import IO
 
-derive makeArbitrary ''Attribute
-derive makeArbitrary ''Bond
-derive makeArbitrary ''Constant
-derive makeArbitrary ''Constraint
-derive makeArbitrary ''Declaration
-derive makeArbitrary ''Default
-derive makeArbitrary ''Field
-derive makeArbitrary ''Import
-derive makeArbitrary ''Language
-derive makeArbitrary ''Modifier
-derive makeArbitrary ''Namespace
-derive makeArbitrary ''Type
-derive makeArbitrary ''TypeParam
-derive makeArbitrary ''MethodType
+makeArbitrary ''Attribute
+makeArbitrary ''Constant
+makeArbitrary ''Constraint
+makeArbitrary ''Default
+makeArbitrary ''Field
+makeArbitrary ''Declaration
+makeArbitrary ''Import
+makeArbitrary ''Language
+makeArbitrary ''Modifier
+makeArbitrary ''Namespace
+makeArbitrary ''Type
+makeArbitrary ''TypeParam
+makeArbitrary ''MethodType
+makeArbitrary ''Bond
+
+
+instance Arbitrary Attribute where
+  arbitrary = arbitraryAttribute
+
+instance Arbitrary Field where
+  arbitrary = arbitraryField
+
+instance Arbitrary Constant where
+  arbitrary = arbitraryConstant
+
+instance Arbitrary Default where
+  arbitrary = arbitraryDefault
+
+instance Arbitrary Declaration where
+  arbitrary = arbitraryDeclaration
+
+instance Arbitrary Import where
+  arbitrary = arbitraryImport
+
+instance Arbitrary Constraint where
+  arbitrary = arbitraryConstraint
+
+instance Arbitrary Language where
+  arbitrary = arbitraryLanguage
+
+instance Arbitrary Modifier where
+  arbitrary = arbitraryModifier
+
+
+instance Arbitrary Namespace where
+  arbitrary = arbitraryNamespace
+
+instance Arbitrary TypeParam where
+  arbitrary = arbitraryTypeParam
+
+instance Arbitrary Type where
+  arbitrary = arbitraryType
+
+instance Arbitrary MethodType where
+  arbitrary = arbitraryMethodType
+
+instance Arbitrary Bond where
+  arbitrary = arbitraryBond
+
 
 instance Arbitrary Method where
   arbitrary = oneof
@@ -125,15 +170,17 @@ verifySchemaDef baseName schemaName =
         (Bond _ _ declarations) <- parseBondFile [] $ "tests" </> "schema" </> baseName <.> "bond"
         let schema = fromJust $ find ((schemaName ==) . declName) declarations
         return $
-            -- some versions aeson encode angle brackets
             BL.fromStrict $
+            -- aeson-pretty-print prints anything above 1e19 in scientific notation
+            replace "1.8446744073709551615e19" "18446744073709551615" $
+            -- some versions aeson encode angle brackets
             replace "\\u003c" "<" $
             replace "\\u003e" ">" $
             BL.toStrict $ prettyEncode $ makeSchemaDef $ BT_UserDefined schema []
       where
-        prettyEncode = encodePretty' (Config indentSpaces compare)
+        prettyEncode = encodePretty' (Config indentSpaces compare Generic False)
           where
-            indentSpaces = 2
+            indentSpaces = Spaces 2
         replace s r bs = if B.null t then h else
             B.append h (B.append r $ replace s r (B.drop (B.length s) t))
           where

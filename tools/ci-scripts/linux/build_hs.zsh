@@ -2,6 +2,8 @@
 
 set -eux
 
+export PATH=/opt/ghc/bin:$PATH
+
 local BOND_CMAKE_FLAGS="$BOND_CMAKE_FLAGS -DBOND_SKIP_CORE_TESTS=TRUE -DBOND_ENABLE_GRPC=FALSE"
 cmake \
     -DBOND_STACK_OPTIONS="--allow-different-user" \

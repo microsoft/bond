@@ -16,7 +16,6 @@ import Control.Monad.Loops (firstM)
 import Data.Aeson (eitherDecode)
 import Data.Void (Void)
 import qualified Data.ByteString.Lazy as BL
-import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import Language.Bond.Codegen.TypeMapping
 import Language.Bond.Parser
@@ -29,7 +28,6 @@ import System.FilePath
 import System.IO
 import Text.Megaparsec
 import Text.Printf
-
 
 parseFile :: [FilePath] -> FilePath -> IO(Bond)
 parseFile importDirs file =
@@ -89,21 +87,21 @@ parseNamespaceMappings = mapM $
         Left err -> fail $ show err
         Right m -> return m
 
-msbuildErrorMessage :: (ParseError Char Void) -> String
+msbuildErrorMessage :: (ParseErrorBundle String Void) -> String
 msbuildErrorMessage err = printf "%s(%d,%d) : error B0000: %s" name line col message
     where
         message = combinedMessage err
-        pos = errorPos err
-        name = sourceName (NE.head pos)
-        line = unPos $ sourceLine (NE.head pos)
-        col = unPos $ sourceColumn (NE.head pos)
+        pos = pstateSourcePos . bundlePosState $ err
+        name = sourceName pos
+        line = unPos $ sourceLine pos
+        col = unPos $ sourceColumn pos
 
-combinedMessage :: (ParseError Char Void) -> String
+combinedMessage :: (ParseErrorBundle String Void) -> String
 combinedMessage err = id $ T.unpack $ T.intercalate (T.pack ", ") messages
     where
         -- parseErrorPretty returns a multi-line String.
         -- We need to break it up to make a useful one-line message.
-        messages = T.splitOn (T.pack "\n") $ T.strip $ T.pack $ parseErrorTextPretty err
+        messages = T.splitOn (T.pack "\n") $ T.strip $ T.pack $ errorBundlePretty err
 
 -- | Normalizes a file path to only use the current platform's preferred
 -- directory separator.

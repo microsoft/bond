@@ -9,6 +9,7 @@ pushd $BOND_ROOT
 git fetch --unshallow --tags
 popd
 
+export PATH=/opt/ghc/bin:$PATH
 # Install gbc.
 cmake \
     -DBOND_ENABLE_JAVA=TRUE \

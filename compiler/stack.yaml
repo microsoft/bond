@@ -5,7 +5,7 @@
 # Resolver to choose a 'specific' stackage snapshot or a compiler version.
 # A snapshot resolver dictates the compiler version and the set of packages
 # to be used for project dependencies. For example:
-resolver: lts-7.24
+resolver: lts-14.4
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -28,18 +28,13 @@ resolver: lts-7.24
 packages:
 - .
 
-flags:
-  bond:
-    warningsAsErrors: true
-
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- aeson-pretty-0.7.2
-- cpphs-1.20.8
-- integer-logarithms-1.0.2
-- megaparsec-6.2.0
-- parser-combinators-0.2.0
-- primitive-0.6.2.0
-- scientific-0.3.5.2
-- vector-0.12.0.1
+- quickcheck-arbitrary-template-0.2.1.0
+
+system-ghc: true
+
+flags:
+  bond:
+    warningsAsErrors: true

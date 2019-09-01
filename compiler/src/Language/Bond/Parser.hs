@@ -45,7 +45,7 @@ parseBond ::
  -> String                              -- ^ content of a schema file to parse
  -> FilePath                            -- ^ path of the file being parsed, used to resolve relative import paths
  -> ImportResolver                      -- ^ function to resolve and load imported files
- -> IO (Either (ParseError Char Void) Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree
+ -> IO (Either (ParseErrorBundle String Void) Bond)         -- ^ function returns 'Bond' which represents the parsed abstract syntax tree
                                         --   or 'ParserError' if parsing failed
 parseBond s c f r = runReaderT (runParserT (evalStateT bond (Symbols [] [])) s c) (Environment [] [] f r)
 
@@ -63,10 +63,10 @@ import_ :: Parser Import
 import_ = do
     i <- Import <$ keyword "import" <*> unescapedStringLiteral <* optional semi <?> "import statement"
     src <- getInput
-    pos <- getPosition
+    pos <- getOffset
     processImport i
     setInput src
-    setPosition pos
+    setOffset pos
     return i
 
 processImport :: Import -> Parser()
@@ -77,7 +77,7 @@ processImport (Import file) = do
     if path `elem` imports then return () else do
             modify (\u -> u { imports = path:imports } )
             setInput content
-            setPosition $ initialPos path
+            setSourcePos $ initialPos path
             void $ local (\e -> e { currentFile = path }) bond
 
 -- parser for struct, enum or type alias declaration/definition
@@ -469,3 +469,8 @@ validDefaultType bondType (Just defaultValue) = validDefaultType' bondType defau
 -- The value of the second parameter is never used: only its type is used.
 isInBounds :: forall a. (Integral a, Bounded a) => Integer -> a -> Bool
 isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger (maxBound :: a))
+
+-- sets source position
+setSourcePos ::  MonadParsec e s m => SourcePos -> m ()
+setSourcePos src = updateParserState setPos
+    where setPos (State s o (PosState i o' _ t l)) =  State s o (PosState i o' src t l)
