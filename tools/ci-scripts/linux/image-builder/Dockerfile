@@ -49,5 +49,10 @@ RUN add-apt-repository ppa:cwchien/gradle && \
     gradle \
     openjdk-8-jdk-headless
 
+# Components for ghc
+RUN add-apt-repository ppa:hvr\ghc -y && \
+    apt-get update && \
+    apt-get -y install ghc-8.6.5
+
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]
