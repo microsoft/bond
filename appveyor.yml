@@ -139,6 +139,10 @@
 
             choco install haskell-stack -y
 
+            # temp workaround: install ghc for happy install
+
+            choco install ghc --version 8.0.1 -y
+
             choco install dotnetcore-sdk -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
@@ -148,6 +152,12 @@
             $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
 
             $env:Path = "$machinePath;$userPath"
+
+            # temp workaround: run cabal update and install happy
+
+            cabal update
+
+            cabal install happy-1.19.5
 
             if ($env:BOND_BUILD -eq "Doc") {
 
