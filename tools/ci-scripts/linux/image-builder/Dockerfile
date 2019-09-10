@@ -32,6 +32,11 @@ RUN apt-get -y install \
 # Components for Haskell. See https://docs.haskellstack.org/en/stable/install_and_upgrade/#linux
 RUN wget -qO- https://get.haskellstack.org/ | sh
 
+# Components for ghc
+RUN add-apt-repository ppa:hvr/ghc -y && \
+    apt-get update && \
+    apt-get -y install ghc-8.0.1
+
 # Components for C#. See http://www.mono-project.com/download/#download-lin
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
     echo "deb http://download.mono-project.com/repo/ubuntu xenial main" | tee /etc/apt/sources.list.d/mono-official.list && \
@@ -48,11 +53,6 @@ RUN add-apt-repository ppa:cwchien/gradle && \
     apt-get -y install \
     gradle \
     openjdk-8-jdk-headless
-
-# Components for ghc
-RUN add-apt-repository ppa:hvr\ghc -y && \
-    apt-get update && \
-    apt-get -y install ghc-8.6.5
 
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]
