@@ -138,6 +138,10 @@
             }
 
             choco install haskell-stack -y
+            
+            # install happy seperately
+            
+            stack build happy --verbose
 
             choco install dotnetcore-sdk -y
 
