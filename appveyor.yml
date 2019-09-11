@@ -139,6 +139,10 @@
 
             choco install haskell-stack -y
 
+            # temp workaround: install ghc for happy install
+
+            choco install ghc --version 8.0.1 -y
+
             choco install dotnetcore-sdk -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
@@ -148,6 +152,12 @@
             $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
 
             $env:Path = "$machinePath;$userPath"
+
+            # temp workaround: run cabal update and install happy
+
+            cabal update
+
+            cabal install happy-1.19.5
 
             if ($env:BOND_BUILD -eq "Doc") {
 
@@ -214,9 +224,17 @@
 
                 # Make sure we have Python27-64 before any other version
 
+                $env:Path = "C:\Python27\;${env:Path}"
+
                 if ($env:BOND_ARCH -eq 64) {
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
+
+            }
+
+            if ($env:BOND_ARCH -eq 64) {
+
+                $pythonExt = "-x64"
 
             }
 
@@ -226,7 +244,7 @@
 
                 cd build
 
-                cmake "-DBoost_ADDITIONAL_VERSIONS=${env:BOND_BOOST}" $cmakeFlags -G $cmakeGenerator ..
+                cmake "-DBoost_ADDITIONAL_VERSIONS=${env:BOND_BOOST}" "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27${pythonExt}\python.exe" $cmakeFlags -G $cmakeGenerator ..
 
             }
 
@@ -246,7 +264,7 @@
 
                 cd build
 
-                cmake $cmakeFlags -G $cmakeGenerator .. 2>cmake_stderr.log
+                cmake "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27${pythonExt}\python.exe" $cmakeFlags -G $cmakeGenerator .. 2>cmake_stderr.log
 
                 Get-Content cmake_stderr.log
 
