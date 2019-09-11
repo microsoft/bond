@@ -224,6 +224,8 @@
 
                 # Make sure we have Python27-64 before any other version
 
+                $env:Path = "C:\Python27\;${env:Path}"
+
                 if ($env:BOND_ARCH -eq 64) {
                     $env:Path = "C:\Python27-x64\scripts;C:\Python27-x64\;${env:Path}"
                 }
