@@ -232,13 +232,19 @@
 
             }
 
+            if ($env:BOND_ARCH -eq 64) {
+
+                $pythonExt = "-x64"
+
+            }
+
             if ($env:BOND_BUILD -eq "Python") {
 
                 mkdir build
 
                 cd build
 
-                cmake "-DBoost_ADDITIONAL_VERSIONS=${env:BOND_BOOST}" "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27\python.exe" $cmakeFlags -G $cmakeGenerator ..
+                cmake "-DBoost_ADDITIONAL_VERSIONS=${env:BOND_BOOST}" "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27${pythonExt}\python.exe" $cmakeFlags -G $cmakeGenerator ..
 
             }
 
@@ -258,7 +264,7 @@
 
                 cd build
 
-                cmake "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27\python.exe" $cmakeFlags -G $cmakeGenerator .. 2>cmake_stderr.log
+                cmake "-DPYTHON_EXECUTABLE:FILEPATH=C:\Python27${pythonExt}\python.exe" $cmakeFlags -G $cmakeGenerator .. 2>cmake_stderr.log
 
                 Get-Content cmake_stderr.log
 
