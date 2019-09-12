@@ -194,10 +194,19 @@ namespace detail
 {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4296) // C4296: '<' : expression is always false
+#endif // _MSC_VER
+
     // Avoid std::max due to a bug in Visual C++ 2017.
     template <std::size_t V0, std::size_t V1>
     struct max_of
         : std::integral_constant<std::size_t, (V0 < V1 ? V1 : V0)> {};
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
     template <typename List> struct
     max_size;
