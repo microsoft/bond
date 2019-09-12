@@ -220,9 +220,18 @@ namespace Bond.IO.Safe
         // Grow the buffer so that there is enough space to write 'count' bytes
         internal virtual void Grow(int count)
         {
-            var minLength = position + count;
+            int minLength = position + count;
             length += length >> 1;
-            if (length < minLength) length = minLength;
+
+            const int ArrayIndexMaxValue = 0x7FFFFFC7;
+            if ((uint)length > ArrayIndexMaxValue)
+            {
+                length = ArrayIndexMaxValue;
+            }
+            else if (length < minLength)
+            {
+                length = minLength;
+            }
 
             Array.Resize(ref buffer, length);
         }
