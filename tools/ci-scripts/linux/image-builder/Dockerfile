@@ -10,6 +10,10 @@ RUN apt-get update && \
     apt-get -y install \
     software-properties-common
 
+# Components for gbc
+RUN apt-get -y install \
+    happy
+
 # Components for Boost
 RUN apt-get -y install \
     build-essential \
