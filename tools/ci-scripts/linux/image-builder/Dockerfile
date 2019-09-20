@@ -35,7 +35,7 @@ RUN wget -qO- https://get.haskellstack.org/ | sh
 # Components for ghc
 RUN add-apt-repository ppa:hvr/ghc -y && \
     apt-get update && \
-    apt-get -y install ghc-8.0.1
+    apt-get -y install ghc-8.6.5
 
 # Components for C#. See http://www.mono-project.com/download/#download-lin
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
