@@ -2,8 +2,6 @@
 
 set -eux
 
-export PATH=/opt/ghc/bin:$PATH
-
 cmake -DBOND_STACK_OPTIONS="--allow-different-user" \
       -DCMAKE_CXX_FLAGS="$BOND_CXX_FLAGS" \
       -DCMAKE_C_FLAGS="$BOND_CC_FLAGS" \
