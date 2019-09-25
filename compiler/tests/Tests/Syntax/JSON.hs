@@ -8,7 +8,7 @@ module Tests.Syntax.JSON
     ) where
 
 import Data.Aeson (FromJSON, ToJSON, eitherDecode)
-import Data.Aeson.Encode.Pretty (Config(..), encodePretty')
+import Data.Aeson.Encode.Pretty (Config(..),NumberFormat(..), Indent(..), encodePretty')
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe ()
 import Data.Text.Lazy as LT
@@ -96,7 +96,7 @@ anyTypeAst = encodeText anyType
 -- | Helper method that JSON encodes to lazy text
 encodeText :: ToJSON a => a -> LT.Text
 encodeText o = decodeUtf8 (encodePretty' config o)
-  where config = (Config 2 compare)
+  where config = (Config (Spaces 2)  compare Generic False)
 
 -- | Asserts that the given JSON decodes into the expected value
 assertJsonDecode :: (Eq a, FromJSON a, Show a) =>

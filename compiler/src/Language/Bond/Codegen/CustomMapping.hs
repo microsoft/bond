@@ -79,12 +79,12 @@ integer = L.signed sc natural
 --
 -- > > parseAliasMapping "Example.OrderedSet=SortedSet<{0}>"
 -- > Right (AliasMapping {aliasName = ["Example","OrderedSet"], aliasTemplate = [Fragment "SortedSet<",Placeholder 0,Fragment ">"]})
-parseAliasMapping :: String -> Either (ParseError Char Void) AliasMapping
+parseAliasMapping :: String -> Either (ParseErrorBundle String Void) AliasMapping
 parseAliasMapping s = parse aliasMapping "" s
   where
     aliasMapping = AliasMapping <$> qualifiedName <* equal <*> some (placeholder <|> fragment) <* eof
     placeholder = Placeholder <$> fromIntegral <$> between (char '{') (char '}') integer
-    fragment = Fragment <$> some (notChar '{')
+    fragment = Fragment <$> some (anySingleBut '{')
 
 -- | Parse a namespace mapping specification used in command-line arguments of
 -- <https://microsoft.github.io/bond/manual/compiler.html#command-line-options gbc>.
@@ -93,7 +93,7 @@ parseAliasMapping s = parse aliasMapping "" s
 --
 -- > > parseNamespaceMapping "bond=Microsoft.Bond"
 -- > Right (NamespaceMapping {fromNamespace = ["bond"], toNamespace = ["Microsoft","Bond"]})
-parseNamespaceMapping :: String -> Either (ParseError Char Void) NamespaceMapping
+parseNamespaceMapping :: String -> Either (ParseErrorBundle String Void) NamespaceMapping
 parseNamespaceMapping s = parse namespaceMapping "" s
   where
     namespaceMapping = NamespaceMapping <$> qualifiedName <* equal <*> qualifiedName

@@ -10,6 +10,7 @@ COMPILER=${4:-clang}
 BOND_ROOT=/root/bond
 BUILD_ROOT=/root/build
 BUILD_SCRIPTS=$BOND_ROOT/tools/ci-scripts/linux
+export PATH=/opt/ghc/bin:$PATH
 
 # We set our cflags in non-standard variables because Stack chokes on some
 # otherwise acceptable configurations.
