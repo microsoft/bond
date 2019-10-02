@@ -6,7 +6,7 @@
 
 # Bond
 
-Bond is an open source, cross-platform framework for working with schematized
+Bond is an open-source, cross-platform framework for working with schematized
 data. It supports cross-language serialization/deserialization and powerful
 generic mechanisms for efficiently manipulating data. Bond is broadly used at
 Microsoft in high scale services.
@@ -25,17 +25,17 @@ For details, see the User's Manuals:
       [the compiler library](https://hackage.haskell.org/package/bond) that
       powers `gbc`.
 
-For a discussion how Bond compares to similar frameworks see [Why Bond](https://microsoft.github.io/bond/why_bond.html).
+For a discussion about how Bond compares to similar frameworks see [Why Bond](https://microsoft.github.io/bond/why_bond.html).
 
 ## Dependencies
 
 Bond C++ library requires some C++11 features (currently limited to those
-supported bv Visual C++ 2013); a C++11 compiler is required. Additionally,
+supported by Visual C++ 2013); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
 
-Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the `--recursive` flag:
+Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be closed with the `--recursive` flag:
 
 ```bash
 git clone --recursive https://github.com/microsoft/bond.git
@@ -67,7 +67,7 @@ sudo apt-get install \
 Additionally, you need the [Haskell Tool
 Stack](https://docs.haskellstack.org/en/stable/README/). If your distro isn't
 shipping a new enough version of it, you may encounter some non-obvious build
-failures, so we recommend installing the latest Stack outside of package
+failures, so we recommend installing the latest Stack outside of the package
 management:
 
 ```bash
@@ -87,7 +87,7 @@ sudo make install
 The `build` directory is just an example. Any directory can be used as the
 build destination.
 
-In order to build the Bond Python module, all the C++/Python tests and
+To build the Bond Python module, all the C++/Python tests and
 examples, and Bond-over-gRPC, a few more packages are needed.
 
 ```bash
@@ -227,7 +227,7 @@ pre-built libraries are only needed for unit tests, Python, and gRPC
 support. If Boost or Python libraries are not found on the system, then some
 tests and examples will not be built.
 
-In order to generate a solution to build the Bond Core C++ and Python with Visual
+To generate a solution to build the Bond Core C++ and Python with Visual
 Studio 2015 run the following commands from the root `bond` directory:
 
 ```bash
@@ -244,14 +244,14 @@ with 32-bit tools.)
 Instead of `cmake` you can also use `cmake-gui` and specify configuration
 settings in the UI. This configuration step has to be performed only once. From
 then on you can use the generated solution `build\bond.sln` from Visual Studio
-or build from command line using `cmake`:
+or build from the command line using `cmake`:
 
 ```bash
 cmake --build . --target
 cmake --build . --target INSTALL
 ```
 
-In order to build and execute the unit tests and examples run:
+To build and execute the unit tests and examples run:
 
 ```bash
 cmake --build . --target check -- /maxcpucount:8
