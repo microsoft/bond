@@ -35,7 +35,7 @@ to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
 
-Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be closed with the `--recursive` flag:
+Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the `--recursive` flag:
 
 ```bash
 git clone --recursive https://github.com/microsoft/bond.git
@@ -67,7 +67,7 @@ sudo apt-get install \
 Additionally, you need the [Haskell Tool
 Stack](https://docs.haskellstack.org/en/stable/README/). If your distro isn't
 shipping a new enough version of it, you may encounter some non-obvious build
-failures, so we recommend installing the latest Stack outside of the package
+failures, so we recommend installing the latest Stack outside of package
 management:
 
 ```bash
