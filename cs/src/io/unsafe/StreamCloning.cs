@@ -83,7 +83,7 @@ namespace Bond.IO.Unsafe
 
         static class MemoryStreamCloner
         {
-#if !(NETSTANDARD1_3 || NETSTANDARD1_6)
+#if !(NET46 || NETSTANDARD1_3 || NETSTANDARD1_6)
             delegate void GetOriginAndLength(MemoryStream stream, out int origin, out int length);
             static readonly GetOriginAndLength getOriginAndLength;
 
@@ -125,7 +125,7 @@ namespace Bond.IO.Unsafe
                 getOriginAndLength(stream, out origin, out length);
                 return new MemoryStream(stream.GetBuffer(), origin, length - origin, false, true) { Position = stream.Position };
             }
-#else // NETSTANDARD implementation
+#else // NET46 & NETSTANDARD implementation
             internal static MemoryStream CloneMemoryStream(MemoryStream stream)
             {
                 ArraySegment<byte> buffer;
