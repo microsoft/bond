@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: TBD
 * IDL core version: TBD
 * C++ version: minor bump needed
-* C# NuGet version: TBD
+* C# NuGet version: minor bump needed
 
 ### C++ ###
 
@@ -29,6 +29,12 @@ different versioning scheme, following the Haskell community's
 * Fixed MSVC warning C4296: "'<': expression is always false" in protocol.h.
   ([Issue
   #981](https://github.com/microsoft/bond/issues/981))
+
+### C# ###
+
+* Added .NET 4.6 target framework to Bond.IO.dll so that it can use
+  `MemoryStream.TryGetBuffer()` when cloning streams like is done when
+  targeting .NET Standard 1.3+.
 
 ## 8.1.0: 2019-03-27 ##
 
