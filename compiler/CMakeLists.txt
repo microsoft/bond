@@ -32,7 +32,6 @@ function (add_stack_build target)
     list (APPEND options $<$<CONFIG:MinSizeRel>:--executable-stripping>)
     list (APPEND options $<$<CONFIG:MinSizeRel>:--ghc-options=-O2>)
     list (APPEND options $<$<CONFIG:MinSizeRel>:--library-stripping>)
-    list (APPEND options $<$<CONFIG:MinSizeRel>:--split-objs>)
 
     list (APPEND options $<$<CONFIG:Release>:--executable-stripping>)
     list (APPEND options $<$<CONFIG:Release>:--ghc-options=-O2>)
