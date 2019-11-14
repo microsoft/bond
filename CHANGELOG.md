@@ -11,11 +11,11 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased  ##
-* `gbc` & compiler library: TBD
-* IDL core version: TBD
-* C++ version: minor bump needed
-* C# NuGet version: minor bump needed
+## 8.2.0: 2019-11-18  ##
+* IDL core version: 3.0
+* C++ version: 8.2.0
+* C# NuGet version: 8.2.0
+* `gbc` & compiler library: 0.12.0.0
 
 ### C++ ###
 
@@ -35,6 +35,15 @@ different versioning scheme, following the Haskell community's
 * Added .NET 4.6 target framework to Bond.IO.dll so that it can use
   `MemoryStream.TryGetBuffer()` when cloning streams like is done when
   targeting .NET Standard 1.3+.
+
+### Bond compiler library ###
+
+* **Breaking change** The bond compiler library (the Haskell library) and
+  `gbc` have been switched to build with stackage snapshot lts-14.4. This
+  snapshot uses megaparsec 7 and aeson 1.4.4, both of which had breaking
+  changes that are reflected in the library, e.g., the `parseBond` signature
+  has changed. There is no impact to users of the gbc command line tool or
+  changes to C++ and C# code generation.
 
 ## 8.1.0: 2019-03-27 ##
 
