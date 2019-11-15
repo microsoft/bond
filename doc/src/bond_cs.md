@@ -698,13 +698,11 @@ own custom implementations.
 The `OutputBuffer` class implements the `IOutputStream` interface on top of
 a memory buffer. It comes in two variants.
 [`Bond.IO.Safe.OutputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/core/io/safe/OutputBuffer.cs)
-uses only safe managed code and is included in the `Bond.dll` assembly which
-is a Portable Class Library.
+uses only safe managed code and is included in the `Bond.dll` assembly.
 [`Bond.IO.Unsafe.OutputBuffer`](https://github.com/microsoft/bond/blob/master/cs/src/io/unsafe/OutputBuffer.cs)
 uses unsafe code to optimize for performance. It is included in the
-`Bond.IO.dll` assembly, which requires a full .NET runtime. Both
-implementations have identical class names and APIs; the only difference is
-the namespace in which they are defined.
+`Bond.IO.dll` assembly. Both implementations have identical class names and
+APIs; the only difference is the namespace in which they are defined.
 
 ```csharp
 // Create an output buffer with initial size of 16KB
@@ -1653,21 +1651,18 @@ namespace).
 
 This table lists which frameworks are targeted by the Bond assemblies.
 
-This table is accurate for Bond NuGet packages 8.1.0 and later.
+This table is accurate for Bond NuGet packages 8.2.0 and later.
 
-| Assembly                 | .NET 4.0 | .NET 4.5 | .NET 4.6 <sup>1</sup> | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
-|--------------------------|----------|----------|-----------------------|-------------------|-------------------|-------------------|
-| Bond.Attributes.dll      | No       | Yes      | ←                     | Yes               | ←                 | Yes               |
-| Bond.Reflection.dll      | No       | Yes      | ←                     | Yes               | ←                 | Yes               |
-| Bond.dll                 | No       | Yes      | ←                     | Yes               | ←                 | Yes               |
-| Bond.JSON.dll            | No       | Yes      | ←                     | Yes               | ←                 | Yes               |
-| Bond.IO.dll              | No       | Win only | Win only              | No                | Win only          | Win only          |
+| Assembly                 | .NET 4.0 | .NET 4.5 | .NET 4.6 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
+|--------------------------|----------|----------|----------|-------------------|-------------------|-------------------|
+| Bond.Attributes.dll      | No       | Yes      | ←        | Yes               | ←                 | Yes               |
+| Bond.Reflection.dll      | No       | Yes      | ←        | Yes               | ←                 | Yes               |
+| Bond.dll                 | No       | Yes      | ←        | Yes               | ←                 | Yes               |
+| Bond.JSON.dll            | No       | Yes      | ←        | Yes               | ←                 | Yes               |
+| Bond.IO.dll              | No       | Win only | Win only | No                | Win only          | Win only          |
 
 A left arrow (←) indicates that support for that framework is provided by
 the version of the assembly that targets a lower version of the framework.
-
-<sup>1</sup> Targeting .NET Framework 4.6 has been comitted by is not yet
-part of a released package.
 
 References
 ==========
