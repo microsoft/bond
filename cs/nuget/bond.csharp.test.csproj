@@ -4,14 +4,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Bond.NuGetTest</AssemblyName>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net46</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\build\internal\bond.snk</AssemblyOriginatorKeyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bond.CSharp" Version="8.0.0" />
+    <PackageReference Include="Bond.CSharp" Version="8.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="NUnit" Version="3.10.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
