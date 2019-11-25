@@ -1,5 +1,5 @@
 name:                bond
-version:             0.12.0.0
+version:             0.12.0.1
 github:              "microsoft/bond"
 license:             MIT
 author:              Adam Sapek <adamsap@microsoft.com>
@@ -56,12 +56,8 @@ library:
      ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
    - condition: os(windows) && arch(x86_64)
      ld-options:     -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
-   - condition: flag(warningsAsError)
-     then:
-         ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
-     else:
-         ghc-options: -threaded -rtsopts -with-rtsopts=-N
-
+   - condition: flag(warningsAsErrors)
+     ghc-options: -Wall -Werror
 
 executables:
   gbc:
@@ -84,12 +80,12 @@ executables:
         ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
       - condition: os(windows) && arch(x86_64)
         ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
-      - condition: flag(warningsAsError)
+      - condition: flag(warningsAsErrors)
         then:
           ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
         else:
           ghc-options: -threaded -rtsopts -with-rtsopts=-N
- 
+
 tests:
   gbc-tests:
     main:                TestMain.hs
@@ -132,7 +128,7 @@ tests:
         ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
       - condition: os(windows) && arch(x86_64)
         ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
-      - condition: flag(warningsAsError)
+      - condition: flag(warningsAsErrors)
         then:
           ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
         else:

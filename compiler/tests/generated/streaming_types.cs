@@ -18,7 +18,7 @@ namespace tests
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
     public partial class stream
     {
         
