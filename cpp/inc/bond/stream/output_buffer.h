@@ -221,15 +221,19 @@ public:
         }
 
         //
-        // copy to the tail of current range
-        std::memcpy(_rangePtr + _rangeSize,
-                    buffer,
-                    sizePart);
+        // Copy to the tail of current range. Note that _rangePtr may still be
+        // null here on initial write to an empty buffer. The behaviour of
+        // std::memcpy() is undefined in that situation, even if size == 0.    
+        //
+        if (sizePart > 0)
+        {
+            std::memcpy(_rangePtr + _rangeSize,
+                        buffer,
+                        sizePart);
 
-        //
-        // increase current range size
-        //
-        _rangeSize += sizePart;
+            // increase current range size
+            _rangeSize += sizePart;
+        }
 
         //
         // if there is more bytes to copy, allocate a new buffer
