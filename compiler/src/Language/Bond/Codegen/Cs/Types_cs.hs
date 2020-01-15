@@ -199,13 +199,13 @@ namespace #{csNamespace}
             def x = if fieldMapping == PublicFields then Nothing else csDefault x
 
     -- C# enum definition for schema enum
-    typeDefinition e@Enum {..} = [lt|#{CS.typeAttributes cs e}public enum #{declName}
+    typeDefinition e@Enum {..} = [lt|#{CS.xmldocComments 1 declXmlDoc}#{CS.typeAttributes cs e}public enum #{declName}
     {
         #{newlineSep 2 constant enumConstants}
     }|]
       where
         -- constant
         constant Constant {..} = let value x = [lt| = unchecked((int)#{x})|] in
-            [lt|#{constantName}#{optional value constantValue},|]
+            [lt|#{CS.xmldocComments 2 constantXmlDoc}#{constantName}#{optional value constantValue},|]
 
     typeDefinition _ = mempty

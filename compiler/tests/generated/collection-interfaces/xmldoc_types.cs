@@ -17,10 +17,14 @@ namespace example.some
 {
     using System.Collections.Generic;
 
+    /// foobar
     [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
     public enum FooBar
     {
+        /// foo
+        /// two lines
         Foo = unchecked((int)1),
+        /// bar
         Bar = unchecked((int)2),
         Baz = unchecked((int)3),
     }
