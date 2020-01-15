@@ -82,11 +82,12 @@ anyType :: Type
 anyType = BT_UserDefined
              (Struct
                { declNamespaces = [Namespace { nsLanguage = Nothing, nsName = ["any"] }]
+               , declXmlDoc = []
                , declAttributes = []
                , declName = "anyTypeName"
                , declParams = []
                , structBase = Nothing
-               , structFields = [Field { fieldAttributes = [], fieldOrdinal = 0, fieldModifier = Optional, fieldType = BT_Int16, fieldName = "anyField", fieldDefault = Nothing }] })
+               , structFields = [Field { fieldXmlDoc = [], fieldAttributes = [], fieldOrdinal = 0, fieldModifier = Optional, fieldType = BT_Int16, fieldName = "anyField", fieldDefault = Nothing }] })
              []
 
 -- | The JSON AST representation of 'anyType'

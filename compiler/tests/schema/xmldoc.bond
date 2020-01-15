@@ -1,0 +1,32 @@
+namespace example.some
+
+/// foobar
+enum FooBar
+{
+    /// foo
+    /// two lines
+    Foo = 1,
+
+    /// bar
+    Bar = 2,
+
+    // not included
+    Baz = 3
+}
+
+/// This is my struct
+/// 2nd line
+struct SomeStruct
+{
+    /// some field
+    /// <code>someField = 42</code>
+    // this is ignored
+    /// last line
+    0: int32 someField = 123;
+    // this is ignored
+
+    /// not ignored
+    1: int32 otherField = 234;
+
+    2: int32 notDocumented = 345;
+}  

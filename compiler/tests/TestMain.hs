@@ -162,6 +162,7 @@ tests = testGroup "Compiler tests"
             , verifyCsCodegen "inheritance"
             , verifyCsCodegen "aliases"
             , verifyCsCodegen "complex_inheritance"
+            , verifyCsCodegen "xmldoc"
             , verifyCodegenVariation
                 [ "c#"
                 , "--preview-constructor-parameters"

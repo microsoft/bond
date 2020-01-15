@@ -118,8 +118,8 @@ public final class #{declName} implements org.bondlib.BondEnum<#{declName}> {
         fixEnumWithInt _ [] result = reverse result
         fixEnumWithInt nextInt (h:r) result = case constantValue h of
           Just n -> let fixedN = (fromInteger (Java.twosComplement 32 (toInteger n))) in
-            fixEnumWithInt (fixedN + 1) r ((Constant (constantName h) (Just fixedN)):result)
-          Nothing -> fixEnumWithInt (nextInt + 1) r ((Constant (constantName h) (Just nextInt)):result)
+            fixEnumWithInt (fixedN + 1) r ((Constant [] (constantName h) (Just fixedN)):result)
+          Nothing -> fixEnumWithInt (nextInt + 1) r ((Constant [] (constantName h) (Just nextInt)):result)
 
         -- Filter a list of constants, leaving a list of constants with distinct values.
         -- If several constants in the input list share a value, the first one that appears will be the one that appears in the output list.

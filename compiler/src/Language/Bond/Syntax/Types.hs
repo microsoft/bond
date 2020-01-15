@@ -94,7 +94,8 @@ data Attribute =
 -- | Definition of a 'Struct' field.
 data Field =
     Field
-        { fieldAttributes :: [Attribute]    -- zero or more attributes
+        { fieldXmlDoc :: [String]           -- zero or more xmldoc comments
+        , fieldAttributes :: [Attribute]    -- zero or more attributes
         , fieldOrdinal :: Word16            -- ordinal
         , fieldModifier :: Modifier         -- field modifier
         , fieldType :: Type                 -- type
@@ -106,7 +107,8 @@ data Field =
 -- | Definition of an 'Enum' constant.
 data Constant =
     Constant
-        { constantName :: String            -- enum constant name
+        { constantXmlDoc :: [String]        -- zero or more xmldoc comments
+        , constantName :: String            -- enum constant name
         , constantValue :: Maybe Int        -- optional constant value
         }
     deriving (Eq, Show)
@@ -160,6 +162,7 @@ methodTypeToMaybe (Streaming t) = error ("Unable to handle streaming " ++ (show 
 data Declaration =
     Struct
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
+        , declXmlDoc :: [String]            -- zero or more xmldoc comments
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- struct identifier
         , declParams :: [TypeParam]         -- list of type parameters for generics
@@ -169,6 +172,7 @@ data Declaration =
     |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#struct-definition struct definition>
     Enum
         { declNamespaces :: [Namespace]     -- namespace(s) in which the enum is declared
+        , declXmlDoc :: [String]            -- zero or more xmldoc comments
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- enum identifier
         , enumConstants :: [Constant]       -- one or more enum constant values
@@ -176,12 +180,14 @@ data Declaration =
     |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#enum-definition enum definition>
     Forward
         { declNamespaces :: [Namespace]     -- namespace(s) in which the struct is declared
+--        , declXmlDoc :: [String]            -- zero or more xmldoc comments
         , declName :: String                -- struct identifier
         , declParams :: [TypeParam]         -- type parameters for generics
         }
     |                                       -- ^ <https://microsoft.github.io/bond/manual/compiler.html#forward-declaration forward declaration>
     Alias
         { declNamespaces :: [Namespace]     -- namespace(s) in which the type alias is declared
+--        , declXmlDoc :: [String]            -- zero or more xmldoc comments
         , declName :: String                -- alias identifier
         , declParams :: [TypeParam]         -- type parameters for generics
         , aliasType :: Type                 -- aliased type
@@ -189,6 +195,7 @@ data Declaration =
     |
     Service
         { declNamespaces :: [Namespace]     -- namespace(s) in which the service is declared
+--        , declXmlDoc :: [String]            -- zero or more xmldoc comments
         , declAttributes :: [Attribute]     -- zero or more attributes
         , declName :: String                -- service name
         , declParams :: [TypeParam]         -- type parameters for generic service

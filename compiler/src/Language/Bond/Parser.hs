@@ -38,6 +38,7 @@ import Language.Bond.Syntax.Util
 import Prelude
 import Text.Megaparsec hiding (many, optional, (<|>))
 import Text.Megaparsec.Char (char)
+import qualified Text.Megaparsec.Char as C
 
 -- | Parses content of a schema definition file.
 parseBond ::
@@ -87,17 +88,21 @@ declaration = do
     -- Parsers must fail to consume ANY token for the next parser to be able to successfully work
     -- unless the parser is encapsulated in a try statement. For more info on try and <|> see:
     -- https://hackage.haskell.org/package/megaparsec-6.2.0/docs/Text-Megaparsec.html#v:try
-    decl <- try forward
-        <|> alias
-        <|> (attributes >>= \a -> (service a <|> enum a <|> structDeclaration a))
+    decl <- try forward <|> alias <|> other
+
     updateSymbols decl <?> "declaration"
     return decl
+  where
+    other = do
+              xdc <- xmldoc
+              attr <- attributes
+              service attr <|> enum xdc attr <|> structDeclaration xdc attr
 
-structDeclaration :: [Attribute] -> Parser Declaration
-structDeclaration attr = do
+
+structDeclaration :: [String] -> [Attribute] -> Parser Declaration
+structDeclaration xdc attr = do
     name <- keyword "struct" *> identifier <?> "struct or struct view definition"
-    decl <- view attr name <|> struct attr name
-    return decl
+    view xdc attr name <|> struct xdc attr name
 
 updateSymbols :: Declaration -> Parser ()
 updateSymbols decl = do
@@ -195,24 +200,30 @@ attributes = many attribute <?> "attributes"
   where
     attribute = brackets (Attribute <$> qualifiedName <*> parens stringLiteral <?> "attribute")
 
+-- xmldoc comment
+xmldoc :: Parser [String]
+xmldoc = c <?> "xmldoc comments"
+  where
+    c = many $ lexeme $ C.string "///" *> many (satisfy (/= '\n'))
+
 -- struct view parser
-view :: [Attribute] -> String -> Parser Declaration
-view attr name = do
+view :: [String] -> [Attribute] -> String -> Parser Declaration
+view xdc attr name = do
     decl <- try (keyword "view_of") *> qualifiedName >>= findStruct <?> "struct view definition"
     fields <- braces $ semiOrCommaSepEnd1 identifier
     namespaces <- asks currentNamespaces
-    Struct namespaces attr name (declParams decl) (structBase decl) (viewFields decl fields) <$ optional semi
+    Struct namespaces xdc attr name (declParams decl) (structBase decl) (viewFields decl fields) <$ optional semi
   where
     viewFields Struct {..} fields = filter ((`elem` fields) . fieldName) structFields
     viewFields _           _      = error "view/viewFields: impossible happened."
 
 -- struct definition parser
-struct :: [Attribute] -> String -> Parser Declaration
-struct attr name = do
+struct :: [String] -> [Attribute] -> String -> Parser Declaration
+struct xdc attr name = do
     params <- parameters
     namespaces <- asks currentNamespaces
     updateSymbols $ Forward namespaces name params
-    local (with params) $ Struct namespaces attr name params <$> base <*> fields <* optional semi
+    local (with params) $ Struct namespaces xdc attr name params <$> base <*> fields <* optional semi
   where
     base = optional (colon *> userType <?> "base struct")
     fields = sortFields $ unique $ braces $ many (field <* semi)
@@ -230,7 +241,7 @@ struct attr name = do
 -- field definition parser
 field :: Parser Field
 field = do
-    mf <- makeField <$> attributes <*> ordinal <*> modifier <*> ftype <*> identifier <*> optional default_
+    mf <- makeField <$> xmldoc <*> attributes <*> ordinal <*> modifier <*> ftype <*> identifier <*> optional default_
     case mf of
       Left e -> fail e
       Right f -> return f
@@ -254,22 +265,22 @@ field = do
                  <|> DefaultEnum <$> identifier
                  <|> DefaultFloat <$> try float
                  <|> DefaultInteger <$> fromIntegral <$> integer)
-    makeField a o m t n d@(Just DefaultNothing)
+    makeField c a o m t n d@(Just DefaultNothing)
         | isStruct t = Left "Struct field can't have default value of 'nothing'"
-        | otherwise  = Right $ Field a o m (BT_Maybe t) n d
-    makeField a o m t n d
+        | otherwise  = Right $ Field c a o m (BT_Maybe t) n d
+    makeField c a o m t n d
         | d == Nothing && isEnum t = Left "Enum field must have a default value"
         | otherwise                = if validDefaultType t d
-                                        then Right $ Field a o m t n d
+                                        then Right $ Field c a o m t n d
                                         else Left "Invalid default value for field"
 
 -- enum definition parser
-enum :: [Attribute] -> Parser Declaration
-enum attr = Enum <$> asks currentNamespaces <*> pure attr <*> name <*> consts <* optional semi <?> "enum definition"
+enum :: [String] -> [Attribute] -> Parser Declaration
+enum xdc attr = Enum <$> asks currentNamespaces <*> pure xdc <*> pure attr <*> name <*> consts <* optional semi <?> "enum definition"
   where
     name = try (keyword "enum") *> identifier <?> "enum identifier"
     consts = braces (semiOrCommaSepEnd1 constant <?> "enum constant")
-    constant = Constant <$> identifier <*> optional value
+    constant = Constant <$> xmldoc <*> identifier <*> optional value
     value = equal *> (fromIntegral <$> integer)
 
 -- basic types parser

@@ -48,6 +48,7 @@ import Language.Bond.Syntax.Types
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
+import qualified Text.Megaparsec.Char as C
 
 -- parser state, mutable and global
 data Symbols =
@@ -76,7 +77,7 @@ type Parser a = StateT Symbols (ParsecT Void String (ReaderT Environment IO)) a
 sc :: Parser ()
 sc = L.space space1 lineCmnt blockCmnt
   where
-    lineCmnt  = L.skipLineComment "//"
+    lineCmnt =  try $ C.string "//" *> notFollowedBy (C.string "/") *> void (takeWhileP (Just "character") (/= '\n'))
     blockCmnt = L.skipBlockComment "/*" "*/"
 
 -- consume whitespace after every lexeme

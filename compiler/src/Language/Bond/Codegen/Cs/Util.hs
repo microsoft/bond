@@ -11,6 +11,7 @@ module Language.Bond.Codegen.Cs.Util
     , defaultValue
     , disableCscWarnings
     , disableReSharperWarnings
+    , xmldocComments
     ) where
 
 import Data.Int (Int64)
@@ -42,6 +43,12 @@ disableReSharperWarnings = [lt|
 // ReSharper disable RedundantUsingDirective
 #endregion
 |]
+
+-- C# xmldoc comments
+xmldocComments :: Int64 -> [String] -> Text
+xmldocComments i = newlineSepEnd i go
+  where
+    go s = [lt|///#{s}|]
 
 -- C# field/property attributes
 propertyAttributes :: MappingContext -> Field -> Text

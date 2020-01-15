@@ -239,5 +239,5 @@ reifyEnumValues :: [Constant] -> [(String, Int)]
 reifyEnumValues constants = nameValues 0 constants
   where
     nameValues _ [] = []
-    nameValues _ ((Constant name (Just value)):xs) = (name, value) : nameValues (value + 1) xs
-    nameValues next ((Constant name Nothing):xs)   = (name, next) : nameValues (next + 1) xs
+    nameValues _ ((Constant _ name (Just value)):xs) = (name, value) : nameValues (value + 1) xs
+    nameValues next ((Constant _ name Nothing):xs)   = (name, next) : nameValues (next + 1) xs

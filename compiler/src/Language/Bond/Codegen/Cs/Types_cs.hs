@@ -78,11 +78,13 @@ namespace #{csNamespace}
     propertyAttributes f = case structMapping of
         Class -> CS.propertyAttributes cs f
 
+    xmlDocCommentsField f = CS.xmldocComments 2 (fieldXmlDoc f)
+
     baseClass x = [lt|
         : #{csType x}|]
 
     -- C# type definition for schema struct
-    typeDefinition s@Struct {..} = [lt|#{typeAttributes s}#{struct}#{declName}#{params}#{maybe interface baseClass structBase}#{constraints}
+    typeDefinition s@Struct {..} = [lt|#{CS.xmldocComments 1 declXmlDoc}#{typeAttributes s}#{struct}#{declName}#{params}#{maybe interface baseClass structBase}#{constraints}
     {
         #{doubleLineSep 2 property structFields}#{constructors}
     }|]
@@ -178,7 +180,7 @@ namespace #{csNamespace}
 
         -- property or field
         property f@Field {..} =
-            [lt|#{propertyAttributes f}#{new}#{access}#{csType fieldType} #{fieldName}#{autoPropertyOrField}|]
+            [lt|#{xmlDocCommentsField f}#{propertyAttributes f}#{new}#{access}#{csType fieldType} #{fieldName}#{autoPropertyOrField}|]
           where
             autoPropertyOrField = case fieldMapping of
                 PublicFields        -> [lt|#{optional fieldInitializer $ csDefault f};|]

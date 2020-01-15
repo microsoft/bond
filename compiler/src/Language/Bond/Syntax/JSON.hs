@@ -200,6 +200,7 @@ instance ToJSON Default where
 
 instance FromJSON Field where
     parseJSON (Object o) = Field <$>
+        o .:? "fieldXmlDoc" .!= [] <*>
         o .:? "fieldAttributes" .!= [] <*>
         o .:  "fieldOrdinal" <*>
         o .:? "fieldModifier" .!= Optional <*>
@@ -211,14 +212,15 @@ instance FromJSON Field where
                     empty
 
 instance ToJSON Field where
-    toJSON f = object
-        [ "fieldAttributes" .= fieldAttributes f
-        , "fieldOrdinal" .= fieldOrdinal f
-        , "fieldModifier" .= fieldModifier f
-        , "fieldType" .= fieldType f
-        , "fieldName" .= fieldName f
-        , "fieldDefault" .= fieldDefault f
-        ]
+    toJSON f = object $ if null (fieldXmlDoc f) then l else "fieldXmlDoc" .= fieldXmlDoc f : l
+      where
+        l = [ "fieldAttributes" .= fieldAttributes f
+            , "fieldOrdinal" .= fieldOrdinal f
+            , "fieldModifier" .= fieldModifier f
+            , "fieldType" .= fieldType f
+            , "fieldName" .= fieldName f
+            , "fieldDefault" .= fieldDefault f
+            ]
 
 instance FromJSON Constraint where
     parseJSON (String "value") = pure Value
@@ -358,10 +360,111 @@ instance FromJSON Method where
           invalidNothingComboMsg :: String -> MethodStreamingTag -> String
           invalidNothingComboMsg dir streaming = unpack [lt|Method marked as #{show streaming}, but has void #{dir}|]
 
+instance ToJSON Constant where
+    toJSON Constant {..} = object $ if null constantXmlDoc then l else "constantXmlDoc" .= constantXmlDoc : l
+        where
+            l = [ "constantName" .= constantName, "constantValue" .= constantValue ]
+
+instance FromJSON Constant where
+    parseJSON (Object v) = Constant <$> v .:? "constantXmlDoc" .!= [] <*> v .: "constantName" <*> v .: "constantValue"
+    parseJSON x = modifyFailure
+                (const $ "Expected an object but found: " ++ show x)
+                empty
+
+instance ToJSON Declaration where
+    toJSON Struct {..} = object $
+        if null declXmlDoc then l else "declXmlDoc" .= declXmlDoc : l
+      where
+        l =
+            [ "tag" .= String "Struct"
+            , "declNamespaces" .= declNamespaces
+            , "declAttributes" .= declAttributes
+            , "declName" .= declName
+            , "declParams" .= declParams
+            , "structBase" .= structBase
+            , "structFields" .= structFields
+            ]
+    toJSON Enum {..} = object $
+        if null declXmlDoc then l else "declXmlDoc" .= declXmlDoc : l
+      where
+        l =
+            [ "tag" .= String "Enum"
+            , "declNamespaces" .= declNamespaces
+            , "declAttributes" .= declAttributes
+            , "declName" .= declName
+            , "enumConstants" .= enumConstants
+            ]
+    toJSON Forward {..} = object
+        [ "tag" .= String "Forward"
+        , "declNamespaces" .= declNamespaces
+        , "declName" .= declName
+        , "declParams" .= declParams
+        ]
+    toJSON Alias {..} = object
+        [ "tag" .= String "Alias"
+        , "declNamespaces" .= declNamespaces
+        , "declName" .= declName
+        , "declParams" .= declParams
+        , "aliasType" .= aliasType
+        ]
+    toJSON Service {..} = object
+        [ "tag" .= String "Service"
+        , "declNamespaces" .= declNamespaces
+        , "declAttributes" .= declAttributes
+        , "declName" .= declName
+        , "declParams" .= declParams
+        , "serviceBase" .= serviceBase
+        , "serviceMethods" .= serviceMethods
+        ]
+
+instance FromJSON Declaration where
+    parseJSON (Object v) = do
+        tag <- v .: "tag"
+        case tag of
+            (String "Struct") ->
+                Struct <$>
+                    v .: "declNamespaces" <*>
+                    v .:? "declXmlDoc" .!= [] <*>
+                    v .: "declAttributes" <*>
+                    v .: "declName" <*>
+                    v .: "declParams" <*>
+                    v .:? "structBase" <*>
+                    v .: "structFields"
+            (String "Enum") ->
+                Enum <$>
+                    v .: "declNamespaces" <*>
+                    v .:? "declXmlDoc" .!= [] <*>
+                    v .: "declAttributes" <*>
+                    v .: "declName" <*>
+                    v .: "enumConstants"
+            (String "Forward") ->
+                Forward <$>
+                    v .: "declNamespaces" <*>
+                    v .: "declName" <*>
+                    v .: "declParams"
+            (String "Alias") ->
+                Alias <$>
+                    v .: "declNamespaces" <*>
+                    v .: "declName" <*>
+                    v .: "declParams" <*>
+                    v .: "aliasType"
+            (String "Service") ->
+                Service <$>
+                    v .: "declNamespaces" <*>
+                    v .: "declAttributes" <*>
+                    v .: "declName" <*>
+                    v .: "declParams" <*>
+                    v .:? "serviceBase" <*>
+                    v .: "serviceMethods"
+            _ -> error "BAD2"
+    parseJSON x = modifyFailure
+                (const $ "Expected an object but found: " ++ show x)
+                empty
+
 $(deriveJSON defaultOptions ''Modifier)
 $(deriveJSON defaultOptions ''Attribute)
-$(deriveJSON defaultOptions ''Constant)
+-- $(deriveJSON defaultOptions { omitNothingFields = True } ''Constant)
 $(deriveJSON defaultOptions ''TypeParam)
-$(deriveJSON defaultOptions ''Declaration)
+-- $(deriveJSON defaultOptions ''Declaration)
 $(deriveJSON defaultOptions ''Import)
 $(deriveJSON defaultOptions ''Language)
