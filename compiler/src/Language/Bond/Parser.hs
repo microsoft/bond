@@ -54,6 +54,7 @@ parseBond s c f r = runReaderT (runParserT (evalStateT bond (Symbols [] [])) s c
 bond :: Parser Bond
 bond = do
     whiteSpace
+    _ <- xmldoc -- todo: figure out where to place bond file level xmldoc comments
     imports <- many import_
     namespaces <- some namespace
     local (with namespaces) $ Bond imports namespaces <$> many declaration <* eof
