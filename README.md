@@ -272,18 +272,18 @@ in the `build` directory from above and then following the other `cmake` command
 cmake -DBOND_ENABLE_GRPC=TRUE -G "Visual Studio 14 2015 Win64" ..
 ```
 
-Alternatively, you can build and install bond using [vcpkg](https://github.com/Microsoft/vcpkg/) dependency manager:
+Alternatively, you can build and install Bond using the [vcpkg](https://github.com/microsoft/vcpkg/) dependency manager:
 
 ```bash
-git clone https://github.com/Microsoft/vcpkg.git
+git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
 ./vcpkg integrate install
 ./vcpkg install bond
 ```
 
-The bond port in vcpkg is kept up to date by Microsoft team members and community contributors.
-If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+The Bond port in vcpkg is kept up to date by Microsoft team members and community contributors.
+If the version is out of date, please [create an issue or pull request in the vcpkg repository](https://github.com/microsoft/vcpkg/issues/new/choose).
 
 ## Contributing
 
