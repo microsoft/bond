@@ -277,6 +277,13 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">choco</span> install activeperl golang ninja yasm</code></pre></div>
 <p>You will also need to enable gRPC in the <code>cmake</code> configuration step by running the following in the <code>build</code> directory from above and then following the other <code>cmake</code> commands above:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -DBOND_ENABLE_GRPC=TRUE -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
+<p>Alternatively, you can build and install Bond using the <a href="https://github.com/microsoft/vcpkg/">vcpkg</a> dependency manager:</p>
+<pre class="batch"><code>git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.bat
+./vcpkg integrate install
+./vcpkg install bond</code></pre>
+<p>The Bond port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please <a href="https://github.com/microsoft/vcpkg/issues/new/choose">create an issue or pull request in the vcpkg repository</a>.</p>
 <h2 id="contributing">Contributing</h2>
 <p>Interested in contributing to Bond? Take a look at our <a href="https://github.com/microsoft/bond/blob/master/CONTRIBUTING.md">contribution guidelines</a> to get started.</p>
 </div>
