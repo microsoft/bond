@@ -29,12 +29,10 @@ namespace import_test
                 &HasEmpty::e,
                 &s_e_metadata
             > {};
-
-            struct e e;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, struct var::e>::type fields1;
+        private: typedef boost::mpl::push_front<fields0, var::e>::type fields1;
 
         public: typedef fields1::type fields;
         

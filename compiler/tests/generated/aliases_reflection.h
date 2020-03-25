@@ -29,12 +29,10 @@ namespace tests
                 &Foo<T>::aa,
                 &s_aa_metadata
             > {};
-
-            struct aa aa;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef typename boost::mpl::push_front<fields0, typename struct var::aa>::type fields1;
+        private: typedef typename boost::mpl::push_front<fields0, typename var::aa>::type fields1;
 
         public: typedef typename fields1::type fields;
         
@@ -83,12 +81,10 @@ namespace tests
                 &WrappingAnEnum::aWrappedEnum,
                 &s_aWrappedEnum_metadata
             > {};
-
-            struct aWrappedEnum aWrappedEnum;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, struct var::aWrappedEnum>::type fields1;
+        private: typedef boost::mpl::push_front<fields0, var::aWrappedEnum>::type fields1;
 
         public: typedef fields1::type fields;
         

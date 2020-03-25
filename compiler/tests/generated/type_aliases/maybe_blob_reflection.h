@@ -28,12 +28,10 @@ namespace tests
                 &Foo::b,
                 &s_b_metadata
             > {};
-
-            struct b b;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, struct var::b>::type fields1;
+        private: typedef boost::mpl::push_front<fields0, var::b>::type fields1;
 
         public: typedef fields1::type fields;
         

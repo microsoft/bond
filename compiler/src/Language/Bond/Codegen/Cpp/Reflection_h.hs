@@ -101,7 +101,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         baseType Nothing = "::bond::no_base"
 
         pushField (field, i) =
-            [lt|private: typedef #{typename}boost::mpl::push_front<fields#{i}, #{typename}struct var::#{field}>::type fields#{i + 1};|]
+            [lt|private: typedef #{typename}boost::mpl::push_front<fields#{i}, #{typename}var::#{field}>::type fields#{i + 1};|]
 
         fieldMetadata Field {..} =
             [lt|private: #{export_attr}static const ::bond::Metadata s_#{fieldName}_metadata;|]
@@ -116,8 +116,6 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
                 &#{className}::#{fieldName},
                 &s_#{fieldName}_metadata
             > {};
-
-            struct #{fieldName} #{fieldName};
         |]
 
 

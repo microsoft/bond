@@ -62,8 +62,6 @@ namespace tests
                 &ComplexTypes::li8,
                 &s_li8_metadata
             > {};
-
-            struct li8 li8;
         
             // sb
             struct sb : ::bond::reflection::FieldTemplate<
@@ -74,8 +72,6 @@ namespace tests
                 &ComplexTypes::sb,
                 &s_sb_metadata
             > {};
-
-            struct sb sb;
         
             // vb
             struct vb : ::bond::reflection::FieldTemplate<
@@ -86,8 +82,6 @@ namespace tests
                 &ComplexTypes::vb,
                 &s_vb_metadata
             > {};
-
-            struct vb vb;
         
             // nf
             struct nf : ::bond::reflection::FieldTemplate<
@@ -98,8 +92,6 @@ namespace tests
                 &ComplexTypes::nf,
                 &s_nf_metadata
             > {};
-
-            struct nf nf;
         
             // msws
             struct msws : ::bond::reflection::FieldTemplate<
@@ -110,8 +102,6 @@ namespace tests
                 &ComplexTypes::msws,
                 &s_msws_metadata
             > {};
-
-            struct msws msws;
         
             // bfoo
             struct bfoo : ::bond::reflection::FieldTemplate<
@@ -122,8 +112,6 @@ namespace tests
                 &ComplexTypes::bfoo,
                 &s_bfoo_metadata
             > {};
-
-            struct bfoo bfoo;
         
             // m
             struct m : ::bond::reflection::FieldTemplate<
@@ -134,18 +122,16 @@ namespace tests
                 &ComplexTypes::m,
                 &s_m_metadata
             > {};
-
-            struct m m;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, struct var::m>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, struct var::bfoo>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, struct var::msws>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, struct var::nf>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, struct var::vb>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, struct var::sb>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, struct var::li8>::type fields7;
+        private: typedef boost::mpl::push_front<fields0, var::m>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, var::bfoo>::type fields2;
+        private: typedef boost::mpl::push_front<fields2, var::msws>::type fields3;
+        private: typedef boost::mpl::push_front<fields3, var::nf>::type fields4;
+        private: typedef boost::mpl::push_front<fields4, var::vb>::type fields5;
+        private: typedef boost::mpl::push_front<fields5, var::sb>::type fields6;
+        private: typedef boost::mpl::push_front<fields6, var::li8>::type fields7;
 
         public: typedef fields7::type fields;
         

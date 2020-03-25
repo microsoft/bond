@@ -30,8 +30,6 @@ namespace tests
                 &Foo<T1, T2>::t2,
                 &s_t2_metadata
             > {};
-
-            struct t2 t2;
         
             // n
             struct n : ::bond::reflection::FieldTemplate<
@@ -42,13 +40,11 @@ namespace tests
                 &Foo<T1, T2>::n,
                 &s_n_metadata
             > {};
-
-            struct n n;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef typename boost::mpl::push_front<fields0, typename struct var::n>::type fields1;
-        private: typedef typename boost::mpl::push_front<fields1, typename struct var::t2>::type fields2;
+        private: typedef typename boost::mpl::push_front<fields0, typename var::n>::type fields1;
+        private: typedef typename boost::mpl::push_front<fields1, typename var::t2>::type fields2;
 
         public: typedef typename fields2::type fields;
         
