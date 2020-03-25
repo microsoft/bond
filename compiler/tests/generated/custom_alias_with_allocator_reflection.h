@@ -31,124 +31,148 @@ namespace test
         public: struct var
         {
             // l
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct l : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::list<bool, arena>,
                 &foo::l,
                 &s_l_metadata
-            > {}  l;
+            > {};
+
+            struct l l;
         
             // v
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct v : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::vector<bool, arena>,
                 &foo::v,
                 &s_v_metadata
-            > {}  v;
+            > {};
+
+            struct v v;
         
             // s
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct s : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::set<bool, arena>,
                 &foo::s,
                 &s_s_metadata
-            > {}  s;
+            > {};
+
+            struct s s;
         
             // m
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct m : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::map<my::string<arena>, bool, arena>,
                 &foo::m,
                 &s_m_metadata
-            > {}  m;
+            > {};
+
+            struct m m;
         
             // st
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct st : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::string<arena>,
                 &foo::st,
                 &s_st_metadata
-            > {}  st;
+            > {};
+
+            struct st st;
         
             // d
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct d : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::string<arena>,
                 &foo::d,
                 &s_d_metadata
-            > {}  d;
+            > {};
+
+            struct d d;
         
             // l1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct l1 : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<my::list<bool, arena> >,
                 &foo::l1,
                 &s_l1_metadata
-            > {}  l1;
+            > {};
+
+            struct l1 l1;
         
             // v1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct v1 : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<my::vector<bool, arena> >,
                 &foo::v1,
                 &s_v1_metadata
-            > {}  v1;
+            > {};
+
+            struct v1 v1;
         
             // s1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct s1 : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<my::set<bool, arena> >,
                 &foo::s1,
                 &s_s1_metadata
-            > {}  s1;
+            > {};
+
+            struct s1 s1;
         
             // m1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct m1 : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<my::map<my::string<arena>, bool, arena> >,
                 &foo::m1,
                 &s_m1_metadata
-            > {}  m1;
+            > {};
+
+            struct m1 m1;
         
             // st1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct st1 : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe<my::string<arena> >,
                 &foo::st1,
                 &s_st1_metadata
-            > {}  st1;
+            > {};
+
+            struct st1 st1;
         
             // na
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct na : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 my::set<my::list<my::map<int32_t, my::string<arena>, arena>, arena>, arena>,
                 &foo::na,
                 &s_na_metadata
-            > {}  na;
+            > {};
+
+            struct na na;
         };
 
         private: typedef boost::mpl::list<> fields0;

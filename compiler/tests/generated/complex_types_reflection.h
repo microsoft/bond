@@ -54,74 +54,88 @@ namespace tests
         public: struct var
         {
             // li8
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct li8 : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::list<int8_t>,
                 &ComplexTypes::li8,
                 &s_li8_metadata
-            > {}  li8;
+            > {};
+
+            struct li8 li8;
         
             // sb
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct sb : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::set<bool>,
                 &ComplexTypes::sb,
                 &s_sb_metadata
-            > {}  sb;
+            > {};
+
+            struct sb sb;
         
             // vb
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct vb : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::vector< ::bond::blob>,
                 &ComplexTypes::vb,
                 &s_vb_metadata
-            > {}  vb;
+            > {};
+
+            struct vb vb;
         
             // nf
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct nf : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::nullable<float>,
                 &ComplexTypes::nf,
                 &s_nf_metadata
-            > {}  nf;
+            > {};
+
+            struct nf nf;
         
             // msws
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct msws : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<std::string, std::wstring>,
                 &ComplexTypes::msws,
                 &s_msws_metadata
-            > {}  msws;
+            > {};
+
+            struct msws msws;
         
             // bfoo
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct bfoo : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::bonded< ::tests::Foo>,
                 &ComplexTypes::bfoo,
                 &s_bfoo_metadata
-            > {}  bfoo;
+            > {};
+
+            struct bfoo bfoo;
         
             // m
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct m : ::bond::reflection::FieldTemplate<
                 6,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > >,
                 &ComplexTypes::m,
                 &s_m_metadata
-            > {}  m;
+            > {};
+
+            struct m m;
         };
 
         private: typedef boost::mpl::list<> fields0;

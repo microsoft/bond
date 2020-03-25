@@ -23,24 +23,28 @@ namespace bondmeta
         public: struct var
         {
             // full_name
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct full_name : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,
                 std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >,
                 &HasMetaFields::full_name,
                 &s_full_name_metadata
-            > {}  full_name;
+            > {};
+
+            struct full_name full_name;
         
             // name
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct name : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,
                 std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >,
                 &HasMetaFields::name,
                 &s_name_metadata
-            > {}  name;
+            > {};
+
+            struct name name;
         };
 
         private: typedef boost::mpl::list<> fields0;

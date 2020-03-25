@@ -20,14 +20,16 @@ namespace tests
         public: struct var
         {
             // x
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct x : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Base,
                 int32_t,
                 &Base::x,
                 &s_x_metadata
-            > {}  x;
+            > {};
+
+            struct x x;
         };
 
         private: typedef boost::mpl::list<> fields0;
@@ -59,14 +61,16 @@ namespace tests
         public: struct var
         {
             // x
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct x : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
                 int32_t,
                 &Foo::x,
                 &s_x_metadata
-            > {}  x;
+            > {};
+
+            struct x x;
         };
 
         private: typedef boost::mpl::list<> fields0;

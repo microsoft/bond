@@ -20,14 +20,16 @@ namespace tests
         public: struct var
         {
             // f
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct f : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
                 std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
                 &Foo::f,
                 &s_f_metadata
-            > {}  f;
+            > {};
+
+            struct f f;
         };
 
         private: typedef boost::mpl::list<> fields0;

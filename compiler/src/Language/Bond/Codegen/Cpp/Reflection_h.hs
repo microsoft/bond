@@ -108,14 +108,16 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 
         fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
             // #{fieldName}
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct #{fieldName} : ::bond::reflection::FieldTemplate<
                 #{fieldOrdinal},
                 #{CPP.modifierTag f},
                 #{className},
                 #{cppType fieldType},
                 &#{className}::#{fieldName},
                 &s_#{fieldName}_metadata
-            > {}  #{fieldName};
+            > {};
+
+            struct #{fieldName} #{fieldName};
         |]
 
 

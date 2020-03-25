@@ -22,24 +22,28 @@ namespace tests
         public: struct var
         {
             // t2
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct t2 : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
                 T2,
                 &Foo<T1, T2>::t2,
                 &s_t2_metadata
-            > {}  t2;
+            > {};
+
+            struct t2 t2;
         
             // n
-            typedef struct : ::bond::reflection::FieldTemplate<
+            struct n : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
                 ::bond::nullable< ::tests::Foo<T1, bool> >,
                 &Foo<T1, T2>::n,
                 &s_n_metadata
-            > {}  n;
+            > {};
+
+            struct n n;
         };
 
         private: typedef boost::mpl::list<> fields0;
