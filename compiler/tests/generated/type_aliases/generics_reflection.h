@@ -47,8 +47,8 @@ namespace tests
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef typename boost::mpl::push_front<fields0, struct typename var::n>::type fields1;
-        private: typedef typename boost::mpl::push_front<fields1, struct typename var::t2>::type fields2;
+        private: typedef typename boost::mpl::push_front<fields0, typename struct var::n>::type fields1;
+        private: typedef typename boost::mpl::push_front<fields1, typename struct var::t2>::type fields2;
 
         public: typedef typename fields2::type fields;
         
