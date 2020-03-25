@@ -139,13 +139,13 @@ namespace tests
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::m>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::bfoo>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::msws>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::nf>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::vb>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::sb>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::li8>::type fields7;
+        private: typedef boost::mpl::push_front<fields0, struct var::m>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, struct var::bfoo>::type fields2;
+        private: typedef boost::mpl::push_front<fields2, struct var::msws>::type fields3;
+        private: typedef boost::mpl::push_front<fields3, struct var::nf>::type fields4;
+        private: typedef boost::mpl::push_front<fields4, struct var::vb>::type fields5;
+        private: typedef boost::mpl::push_front<fields5, struct var::sb>::type fields6;
+        private: typedef boost::mpl::push_front<fields6, struct var::li8>::type fields7;
 
         public: typedef fields7::type fields;
         

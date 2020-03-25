@@ -202,20 +202,20 @@ namespace tests
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::_blob>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::_float>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::_double>::type fields3;
-        private: typedef boost::mpl::push_front<fields3, var::_int64>::type fields4;
-        private: typedef boost::mpl::push_front<fields4, var::_int32>::type fields5;
-        private: typedef boost::mpl::push_front<fields5, var::_int16>::type fields6;
-        private: typedef boost::mpl::push_front<fields6, var::_int8>::type fields7;
-        private: typedef boost::mpl::push_front<fields7, var::_uint8>::type fields8;
-        private: typedef boost::mpl::push_front<fields8, var::_uint32>::type fields9;
-        private: typedef boost::mpl::push_front<fields9, var::_uint16>::type fields10;
-        private: typedef boost::mpl::push_front<fields10, var::_uint64>::type fields11;
-        private: typedef boost::mpl::push_front<fields11, var::_wstr>::type fields12;
-        private: typedef boost::mpl::push_front<fields12, var::_str>::type fields13;
-        private: typedef boost::mpl::push_front<fields13, var::_bool>::type fields14;
+        private: typedef boost::mpl::push_front<fields0, struct var::_blob>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, struct var::_float>::type fields2;
+        private: typedef boost::mpl::push_front<fields2, struct var::_double>::type fields3;
+        private: typedef boost::mpl::push_front<fields3, struct var::_int64>::type fields4;
+        private: typedef boost::mpl::push_front<fields4, struct var::_int32>::type fields5;
+        private: typedef boost::mpl::push_front<fields5, struct var::_int16>::type fields6;
+        private: typedef boost::mpl::push_front<fields6, struct var::_int8>::type fields7;
+        private: typedef boost::mpl::push_front<fields7, struct var::_uint8>::type fields8;
+        private: typedef boost::mpl::push_front<fields8, struct var::_uint32>::type fields9;
+        private: typedef boost::mpl::push_front<fields9, struct var::_uint16>::type fields10;
+        private: typedef boost::mpl::push_front<fields10, struct var::_uint64>::type fields11;
+        private: typedef boost::mpl::push_front<fields11, struct var::_wstr>::type fields12;
+        private: typedef boost::mpl::push_front<fields12, struct var::_str>::type fields13;
+        private: typedef boost::mpl::push_front<fields13, struct var::_bool>::type fields14;
 
         public: typedef fields14::type fields;
         

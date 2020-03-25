@@ -48,8 +48,8 @@ namespace bondmeta
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::name>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::full_name>::type fields2;
+        private: typedef boost::mpl::push_front<fields0, struct var::name>::type fields1;
+        private: typedef boost::mpl::push_front<fields1, struct var::full_name>::type fields2;
 
         public: typedef fields2::type fields;
         
