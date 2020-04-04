@@ -19,8 +19,16 @@ namespace detail
 
 #if !defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION) && !defined(BOND_NO_CXX14_GENERIC_LAMBDAS)
 
+#if defined(BOND_CXX_17)
+    template<typename Visitor, typename T>
+    using invoke_result_of_t = std::invoke_result_t<Visitor, T&>;
+#else
+    template<typename Visitor, typename T>
+    using invoke_result_of_t = std::result_of_t<Visitor(T&)>;
+#endif
+
 template <typename T, typename Visitor, typename Any>
-inline typename boost::disable_if<std::is_void<std::result_of_t<Visitor(T&)> >, boost::optional<std::result_of_t<Visitor(T&)> > >::type
+inline typename boost::disable_if<std::is_void<invoke_result_of_t<Visitor, T> >, boost::optional<invoke_result_of_t<Visitor, T> > >::type
 try_visit_any(Visitor&& visitor, Any& x)
 {
     if (auto value = any_cast<T>(&x))
@@ -32,7 +40,7 @@ try_visit_any(Visitor&& visitor, Any& x)
 }
 
 template <typename T, typename Visitor, typename Any>
-inline typename boost::enable_if<std::is_void<std::result_of_t<Visitor(T&)> >, bool>::type
+inline typename boost::enable_if<std::is_void<invoke_result_of_t<Visitor, T> >, bool>::type
 try_visit_any(Visitor&& visitor, Any& x)
 {
     if (auto value = any_cast<T>(&x))
