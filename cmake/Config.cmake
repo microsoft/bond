@@ -226,7 +226,3 @@ set (BOND_STACK_OPTIONS
 if (BOND_ENABLE_GRPC AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
     message(FATAL_ERROR "BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
 endif()
-
-if(CMAKE_CXX_STANDARD GREATER_EQUAL 17)
-    add_definitions(-DBOND_CXX_17)
-endif()
