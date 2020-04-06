@@ -24,6 +24,9 @@ There are no changes to code generation or the language projections.
 * Fixed Cabal packaging issues that prevented the publication of
   [0.12.0.0](#820-2019-11-18).
 
+### C++ ###
+* Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
+
 ## 8.2.0: 2019-11-18  ##
 * IDL core version: 3.0
 * C++ version: 8.2.0
