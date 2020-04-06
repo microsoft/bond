@@ -27,6 +27,15 @@
 #define BOND_NO_SFINAE_EXPR
 #endif
 
+// MSVC doesn't set __cplusplus to the C++ standard level unless the extra
+// /Zc:__cplusplus switch is passed (to prevent breaking existing code that
+// assumes it is always equal to 199711L). We don't want to require users of
+// Bond to have to pass this, so we also check _MSVC_LANG, which is always
+// set to the C++ standard level since MSVC 2015.
+#if (__cplusplus >= 201703L || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L)))
+    #define BOND_CXX_17
+#endif
+
 #if defined(BOOST_NO_CXX14_RETURN_TYPE_DEDUCTION)
 #define BOND_NO_CXX14_RETURN_TYPE_DEDUCTION
 #endif
