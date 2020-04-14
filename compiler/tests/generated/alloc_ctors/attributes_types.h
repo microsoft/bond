@@ -38,21 +38,7 @@ namespace tests
             return "tests.Enum";
         }
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        extern const std::map<enum Enum, std::string> _value_to_name_Enum;
 
-        inline const std::map<enum Enum, std::string>& GetValueToNameMap(enum Enum)
-        {
-            return _value_to_name_Enum;
-        }
-
-        extern const std::map<std::string, enum Enum> _name_to_value_Enum;
-
-        inline const std::map<std::string, enum Enum>& GetNameToValueMap(enum Enum)
-        {
-            return _name_to_value_Enum;
-        }
-#else
         template <typename Map = std::map<enum Enum, std::string> >
         inline const Map& GetValueToNameMap(enum Enum, ::bond::detail::mpl::identity<Map> = {})
         {
@@ -72,7 +58,6 @@ namespace tests
                 };
             return s_nameToValueMap;
         }
-#endif
         const std::string& ToString(enum Enum value);
 
         void FromString(const std::string& name, enum Enum& value);
@@ -109,14 +94,7 @@ namespace tests
         {
         }
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo(Foo&& other)
-          : f(std::move(other.f))
-        {
-        }
-#else
         Foo(Foo&&) = default;
-#endif
 
         Foo(Foo&& other, const arena& allocator)
           : f(std::move(other.f), allocator)
@@ -130,17 +108,9 @@ namespace tests
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo& operator=(Foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
-#endif
 
         bool operator==(const Foo& other) const
         {

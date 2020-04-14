@@ -256,16 +256,7 @@ struct UsesAllocator
 
     UsesAllocator(const UsesAllocator&) = default;
 
-    #if defined(_MSC_VER) && _MSC_VER < 1900
-    // MSVC 2013 cannot = default rvalue constructor
-    UsesAllocator(UsesAllocator&& that)
-        : constructed_alloc(std::move(that.constructed_alloc)),
-          copied_alloc(std::move(that.copied_alloc)),
-          moved_alloc(std::move(that.moved_alloc))
-    { }
-    #else
     UsesAllocator(UsesAllocator&&) = default;
-    #endif
 
     UsesAllocator(const allocator_type& alloc)
         : constructed_alloc(alloc)
@@ -281,18 +272,7 @@ struct UsesAllocator
 
     UsesAllocator& operator=(const UsesAllocator&) = default;
 
-    #if defined(_MSC_VER) && _MSC_VER < 1900
-    // MSVC 2013 cannot = default rvalue asignment operators
-    UsesAllocator& operator=(UsesAllocator&& that)
-    {
-        constructed_alloc = std::move(that.constructed_alloc);
-        copied_alloc = std::move(that.copied_alloc);
-        moved_alloc = std::move(that.moved_alloc);
-        return *this;
-    }
-    #else
     UsesAllocator& operator=(UsesAllocator&&) = default;
-    #endif
 
     boost::optional<allocator_type> constructed_alloc;
     boost::optional<allocator_type> copied_alloc;
@@ -377,7 +357,6 @@ TEST_CASE_BEGIN(AllocatorPropagated)
 }
 TEST_CASE_END
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
 // MSVC 2013 doesn't have implementations of these type traits, so we skip
 // these tests there.
 
@@ -400,7 +379,6 @@ BOOST_STATIC_ASSERT(std::is_same<UsesAllocator, bond::maybe<UsesAllocator>::valu
 BOOST_STATIC_ASSERT(!std::is_default_constructible<bond::maybe<UsesAllocator>>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<bond::maybe<UsesAllocator>>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<bond::maybe<UsesAllocator>>::value);
-#endif
 
 template <typename Reader, typename Writer, typename Enable = void>
 struct MaybeBindingAndMapping;

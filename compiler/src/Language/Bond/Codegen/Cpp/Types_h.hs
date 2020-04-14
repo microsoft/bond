@@ -308,11 +308,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
             -- even if implicit would be okay, fall back to explicit for
             -- compilers that don't support = default for move constructors
                                     else [lt|
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        #{explicit}
-#else
-        #{implicit}
-#endif|]
+        #{implicit}|]
           where
             -- default OK when there are no meta fields
             implicit = [lt|#{declName}(#{declName}&&) = default;|]
@@ -335,13 +331,9 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
           where
             -- default OK when there are no meta fields
             implicitlyDeclared = [lt|
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        #{define}
-#else
         // Compiler generated operator= OK
         #{declName}& operator=(const #{declName}&) = default;
-        #{declName}& operator=(#{declName}&&) = default;
-#endif|]
+        #{declName}& operator=(#{declName}&&) = default;|]
 
             -- define operator= using swap
             define = [lt|#{declName}& operator=(#{declName} #{otherParamName})
@@ -386,21 +378,7 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
             return "#{getDeclTypeName idl e}";
         }
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        extern const std::map<enum #{declName}, std::string> _value_to_name_#{declName};
 
-        inline const std::map<enum #{declName}, std::string>& GetValueToNameMap(enum #{declName})
-        {
-            return _value_to_name_#{declName};
-        }
-
-        extern const std::map<std::string, enum #{declName}> _name_to_value_#{declName};
-
-        inline const std::map<std::string, enum #{declName}>& GetNameToValueMap(enum #{declName})
-        {
-            return _name_to_value_#{declName};
-        }
-#else
         template <typename Map = std::map<enum #{declName}, std::string> >
         inline const Map& GetValueToNameMap(enum #{declName}, ::bond::detail::mpl::identity<Map> = {})
         {
@@ -420,7 +398,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
                 };
             return s_nameToValueMap;
         }
-#endif
         #{export_attr}const std::string& ToString(enum #{declName} value);
 
         #{export_attr}void FromString(const std::string& name, enum #{declName}& value);

@@ -30,7 +30,7 @@ For a discussion about how Bond compares to similar frameworks see [Why Bond](ht
 ## Dependencies
 
 Bond C++ library requires some C++11 features (currently limited to those
-supported by Visual C++ 2013); a C++11 compiler is required. Additionally,
+supported by Visual C++ 2015); a C++11 compiler is required. Additionally,
 to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
@@ -183,7 +183,7 @@ cmake .. \
 
 Install the following tools:
 
-- Visual Studio 2013, 2015, or 2017
+- Visual Studio 2015 or 2017
     - VS2017 is required to build C# Bond from source
 - .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
     - Alternative to VS2017 for building C# Bond from source

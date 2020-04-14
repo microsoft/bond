@@ -32,27 +32,12 @@ namespace import_test
         // Compiler generated copy ctor OK
         HasEmpty(const HasEmpty&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        HasEmpty(HasEmpty&& other)
-          : e(std::move(other.e))
-        {
-        }
-#else
         HasEmpty(HasEmpty&&) = default;
-#endif
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        HasEmpty& operator=(HasEmpty other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         HasEmpty& operator=(const HasEmpty&) = default;
         HasEmpty& operator=(HasEmpty&&) = default;
-#endif
 
         bool operator==(const HasEmpty& other) const
         {
