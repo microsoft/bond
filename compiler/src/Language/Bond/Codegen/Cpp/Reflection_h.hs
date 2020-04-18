@@ -51,7 +51,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         #{newlineBeginSep 2 fieldMetadata structFields}
 
         public: struct var
-        {#{fieldTemplates structFields}};
+        {#{fieldTemplates (zip structFields uniqueFieldTemplateStructNames)}};
 
         private: typedef boost::mpl::list<> fields0;
         #{newlineSep 2 pushField indexedFields}
@@ -106,11 +106,18 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         fieldMetadata Field {..} =
             [lt|private: #{export_attr}static const ::bond::Metadata s_#{fieldName}_metadata;|]
 
+        -- fieldTemplateReservedNames are static variables names used in ::bond::reflection::FieldTemplate<>
+        fieldTemplateReservedNames = ["metadata", "field", "id"]
+        
         fieldNames = map (\f -> fieldName f) structFields
 
-        fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
+        fieldTemplateStructReservedNames = fieldTemplateReservedNames ++ fieldNames
+
+        uniqueFieldTemplateStructNames = uniqueNames (map (\n -> "_" ++ n) fieldNames) fieldTemplateStructReservedNames
+
+        fieldTemplates = F.foldMap $ \ (f@Field {..}, sn) -> [lt|
             // #{fieldName}
-            typedef struct #{uniqueName ("_" ++ fieldName) fieldNames} : ::bond::reflection::FieldTemplate<
+            typedef struct #{sn} : ::bond::reflection::FieldTemplate<
                 #{fieldOrdinal},
                 #{CPP.modifierTag f},
                 #{className},
