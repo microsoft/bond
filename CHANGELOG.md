@@ -11,6 +11,14 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+### C++ ###
+* Fixed MSVC warning C5208: unnamed class used in typedef name 
+  cannot declare members other than non-static data members, member
+  enumerations, or member classes.
+  ([Issue #1027](https://github.com/microsoft/bond/issues/1027))
+
 ## gbc & compiler library 0.12.0.1: 2019-11-21 ##
 * IDL core version: 3.0
 * C++ version: 8.2.0
