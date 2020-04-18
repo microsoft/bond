@@ -21,14 +21,14 @@ namespace import_test
         public: struct var
         {
             // e
-            struct e : ::bond::reflection::FieldTemplate<
+            typedef struct _e : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 HasEmpty,
                 ::empty::Empty,
                 &HasEmpty::e,
                 &s_e_metadata
-            > {};
+            > {} e;
         };
 
         private: typedef boost::mpl::list<> fields0;

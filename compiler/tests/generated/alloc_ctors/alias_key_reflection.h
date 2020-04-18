@@ -21,24 +21,24 @@ namespace test
         public: struct var
         {
             // m
-            struct m : ::bond::reflection::FieldTemplate<
+            typedef struct _m : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t> > >,
                 &foo::m,
                 &s_m_metadata
-            > {};
+            > {} m;
         
             // s
-            struct s : ::bond::reflection::FieldTemplate<
+            typedef struct _s : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::set<int32_t, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<int32_t> >,
                 &foo::s,
                 &s_s_metadata
-            > {};
+            > {} s;
         };
 
         private: typedef boost::mpl::list<> fields0;

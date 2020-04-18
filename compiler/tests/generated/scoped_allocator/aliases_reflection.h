@@ -21,14 +21,14 @@ namespace tests
         public: struct var
         {
             // aa
-            struct aa : ::bond::reflection::FieldTemplate<
+            typedef struct _aa : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T>,
                 std::vector<std::vector<T, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<T> > >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::vector<T, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<T> > > > > >,
                 &Foo<T>::aa,
                 &s_aa_metadata
-            > {};
+            > {} aa;
         };
 
         private: typedef boost::mpl::list<> fields0;
@@ -73,14 +73,14 @@ namespace tests
         public: struct var
         {
             // aWrappedEnum
-            struct aWrappedEnum : ::bond::reflection::FieldTemplate<
+            typedef struct _aWrappedEnum : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 WrappingAnEnum,
                 ::tests::EnumToWrap,
                 &WrappingAnEnum::aWrappedEnum,
                 &s_aWrappedEnum_metadata
-            > {};
+            > {} aWrappedEnum;
         };
 
         private: typedef boost::mpl::list<> fields0;

@@ -24,14 +24,14 @@ namespace tests
         public: struct var
         {
             // count
-            struct count : ::bond::reflection::FieldTemplate<
+            typedef struct _count : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 dummy,
                 int32_t,
                 &dummy::count,
                 &s_count_metadata
-            > {};
+            > {} count;
         };
 
         private: typedef boost::mpl::list<> fields0;
