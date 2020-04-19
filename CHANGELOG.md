@@ -17,6 +17,11 @@ different versioning scheme, following the Haskell community's
 * Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
   ([Issue #1007](https://github.com/microsoft/bond/issues/1007))
 
+### C# ###
+
+* Fixed creation of duplicate default constructor when defining an empty struct and using --contructor-parameters.
+  ([Issue #963](https://github.com/microsoft/bond/issues/963))
+
 ## gbc & compiler library 0.12.0.1: 2019-11-21 ##
 * IDL core version: 3.0
 * C++ version: 8.2.0
