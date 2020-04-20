@@ -14,6 +14,10 @@
 class InputFile
 {
 public:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    using range_type = bond::blob;
+#endif
+
     InputFile()
     {}
 
@@ -46,6 +50,16 @@ public:
             BOND_THROW(bond::StreamException, "Error " << ErrorString(errno) << " opening file " << that.name);
         }
     }
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    InputFile& operator=(const InputFile& that)
+    {
+        InputFile temp(that);
+        file = std::move(temp.file);
+        name = std::move(temp.name);
+        return *this;
+    }
+#endif
 
     bool operator==(const InputFile& that) const
     {

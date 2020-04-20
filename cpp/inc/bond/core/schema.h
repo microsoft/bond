@@ -354,6 +354,25 @@ inline RuntimeSchema key_schema(const RuntimeSchema& schema)
 }
 
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+
+/// @brief Returns a const reference to a map of values for a user defined enum
+template <typename T>
+inline const std::map<T, std::string>& GetEnumValues()
+{
+    return GetValueToNameMap(T());
+}
+
+
+/// @brief Returns a const reference to a map of names for a user defined enum
+template <typename T>
+inline const std::map<std::string, T>& GetEnumNames()
+{
+    return GetNameToValueMap(T());
+}
+
+#else
+
 /// @brief Returns a const reference to a map of values for a user defined enum
 template <typename T, typename Map = std::map<T, std::string> >
 inline const Map& GetEnumValues()
@@ -369,5 +388,6 @@ inline const Map& GetEnumNames()
     return GetNameToValueMap(T{}, detail::mpl::identity<Map>{});
 }
 
+#endif
 
 } // namespace bond

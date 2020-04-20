@@ -34,7 +34,14 @@ namespace tests
         // Compiler generated copy ctor OK
         Base(const Base&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Base(Base&& other)
+          : x(std::move(other.x))
+        {
+        }
+#else
         Base(Base&&) = default;
+#endif
         
         explicit
         Base(const arena&)
@@ -43,9 +50,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Base& operator=(Base other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         Base& operator=(const Base&) = default;
         Base& operator=(Base&&) = default;
+#endif
 
         bool operator==(const Base& other) const
         {
@@ -96,7 +111,15 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo(Foo&& other)
+          : ::tests::Base(std::move(other)),
+            x(std::move(other.x))
+        {
+        }
+#else
         Foo(Foo&&) = default;
+#endif
         
         explicit
         Foo(const arena& allocator)
@@ -106,9 +129,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo& operator=(Foo other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
+#endif
 
         bool operator==(const Foo& other) const
         {

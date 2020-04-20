@@ -34,7 +34,13 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo(Foo&&)
+        {
+        }
+#else
         Foo(Foo&&) = default;
+#endif
         
         explicit
         Foo(const arena&)
@@ -42,9 +48,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo& operator=(Foo other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
+#endif
 
         bool operator==(const Foo&) const
         {
@@ -99,7 +113,20 @@ namespace tests
         // Compiler generated copy ctor OK
         ComplexTypes(const ComplexTypes&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        ComplexTypes(ComplexTypes&& other)
+          : li8(std::move(other.li8)),
+            sb(std::move(other.sb)),
+            vb(std::move(other.vb)),
+            nf(std::move(other.nf)),
+            msws(std::move(other.msws)),
+            bfoo(std::move(other.bfoo)),
+            m(std::move(other.m))
+        {
+        }
+#else
         ComplexTypes(ComplexTypes&&) = default;
+#endif
         
         explicit
         ComplexTypes(const arena& allocator)
@@ -113,9 +140,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        ComplexTypes& operator=(ComplexTypes other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         ComplexTypes& operator=(const ComplexTypes&) = default;
         ComplexTypes& operator=(ComplexTypes&&) = default;
+#endif
 
         bool operator==(const ComplexTypes& other) const
         {

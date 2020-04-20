@@ -34,12 +34,27 @@ namespace tests
         // Compiler generated copy ctor OK
         dummy(const dummy&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        dummy(dummy&& other)
+          : count(std::move(other.count))
+        {
+        }
+#else
         dummy(dummy&&) = default;
+#endif
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        dummy& operator=(dummy other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         dummy& operator=(const dummy&) = default;
         dummy& operator=(dummy&&) = default;
+#endif
 
         bool operator==(const dummy& other) const
         {

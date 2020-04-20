@@ -70,6 +70,28 @@ public:
         _input.Read(_current);
     }
 
+    #if defined(_MSC_VER) && _MSC_VER < 1900
+    // since we explicitly implement a move ctor, we need to explicitly
+    // default these
+    RapidJsonInputStream(const RapidJsonInputStream&) = default;
+    RapidJsonInputStream& operator=(const RapidJsonInputStream&) = default;
+
+    // MSVC cannot = default rvalue ctor or move-assign operators
+    RapidJsonInputStream(RapidJsonInputStream&& other)
+        : _input(std::move(other._input)),
+          _current(std::move(other._current)),
+          _count(std::move(other._count))
+    { }
+
+    RapidJsonInputStream& operator=(RapidJsonInputStream&& other)
+    {
+        _input = std::move(other._input);
+        _current = std::move(other._current);
+        _count = std::move(other._count);
+        return *this;
+    }
+    #endif
+
     const Buffer& GetBuffer() const
     {
         return _input;

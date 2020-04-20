@@ -397,7 +397,12 @@ public:
     }
 
 protected:
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    // Using BondDataType directly in non-trivial boolean template checks fails on VC12.
+    using BT = std::underlying_type<BondDataType>::type;
+#else
     using BT = BondDataType;
+#endif
 
     template <BT T>
     typename boost::enable_if_c<(T == BT_BOOL || T == BT_UINT8 || T == BT_INT8)>::type

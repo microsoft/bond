@@ -32,12 +32,28 @@ namespace test
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        foo(foo&& other)
+          : m(std::move(other.m)),
+            s(std::move(other.s))
+        {
+        }
+#else
         foo(foo&&) = default;
+#endif
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        foo& operator=(foo other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         foo& operator=(const foo&) = default;
         foo& operator=(foo&&) = default;
+#endif
 
         bool operator==(const foo& other) const
         {

@@ -77,7 +77,27 @@ namespace nsmapped
         {
         }
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        BasicTypes(BasicTypes&& other)
+          : _bool(std::move(other._bool)),
+            _str(std::move(other._str)),
+            _wstr(std::move(other._wstr)),
+            _uint64(std::move(other._uint64)),
+            _uint16(std::move(other._uint16)),
+            _uint32(std::move(other._uint32)),
+            _uint8(std::move(other._uint8)),
+            _int8(std::move(other._int8)),
+            _int16(std::move(other._int16)),
+            _int32(std::move(other._int32)),
+            _int64(std::move(other._int64)),
+            _double(std::move(other._double)),
+            _float(std::move(other._float)),
+            _blob(std::move(other._blob))
+        {
+        }
+#else
         BasicTypes(BasicTypes&&) = default;
+#endif
 
         BasicTypes(BasicTypes&& other, const arena& allocator)
           : _bool(std::move(other._bool)),
@@ -116,9 +136,17 @@ namespace nsmapped
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        BasicTypes& operator=(BasicTypes other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         BasicTypes& operator=(const BasicTypes&) = default;
         BasicTypes& operator=(BasicTypes&&) = default;
+#endif
 
         bool operator==(const BasicTypes& other) const
         {

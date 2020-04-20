@@ -36,7 +36,14 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo(Foo&& other)
+          : aa(std::move(other.aa))
+        {
+        }
+#else
         Foo(Foo&&) = default;
+#endif
         
         explicit
         Foo(const arena& allocator)
@@ -45,9 +52,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        Foo& operator=(Foo other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
+#endif
 
         bool operator==(const Foo& other) const
         {
@@ -100,7 +115,21 @@ namespace tests
             return "tests.EnumToWrap";
         }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
+        extern const std::map<enum EnumToWrap, std::string> _value_to_name_EnumToWrap;
 
+        inline const std::map<enum EnumToWrap, std::string>& GetValueToNameMap(enum EnumToWrap)
+        {
+            return _value_to_name_EnumToWrap;
+        }
+
+        extern const std::map<std::string, enum EnumToWrap> _name_to_value_EnumToWrap;
+
+        inline const std::map<std::string, enum EnumToWrap>& GetNameToValueMap(enum EnumToWrap)
+        {
+            return _name_to_value_EnumToWrap;
+        }
+#else
         template <typename Map = std::map<enum EnumToWrap, std::string> >
         inline const Map& GetValueToNameMap(enum EnumToWrap, ::bond::detail::mpl::identity<Map> = {})
         {
@@ -120,6 +149,7 @@ namespace tests
                 };
             return s_nameToValueMap;
         }
+#endif
         const std::string& ToString(enum EnumToWrap value);
 
         void FromString(const std::string& name, enum EnumToWrap& value);
@@ -150,7 +180,14 @@ namespace tests
         // Compiler generated copy ctor OK
         WrappingAnEnum(const WrappingAnEnum&) = default;
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        WrappingAnEnum(WrappingAnEnum&& other)
+          : aWrappedEnum(std::move(other.aWrappedEnum))
+        {
+        }
+#else
         WrappingAnEnum(WrappingAnEnum&&) = default;
+#endif
         
         explicit
         WrappingAnEnum(const arena&)
@@ -159,9 +196,17 @@ namespace tests
         }
         
         
+#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
+        WrappingAnEnum& operator=(WrappingAnEnum other)
+        {
+            other.swap(*this);
+            return *this;
+        }
+#else
         // Compiler generated operator= OK
         WrappingAnEnum& operator=(const WrappingAnEnum&) = default;
         WrappingAnEnum& operator=(WrappingAnEnum&&) = default;
+#endif
 
         bool operator==(const WrappingAnEnum& other) const
         {

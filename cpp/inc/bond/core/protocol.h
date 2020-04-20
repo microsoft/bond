@@ -192,6 +192,8 @@ BOND_DEFINE_BUFFER_MAGIC(ValueReader::Buffer, 0);
 
 namespace detail
 {
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4296) // C4296: '<' : expression is always false
@@ -219,6 +221,12 @@ namespace detail
 
     using protocol_max_size = max_size<BuiltInProtocols::Append<ValueReader>::type>;
 
+#else // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+    // Use hard-coded 128 byte storage on VC12 as a compiler crash workaround.
+    using protocol_max_size = std::integral_constant<std::size_t, 128>;
+
+#endif
 } // namespace detail
 
 
