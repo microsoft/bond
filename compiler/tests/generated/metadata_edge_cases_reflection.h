@@ -17,14 +17,14 @@ namespace tests
         
         private: static const ::bond::Metadata s_id_metadata;
         private: static const ::bond::Metadata s_metadata_metadata;
-        private: static const ::bond::Metadata s__id_metadata;
+        private: static const ::bond::Metadata s_id_type_metadata;
         private: static const ::bond::Metadata s_x_metadata;
-        private: static const ::bond::Metadata s__x_metadata;
+        private: static const ::bond::Metadata s_x_type_metadata;
 
         public: struct var
         {
             // id
-            typedef struct _id0 : ::bond::reflection::FieldTemplate<
+            typedef struct id_type0 : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -34,7 +34,7 @@ namespace tests
             > {} id;
         
             // metadata
-            typedef struct _metadata : ::bond::reflection::FieldTemplate<
+            typedef struct metadata_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -43,18 +43,18 @@ namespace tests
                 &s_metadata_metadata
             > {} metadata;
         
-            // _id
-            typedef struct __id : ::bond::reflection::FieldTemplate<
+            // id_type
+            typedef struct id_type_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
                 int32_t,
-                &Foo::_id,
-                &s__id_metadata
-            > {} _id;
+                &Foo::id_type,
+                &s_id_type_metadata
+            > {} id_type;
         
             // x
-            typedef struct _x0 : ::bond::reflection::FieldTemplate<
+            typedef struct x_type0 : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -63,21 +63,21 @@ namespace tests
                 &s_x_metadata
             > {} x;
         
-            // _x
-            typedef struct __x : ::bond::reflection::FieldTemplate<
+            // x_type
+            typedef struct x_type_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
                 int32_t,
-                &Foo::_x,
-                &s__x_metadata
-            > {} _x;
+                &Foo::x_type,
+                &s_x_type_metadata
+            > {} x_type;
         };
 
         private: typedef boost::mpl::list<> fields0;
-        private: typedef boost::mpl::push_front<fields0, var::_x>::type fields1;
+        private: typedef boost::mpl::push_front<fields0, var::x_type>::type fields1;
         private: typedef boost::mpl::push_front<fields1, var::x>::type fields2;
-        private: typedef boost::mpl::push_front<fields2, var::_id>::type fields3;
+        private: typedef boost::mpl::push_front<fields2, var::id_type>::type fields3;
         private: typedef boost::mpl::push_front<fields3, var::metadata>::type fields4;
         private: typedef boost::mpl::push_front<fields4, var::id>::type fields5;
 

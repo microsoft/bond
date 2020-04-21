@@ -20,7 +20,7 @@ namespace tests
         public: struct var
         {
             // b
-            typedef struct _b : ::bond::reflection::FieldTemplate<
+            typedef struct b_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,

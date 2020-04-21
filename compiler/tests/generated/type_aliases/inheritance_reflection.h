@@ -20,7 +20,7 @@ namespace tests
         public: struct var
         {
             // x
-            typedef struct _x : ::bond::reflection::FieldTemplate<
+            typedef struct x_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Base,
@@ -59,7 +59,7 @@ namespace tests
         public: struct var
         {
             // x
-            typedef struct _x : ::bond::reflection::FieldTemplate<
+            typedef struct x_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,

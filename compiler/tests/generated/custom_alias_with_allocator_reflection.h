@@ -31,7 +31,7 @@ namespace test
         public: struct var
         {
             // l
-            typedef struct _l : ::bond::reflection::FieldTemplate<
+            typedef struct l_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -41,7 +41,7 @@ namespace test
             > {} l;
         
             // v
-            typedef struct _v : ::bond::reflection::FieldTemplate<
+            typedef struct v_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -51,7 +51,7 @@ namespace test
             > {} v;
         
             // s
-            typedef struct _s : ::bond::reflection::FieldTemplate<
+            typedef struct s_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -61,7 +61,7 @@ namespace test
             > {} s;
         
             // m
-            typedef struct _m : ::bond::reflection::FieldTemplate<
+            typedef struct m_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -71,7 +71,7 @@ namespace test
             > {} m;
         
             // st
-            typedef struct _st : ::bond::reflection::FieldTemplate<
+            typedef struct st_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -81,7 +81,7 @@ namespace test
             > {} st;
         
             // d
-            typedef struct _d : ::bond::reflection::FieldTemplate<
+            typedef struct d_type : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -91,7 +91,7 @@ namespace test
             > {} d;
         
             // l1
-            typedef struct _l1 : ::bond::reflection::FieldTemplate<
+            typedef struct l1_type : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -101,7 +101,7 @@ namespace test
             > {} l1;
         
             // v1
-            typedef struct _v1 : ::bond::reflection::FieldTemplate<
+            typedef struct v1_type : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -111,7 +111,7 @@ namespace test
             > {} v1;
         
             // s1
-            typedef struct _s1 : ::bond::reflection::FieldTemplate<
+            typedef struct s1_type : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -121,7 +121,7 @@ namespace test
             > {} s1;
         
             // m1
-            typedef struct _m1 : ::bond::reflection::FieldTemplate<
+            typedef struct m1_type : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -131,7 +131,7 @@ namespace test
             > {} m1;
         
             // st1
-            typedef struct _st1 : ::bond::reflection::FieldTemplate<
+            typedef struct st1_type : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 foo,
@@ -141,7 +141,7 @@ namespace test
             > {} st1;
         
             // na
-            typedef struct _na : ::bond::reflection::FieldTemplate<
+            typedef struct na_type : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 foo,

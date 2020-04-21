@@ -54,7 +54,7 @@ namespace tests
         public: struct var
         {
             // li8
-            typedef struct _li8 : ::bond::reflection::FieldTemplate<
+            typedef struct li8_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -64,7 +64,7 @@ namespace tests
             > {} li8;
         
             // sb
-            typedef struct _sb : ::bond::reflection::FieldTemplate<
+            typedef struct sb_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -74,7 +74,7 @@ namespace tests
             > {} sb;
         
             // vb
-            typedef struct _vb : ::bond::reflection::FieldTemplate<
+            typedef struct vb_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -84,7 +84,7 @@ namespace tests
             > {} vb;
         
             // nf
-            typedef struct _nf : ::bond::reflection::FieldTemplate<
+            typedef struct nf_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -94,7 +94,7 @@ namespace tests
             > {} nf;
         
             // msws
-            typedef struct _msws : ::bond::reflection::FieldTemplate<
+            typedef struct msws_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -104,7 +104,7 @@ namespace tests
             > {} msws;
         
             // bfoo
-            typedef struct _bfoo : ::bond::reflection::FieldTemplate<
+            typedef struct bfoo_type : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
@@ -114,7 +114,7 @@ namespace tests
             > {} bfoo;
         
             // m
-            typedef struct _m : ::bond::reflection::FieldTemplate<
+            typedef struct m_type : ::bond::reflection::FieldTemplate<
                 6,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,

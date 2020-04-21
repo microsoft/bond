@@ -113,7 +113,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 
         fieldTemplateStructReservedNames = fieldTemplateReservedNames ++ fieldNames
 
-        uniqueFieldTemplateStructNames = uniqueNames (map (\n -> "_" ++ n) fieldNames) fieldTemplateStructReservedNames
+        uniqueFieldTemplateStructNames = uniqueNames (map (\n -> n ++ "_type") fieldNames) fieldTemplateStructReservedNames
 
         fieldTemplates = F.foldMap $ \ (f@Field {..}, sn) -> [lt|
             // #{fieldName}

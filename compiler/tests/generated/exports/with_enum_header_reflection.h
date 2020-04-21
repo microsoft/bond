@@ -92,7 +92,7 @@ namespace tests
         public: struct var
         {
             // m_bool_1
-            typedef struct _m_bool_1 : ::bond::reflection::FieldTemplate<
+            typedef struct m_bool_1_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -102,7 +102,7 @@ namespace tests
             > {} m_bool_1;
         
             // m_bool_2
-            typedef struct _m_bool_2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_bool_2_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -112,7 +112,7 @@ namespace tests
             > {} m_bool_2;
         
             // m_bool_3
-            typedef struct _m_bool_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_bool_3_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -122,7 +122,7 @@ namespace tests
             > {} m_bool_3;
         
             // m_str_1
-            typedef struct _m_str_1 : ::bond::reflection::FieldTemplate<
+            typedef struct m_str_1_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -132,7 +132,7 @@ namespace tests
             > {} m_str_1;
         
             // m_str_2
-            typedef struct _m_str_2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_str_2_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -142,7 +142,7 @@ namespace tests
             > {} m_str_2;
         
             // m_int8_4
-            typedef struct _m_int8_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int8_4_type : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -152,7 +152,7 @@ namespace tests
             > {} m_int8_4;
         
             // m_int8_5
-            typedef struct _m_int8_5 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int8_5_type : ::bond::reflection::FieldTemplate<
                 6,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -162,7 +162,7 @@ namespace tests
             > {} m_int8_5;
         
             // m_int16_4
-            typedef struct _m_int16_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int16_4_type : ::bond::reflection::FieldTemplate<
                 7,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -172,7 +172,7 @@ namespace tests
             > {} m_int16_4;
         
             // m_int16_5
-            typedef struct _m_int16_5 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int16_5_type : ::bond::reflection::FieldTemplate<
                 8,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -182,7 +182,7 @@ namespace tests
             > {} m_int16_5;
         
             // m_int32_4
-            typedef struct _m_int32_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int32_4_type : ::bond::reflection::FieldTemplate<
                 9,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -192,7 +192,7 @@ namespace tests
             > {} m_int32_4;
         
             // m_int32_max
-            typedef struct _m_int32_max : ::bond::reflection::FieldTemplate<
+            typedef struct m_int32_max_type : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -202,7 +202,7 @@ namespace tests
             > {} m_int32_max;
         
             // m_int64_4
-            typedef struct _m_int64_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_int64_4_type : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -212,7 +212,7 @@ namespace tests
             > {} m_int64_4;
         
             // m_int64_max
-            typedef struct _m_int64_max : ::bond::reflection::FieldTemplate<
+            typedef struct m_int64_max_type : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -222,7 +222,7 @@ namespace tests
             > {} m_int64_max;
         
             // m_uint8_2
-            typedef struct _m_uint8_2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint8_2_type : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -232,7 +232,7 @@ namespace tests
             > {} m_uint8_2;
         
             // m_uint8_3
-            typedef struct _m_uint8_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint8_3_type : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -242,7 +242,7 @@ namespace tests
             > {} m_uint8_3;
         
             // m_uint16_2
-            typedef struct _m_uint16_2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint16_2_type : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -252,7 +252,7 @@ namespace tests
             > {} m_uint16_2;
         
             // m_uint16_3
-            typedef struct _m_uint16_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint16_3_type : ::bond::reflection::FieldTemplate<
                 16,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -262,7 +262,7 @@ namespace tests
             > {} m_uint16_3;
         
             // m_uint32_3
-            typedef struct _m_uint32_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint32_3_type : ::bond::reflection::FieldTemplate<
                 17,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -272,7 +272,7 @@ namespace tests
             > {} m_uint32_3;
         
             // m_uint32_max
-            typedef struct _m_uint32_max : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint32_max_type : ::bond::reflection::FieldTemplate<
                 18,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -282,7 +282,7 @@ namespace tests
             > {} m_uint32_max;
         
             // m_uint64_3
-            typedef struct _m_uint64_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint64_3_type : ::bond::reflection::FieldTemplate<
                 19,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -292,7 +292,7 @@ namespace tests
             > {} m_uint64_3;
         
             // m_uint64_max
-            typedef struct _m_uint64_max : ::bond::reflection::FieldTemplate<
+            typedef struct m_uint64_max_type : ::bond::reflection::FieldTemplate<
                 20,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -302,7 +302,7 @@ namespace tests
             > {} m_uint64_max;
         
             // m_double_3
-            typedef struct _m_double_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_double_3_type : ::bond::reflection::FieldTemplate<
                 21,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -312,7 +312,7 @@ namespace tests
             > {} m_double_3;
         
             // m_double_4
-            typedef struct _m_double_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_double_4_type : ::bond::reflection::FieldTemplate<
                 22,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -322,7 +322,7 @@ namespace tests
             > {} m_double_4;
         
             // m_double_5
-            typedef struct _m_double_5 : ::bond::reflection::FieldTemplate<
+            typedef struct m_double_5_type : ::bond::reflection::FieldTemplate<
                 23,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -332,7 +332,7 @@ namespace tests
             > {} m_double_5;
         
             // m_float_3
-            typedef struct _m_float_3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_float_3_type : ::bond::reflection::FieldTemplate<
                 24,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -342,7 +342,7 @@ namespace tests
             > {} m_float_3;
         
             // m_float_4
-            typedef struct _m_float_4 : ::bond::reflection::FieldTemplate<
+            typedef struct m_float_4_type : ::bond::reflection::FieldTemplate<
                 25,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -352,7 +352,7 @@ namespace tests
             > {} m_float_4;
         
             // m_float_7
-            typedef struct _m_float_7 : ::bond::reflection::FieldTemplate<
+            typedef struct m_float_7_type : ::bond::reflection::FieldTemplate<
                 26,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -362,7 +362,7 @@ namespace tests
             > {} m_float_7;
         
             // m_enum1
-            typedef struct _m_enum1 : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum1_type : ::bond::reflection::FieldTemplate<
                 27,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -372,7 +372,7 @@ namespace tests
             > {} m_enum1;
         
             // m_enum2
-            typedef struct _m_enum2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum2_type : ::bond::reflection::FieldTemplate<
                 28,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -382,7 +382,7 @@ namespace tests
             > {} m_enum2;
         
             // m_enum3
-            typedef struct _m_enum3 : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum3_type : ::bond::reflection::FieldTemplate<
                 29,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -392,7 +392,7 @@ namespace tests
             > {} m_enum3;
         
             // m_enum_int32min
-            typedef struct _m_enum_int32min : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum_int32min_type : ::bond::reflection::FieldTemplate<
                 30,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -402,7 +402,7 @@ namespace tests
             > {} m_enum_int32min;
         
             // m_enum_int32max
-            typedef struct _m_enum_int32max : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum_int32max_type : ::bond::reflection::FieldTemplate<
                 31,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -412,7 +412,7 @@ namespace tests
             > {} m_enum_int32max;
         
             // m_enum_uint32_min
-            typedef struct _m_enum_uint32_min : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum_uint32_min_type : ::bond::reflection::FieldTemplate<
                 32,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -422,7 +422,7 @@ namespace tests
             > {} m_enum_uint32_min;
         
             // m_enum_uint32_max
-            typedef struct _m_enum_uint32_max : ::bond::reflection::FieldTemplate<
+            typedef struct m_enum_uint32_max_type : ::bond::reflection::FieldTemplate<
                 33,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -432,7 +432,7 @@ namespace tests
             > {} m_enum_uint32_max;
         
             // m_wstr_1
-            typedef struct _m_wstr_1 : ::bond::reflection::FieldTemplate<
+            typedef struct m_wstr_1_type : ::bond::reflection::FieldTemplate<
                 34,
                 ::bond::reflection::optional_field_modifier,
                 Foo,
@@ -442,7 +442,7 @@ namespace tests
             > {} m_wstr_1;
         
             // m_wstr_2
-            typedef struct _m_wstr_2 : ::bond::reflection::FieldTemplate<
+            typedef struct m_wstr_2_type : ::bond::reflection::FieldTemplate<
                 35,
                 ::bond::reflection::optional_field_modifier,
                 Foo,

@@ -4,7 +4,7 @@ struct Foo
 {
     0: int32 id;
     1: int32 metadata;
-    2: int32 _id;
+    2: int32 id_type;
     3: int32 x;
-    4: int32 _x;
+    4: int32 x_type;
 }

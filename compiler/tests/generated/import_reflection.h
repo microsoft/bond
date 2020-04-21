@@ -21,7 +21,7 @@ namespace import_test
         public: struct var
         {
             // e
-            typedef struct _e : ::bond::reflection::FieldTemplate<
+            typedef struct e_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 HasEmpty,

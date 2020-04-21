@@ -24,7 +24,7 @@ namespace tests
         public: struct var
         {
             // count
-            typedef struct _count : ::bond::reflection::FieldTemplate<
+            typedef struct count_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 dummy,

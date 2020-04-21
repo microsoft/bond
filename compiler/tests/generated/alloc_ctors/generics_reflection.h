@@ -22,7 +22,7 @@ namespace tests
         public: struct var
         {
             // t2
-            typedef struct _t2 : ::bond::reflection::FieldTemplate<
+            typedef struct t2_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,
@@ -32,7 +32,7 @@ namespace tests
             > {} t2;
         
             // n
-            typedef struct _n : ::bond::reflection::FieldTemplate<
+            typedef struct n_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T1, T2>,

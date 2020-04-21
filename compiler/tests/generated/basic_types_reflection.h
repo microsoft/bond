@@ -33,7 +33,7 @@ namespace tests
         public: struct var
         {
             // _bool
-            typedef struct __bool : ::bond::reflection::FieldTemplate<
+            typedef struct _bool_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -43,7 +43,7 @@ namespace tests
             > {} _bool;
         
             // _str
-            typedef struct __str : ::bond::reflection::FieldTemplate<
+            typedef struct _str_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -53,7 +53,7 @@ namespace tests
             > {} _str;
         
             // _wstr
-            typedef struct __wstr : ::bond::reflection::FieldTemplate<
+            typedef struct _wstr_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -63,7 +63,7 @@ namespace tests
             > {} _wstr;
         
             // _uint64
-            typedef struct __uint64 : ::bond::reflection::FieldTemplate<
+            typedef struct _uint64_type : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -73,7 +73,7 @@ namespace tests
             > {} _uint64;
         
             // _uint16
-            typedef struct __uint16 : ::bond::reflection::FieldTemplate<
+            typedef struct _uint16_type : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -83,7 +83,7 @@ namespace tests
             > {} _uint16;
         
             // _uint32
-            typedef struct __uint32 : ::bond::reflection::FieldTemplate<
+            typedef struct _uint32_type : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -93,7 +93,7 @@ namespace tests
             > {} _uint32;
         
             // _uint8
-            typedef struct __uint8 : ::bond::reflection::FieldTemplate<
+            typedef struct _uint8_type : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -103,7 +103,7 @@ namespace tests
             > {} _uint8;
         
             // _int8
-            typedef struct __int8 : ::bond::reflection::FieldTemplate<
+            typedef struct _int8_type : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -113,7 +113,7 @@ namespace tests
             > {} _int8;
         
             // _int16
-            typedef struct __int16 : ::bond::reflection::FieldTemplate<
+            typedef struct _int16_type : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -123,7 +123,7 @@ namespace tests
             > {} _int16;
         
             // _int32
-            typedef struct __int32 : ::bond::reflection::FieldTemplate<
+            typedef struct _int32_type : ::bond::reflection::FieldTemplate<
                 16,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -133,7 +133,7 @@ namespace tests
             > {} _int32;
         
             // _int64
-            typedef struct __int64 : ::bond::reflection::FieldTemplate<
+            typedef struct _int64_type : ::bond::reflection::FieldTemplate<
                 17,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -143,7 +143,7 @@ namespace tests
             > {} _int64;
         
             // _double
-            typedef struct __double : ::bond::reflection::FieldTemplate<
+            typedef struct _double_type : ::bond::reflection::FieldTemplate<
                 18,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -153,7 +153,7 @@ namespace tests
             > {} _double;
         
             // _float
-            typedef struct __float : ::bond::reflection::FieldTemplate<
+            typedef struct _float_type : ::bond::reflection::FieldTemplate<
                 20,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
@@ -163,7 +163,7 @@ namespace tests
             > {} _float;
         
             // _blob
-            typedef struct __blob : ::bond::reflection::FieldTemplate<
+            typedef struct _blob_type : ::bond::reflection::FieldTemplate<
                 21,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,

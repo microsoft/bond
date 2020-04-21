@@ -21,7 +21,7 @@ namespace tests
         public: struct var
         {
             // aa
-            typedef struct _aa : ::bond::reflection::FieldTemplate<
+            typedef struct aa_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 Foo<T>,
@@ -73,7 +73,7 @@ namespace tests
         public: struct var
         {
             // aWrappedEnum
-            typedef struct _aWrappedEnum : ::bond::reflection::FieldTemplate<
+            typedef struct aWrappedEnum_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 WrappingAnEnum,

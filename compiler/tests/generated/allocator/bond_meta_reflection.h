@@ -23,7 +23,7 @@ namespace bondmeta
         public: struct var
         {
             // full_name
-            typedef struct _full_name : ::bond::reflection::FieldTemplate<
+            typedef struct full_name_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,
@@ -33,7 +33,7 @@ namespace bondmeta
             > {} full_name;
         
             // name
-            typedef struct _name : ::bond::reflection::FieldTemplate<
+            typedef struct name_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::required_optional_field_modifier,
                 HasMetaFields,

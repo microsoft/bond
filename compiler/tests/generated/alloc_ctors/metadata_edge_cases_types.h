@@ -25,16 +25,16 @@ namespace tests
 
         int32_t id;
         int32_t metadata;
-        int32_t _id;
+        int32_t id_type;
         int32_t x;
-        int32_t _x;
+        int32_t x_type;
         
         Foo()
           : id(),
             metadata(),
-            _id(),
+            id_type(),
             x(),
-            _x()
+            x_type()
         {
         }
 
@@ -45,9 +45,9 @@ namespace tests
         Foo(const Foo& other, const arena&)
           : id(other.id),
             metadata(other.metadata),
-            _id(other._id),
+            id_type(other.id_type),
             x(other.x),
-            _x(other._x)
+            x_type(other.x_type)
         {
         }
         
@@ -55,9 +55,9 @@ namespace tests
         Foo(Foo&& other)
           : id(std::move(other.id)),
             metadata(std::move(other.metadata)),
-            _id(std::move(other._id)),
+            id_type(std::move(other.id_type)),
             x(std::move(other.x)),
-            _x(std::move(other._x))
+            x_type(std::move(other.x_type))
         {
         }
 #else
@@ -67,9 +67,9 @@ namespace tests
         Foo(Foo&& other, const arena&)
           : id(std::move(other.id)),
             metadata(std::move(other.metadata)),
-            _id(std::move(other._id)),
+            id_type(std::move(other.id_type)),
             x(std::move(other.x)),
-            _x(std::move(other._x))
+            x_type(std::move(other.x_type))
         {
         }
         
@@ -77,9 +77,9 @@ namespace tests
         Foo(const arena&)
           : id(),
             metadata(),
-            _id(),
+            id_type(),
             x(),
-            _x()
+            x_type()
         {
         }
         
@@ -101,9 +101,9 @@ namespace tests
             return true
                 && (id == other.id)
                 && (metadata == other.metadata)
-                && (_id == other._id)
+                && (id_type == other.id_type)
                 && (x == other.x)
-                && (_x == other._x);
+                && (x_type == other.x_type);
         }
 
         bool operator!=(const Foo& other) const
@@ -116,9 +116,9 @@ namespace tests
             using std::swap;
             swap(id, other.id);
             swap(metadata, other.metadata);
-            swap(_id, other._id);
+            swap(id_type, other.id_type);
             swap(x, other.x);
-            swap(_x, other._x);
+            swap(x_type, other.x_type);
         }
 
         struct Schema;
