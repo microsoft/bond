@@ -62,13 +62,7 @@ namespace bond { namespace ext
         class internal_counter : public Counter
         {
         public:
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
             using Counter::Counter;
-#else
-            explicit internal_counter(value_type max_value) BOND_NOEXCEPT
-                : Counter{ max_value }
-            {}
-#endif
 
             friend void intrusive_ptr_add_ref(internal_counter* p) BOND_NOEXCEPT
             {

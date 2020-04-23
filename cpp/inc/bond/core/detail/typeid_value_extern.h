@@ -30,15 +30,9 @@ BOND_DETAIL_EXTERN(BOND_DETAIL_BasicTypeField_Null, BOND_DETAIL_BUILTIN_READERS)
 BOND_DETAIL_EXTERN(BOND_DETAIL_BasicTypeContainer, BOND_DETAIL_BUILTIN_READERS_WRITERS)
 
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define BOND_DETAIL_MapByKey(Reader, Writer, T) \
-    void MapByKey<BuiltInProtocols, const Serializer<Writer>, value<T, Reader&> >( \
-        const Serializer<Writer>&, BondDataType, const value<T, Reader&>&, Reader&, uint32_t);
-#else
 #define BOND_DETAIL_MapByKey(Reader, Writer, T) \
     void MapByKey<BuiltInProtocols>( \
         const Serializer<Writer>&, BondDataType, const value<T, Reader&>&, Reader&, uint32_t);
-#endif
 
 BOND_DETAIL_EXTERN(BOND_DETAIL_MapByKey, BOND_DETAIL_BUILTIN_READERS_WRITERS_BASIC_TYPES)
 
