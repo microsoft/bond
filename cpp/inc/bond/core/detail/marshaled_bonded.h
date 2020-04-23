@@ -15,9 +15,7 @@ namespace detail
 
 template <typename Reader>
 auto ReadBlob(Reader& reader)
-#if defined(_MSC_VER) && _MSC_VER < 1900
-    -> typename std::remove_reference<typename Reader::Buffer>::type::range_type
-#elif defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION)
+#if defined(BOND_NO_CXX14_RETURN_TYPE_DEDUCTION)
     -> decltype(GetBufferRange(GetCurrentBuffer(reader.GetBuffer()), GetCurrentBuffer(reader.GetBuffer())))
 #endif
 {
