@@ -159,8 +159,8 @@ enumDefinition Enum {..} = [lt|enum #{declName}
         };|]
   where
     constant Constant {..} = [lt|#{constantName}#{optional value constantValue}|]
-    value (-2147483648) = [lt| = static_cast<std::int32_t>(-2147483647-1)|]
-    value x = [lt| = static_cast<std::int32_t>(#{x})|]
+    value (-2147483648) = [lt| = static_cast<int32_t>(-2147483647-1)|]
+    value x = [lt| = static_cast<int32_t>(#{x})|]
 enumDefinition _ = error "enumDefinition: impossible happened."
 
 isEnumDeclaration :: Declaration -> Bool

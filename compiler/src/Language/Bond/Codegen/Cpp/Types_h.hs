@@ -302,8 +302,6 @@ types_h export_attribute userHeaders enumHeader allocator alloc_ctors_enabled ty
         -- move constructor
         moveCtor = if hasMetaFields then [lt|
         #{explicit}|]
-            -- even if implicit would be okay, fall back to explicit for
-            -- compilers that don't support = default for move constructors
                                     else [lt|
         #{implicit}|]
           where
