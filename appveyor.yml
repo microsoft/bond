@@ -38,16 +38,6 @@
         # overall completion time since we run multiple configurations in
         # parallel.
         matrix:
-              # C++ Core build and tests (Visual C++ 2013)
-            - BOND_BUILD: C++
-              BOND_VS_VERSION: Visual Studio 2013
-              # We need to use the Visual Studio 2015 image for the 2013 build
-              # as the C# compatibility tests need a C# 6 compiler, which is
-              # available starting with the 2015 image.
-              APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-              BOND_ARCH: 32
-              BOND_BOOST: "1.61.0"
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE;-DBOND_SKIP_GBC_TESTS=TRUE"
               # C++ Core build and tests
             - BOND_BUILD: C++
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
