@@ -14,7 +14,7 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 ### C++ ###
-* MSVC 2013 support is removed ([Issue #851](https://github.com/microsoft/bond/issues/851))
+* MSVC 2013 support has been removed ([Issue #851](https://github.com/microsoft/bond/issues/851))
 * Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
   ([Issue #1007](https://github.com/microsoft/bond/issues/1007))
 
