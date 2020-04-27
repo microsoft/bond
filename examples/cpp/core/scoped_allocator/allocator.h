@@ -12,6 +12,12 @@ namespace scoped_allocator
     {
         using value_type = T;
 
+#if defined(_MSC_VER) && _MSC_VER < 1910
+        // MSVC 2015 and older versions have bug in std::scoped_allocator_adaptor
+        // which requires default constructibility for its outer/inner allocators.
+        MyAllocator() = default;
+#endif
+
         explicit MyAllocator(std::size_t /*unused*/)
         {}
 

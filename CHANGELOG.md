@@ -14,6 +14,9 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 ### C++ ###
+* Deleted warning.h as it was only needed for MSVC 2013 which we don't
+  support anymore. This completes the warning cleanup done in
+  [Release 5.3.0](https://github.com/microsoft/bond/releases/tag/5.3.0).
 * MSVC 2013 support has been removed. ([Issue #851](https://github.com/microsoft/bond/issues/851))
 * Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
   ([Issue #1007](https://github.com/microsoft/bond/issues/1007))

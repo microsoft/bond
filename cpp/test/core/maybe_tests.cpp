@@ -357,9 +357,6 @@ TEST_CASE_BEGIN(AllocatorPropagated)
 }
 TEST_CASE_END
 
-// MSVC 2013 doesn't have implementations of these type traits, so we skip
-// these tests there.
-
 BOOST_STATIC_ASSERT(std::is_same<int, bond::maybe<int>::value_type>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_default_constructible<bond::maybe<int>>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<bond::maybe<int>>::value);
@@ -369,7 +366,6 @@ BOOST_STATIC_ASSERT(std::is_same<std::vector<int>, bond::maybe<std::vector<int>>
 BOOST_STATIC_ASSERT(std::is_nothrow_default_constructible<bond::maybe<std::vector<int>>>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_constructible<bond::maybe<std::vector<int>>>::value);
 BOOST_STATIC_ASSERT(std::is_nothrow_move_assignable<bond::maybe<std::vector<int>>>::value);
-
 
 // UsesAllocator uses allocator_with_state as its allocator, so
 // bond::maybe<UsesAllocator> cannot be default constructued, as bond::maybe
