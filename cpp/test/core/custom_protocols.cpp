@@ -9,7 +9,7 @@ void CustomProtocolsTests(const char* name)
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N), 
-        AllBindingAndMapping1_CustomProtocols,
+        AllBindingAndMapping1,
         Reader, Writer, TestReaderStruct, Protocols>(suite, "Simple struct");
 }
 
@@ -20,7 +20,7 @@ void CustomInputBufferTests(const char* name)
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N),
-        AllBindingAndMapping2_CustomProtocols,
+        AllBindingAndMapping2,
         Reader, Writer, NestedStruct1, NestedStruct1OptionalBondedView, Protocols>(suite, "Optional bonded field");
 }
 
