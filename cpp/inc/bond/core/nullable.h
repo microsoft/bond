@@ -66,10 +66,6 @@ to_address(const Ptr& ptr) BOND_NOEXCEPT
 template <typename T, typename Enable = void>
 class nullable;
 
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(push)
-#pragma warning(disable: 4510) // default constructor could not be generated
-#endif
 template <typename T>
 class nullable<T, typename boost::enable_if<detail::use_value<T> >::type>
     : private detail::allocator_holder<typename detail::allocator_type<T>::type>
@@ -260,9 +256,6 @@ private:
 
     boost::optional<T> _value;
 };
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(pop)
-#endif
 
 
 /** @brief Nullable type */

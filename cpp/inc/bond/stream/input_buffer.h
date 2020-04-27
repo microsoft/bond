@@ -91,10 +91,6 @@ struct VariableUnsignedUnchecked<uint64_t, 56>
 class InputBuffer
 {
 public:
-#if defined(_MSC_VER) && _MSC_VER < 1900
-    using range_type = blob;
-#endif
-
     /// @brief Default constructor
     InputBuffer()
         : _pointer()

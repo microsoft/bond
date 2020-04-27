@@ -53,10 +53,6 @@ public:
     }
 };
 
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(push)
-#pragma warning(disable: 4510)
-#endif
 template <typename Alloc>
 class allocator_holder<Alloc, typename boost::disable_if<empty_base_eligible<Alloc>>::type>
 {
@@ -81,8 +77,5 @@ public:
 private:
     Alloc _alloc;
 };
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#pragma warning(pop)
-#endif
 } // namespace detail
 } // namespace bond
