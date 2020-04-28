@@ -31,7 +31,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 #{CPP.closeNamespace cpp}
 |])
   where
-    idl = MappingContext idlTypeMapping [] [] []  
+    idl = MappingContext idlTypeMapping [] [] []
 
     -- C++ type
     cppType = getTypeName cpp
@@ -92,7 +92,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         }|]
           where
             static Field {..} = [lt|(void)s_#{fieldName}_metadata;|]
-        
+
         -- reversed list of field names zipped with indexes
         indexedFields :: [(String, Int)]
         indexedFields = zipWith ((,) . fieldName) (reverse structFields) [0..]
@@ -108,7 +108,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 
         -- fieldTemplateReservedNames are names used in ::bond::reflection::FieldTemplate<>
         fieldTemplateReservedNames = ["FieldTemplate", "struct_type", "field_pointer", "field_type", "value_type", "field_modifier", "metadata", "field", "id", "GetVariable"]
-        
+
         fieldNames = map (\f -> fieldName f) structFields
 
         fieldTemplateStructReservedNames = fieldTemplateReservedNames ++ fieldNames
