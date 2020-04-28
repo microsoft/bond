@@ -9,11 +9,7 @@ void CustomProtocolsTests(const char* name)
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N), 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
         AllBindingAndMapping1,
-#else
-        AllBindingAndMapping1_CustomProtocols,
-#endif
         Reader, Writer, TestReaderStruct, Protocols>(suite, "Simple struct");
 }
 
@@ -24,11 +20,7 @@ void CustomInputBufferTests(const char* name)
     UnitTestSuite suite(name);
 
     AddTestCase<TEST_ID(N),
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
         AllBindingAndMapping2,
-#else
-        AllBindingAndMapping2_CustomProtocols,
-#endif
         Reader, Writer, NestedStruct1, NestedStruct1OptionalBondedView, Protocols>(suite, "Optional bonded field");
 }
 

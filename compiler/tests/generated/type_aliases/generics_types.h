@@ -27,9 +27,8 @@ namespace tests
         T2 t2;
         ::bond::nullable< ::tests::Foo<T1, bool> > n;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        Foo(_bond_vc12_ctor_workaround_ = {})
+        Foo()
           : t2()
         {
         }
@@ -38,15 +37,7 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo(Foo&& other)
-          : t2(std::move(other.t2)),
-            n(std::move(other.n))
-        {
-        }
-#else
         Foo(Foo&&) = default;
-#endif
         
         explicit
         Foo(const arena& allocator)
@@ -56,17 +47,9 @@ namespace tests
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo& operator=(Foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
-#endif
 
         bool operator==(const Foo& other) const
         {

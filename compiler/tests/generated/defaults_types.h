@@ -50,21 +50,7 @@ namespace tests
             return "tests.EnumType1";
         }
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900) // Versions of MSVC prior to 1900 do not support magic statics
-        extern const std::map<enum EnumType1, std::string> _value_to_name_EnumType1;
 
-        inline const std::map<enum EnumType1, std::string>& GetValueToNameMap(enum EnumType1)
-        {
-            return _value_to_name_EnumType1;
-        }
-
-        extern const std::map<std::string, enum EnumType1> _name_to_value_EnumType1;
-
-        inline const std::map<std::string, enum EnumType1>& GetNameToValueMap(enum EnumType1)
-        {
-            return _name_to_value_EnumType1;
-        }
-#else
         template <typename Map = std::map<enum EnumType1, std::string> >
         inline const Map& GetValueToNameMap(enum EnumType1, ::bond::detail::mpl::identity<Map> = {})
         {
@@ -108,7 +94,6 @@ namespace tests
                 };
             return s_nameToValueMap;
         }
-#endif
         const std::string& ToString(enum EnumType1 value);
 
         void FromString(const std::string& name, enum EnumType1& value);
@@ -197,64 +182,12 @@ namespace tests
         // Compiler generated copy ctor OK
         Foo(const Foo&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo(Foo&& other)
-          : m_bool_1(std::move(other.m_bool_1)),
-            m_bool_2(std::move(other.m_bool_2)),
-            m_bool_3(std::move(other.m_bool_3)),
-            m_str_1(std::move(other.m_str_1)),
-            m_str_2(std::move(other.m_str_2)),
-            m_int8_4(std::move(other.m_int8_4)),
-            m_int8_5(std::move(other.m_int8_5)),
-            m_int16_4(std::move(other.m_int16_4)),
-            m_int16_5(std::move(other.m_int16_5)),
-            m_int32_4(std::move(other.m_int32_4)),
-            m_int32_max(std::move(other.m_int32_max)),
-            m_int64_4(std::move(other.m_int64_4)),
-            m_int64_max(std::move(other.m_int64_max)),
-            m_uint8_2(std::move(other.m_uint8_2)),
-            m_uint8_3(std::move(other.m_uint8_3)),
-            m_uint16_2(std::move(other.m_uint16_2)),
-            m_uint16_3(std::move(other.m_uint16_3)),
-            m_uint32_3(std::move(other.m_uint32_3)),
-            m_uint32_max(std::move(other.m_uint32_max)),
-            m_uint64_3(std::move(other.m_uint64_3)),
-            m_uint64_max(std::move(other.m_uint64_max)),
-            m_double_3(std::move(other.m_double_3)),
-            m_double_4(std::move(other.m_double_4)),
-            m_double_5(std::move(other.m_double_5)),
-            m_float_3(std::move(other.m_float_3)),
-            m_float_4(std::move(other.m_float_4)),
-            m_float_7(std::move(other.m_float_7)),
-            m_enum1(std::move(other.m_enum1)),
-            m_enum2(std::move(other.m_enum2)),
-            m_enum3(std::move(other.m_enum3)),
-            m_enum_int32min(std::move(other.m_enum_int32min)),
-            m_enum_int32max(std::move(other.m_enum_int32max)),
-            m_enum_uint32_min(std::move(other.m_enum_uint32_min)),
-            m_enum_uint32_max(std::move(other.m_enum_uint32_max)),
-            m_wstr_1(std::move(other.m_wstr_1)),
-            m_wstr_2(std::move(other.m_wstr_2)),
-            m_int64_neg_hex(std::move(other.m_int64_neg_hex)),
-            m_int64_neg_oct(std::move(other.m_int64_neg_oct))
-        {
-        }
-#else
         Foo(Foo&&) = default;
-#endif
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo& operator=(Foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
-#endif
 
         bool operator==(const Foo& other) const
         {

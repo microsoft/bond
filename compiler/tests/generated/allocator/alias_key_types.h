@@ -26,9 +26,8 @@ namespace test
         std::map<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t, std::less<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > >, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, int32_t> > > m;
         std::set<int32_t, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<int32_t> > s;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        foo(_bond_vc12_ctor_workaround_ = {})
+        foo()
         {
         }
 
@@ -36,15 +35,7 @@ namespace test
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        foo(foo&& other)
-          : m(std::move(other.m)),
-            s(std::move(other.s))
-        {
-        }
-#else
         foo(foo&&) = default;
-#endif
         
         explicit
         foo(const arena& allocator)
@@ -54,17 +45,9 @@ namespace test
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        foo& operator=(foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         foo& operator=(const foo&) = default;
         foo& operator=(foo&&) = default;
-#endif
 
         bool operator==(const foo& other) const
         {
