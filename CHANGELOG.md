@@ -19,7 +19,8 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
-* Fixed creation of duplicate default constructor when defining an empty struct and using --contructor-parameters.
+* Fixed creation of duplicate default constructor when defining an empty struct
+  and using `--preview-constructor-parameters`.
   ([Issue #963](https://github.com/microsoft/bond/issues/963))
 
 ## gbc & compiler library 0.12.0.1: 2019-11-21 ##
