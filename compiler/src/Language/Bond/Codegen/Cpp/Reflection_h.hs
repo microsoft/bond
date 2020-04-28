@@ -106,8 +106,8 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         fieldMetadata Field {..} =
             [lt|private: #{export_attr}static const ::bond::Metadata s_#{fieldName}_metadata;|]
 
-        -- fieldTemplateReservedNames are static variables names used in ::bond::reflection::FieldTemplate<>
-        fieldTemplateReservedNames = ["metadata", "field", "id"]
+        -- fieldTemplateReservedNames are names used in ::bond::reflection::FieldTemplate<>
+        fieldTemplateReservedNames = ["FieldTemplate", "struct_type", "field_pointer", "field_type", "value_type", "field_modifier", "metadata", "field", "id", "GetVariable"]
         
         fieldNames = map (\f -> fieldName f) structFields
 
