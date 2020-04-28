@@ -38,13 +38,7 @@ namespace tests
         {
         }
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo(Foo&&)
-        {
-        }
-#else
         Foo(Foo&&) = default;
-#endif
 
         Foo(Foo&&, const arena&)
         {
@@ -56,17 +50,9 @@ namespace tests
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        Foo& operator=(Foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         Foo& operator=(const Foo&) = default;
         Foo& operator=(Foo&&) = default;
-#endif
 
         bool operator==(const Foo&) const
         {
@@ -111,9 +97,8 @@ namespace tests
         ::bond::bonded< ::tests::Foo> bfoo;
         std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > >, std::less<double>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > > m;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        ComplexTypes(_bond_vc12_ctor_workaround_ = {})
+        ComplexTypes()
         {
         }
 
@@ -132,20 +117,7 @@ namespace tests
         {
         }
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        ComplexTypes(ComplexTypes&& other)
-          : li8(std::move(other.li8)),
-            sb(std::move(other.sb)),
-            vb(std::move(other.vb)),
-            nf(std::move(other.nf)),
-            msws(std::move(other.msws)),
-            bfoo(std::move(other.bfoo)),
-            m(std::move(other.m))
-        {
-        }
-#else
         ComplexTypes(ComplexTypes&&) = default;
-#endif
 
         ComplexTypes(ComplexTypes&& other, const arena& allocator)
           : li8(std::move(other.li8), allocator),
@@ -170,17 +142,9 @@ namespace tests
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        ComplexTypes& operator=(ComplexTypes other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         ComplexTypes& operator=(const ComplexTypes&) = default;
         ComplexTypes& operator=(ComplexTypes&&) = default;
-#endif
 
         bool operator==(const ComplexTypes& other) const
         {

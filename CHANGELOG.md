@@ -14,12 +14,27 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 ### C++ ###
+* **Breaking change** MSVC 2013 support has been removed. ([Issue
+  #851](https://github.com/microsoft/bond/issues/851))
+* **Breaking change** `bond/core/warning.h` has been deleted. Since the
+  [5.3.0 release](#530-2017-04-12), Bond hasn't needed global warning
+  suppressions for any compiler except MSVC 2013. This file was only used
+  for MSVC 2013, which is no longer a supported compiler.
 * Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
   ([Issue #1007](https://github.com/microsoft/bond/issues/1007))
 * Fixed MSVC warning C5208: unnamed class used in typedef name 
   cannot declare members other than non-static data members, member
   enumerations, or member classes.
   ([Issue #1027](https://github.com/microsoft/bond/issues/1027))
+
+### C# ###
+
+* Fixed creation of duplicate default constructor when defining an empty struct
+  and using `--preview-constructor-parameters`.
+  ([Issue #963](https://github.com/microsoft/bond/issues/963))
+
+### `gbc` and Bond compiler library ###
+* C++ codegen no longer supports MSVC 2013.
 
 ## gbc & compiler library 0.12.0.1: 2019-11-21 ##
 * IDL core version: 3.0

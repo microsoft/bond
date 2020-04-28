@@ -126,7 +126,10 @@ namespace #{csNamespace}
         constructorWithParameters = if not noMetaFields
             then error $ "bond_meta usage in Struct " ++ (show declName) ++ " Field " ++ (show $ fieldName $ head metaFields) ++ " is incompatible with --preview--constructor-parameters"
             else if (null baseFieldList)
-                then [lt|
+                then if (null structFields) 
+                     then [lt|
+        #{defaultConstructor}|]
+                     else [lt|
 
         public #{declName}(
             #{commaLineSep 3 paramDecl fieldNameList})
@@ -134,10 +137,7 @@ namespace #{csNamespace}
             #{newlineSep 3 paramBasedInitializer fieldNameList}
         }
 
-        public #{declName}()
-        {
-            #{newlineSep 3 initializer structFields}
-        }|]
+        #{defaultConstructor}|]
                 else [lt|
 
         public #{declName}(
@@ -149,10 +149,7 @@ namespace #{csNamespace}
             #{newlineSep 3 paramBasedInitializer (zip structFields uniqueThisFieldNames)}
         }
 
-        public #{declName}()
-        {
-            #{newlineSep 3 initializer structFields}
-        }|]
+        #{defaultConstructor}|]
 
         thisParamBlock = if null structFields
             then mempty
@@ -160,6 +157,11 @@ namespace #{csNamespace}
 
             // This class parameters
             #{commaLineSep 3 paramDecl (zip structFields uniqueThisFieldNames)}|]
+
+        defaultConstructor = [lt|public #{declName}()
+        {
+            #{newlineSep 3 initializer structFields}
+        }|]
 
         baseFieldList = concat $ baseFields s
 

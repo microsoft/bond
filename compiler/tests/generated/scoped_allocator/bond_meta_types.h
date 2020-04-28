@@ -28,9 +28,8 @@ namespace bondmeta
         std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > full_name;
         std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > name;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        HasMetaFields(_bond_vc12_ctor_workaround_ = {})
+        HasMetaFields()
         {
             InitMetadata("HasMetaFields", "deprecated.bondmeta.HasMetaFields");
         }

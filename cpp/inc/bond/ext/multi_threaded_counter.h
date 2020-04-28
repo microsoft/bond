@@ -24,13 +24,7 @@ namespace bond { namespace ext
     public:
         using is_thread_safe = std::true_type;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
         using detail::counter_base<T>::counter_base;
-#else
-        explicit multi_threaded_counter(T max_value) BOND_NOEXCEPT
-            : detail::counter_base<T>(max_value)
-        {}
-#endif
 
         bool try_add(T n) BOND_NOEXCEPT
         {

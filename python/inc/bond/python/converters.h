@@ -7,10 +7,6 @@
 // Disable warnings in boost::python
 #   pragma warning (push)
 #   pragma warning (disable : 4100 4121 4127 4244 4267 4456 4459 4512)
-
-#   if _MSC_VER < 1800
-#       define HAVE_ROUND
-#   endif
 #endif
 
 #include <boost/python/module.hpp>

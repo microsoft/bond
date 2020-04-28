@@ -26,9 +26,8 @@ namespace import_test
 
         ::empty::Empty e;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        HasEmpty(_bond_vc12_ctor_workaround_ = {})
+        HasEmpty()
         {
         }
 
@@ -41,14 +40,7 @@ namespace import_test
         {
         }
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        HasEmpty(HasEmpty&& other)
-          : e(std::move(other.e))
-        {
-        }
-#else
         HasEmpty(HasEmpty&&) = default;
-#endif
 
         HasEmpty(HasEmpty&& other, const arena& allocator)
           : e(std::move(other.e), allocator)
@@ -62,17 +54,9 @@ namespace import_test
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        HasEmpty& operator=(HasEmpty other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         HasEmpty& operator=(const HasEmpty&) = default;
         HasEmpty& operator=(HasEmpty&&) = default;
-#endif
 
         bool operator==(const HasEmpty& other) const
         {

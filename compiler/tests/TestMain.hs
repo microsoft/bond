@@ -192,6 +192,13 @@ tests = testGroup "Compiler tests"
                  , "--import-dir=tests/schema/imports"
                  ]
                  "import"
+            , verifyCodegenVariation
+                [ "c#"
+                , "--preview-constructor-parameters"
+                , "--readonly-properties"
+                ]
+                "empty_struct"
+                "constructor-parameters"
             , testGroup "Grpc"
                 [ verifyCsGrpcCodegen
                     [ "c#"

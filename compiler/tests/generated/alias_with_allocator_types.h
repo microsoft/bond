@@ -36,9 +36,8 @@ namespace test
         ::bond::maybe<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > st1;
         std::set<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > >, std::less<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::list<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > >, typename std::allocator_traits<arena>::template rebind_alloc<std::map<int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >, std::less<int32_t>, typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const int32_t, std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> > > > > > > > > na;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        foo(_bond_vc12_ctor_workaround_ = {})
+        foo()
           : d("foo")
         {
         }
@@ -47,25 +46,7 @@ namespace test
         // Compiler generated copy ctor OK
         foo(const foo&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        foo(foo&& other)
-          : l(std::move(other.l)),
-            v(std::move(other.v)),
-            s(std::move(other.s)),
-            m(std::move(other.m)),
-            st(std::move(other.st)),
-            d(std::move(other.d)),
-            l1(std::move(other.l1)),
-            v1(std::move(other.v1)),
-            s1(std::move(other.s1)),
-            m1(std::move(other.m1)),
-            st1(std::move(other.st1)),
-            na(std::move(other.na))
-        {
-        }
-#else
         foo(foo&&) = default;
-#endif
         
         explicit
         foo(const arena& allocator)
@@ -85,17 +66,9 @@ namespace test
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        foo& operator=(foo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         foo& operator=(const foo&) = default;
         foo& operator=(foo&&) = default;
-#endif
 
         bool operator==(const foo& other) const
         {
@@ -157,9 +130,8 @@ namespace test
         ::test::foo f;
         ::test::foo f1;
         
-        struct _bond_vc12_ctor_workaround_ {};
         template <int = 0> // Workaround to avoid compilation if not used
-        withFoo(_bond_vc12_ctor_workaround_ = {})
+        withFoo()
         {
         }
 
@@ -167,15 +139,7 @@ namespace test
         // Compiler generated copy ctor OK
         withFoo(const withFoo&) = default;
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        withFoo(withFoo&& other)
-          : f(std::move(other.f)),
-            f1(std::move(other.f1))
-        {
-        }
-#else
         withFoo(withFoo&&) = default;
-#endif
         
         explicit
         withFoo(const arena& allocator)
@@ -185,17 +149,9 @@ namespace test
         }
         
         
-#if defined(_MSC_VER) && (_MSC_VER < 1900)  // Versions of MSVC prior to 1900 do not support = default for move ctors
-        withFoo& operator=(withFoo other)
-        {
-            other.swap(*this);
-            return *this;
-        }
-#else
         // Compiler generated operator= OK
         withFoo& operator=(const withFoo&) = default;
         withFoo& operator=(withFoo&&) = default;
-#endif
 
         bool operator==(const withFoo& other) const
         {
