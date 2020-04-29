@@ -31,7 +31,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
 #{CPP.closeNamespace cpp}
 |])
   where
-    idl = MappingContext idlTypeMapping [] [] []  
+    idl = MappingContext idlTypeMapping [] [] []
 
     -- C++ type
     cppType = getTypeName cpp
@@ -51,7 +51,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         #{newlineBeginSep 2 fieldMetadata structFields}
 
         public: struct var
-        {#{fieldTemplates structFields}};
+        {#{fieldTemplates (zip structFields uniqueFieldTemplateStructNames)}};
 
         private: typedef boost::mpl::list<> fields0;
         #{newlineSep 2 pushField indexedFields}
@@ -92,7 +92,7 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         }|]
           where
             static Field {..} = [lt|(void)s_#{fieldName}_metadata;|]
-        
+
         -- reversed list of field names zipped with indexes
         indexedFields :: [(String, Int)]
         indexedFields = zipWith ((,) . fieldName) (reverse structFields) [0..]
@@ -106,16 +106,25 @@ reflection_h export_attribute cpp file imports declarations = ("_reflection.h", 
         fieldMetadata Field {..} =
             [lt|private: #{export_attr}static const ::bond::Metadata s_#{fieldName}_metadata;|]
 
-        fieldTemplates = F.foldMap $ \ f@Field {..} -> [lt|
+        -- fieldTemplateReservedNames are names used in ::bond::reflection::FieldTemplate<>
+        fieldTemplateReservedNames = ["FieldTemplate", "struct_type", "field_pointer", "field_type", "value_type", "field_modifier", "metadata", "field", "id", "GetVariable"]
+
+        fieldNames = map (\f -> fieldName f) structFields
+
+        fieldTemplateStructReservedNames = fieldTemplateReservedNames ++ fieldNames
+
+        uniqueFieldTemplateStructNames = uniqueNames (map (\n -> n ++ "_type") fieldNames) fieldTemplateStructReservedNames
+
+        fieldTemplates = F.foldMap $ \ (f@Field {..}, sn) -> [lt|
             // #{fieldName}
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct #{sn} : ::bond::reflection::FieldTemplate<
                 #{fieldOrdinal},
                 #{CPP.modifierTag f},
                 #{className},
                 #{cppType fieldType},
                 &#{className}::#{fieldName},
                 &s_#{fieldName}_metadata
-            > {}  #{fieldName};
+            > {} #{fieldName};
         |]
 
 

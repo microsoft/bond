@@ -71,6 +71,9 @@ template <
     const bond::Metadata* metadata_ptr>
 struct FieldTemplate
 {
+    // Note: When introducing new names inside this scope, remember to update the 
+    // fieldTemplateReservedNames list in Reflection_h.hs
+
     /// @brief Type of the field's parent struct
     typedef Struct struct_type;
 

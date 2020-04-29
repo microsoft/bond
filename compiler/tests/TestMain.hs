@@ -76,6 +76,7 @@ tests = testGroup "Compiler tests"
             , verifyCppCodegen "aliases"
             , verifyCppCodegen "alias_key"
             , verifyCppCodegen "maybe_blob"
+            , verifyCppCodegen "metadata_edge_cases"
             , verifyCodegen
                 [ "c++"
                 , "--enum-header"

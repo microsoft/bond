@@ -22,6 +22,10 @@ different versioning scheme, following the Haskell community's
   for MSVC 2013, which is no longer a supported compiler.
 * Fixed MSVC warning for deprecation of `std::result_of_t` in `/std:c++17`.
   ([Issue #1007](https://github.com/microsoft/bond/issues/1007))
+* Fixed MSVC warning C5208: unnamed class used in typedef name cannot
+  declare members other than non-static data members, member enumerations,
+  or member classes. ([Issue
+  #1027](https://github.com/microsoft/bond/issues/1027))
 
 ### C# ###
 

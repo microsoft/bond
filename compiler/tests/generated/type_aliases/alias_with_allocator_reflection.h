@@ -31,124 +31,124 @@ namespace test
         public: struct var
         {
             // l
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct l_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::List<bool>,
                 &foo::l,
                 &s_l_metadata
-            > {}  l;
+            > {} l;
         
             // v
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct v_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::Vector<bool>,
                 &foo::v,
                 &s_v_metadata
-            > {}  v;
+            > {} v;
         
             // s
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct s_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::Set<bool>,
                 &foo::s,
                 &s_s_metadata
-            > {}  s;
+            > {} s;
         
             // m
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct m_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::Map< ::test::String, bool>,
                 &foo::m,
                 &s_m_metadata
-            > {}  m;
+            > {} m;
         
             // st
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct st_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::String,
                 &foo::st,
                 &s_st_metadata
-            > {}  st;
+            > {} st;
         
             // d
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct d_type : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::String,
                 &foo::d,
                 &s_d_metadata
-            > {}  d;
+            > {} d;
         
             // l1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct l1_type : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe< ::test::List<bool> >,
                 &foo::l1,
                 &s_l1_metadata
-            > {}  l1;
+            > {} l1;
         
             // v1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct v1_type : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe< ::test::Vector<bool> >,
                 &foo::v1,
                 &s_v1_metadata
-            > {}  v1;
+            > {} v1;
         
             // s1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct s1_type : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe< ::test::Set<bool> >,
                 &foo::s1,
                 &s_s1_metadata
-            > {}  s1;
+            > {} s1;
         
             // m1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct m1_type : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe< ::test::Map< ::test::String, bool> >,
                 &foo::m1,
                 &s_m1_metadata
-            > {}  m1;
+            > {} m1;
         
             // st1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct st1_type : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::bond::maybe< ::test::String>,
                 &foo::st1,
                 &s_st1_metadata
-            > {}  st1;
+            > {} st1;
         
             // na
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct na_type : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 ::test::NestedAliases,
                 &foo::na,
                 &s_na_metadata
-            > {}  na;
+            > {} na;
         };
 
         private: typedef boost::mpl::list<> fields0;
@@ -192,24 +192,24 @@ namespace test
         public: struct var
         {
             // f
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct f_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::TheFoo,
                 &withFoo::f,
                 &s_f_metadata
-            > {}  f;
+            > {} f;
         
             // f1
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct f1_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 withFoo,
                 ::test::foo,
                 &withFoo::f1,
                 &s_f1_metadata
-            > {}  f1;
+            > {} f1;
         };
 
         private: typedef boost::mpl::list<> fields0;

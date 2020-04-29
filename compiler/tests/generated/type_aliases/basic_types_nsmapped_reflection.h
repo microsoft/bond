@@ -33,144 +33,144 @@ namespace nsmapped
         public: struct var
         {
             // _bool
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _bool_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 bool,
                 &BasicTypes::_bool,
                 &s__bool_metadata
-            > {}  _bool;
+            > {} _bool;
         
             // _str
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _str_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<arena>::template rebind_alloc<char> >,
                 &BasicTypes::_str,
                 &s__str_metadata
-            > {}  _str;
+            > {} _str;
         
             // _wstr
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _wstr_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 std::basic_string<wchar_t, std::char_traits<wchar_t>, typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> >,
                 &BasicTypes::_wstr,
                 &s__wstr_metadata
-            > {}  _wstr;
+            > {} _wstr;
         
             // _uint64
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _uint64_type : ::bond::reflection::FieldTemplate<
                 10,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint64_t,
                 &BasicTypes::_uint64,
                 &s__uint64_metadata
-            > {}  _uint64;
+            > {} _uint64;
         
             // _uint16
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _uint16_type : ::bond::reflection::FieldTemplate<
                 11,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint16_t,
                 &BasicTypes::_uint16,
                 &s__uint16_metadata
-            > {}  _uint16;
+            > {} _uint16;
         
             // _uint32
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _uint32_type : ::bond::reflection::FieldTemplate<
                 12,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint32_t,
                 &BasicTypes::_uint32,
                 &s__uint32_metadata
-            > {}  _uint32;
+            > {} _uint32;
         
             // _uint8
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _uint8_type : ::bond::reflection::FieldTemplate<
                 13,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 uint8_t,
                 &BasicTypes::_uint8,
                 &s__uint8_metadata
-            > {}  _uint8;
+            > {} _uint8;
         
             // _int8
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _int8_type : ::bond::reflection::FieldTemplate<
                 14,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int8_t,
                 &BasicTypes::_int8,
                 &s__int8_metadata
-            > {}  _int8;
+            > {} _int8;
         
             // _int16
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _int16_type : ::bond::reflection::FieldTemplate<
                 15,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int16_t,
                 &BasicTypes::_int16,
                 &s__int16_metadata
-            > {}  _int16;
+            > {} _int16;
         
             // _int32
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _int32_type : ::bond::reflection::FieldTemplate<
                 16,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int32_t,
                 &BasicTypes::_int32,
                 &s__int32_metadata
-            > {}  _int32;
+            > {} _int32;
         
             // _int64
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _int64_type : ::bond::reflection::FieldTemplate<
                 17,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 int64_t,
                 &BasicTypes::_int64,
                 &s__int64_metadata
-            > {}  _int64;
+            > {} _int64;
         
             // _double
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _double_type : ::bond::reflection::FieldTemplate<
                 18,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 double,
                 &BasicTypes::_double,
                 &s__double_metadata
-            > {}  _double;
+            > {} _double;
         
             // _float
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _float_type : ::bond::reflection::FieldTemplate<
                 20,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 float,
                 &BasicTypes::_float,
                 &s__float_metadata
-            > {}  _float;
+            > {} _float;
         
             // _blob
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct _blob_type : ::bond::reflection::FieldTemplate<
                 21,
                 ::bond::reflection::optional_field_modifier,
                 BasicTypes,
                 ::bond::blob,
                 &BasicTypes::_blob,
                 &s__blob_metadata
-            > {}  _blob;
+            > {} _blob;
         };
 
         private: typedef boost::mpl::list<> fields0;

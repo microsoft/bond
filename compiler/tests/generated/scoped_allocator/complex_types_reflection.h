@@ -54,74 +54,74 @@ namespace tests
         public: struct var
         {
             // li8
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct li8_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::list<int8_t, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<int8_t> > >,
                 &ComplexTypes::li8,
                 &s_li8_metadata
-            > {}  li8;
+            > {} li8;
         
             // sb
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct sb_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::set<bool, std::less<bool>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<bool> > >,
                 &ComplexTypes::sb,
                 &s_sb_metadata
-            > {}  sb;
+            > {} sb;
         
             // vb
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct vb_type : ::bond::reflection::FieldTemplate<
                 2,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::vector< ::bond::blob, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::blob> > >,
                 &ComplexTypes::vb,
                 &s_vb_metadata
-            > {}  vb;
+            > {} vb;
         
             // nf
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct nf_type : ::bond::reflection::FieldTemplate<
                 3,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::nullable<float>,
                 &ComplexTypes::nf,
                 &s_nf_metadata
-            > {}  nf;
+            > {} nf;
         
             // msws
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct msws_type : ::bond::reflection::FieldTemplate<
                 4,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >, std::basic_string<wchar_t, std::char_traits<wchar_t>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > >, std::less<std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > > >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const std::basic_string<char, std::char_traits<char>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<char> > >, std::basic_string<wchar_t, std::char_traits<wchar_t>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<wchar_t> > > > > > >,
                 &ComplexTypes::msws,
                 &s_msws_metadata
-            > {}  msws;
+            > {} msws;
         
             // bfoo
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct bfoo_type : ::bond::reflection::FieldTemplate<
                 5,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 ::bond::bonded< ::tests::Foo>,
                 &ComplexTypes::bfoo,
                 &s_bfoo_metadata
-            > {}  bfoo;
+            > {} bfoo;
         
             // m
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct m_type : ::bond::reflection::FieldTemplate<
                 6,
                 ::bond::reflection::optional_field_modifier,
                 ComplexTypes,
                 std::map<double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > >, std::less<double>, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::pair<const double, std::list<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc<std::vector< ::bond::nullable< ::bond::bonded< ::tests::Bar> >, std::scoped_allocator_adaptor<typename std::allocator_traits<arena>::template rebind_alloc< ::bond::nullable< ::bond::bonded< ::tests::Bar> > > > > > > > > > > >,
                 &ComplexTypes::m,
                 &s_m_metadata
-            > {}  m;
+            > {} m;
         };
 
         private: typedef boost::mpl::list<> fields0;

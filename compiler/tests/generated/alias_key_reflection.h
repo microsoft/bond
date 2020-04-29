@@ -21,24 +21,24 @@ namespace test
         public: struct var
         {
             // m
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct m_type : ::bond::reflection::FieldTemplate<
                 0,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::map<std::string, int32_t>,
                 &foo::m,
                 &s_m_metadata
-            > {}  m;
+            > {} m;
         
             // s
-            typedef struct : ::bond::reflection::FieldTemplate<
+            typedef struct s_type : ::bond::reflection::FieldTemplate<
                 1,
                 ::bond::reflection::optional_field_modifier,
                 foo,
                 std::set<int32_t>,
                 &foo::s,
                 &s_s_metadata
-            > {}  s;
+            > {} s;
         };
 
         private: typedef boost::mpl::list<> fields0;
