@@ -2,7 +2,7 @@
 
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace examples::runtime_binding;
 

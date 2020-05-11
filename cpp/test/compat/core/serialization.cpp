@@ -7,7 +7,7 @@
 #include <bond/stream/output_buffer.h>
 #include <bond/protocol/simple_json_writer.h>
 #include <bond/protocol/random_protocol.h>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/assign/list_of.hpp>
 #include <climits>
 

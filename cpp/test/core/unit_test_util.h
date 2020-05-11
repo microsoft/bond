@@ -17,7 +17,7 @@ using bond::string_length;
 
 #include <boost/mpl/copy.hpp>
 #include <boost/assign/list_of.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/function.hpp>
 
 using namespace std;
