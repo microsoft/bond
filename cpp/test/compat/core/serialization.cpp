@@ -231,7 +231,7 @@ void Init(Test test, Compat& obj)
 
     // Erase field m_defaults
     fields.erase(
-        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, _1)),
+        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, boost::placeholders::_1)),
         fields.end());
 
     {

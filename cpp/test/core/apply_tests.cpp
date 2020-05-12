@@ -24,7 +24,7 @@ void Marshal(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Marshal<bond::BuiltInProtocols, X, Writer>, obj, _1));
+        bond::Marshal<bond::BuiltInProtocols, X, Writer>, obj, boost::placeholders::_1));
 
     bond::InputBuffer input = output.GetBuffer();
 
@@ -43,7 +43,7 @@ void Serialize(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, _1));
+        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, boost::placeholders::_1));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
@@ -69,7 +69,7 @@ void Apply(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, _1), obj));
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, boost::placeholders::_1), obj));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
@@ -91,7 +91,7 @@ void SimpleApply(uint16_t version = bond::v1)
 
     typename Writer::Buffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, _1), obj));
+        CallApply<bond::Serializer<Writer>, X>, boost::bind(bond::SerializeTo<bond::BuiltInProtocols, Writer>, boost::placeholders::_1), obj));
 }
 
 
@@ -114,7 +114,7 @@ Bonded(uint16_t version = bond::v1)
 
     bond::OutputBuffer output;
     Factory<Writer>::Call(output, version, boost::bind(
-        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, _1));
+        bond::Serialize<bond::BuiltInProtocols, X, Writer>, obj, boost::placeholders::_1));
 
     bond::InputBuffer input = output.GetBuffer();
     Reader reader(Factory<Reader>::Create(input, version));
@@ -122,7 +122,7 @@ Bonded(uint16_t version = bond::v1)
 
     bond::OutputBuffer output2;
     Factory<Writer>::Call(output2, version, boost::bind(
-        &bond::bonded<X>::template Serialize<bond::BuiltInProtocols, Writer>, bonded, _1));
+        &bond::bonded<X>::template Serialize<bond::BuiltInProtocols, Writer>, bonded, boost::placeholders::_1));
 
     bond::InputBuffer input2 = output2.GetBuffer();
     Reader reader2(Factory<Reader>::Create(input2, version));
