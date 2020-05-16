@@ -79,7 +79,7 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
 
         public: struct service
         {
-            #{newlineSep 3 methodTemplate serviceMethods}
+            #{newlineSep 3 (uncurry methodTemplate) (zip serviceMethods uniqueMethodTemplateStructNames)}
         };
 
         private: typedef boost::mpl::list<> methods0;
@@ -167,7 +167,18 @@ grpc_h export_attribute cpp file imports declarations = ("_grpc.h", [lt|
           where
             static m = [lt|(void)#{methodMetadataVar m};|]
 
-        methodTemplate m = [lt|typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<#{declName}, #{payload $ methodTypeToMaybe (methodInput m)}, #{resultType m}, &#{methodMetadataVar m}> {} #{methodName m};|]
+        -- unique names for each of the MethodTemplate derived structs that
+        -- we need to generate in the same order as serviceMethods.
+        uniqueMethodTemplateStructNames :: [String]
+        uniqueMethodTemplateStructNames = uniqueNames (map (\n -> n ++ "_type") methodNames) reservedNames
+          where
+            methodNames = map methodName serviceMethods
+            reservedNames = methodTemplateReservedNames ++ methodNames
+            -- methodTemplateReservedNames are names used in ::bond::reflection::MethodTemplate<>
+            methodTemplateReservedNames = ["MethodTemplate", "service_type", "input_type", "result_type", "metadata", "method"]
+
+        methodTemplate :: Method -> String -> L.Text
+        methodTemplate m methodTemplateStructName = [lt|typedef struct #{methodTemplateStructName} : ::bond::ext::grpc::reflection::MethodTemplate<#{declName}, #{payload $ methodTypeToMaybe (methodInput m)}, #{resultType m}, &#{methodMetadataVar m}> {} #{methodName m};|]
 
         proxyName = "Client" :: String
         serviceName = "Service" :: String

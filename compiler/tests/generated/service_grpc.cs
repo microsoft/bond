@@ -163,6 +163,55 @@ namespace tests
             global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
             global::Bond.Grpc.Marshaller<BasicTypes>.Instance);
 
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_foo11_type = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "foo11_type",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_MethodTemplate = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "MethodTemplate",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_service_type = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "service_type",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_input_type = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "input_type",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_result_type = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "result_type",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_metadata = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "metadata",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
+        static readonly global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>> Method_method = new global::Grpc.Core.Method<global::Bond.Grpc.IMessage<global::Bond.Void>, global::Bond.Grpc.IMessage<global::Bond.Void>>(
+            global::Grpc.Core.MethodType.Unary,
+            ServiceName,
+            "method",
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance,
+            global::Bond.Grpc.Marshaller<global::Bond.Void>.Instance);
+
         public abstract class FooBase
         {
             public abstract global::System.Threading.Tasks.Task foo11(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
@@ -228,6 +277,20 @@ namespace tests
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<dummy>> foo44(global::Bond.Grpc.IMessage<dummy> request, global::Grpc.Core.ServerCallContext context);
 
             public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<BasicTypes>> cq(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> foo11_type(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> MethodTemplate(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> service_type(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> input_type(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> result_type(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> metadata(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
+
+            public abstract global::System.Threading.Tasks.Task<global::Bond.Grpc.IMessage<global::Bond.Void>> method(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.ServerCallContext context);
         }
 
         public class FooClient : global::Grpc.Core.ClientBase<FooClient>
@@ -448,6 +511,76 @@ namespace tests
                 return CallInvoker.AsyncUnaryCall(Method_cq, null, options, request);
             }
 
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo11_typeAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return foo11_typeAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> foo11_typeAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_foo11_type, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> MethodTemplateAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return MethodTemplateAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> MethodTemplateAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_MethodTemplate, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> service_typeAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return service_typeAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> service_typeAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_service_type, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> input_typeAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return input_typeAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> input_typeAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_input_type, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> result_typeAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return result_typeAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> result_typeAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_result_type, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> metadataAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return metadataAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> metadataAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_metadata, null, options, request);
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> methodAsync(global::Grpc.Core.Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+            {
+                return methodAsync(global::Bond.Grpc.Message.Void, new global::Grpc.Core.CallOptions(headers, deadline, cancellationToken));
+            }
+
+            public virtual global::Grpc.Core.AsyncUnaryCall<global::Bond.Grpc.IMessage<global::Bond.Void>> methodAsync(global::Bond.Grpc.IMessage<global::Bond.Void> request, global::Grpc.Core.CallOptions options)
+            {
+                return CallInvoker.AsyncUnaryCall(Method_method, null, options, request);
+            }
+
             protected override FooClient NewInstance(global::Grpc.Core.ClientBase.ClientBaseConfiguration configuration)
             {
                 return new FooClient(configuration);
@@ -477,6 +610,13 @@ namespace tests
                     .AddMethod(Method_foo43, serviceImpl.foo43)
                     .AddMethod(Method_foo44, serviceImpl.foo44)
                     .AddMethod(Method_cq, serviceImpl.cq)
+                    .AddMethod(Method_foo11_type, serviceImpl.foo11_type)
+                    .AddMethod(Method_MethodTemplate, serviceImpl.MethodTemplate)
+                    .AddMethod(Method_service_type, serviceImpl.service_type)
+                    .AddMethod(Method_input_type, serviceImpl.input_type)
+                    .AddMethod(Method_result_type, serviceImpl.result_type)
+                    .AddMethod(Method_metadata, serviceImpl.metadata)
+                    .AddMethod(Method_method, serviceImpl.method)
                     .Build();
         }
     }

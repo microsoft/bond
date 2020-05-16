@@ -32,11 +32,11 @@ template <typename Payload>
 
         public: struct service
         {
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, Payload, void, &s_foo31_metadata> {} foo31;
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, void, Payload, &s_foo32_metadata> {} foo32;
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, Payload, Payload, &s_foo33_metadata> {} foo33;
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::SomeBox<int32_t>, void, &s_ConsumesGeneric1_metadata> {} ConsumesGeneric1;
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::SomeBox<std::vector<int32_t> >, void, &s_ConsumesGeneric2_metadata> {} ConsumesGeneric2;
+            typedef struct foo31_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, Payload, void, &s_foo31_metadata> {} foo31;
+            typedef struct foo32_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, void, Payload, &s_foo32_metadata> {} foo32;
+            typedef struct foo33_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, Payload, Payload, &s_foo33_metadata> {} foo33;
+            typedef struct ConsumesGeneric1_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::SomeBox<int32_t>, void, &s_ConsumesGeneric1_metadata> {} ConsumesGeneric1;
+            typedef struct ConsumesGeneric2_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::SomeBox<std::vector<int32_t> >, void, &s_ConsumesGeneric2_metadata> {} ConsumesGeneric2;
         };
 
         private: typedef boost::mpl::list<> methods0;

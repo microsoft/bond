@@ -39,17 +39,29 @@ target_link_libraries (grpc_test_common PUBLIC
     grpc++)
 
 add_bond_codegen(TARGET grpc_test_services_codegen
+  name_conflicts.bond
   services.bond
   GRPC)
 
-add_unit_test (io_manager.cpp)
-
-add_unit_test (service_attributes.cpp
+add_library (grpc_test_services
+    EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/name_conflicts_types.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/name_conflicts_grpc.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/services_types.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/services_grpc.cpp")
+add_target_to_folder (grpc_test_services)
+target_include_directories (grpc_test_common PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+target_link_libraries(grpc_test_services PRIVATE bond grpc++)
+add_dependencies(grpc_test_services grpc_test_services_codegen)
+
+add_unit_test (io_manager.cpp)
+
+add_unit_test (service_attributes.cpp)
 target_include_directories(service_attributes
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-add_dependencies(service_attributes grpc_test_services_codegen)
+add_dependencies(service_attributes grpc_test_services)
 
 add_unit_test (thread_pool.cpp)
 

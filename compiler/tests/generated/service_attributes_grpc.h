@@ -27,7 +27,7 @@ struct Foo final
 
         public: struct service
         {
-            typedef struct : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::Param, ::tests::Result, &s_foo_metadata> {} foo;
+            typedef struct foo_type : ::bond::ext::grpc::reflection::MethodTemplate<Foo, ::tests::Param, ::tests::Result, &s_foo_metadata> {} foo;
         };
 
         private: typedef boost::mpl::list<> methods0;
