@@ -37,6 +37,7 @@ function ToVcToolsetVer([string]$imageName)
         'Visual Studio 2013' { '12.0' }
         'Visual Studio 2015' { '14.0' }
         'Visual Studio 2017' { '14.1' }
+        'Visual Studio 2019' { '14.2' }
         default { throw "Unknown image name '$imageName'" }
     }
 }
@@ -48,6 +49,7 @@ function ToYear([string]$vcToolsetVer)
         '12.0' { '2013' }
         '14.0' { '2015' }
         '14.1' { '2017' }
+        '14.2' { '2019' }
         default { throw "Unknown VcToolsetVer '$vcToolsetVer'" }
     }
 }
@@ -59,6 +61,7 @@ function ToCMakeGeneratorNum([string]$vcToolsetVer)
         '12.0' { '12' }
         '14.0' { '14' }
         '14.1' { '15' }
+        '14.2' { '16' }
         default { throw "Unknown VcToolsetVer '$vcToolsetVer'" }
     }
 }
