@@ -28,7 +28,7 @@ param
     [string]
     $Version,
 
-    [ValidateSet('12.0', '14.0', '14.1')]
+    [ValidateSet('12.0', '14.0', '14.1', '14.2')]
     [string]
     $VcToolsetVer,
     
