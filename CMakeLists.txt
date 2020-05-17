@@ -13,7 +13,7 @@ set (BOND_ENABLE_GRPC
     CACHE BOOL "If FALSE, then do not build gRPC integration")
 set (BOND_SKIP_GRPC_LIB_COMPILE
     "FALSE"
-    CACHE BOOL "If TRUE, then do not build the 3rd party gRPC library (useful if you already have it built, e.g. when using build system like vcpkg)")
+    CACHE BOOL "If TRUE, then do not build the 3rd party gRPC library")
 set (BOND_FIND_RAPIDJSON
     "FALSE"
     CACHE BOOL "If FALSE, then use and install rapidjson from thirdparty subdirectory")
