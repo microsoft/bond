@@ -68,6 +68,27 @@ namespace tests
     
     const ::bond::Metadata Foo::Schema::s_cq_metadata
         = ::bond::reflection::MetadataInit("cq");
+    
+    const ::bond::Metadata Foo::Schema::s_foo11_type_metadata
+        = ::bond::reflection::MetadataInit("foo11_type");
+    
+    const ::bond::Metadata Foo::Schema::s_MethodTemplate_metadata
+        = ::bond::reflection::MetadataInit("MethodTemplate");
+    
+    const ::bond::Metadata Foo::Schema::s_service_type_metadata
+        = ::bond::reflection::MetadataInit("service_type");
+    
+    const ::bond::Metadata Foo::Schema::s_input_type_metadata
+        = ::bond::reflection::MetadataInit("input_type");
+    
+    const ::bond::Metadata Foo::Schema::s_result_type_metadata
+        = ::bond::reflection::MetadataInit("result_type");
+    
+    const ::bond::Metadata Foo::Schema::s_metadata_metadata
+        = ::bond::reflection::MetadataInit("metadata");
+    
+    const ::bond::Metadata Foo::Schema::s_method_metadata
+        = ::bond::reflection::MetadataInit("method");
 
     
 } // namespace tests
