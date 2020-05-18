@@ -56,6 +56,7 @@ add_target_to_folder (grpc_test_services)
 target_include_directories (grpc_test_services PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+cxx_target_compile_options (MSVC grpc_test_services PRIVATE -D_WIN32_WINNT=0x0600)
 target_link_libraries(grpc_test_services PRIVATE bond grpc++)
 add_dependencies(grpc_test_services grpc_test_services_codegen)
 
