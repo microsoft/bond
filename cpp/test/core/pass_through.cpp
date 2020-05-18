@@ -352,7 +352,7 @@ void DefaultValuesTranscodingTest(T to, uint16_t version1 = bond::v1, uint16_t v
     typename Writer2::Buffer output_buffer(4096);
 
     Factory<Writer2>::Call(output_buffer, version2, boost::bind(
-        &bond::bonded<Bonded>::template Serialize<Protocols, Writer2>, bonded1, _1));
+        &bond::bonded<Bonded>::template Serialize<Protocols, Writer2>, bonded1, boost::placeholders::_1));
 
     typename Reader2::Buffer input_buffer(output_buffer.GetBuffer());
     Reader2 input = Factory<Reader2>::Create(input_buffer, version2);

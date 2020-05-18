@@ -7,7 +7,7 @@
 #include <bond/stream/output_buffer.h>
 #include <bond/protocol/simple_json_writer.h>
 #include <bond/protocol/random_protocol.h>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/assign/list_of.hpp>
 #include <climits>
 
@@ -231,7 +231,7 @@ void Init(Test test, Compat& obj)
 
     // Erase field m_defaults
     fields.erase(
-        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, _1)),
+        std::remove_if(fields.begin(), fields.end(), boost::bind<bool>(FieldIdEqual(), Compat::Schema::var::m_defaults::id, boost::placeholders::_1)),
         fields.end());
 
     {

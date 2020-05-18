@@ -10,7 +10,7 @@
 #include "reflection.h"
 #include "runtime_schema.h"
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/make_shared.hpp>
 
 #include <limits>

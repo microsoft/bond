@@ -26,6 +26,9 @@ different versioning scheme, following the Haskell community's
   declare members other than non-static data members, member enumerations,
   or member classes. ([Issue
   #1027](https://github.com/microsoft/bond/issues/1027))
+* Fixed Boost 1.73 warning "The practice of declaring the Bind placeholders
+  (_1, _2, ...) in the global namespace is deprecated." ([Pull request
+  #1036](https://github.com/microsoft/bond/pull/1036))
 
 ### C# ###
 

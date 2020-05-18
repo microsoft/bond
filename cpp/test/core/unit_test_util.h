@@ -17,7 +17,7 @@ using bond::string_length;
 
 #include <boost/mpl/copy.hpp>
 #include <boost/assign/list_of.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/function.hpp>
 
 using namespace std;
@@ -278,7 +278,7 @@ Reader Serialize(const T& x, uint16_t version = bond::v1)
 
     // serialize value to output
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Serialize<Protocols, T, Writer>, x, _1));
+        bond::Serialize<Protocols, T, Writer>, x, boost::placeholders::_1));
 
     typename Reader::Buffer input_buffer(output_buffer.GetBuffer());
     return Factory<Reader>::Create(input_buffer, version);
@@ -309,7 +309,7 @@ Reader Merge(const Payload& payload, const T& x, uint16_t version = bond::v1)
 
     // merge x with serialized payload into output
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Merge<Protocols, T, Reader, Writer>, x, Serialize<Reader, Writer, Protocols>(payload, version), _1));
+        bond::Merge<Protocols, T, Reader, Writer>, x, Serialize<Reader, Writer, Protocols>(payload, version), boost::placeholders::_1));
 
     typename Reader::Buffer input_buffer(output_buffer.GetBuffer());
 

@@ -111,7 +111,7 @@ TEST_CASE_BEGIN(OptionalToRequired)
     typename Writer::Buffer buffer(1024);
 
     Factory<Writer>::Call(buffer, bond::v1, boost::bind(
-        bond::Serialize<Protocols, From, Writer>, from, _1));
+        bond::Serialize<Protocols, From, Writer>, from, boost::placeholders::_1));
 
     {
         To to;

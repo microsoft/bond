@@ -2,7 +2,7 @@
 
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace examples::runtime_binding;
 
@@ -54,12 +54,12 @@ void Map(const bond::RuntimeSchema& from_schema, std::string from_name,
     // Find the field from_name in from_schema ...
     Field from = find_if(from_schema.GetStruct().fields.begin(), 
                          from_schema.GetStruct().fields.end(),
-                         boost::bind(&ByName, _1, from_name));
+                         boost::bind(&ByName, boost::placeholders::_1, from_name));
     
     // ... and field to_name in to_schema
     Field to = find_if(to_schema.GetStruct().fields.begin(), 
                        to_schema.GetStruct().fields.end(),
-                       boost::bind(&ByName, _1, to_name));
+                       boost::bind(&ByName, boost::placeholders::_1, to_name));
     
     // Add mapping (for clarity omits error checking)
     mappings[from->id].path.push_back(to->id);

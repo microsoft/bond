@@ -9,7 +9,7 @@ void MarshalingTest(uint16_t version = bond::v1)
     typename Writer::Buffer output_buffer;
     
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, _1));
+        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, boost::placeholders::_1));
     
     T to;
     bond::InputBuffer input(output_buffer.GetBuffer());
@@ -38,7 +38,7 @@ void TranscodingTest(uint16_t version = bond::v1)
     typename Writer::Buffer output_buffer;
 
     Factory<Writer>::Call(output_buffer, version, boost::bind(
-        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, _1));
+        bond::Marshal<bond::BuiltInProtocols, T, Writer>, from, boost::placeholders::_1));
     
     // Trans-marshal to Simple Protocol using runtime schema
     bond::OutputBuffer simple_buffer;
@@ -58,7 +58,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         {
             bond::InputBuffer input(simple_buffer.GetBuffer());
 	    Factory<Writer>::Call(writer_buffer, version, boost::bind(
-                 bond::SelectProtocolAndApply<T, bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, _1)));
+                 bond::SelectProtocolAndApply<T, bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, boost::placeholders::_1)));
         }
 
         T to;
@@ -76,7 +76,7 @@ void TranscodingTest(uint16_t version = bond::v1)
         {
             bond::InputBuffer input(simple_buffer.GetBuffer());
 	    Factory<Writer>::Call(writer_buffer, version, boost::bind(
-                 bond::SelectProtocolAndApply<bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, bond::GetRuntimeSchema<T>(), input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, _1)));
+                 bond::SelectProtocolAndApply<bond::BuiltInProtocols, bond::InputBuffer, bond::Marshaler<Writer> >, bond::GetRuntimeSchema<T>(), input, boost::bind(bond::MarshalTo<bond::BuiltInProtocols, Writer>, boost::placeholders::_1)));
         }
 
         T to;
