@@ -10,8 +10,8 @@ to send Bond objects via [gRPC](http://www.grpc.io/).
 ## Defining Services ##
 
 The Bond IDL has been extended to support the definition of
-[services](compiler.html#service-definition) and
-[generic services](compiler.html#generic-service). These definitions are
+[services](compiler.md#service-definition) and
+[generic services](compiler.md#generic-service). These definitions are
 used by the Bond compiler to generate classes that provide:
 
 * a service base that can be used as the basis for implementing services'
@@ -124,7 +124,7 @@ types. Note also that Bond-over-gRPC does not provide synchronous APIs in C#
 by design.
 
 For more information about gRPC in C#, take a look at the
-[gRPC C# tutorial](http://www.grpc.io/docs/tutorials/basic/csharp.html).
+[gRPC C# tutorial](http://www.grpc.io/docs/tutorials/basic/csharp.md).
 
 There is a [Bond-over-gRPC standalone example project](https://github.com/microsoft/bond-grpc-examples).
 
@@ -275,7 +275,7 @@ of `bonded` request objects and `ClientContext` arguments, see the pingpong
 example.
 
 For more information about gRPC in C++, take a look at the
-[gRPC C++ tutorial](http://www.grpc.io/docs/tutorials/basic/c.html);
+[gRPC C++ tutorial](http://www.grpc.io/docs/tutorials/basic/c.md);
 however, keep in mind that the Bond-over-gRPC APIs diverge significantly
 from those documented there.
 

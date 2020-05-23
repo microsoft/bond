@@ -23,7 +23,7 @@ Basic example
 =============
 
 In Bond data schemas are defined using idl-like
-[syntax](compiler.html#idl-syntax):
+[syntax](compiler.md#idl-syntax):
 
 ```
 namespace Examples
@@ -46,7 +46,7 @@ gbc c# example.bond
 
 Using the generated C# code, we can write a simple program that will
 serialize and deserialize an instance of the Record schema using [Compact
-Binary](bond_cpp.html#compact-binary) protocol:
+Binary](bond_cpp.md#compact-binary) protocol:
 
 ```csharp
 namespace Examples
@@ -86,7 +86,7 @@ Code generation
 ===============
 
 In order to use a Bond schema in a C# program, it needs to be compiled using the
-Bond compiler [`gbc`](compiler.html). The compiler generates C# classes that
+Bond compiler [`gbc`](compiler.md). The compiler generates C# classes that
 represent the schema. By default schema fields are represented by public
 auto-properties initialized in the default constructor.
 
@@ -94,7 +94,7 @@ The mapping between Bond and C# type systems is mostly obvious, but it is worth
 noting that, unlike C# reference types, Bond types are not nullable. This means
 that `string` in Bond IDL will be mapped to C# `string`, which is a reference
 type, but the value `null` will not be valid. In order to allow `null` values, a
-type must be declared as [`nullable`](bond_cpp.html#nullable-types), e.g.:
+type must be declared as [`nullable`](bond_cpp.md#nullable-types), e.g.:
 
 ```
 struct Foo
@@ -104,7 +104,7 @@ struct Foo
 ```
 
 The value `null` is also legal for fields declared in Bond IDL to have a [default
-of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
+of `nothing`](bond_cpp.md#default-value-of-nothing), e.g.:
 
 ```
 struct Bar
@@ -252,7 +252,7 @@ Marshaling
 ==========
 
 Since Bond supports multiple serialization
-[protocols](bond_cpp.html#protocols), application endpoints either have to
+[protocols](bond_cpp.md#protocols), application endpoints either have to
 agree on a particular protocol, or include protocol metadata in the payload.
 Marshaling APIs provide the standard way to do the latter, by automatically
 adding a payload header with the protocol identifier and version.
@@ -371,7 +371,7 @@ payload (e.g. when the payload was created from an older version of the
 schema).
 
 Additionally, some protocols can omit
-[`optional` non-struct fields](bond_cpp.html#required-fields) set to their
+[`optional` non-struct fields](bond_cpp.md#required-fields) set to their
 default values, reducing payload size.
 
 Default value of `nothing`
@@ -407,7 +407,7 @@ value of the field doesn't have a serialized representation. What this means
 in practice depends on whether the field is `optional` or `required`.
 Optional fields set to `nothing` are usually omitted during serialization
 [^2], just like for any other default values.
-[Required fields](bond_cpp.html#required-fields), by definition, can never
+[Required fields](bond_cpp.md#required-fields), by definition, can never
 be omitted. Since `nothing` has no serialized representation, an attempt to
 serialize an object with required fields set to `nothing` will result in a
 runtime exception. If a null value needs to be represented in the serialized
@@ -952,7 +952,7 @@ Serialize.To(writer, Schema<T>.RuntimeSchema.SchemaDef);
 ```
 
 A serialized representation of `SchemaDef` can be also obtained directly from
-a schema definition IDL file using [bond compiler](compiler.html#runtime-schema).
+a schema definition IDL file using [bond compiler](compiler.md#runtime-schema).
 
 See also the following example:
 
@@ -1127,7 +1127,7 @@ using the `DateTime` class and serialized as `int64`.
 
 Defining a custom type mapping involves three steps:
 
-- Define a [type alias](compiler.html#type-aliases) in the schema.
+- Define a [type alias](compiler.md#type-aliases) in the schema.
 - Specify during codegen a C# type to represent the alias.
 - Implement an appropriate converter for the custom C# type.
 
@@ -1135,7 +1135,7 @@ Codegen parameters
 ------------------
 
 When generating code for a schema that uses [type
-aliases](compiler.html#type-aliases), the user can specify a custom type to
+aliases](compiler.md#type-aliases), the user can specify a custom type to
 represent each alias in the generated code:
 
 ```
@@ -1264,7 +1264,7 @@ the containing structs.
 Using Xml namespace inherently limits some of flexibility of Bond
 deserialization. In particular a document with namespaces can't be deserialized
 into a schema that is compatible but has a different name, for example
-a [view](compiler.html#struct-views) of the payload schema.
+a [view](compiler.md#struct-views) of the payload schema.
 
 See also the following example:
 
@@ -1399,7 +1399,7 @@ represent schema fields and thus are not decorated with Bond attributes.
 ### RequiredAttribute ###
 
 By default fields of Bond schemas are optional. [Required
-fields](bond_cpp.html#required-fields) must be marked with the `Required`
+fields](bond_cpp.md#required-fields) must be marked with the `Required`
 attribute.
 
 ```csharp
@@ -1618,18 +1618,18 @@ Bond.Compiler.CSharp to perform code generation at build time.
 
 [![Bond.Runtime.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Runtime.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Runtime.CSharp/)
 **Bond.Runtime.CSharp** - Additional assemblies that may be needed at
-runtime depending on which Bond [protocols](bond_cpp.html#protocols) are
+runtime depending on which Bond [protocols](bond_cpp.md#protocols) are
 being used. Needed for Simple JSON.
 
 [![Bond.Compiler.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.Compiler.CSharp.svg?style=flat)](https://www.nuget.org/packages/Bond.Compiler.CSharp/)
 **Bond.Compiler.CSharp** - A package with the
-[Bond compiler (gbc)](compiler.html) and MSBuild targets for C# code
+[Bond compiler (gbc)](compiler.md) and MSBuild targets for C# code
 generation. Bond.CSharp includes similar functionality, but pulls in lots of
 dependencies. Bond.Complier.CSharp has no dependencies.
 
 [![Bond.Compiler NuGet package](https://img.shields.io/nuget/v/Bond.Compiler.svg?style=flat)](https://www.nuget.org/packages/Bond.Compiler/)
 **Bond.Compiler** - A tools-only package that contains the
-[Bond compiler (gbc)](compiler.html). This is useful if you want to
+[Bond compiler (gbc)](compiler.md). This is useful if you want to
 integrate gbc into a build process that isn't using C# or MSBuild.
 
 For example, if you want to use Bond's Compact Binary protocol but want to
@@ -1679,14 +1679,14 @@ References
 [Bond-over-gRPC overview][bond_over_grpc]
 ----------------------------
 
-[bond_over_grpc]: bond_over_grpc.html
-[bond_cpp]: bond_cpp.html
-[bond_java]: bond_java.html
-[bond_py]: bond_py.html
-[compiler]: compiler.html
+[bond_over_grpc]: bond_over_grpc.md
+[bond_cpp]: bond_cpp.md
+[bond_java]: bond_java.md
+[bond_py]: bond_py.md
+[compiler]: compiler.md
 
 [compact_binary_format_reference]:
-../reference/cpp/compact__binary_8h_source.html
+../reference/cpp/compact__binary_8h_source.md
 
 [fast_binary_format_reference]:
-../reference/cpp/fast__binary_8h_source.html
+../reference/cpp/fast__binary_8h_source.md

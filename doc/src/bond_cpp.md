@@ -22,7 +22,7 @@ Bond is published on GitHub at
 Basic example
 =============
 
-In Bond data schemas are defined using idl-like [syntax](compiler.html#idl-syntax):
+In Bond data schemas are defined using idl-like [syntax](compiler.md#idl-syntax):
 
 ```
 namespace example
@@ -35,7 +35,7 @@ struct Record
 ```
 
 In order to use the schema in a C++ program, it needs to be compiled using the
-Bond compiler [`gbc`](compiler.html). This step is sometimes also referred to as
+Bond compiler [`gbc`](compiler.md). This step is sometimes also referred to as
 code generation (or codegen) because the compilation generates C++ code
 corresponding to the schema definition.
 
@@ -470,7 +470,7 @@ constructable from `boost::shared_ptr<SchemaDef>` but only explicitly from
 `const SchemaDef&`.
 
 A serialized representation of `SchemaDef` can be also obtained directly from
-a schema definition IDL file using [bond compiler](compiler.html#runtime-schema).
+a schema definition IDL file using [bond compiler](compiler.md#runtime-schema).
 
 See example: `examples/cpp/core/runtime_schema`.
 
@@ -538,7 +538,7 @@ class bonded;
 
 The class template has two parameters. The first one, `T`, represents schema
 (or type) of the data. Usually it is a struct defined via Bond
-[IDL](compiler.html#idl-syntax) but it can also be `void` (see
+[IDL](compiler.md#idl-syntax) but it can also be `void` (see
 [`bonded<void>`][bonded_void_reference]) if we want to work with data for which
 schema is not known at compile-time. The second parameter, `Reader`, specifies
 representation of the data. The default, `ProtocolReader` is a variant type
@@ -1371,14 +1371,14 @@ represented using the `boost::posix_time::ptime` class and serialized as
 
 Defining a custom type mapping involves three steps:
 
-- Define a [type alias](compiler.html#type-aliases) in the schema.
+- Define a [type alias](compiler.md#type-aliases) in the schema.
 - Specify during codegen a C++ type to represent the alias.
 - Implement an appropriate concept for the custom C++ type.
 
 Codegen parameters
 ------------------
 
-When generating code for a schema that uses [type aliases](compiler.html#type-aliases), the
+When generating code for a schema that uses [type aliases](compiler.md#type-aliases), the
 user can specify a custom type to represent each alias in the generated code:
 
 ```
@@ -2016,70 +2016,70 @@ References
 [Bond-over-gRPC overview][bond_over_grpc]
 ----------------------------
 
-[API_reference]: ../reference/cpp/index.html
+[API_reference]: ../reference/cpp/index.md
 
-[compiler]: compiler.html
+[compiler]: compiler.md
 
-[bond_py]: bond_py.html
+[bond_py]: bond_py.md
 
-[bond_cs]: bond_cs.html
+[bond_cs]: bond_cs.md
 
-[bond_java]: bond_java.html
+[bond_java]: bond_java.md
 
-[bond_over_grpc]: bond_over_grpc.html
+[bond_over_grpc]: bond_over_grpc.md
 
 [serializing_transform_ref]:
-../reference/cpp/structbond_1_1_serializing_transform.html
+../reference/cpp/structbond_1_1_serializing_transform.md
 
 [deserializing_transform_ref]:
-../reference/cpp/structbond_1_1_deserializing_transform.html
+../reference/cpp/structbond_1_1_deserializing_transform.md
 
 [modifying_transform_ref]:
-../reference/cpp/structbond_1_1_modifying_transform.html
+../reference/cpp/structbond_1_1_modifying_transform.md
 
-[transforms_h]: ../reference/cpp/transforms_8h_source.html
+[transforms_h]: ../reference/cpp/transforms_8h_source.md
 
 [field_template_reference]:
-../reference/cpp/structbond_1_1reflection_1_1_field_template.html
+../reference/cpp/structbond_1_1reflection_1_1_field_template.md
 
-[maybe_reference]: ../reference/cpp/classbond_1_1maybe.html
+[maybe_reference]: ../reference/cpp/classbond_1_1maybe.md
 
 [nullable_reference]:
-../reference/cpp/classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4.html
+../reference/cpp/classbond_1_1nullable_3_01_t_00_01_allocator_00_01false_01_4.md
 
-[bonded_reference]: ../reference/cpp/classbond_1_1bonded.html
+[bonded_reference]: ../reference/cpp/classbond_1_1bonded.md
 
 [bonded_void_reference]:
-../reference/cpp/classbond_1_1bonded_3_01void_00_01_reader_01_4.html
+../reference/cpp/classbond_1_1bonded_3_01void_00_01_reader_01_4.md
 
-[blob_reference]: ../reference/cpp/classbond_1_1blob.html
+[blob_reference]: ../reference/cpp/classbond_1_1blob.md
 
 [compact_binary_reader_reference]:
-../reference/cpp/classbond_1_1_compact_binary_reader.html
+../reference/cpp/classbond_1_1_compact_binary_reader.md
 
 [compact_binary_writer_reference]:
-../reference/cpp/classbond_1_1_compact_binary_writer.html
+../reference/cpp/classbond_1_1_compact_binary_writer.md
 
 [compact_binary_format_reference]:
-../reference/cpp/compact__binary_8h_source.html
+../reference/cpp/compact__binary_8h_source.md
 
 [fast_binary_reader_reference]:
-../reference/cpp/classbond_1_1_fast_binary_reader.html
+../reference/cpp/classbond_1_1_fast_binary_reader.md
 
 [fast_binary_writer_reference]:
-../reference/cpp/classbond_1_1_fast_binary_writer.html
+../reference/cpp/classbond_1_1_fast_binary_writer.md
 
 [fast_binary_format_reference]:
-../reference/cpp/fast__binary_8h_source.html
+../reference/cpp/fast__binary_8h_source.md
 
 [simple_binary_reader_reference]:
-../reference/cpp/classbond_1_1_simple_binary_reader.html
+../reference/cpp/classbond_1_1_simple_binary_reader.md
 
 [simple_binary_writer_reference]:
-../reference/cpp/classbond_1_1_simple_binary_writer.html
+../reference/cpp/classbond_1_1_simple_binary_writer.md
 
 [simple_json_reader_reference]:
-../reference/cpp/classbond_1_1_simple_json_reader.html
+../reference/cpp/classbond_1_1_simple_json_reader.md
 
 [simple_json_writer_reference]:
-../reference/cpp/classbond_1_1_simple_json_writer.html
+../reference/cpp/classbond_1_1_simple_json_writer.md

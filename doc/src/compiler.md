@@ -3,7 +3,7 @@
 Command line options
 ====================
 
-<div class="sourceCode"><object width="100%" height="600" data="gbc.html"/></div>
+<div class="sourceCode"><object width="100%" height="600" data="gbc.md"/></div>
 
 IDL syntax
 ==========

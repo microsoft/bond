@@ -12,10 +12,10 @@ like to include a link to it in this document, please send a pull request.
 Meta schema
 -----------
 
-Bond has a very rich [type system](manual/compiler.html#idl-syntax). It is
+Bond has a very rich [type system](manual/compiler.md#idl-syntax). It is
 probably most similar to Thrift in this respect. Some notable additions in Bond
-are inheritance, [type aliases](manual/bond_cpp.html#type-aliases) and
-[generics](manual/bond_cpp.html#generic-struct). One type system feature not
+are inheritance, [type aliases](manual/bond_cpp.md#type-aliases) and
+[generics](manual/bond_cpp.md#generic-struct). One type system feature not
 present in Bond that Avro, and recently Protocol Buffers, have are unions. Bond
 uses schemas with optional fields to represent unions.
 
@@ -30,8 +30,8 @@ STL containers like `std::vector` however user can easily map custom types
 (e.g. use `boost::multi_index_container`  in a generated C++ struct or map 
 a `uint64` schema field to a `System.DateTime` field in a generated C# class). 
 Bond generated C++ structs can also use custom allocators. See [custom type 
-mappings](manual/bond_cpp.html#custom-type-mappings) for [more 
-details](manual/bond_cs.html#custom-type-mappings).
+mappings](manual/bond_cpp.md#custom-type-mappings) for [more 
+details](manual/bond_cs.md#custom-type-mappings).
 
 Protocols
 ---------
@@ -58,20 +58,20 @@ One unique feature of Bond is that serialization and deserialization are not
 fundamental operations hard-coded in the generated code. In fact there is no 
 code generated that is specific to serialization and deserialization. Instead 
 Bond programming model exposes parsers and 
-[transforms](manual/bond_cpp.html#transforms) which are composable by the user 
+[transforms](manual/bond_cpp.md#transforms) which are composable by the user 
 using meta-programming techniques. Some examples how this is used internally 
 should give a taste of the flexibility of the architecture:
 
 - Bond Python implementation doesn't involve *any* Python specific generated 
   code. It is fully built by driving Boost Python library using 
   meta-programming interfaces in Bond C++ implementation. A basic Python 
-  [example](manual/bond_py.html#basic-example) is literally 7 lines of code.
+  [example](manual/bond_py.md#basic-example) is literally 7 lines of code.
 
 - Bond can serialize and deserialize arbitrary instances of `std::tuple<T...>` 
   without any generated code. This is possible because serializer and 
   deserializer are constructed at C++ compile time and the C++ parameter pack 
   expansion effectively gives us compile-time C++ reflection for 
-  [tuples](manual/bond_cpp.html#tuples).
+  [tuples](manual/bond_cpp.md#tuples).
 
 - In C# implementation we have parsers for payload and for objects and we have 
   transforms that can consume data from a parser and serialize or deserialize 

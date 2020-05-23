@@ -321,12 +321,12 @@ References
 [Boost Python][boost_python]
 ----------------------------
 
-[compiler]: compiler.html
+[compiler]: compiler.md
 
-[bond_cpp]: bond_cpp.html
+[bond_cpp]: bond_cpp.md
 
-[bond_cs]: bond_cs.html
+[bond_cs]: bond_cs.md
 
-[boost_python]: http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.html
+[boost_python]: http://www.boost.org/doc/libs/1_54_0/libs/python/doc/index.md
 
-[boost_python_build]: http://www.boost.org/doc/libs/1_54_0/libs/python/doc/building.html
+[boost_python_build]: http://www.boost.org/doc/libs/1_54_0/libs/python/doc/building.md

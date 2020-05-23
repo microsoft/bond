@@ -1,4 +1,4 @@
 Bond Reference
 ==============
 
-- [C++](cpp\index.html)
+- [C++](cpp\index.md)

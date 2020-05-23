@@ -22,7 +22,7 @@ Basic example
 =============
 
 In Bond data schemas are defined using idl-like
-[syntax](compiler.html#idl-syntax):
+[syntax](compiler.md#idl-syntax):
 
 ```
 namespace examples
@@ -45,7 +45,7 @@ gbc java example.bond
 
 Using the generated Java code, we can write a simple program that will
 serialize and deserialize an instance of the Record schema using the [Compact
-Binary](bond_cpp.html#compact-binary) protocol:
+Binary](bond_cpp.md#compact-binary) protocol:
 
 ```java
 package examples;
@@ -80,7 +80,7 @@ Code generation
 ===============
 
 In order to use a Bond schema in a Java program, it needs to be compiled using
-the Bond compiler [`gbc`](compiler.html). The compiler generates Java classes
+the Bond compiler [`gbc`](compiler.md). The compiler generates Java classes
 that represent the schema. Schema fields are represented by public fields, and
 collection fields will be automatically initialized to an empty instance.
 
@@ -89,7 +89,7 @@ worth noting that, unlike Java reference types, Bond types are not nullable.
 This means that `string` in Bond IDL will be mapped to `java.lang.String`, which
 is a reference type, but the value `null` will not be valid. In order to allow
 `null` values, a type must be declared as
-[`nullable`](bond_cpp.html#nullable-types),
+[`nullable`](bond_cpp.md#nullable-types),
 e.g.:
 
 ```
@@ -100,7 +100,7 @@ struct Foo
 ```
 
 The value `null` is also legal for fields declared in Bond IDL to have a
-[default of `nothing`](bond_cpp.html#default-value-of-nothing), e.g.:
+[default of `nothing`](bond_cpp.md#default-value-of-nothing), e.g.:
 
 ```
 struct Bar
@@ -170,7 +170,7 @@ See also the following example:
 Marshaling
 ==========
 
-Since Bond supports multiple serialization [protocols](bond_cpp.html#protocols),
+Since Bond supports multiple serialization [protocols](bond_cpp.md#protocols),
 application endpoints either have to agree on a particular protocol, or include
 protocol metadata in the payload. Marshaling APIs provide the standard way to do
 the latter by automatically adding a payload header with the protocol identifier
@@ -302,7 +302,7 @@ payload (e.g. when the payload was created from an older version of the
 schema).
 
 Additionally, some protocols can omit
-[`optional` non-struct fields](bond_cpp.html#required-fields) set to their
+[`optional` non-struct fields](bond_cpp.md#required-fields) set to their
 default values, reducing payload size.
 
 Default value of `nothing`
@@ -335,7 +335,7 @@ value of the field doesn't have a serialized representation. What this means
 in practice depends on whether the field is `optional` or `required`.
 Optional fields set to `nothing` are usually omitted during serialization
 [^2], just like for any other default values.
-[Required fields](bond_cpp.html#required-fields), by definition, can never
+[Required fields](bond_cpp.md#required-fields), by definition, can never
 be omitted. Since `nothing` has no serialized representation, an attempt to
 serialize an object with required fields set to `nothing` will result in a
 runtime exception. If a null value needs to be represented in the serialized
@@ -515,7 +515,7 @@ serializer.serialize(Record.BOND_TYPE.buildSchemaDef(), writer);
 
 A serialized representation of `SchemaDef` can be also obtained directly from
 a schema definition IDL file using the [bond
-compiler](compiler.html#runtime-schema).
+compiler](compiler.md#runtime-schema).
 
 See also the following example:
 
@@ -675,13 +675,13 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[bond_cpp]: bond_cpp.html
-[bond_cs]: bond_cs.html
-[bond_py]: bond_py.html
-[compiler]: compiler.html
+[bond_cpp]: bond_cpp.md
+[bond_cs]: bond_cs.md
+[bond_py]: bond_py.md
+[compiler]: compiler.md
 
 [compact_binary_format_reference]:
-../reference/cpp/compact__binary_8h_source.html
+../reference/cpp/compact__binary_8h_source.md
 
 [fast_binary_format_reference]:
-../reference/cpp/fast__binary_8h_source.html
+../reference/cpp/fast__binary_8h_source.md
