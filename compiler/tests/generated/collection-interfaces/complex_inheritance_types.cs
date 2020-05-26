@@ -17,7 +17,7 @@ namespace Test
 {
     using System.Collections.Generic;
 
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public enum TestEnum
     {
         EnumVal1,
@@ -26,7 +26,7 @@ namespace Test
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class Simple
     {
         [global::Bond.Id(0)]
@@ -49,7 +49,7 @@ namespace Test
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class Foo
     {
         [global::Bond.Id(0), global::Bond.Type(typeof(global::Bond.Tag.wstring))]
@@ -66,7 +66,7 @@ namespace Test
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class Bar
         : Foo
     {
@@ -107,7 +107,7 @@ namespace Test
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class Baz
         : Bar
     {
@@ -133,7 +133,7 @@ namespace Test
     }
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class DerivedEmpty
         : Foo
     {

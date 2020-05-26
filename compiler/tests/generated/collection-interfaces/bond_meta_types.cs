@@ -18,7 +18,7 @@ namespace deprecated.bondmeta
     using System.Collections.Generic;
 
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public partial class HasMetaFields
     {
         [global::Bond.Id(0), global::Bond.RequiredOptional]

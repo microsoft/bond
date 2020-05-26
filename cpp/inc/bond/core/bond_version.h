@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <type_traits>
 
-#define BOND_VERSION 0x0800
-#define BOND_MIN_CODEGEN_VERSION 0x0b00
+#define BOND_VERSION 0x0900
+#define BOND_MIN_CODEGEN_VERSION 0x0c10
 
 namespace bond
 {
