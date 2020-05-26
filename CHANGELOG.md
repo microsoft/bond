@@ -11,7 +11,11 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
+## 9.0: 2020-05-26  ##
+* IDL core version: 3.0
+* C++ version: 9.0.0
+* C# NuGet version: 9.0.0.
+* `gbc` & compiler library: 0.12.1.0
 
 ### C++ ###
 * **Breaking change** MSVC 2013 support has been removed. ([Issue

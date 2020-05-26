@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b913222488b7035eec255444fe3bf82606f82eb0940c6ae5a4a3af784638c527
+-- hash: 5f829cf187d9630385924b752fae193c51da82b2d9bfc0ef8f38f23a638fc604
 
 name:           bond
-version:        0.12.0.1
+version:        0.12.1.0
 synopsis:       Bond schema compiler and code generator
 description:    Bond is a cross-platform framework for handling schematized data. It supports cross-language de/serialization and powerful generic mechanisms for efficiently manipulating data. . This package contains a library for parsing the Bond schema definition language and performing template-based code generation. The library includes built-in templates for generating standard Bond C++ and C# code, as well as utilities for writing custom codegen templates. . The package also contains a command-line compiler/codegen tool, named gbc, which is primarily used to generate code for C++ and C# programs using Bond.
 category:       Language, Compiler, Code Generation

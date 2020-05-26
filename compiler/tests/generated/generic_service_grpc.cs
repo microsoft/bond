@@ -18,7 +18,7 @@ namespace tests
 {
     using System.Collections.Generic;
 
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.0.1")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
     public static class Foo<Payload> where Payload : class
     {
         static readonly string ServiceName = "tests.Foo";
