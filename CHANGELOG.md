@@ -14,7 +14,7 @@ different versioning scheme, following the Haskell community's
 ## 9.0: 2020-05-26  ##
 * IDL core version: 3.0
 * C++ version: 9.0.0
-* C# NuGet version: 9.0.0.
+* C# NuGet version: 9.0.0
 * `gbc` & compiler library: 0.12.1.0
 
 ### C++ ###
@@ -39,9 +39,15 @@ different versioning scheme, following the Haskell community's
 * Fixed creation of duplicate default constructor when defining an empty struct
   and using `--preview-constructor-parameters`.
   ([Issue #963](https://github.com/microsoft/bond/issues/963))
+* The .NET assemblies are now only Authenticode signed with SHA-2. Legacy
+  Windows OS versions may need [updates to work with SHA-2
+  signatures](https://support.microsoft.com/en-us/help/4472027/2019-sha-2-code-signing-support-requirement-for-windows-and-wsus).
 
 ### `gbc` and Bond compiler library ###
 * C++ codegen no longer supports MSVC 2013.
+* gbc is now only Authenticode signed with SHA-2. Legacy Windows OS versions
+  may need [updates to work with SHA-2
+  signatures](https://support.microsoft.com/en-us/help/4472027/2019-sha-2-code-signing-support-requirement-for-windows-and-wsus).
 
 ## gbc & compiler library 0.12.0.1: 2019-11-21 ##
 * IDL core version: 3.0
@@ -167,7 +173,7 @@ There are no changes to code generation or the language projections.
 * File and directory paths on the command line, in response files, or in
   `import` statements can now use a mix of forward and backslashes. [Issue
   #869](https://github.com/microsoft/bond/issues/869)
-* gbc is now Authenticode dual-signed with both SHA1 and SHA2.
+* gbc is now Authenticode dual-signed with both SHA-1 and SHA-2.
 
 ### C++ ###
 
@@ -325,8 +331,8 @@ There are no changes to code generation or the language projections.
   Core projects.
 * The .NET Standard assemblies are fully strong-name signed. Previously, they
   were inadvertently only public strong-name signed.
-* The .NET assemblies are now Authenticode dual-signed with both SHA1 and
-  SHA2.
+* The .NET assemblies are now Authenticode dual-signed with both SHA-1 and
+  SHA-2.
 * Fixed a bug in the codegen targets when using `gbc` from $PATH on macOS and
   Linux that prevented the C# compiler from finding the generated C# files.
 * *Preview*: Added preliminary support for generating types with constructors
