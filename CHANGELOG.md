@@ -13,7 +13,7 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 
-## C++ ##
+### C++ ###
 * RapidJSON repository points to [Tencent](https://github.com/Tencent/rapidjson.git)
   and is at commit [8f4c021](https://github.com/Tencent/rapidjson/commit/8f4c021fa2f1e001d2376095928fc0532adf2ae6).
 
