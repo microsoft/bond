@@ -126,7 +126,7 @@
        selective.
 
        NOTE: This still won't catch changes to files imported outside the
-       BondCodegen item or metadata changes the require codegen to be
+       BondCodegen item or metadata changes that require codegen to be
        re-run. -->
   <Target Name="BondCodegenCs"
           Inputs="$(_PreExistingBondExe);@(BondCodegen)"
@@ -201,7 +201,7 @@
           Condition="$(BondOptions.Contains('--grpc'))
                      AND !$(BondOptions.Contains('--grpc=false'))">
         <AutoGen>true</AutoGen>
-        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
+        <DependentUpon>%(_BondCodegenWithDefaultOptions.Identity)</DependentUpon>
       </_BondGen_Grpc_BondOptions>
 
       <_BondGen_Grpc_Options
