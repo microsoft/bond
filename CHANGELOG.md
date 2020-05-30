@@ -17,6 +17,12 @@ different versioning scheme, following the Haskell community's
 * RapidJSON repository points to [Tencent](https://github.com/Tencent/rapidjson.git)
   and is at commit [8f4c021](https://github.com/Tencent/rapidjson/commit/8f4c021fa2f1e001d2376095928fc0532adf2ae6).
 
+### C# ###
+
+* Fixed MSB3105/CS2002 error about duplicate Compile items when a directory
+  contains multiple .bond files and `--gprc` is in `$BondOptions`. ([Issue
+  #1050](https://github.com/microsoft/bond/issues/1050))
+
 ## 9.0: 2020-05-26  ##
 * IDL core version: 3.0
 * C++ version: 9.0.0
