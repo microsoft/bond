@@ -2,9 +2,12 @@
 bin/
 obj/
 TestResults/
+tools/
+Debug/
+Release/
 
 # Nuget packages 
-packages/Newtonsoft.Json.*/
+packages/
 
 # Profiler artifacts
 *.exe.manifest
@@ -17,5 +20,10 @@ _ReSharper.*
 *.sdf
 *.suo
 *.user
+*.opendb
 *.opensdf
 *.psess
+*.VC.db
+
+# MSBuild binary log
+msbuild.binlog

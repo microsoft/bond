@@ -24,3 +24,6 @@ _ReSharper.*
 *.opensdf
 *.psess
 *.VC.db
+
+# MSBuild binary log
+msbuild.binlog
