@@ -111,8 +111,11 @@ namespace Bond.Expressions
         static Type GetConverter(Type type)
         {
             var name = type.AssemblyQualifiedName;
-            var converterName = type.Namespace + ".BondTypeAliasConverter" + name.Substring(type.FullName.Length);
-            return Type.GetType(converterName);
+            var converterName = type.Namespace + ".BondTypeAliasConverter";
+            // First try to locate converter class in the same assembly of the target type,
+            // If not found, try to locate in any assembly:
+            return Type.GetType(converterName + name.Substring(type.FullName.Length)) 
+                   ?? Type.GetType(converterName);
         }
     }
 }
