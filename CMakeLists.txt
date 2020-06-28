@@ -3,6 +3,11 @@ cmake_minimum_required (VERSION 3.1)
 project (bond)
 cmake_policy (SET CMP0022 NEW)
 
+if (POLICY CMP0077)
+    # Allow CMake 3.13+ to override options when using FetchContent/add_subdirectory.
+    cmake_policy(SET CMP0077 NEW)
+endif ()
+
 set (CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cmake-modules)
