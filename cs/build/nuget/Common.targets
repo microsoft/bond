@@ -177,6 +177,7 @@
   -->
   <Target Name="BondCompileCs"
           BeforeTargets="CoreCompile"
+          DependsOnTargets="BondCodegenCs"
           Condition="'@(BondCodegen)' != ''">
 
     <ItemGroup>
