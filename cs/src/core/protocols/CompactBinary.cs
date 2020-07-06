@@ -210,7 +210,8 @@ namespace Bond.Protocols
                 lengths.RemoveFirst();
 
                 output.WriteVarUInt32(length);
-                PushLengthCheck(output.Position + length);
+                long position = checked(output.Position + length);
+                PushLengthCheck(position);
             }
         }
 
@@ -466,8 +467,9 @@ namespace Bond.Protocols
             }
             else
             {
+                int byteSize = checked(value.Length * 2);
                 WriteUInt32((UInt32)value.Length);
-                output.WriteString(Encoding.Unicode, value, value.Length << 1);
+                output.WriteString(Encoding.Unicode, value, byteSize);
             }
         }
         #endregion
@@ -629,7 +631,7 @@ namespace Bond.Protocols
             if (2 == version && (raw & (0x07 << 5)) != 0)
                 count = (raw >> 5) - 1;
             else
-                count = (int)input.ReadVarUInt32();
+                count = checked((int)input.ReadVarUInt32());
         }
 
         /// <summary>
@@ -644,7 +646,7 @@ namespace Bond.Protocols
         {
             keyType = (BondDataType)input.ReadUInt8();
             valueType = (BondDataType)input.ReadUInt8();
-            count = (int)input.ReadVarUInt32();
+            count = checked((int)input.ReadVarUInt32());
         }
 
         /// <summary>
@@ -776,7 +778,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public String ReadString()
         {
-            var length = (int)input.ReadVarUInt32();
+            var length = checked((int)input.ReadVarUInt32());
             return length == 0 ? string.Empty : input.ReadString(Encoding.UTF8, length);
         }
 
@@ -787,8 +789,8 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadWString()
         {
-            var length = (int)input.ReadVarUInt32();
-            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length << 1);
+            var length = checked((int)(input.ReadVarUInt32() * 2));
+            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length);
         }
 
         /// <summary>
@@ -837,10 +839,10 @@ namespace Bond.Protocols
                     input.ReadVarUInt64();
                     break;
                 case (BondDataType.BT_STRING):
-                    input.SkipBytes((int)input.ReadVarUInt32());
+                    input.SkipBytes(checked((int)input.ReadVarUInt32()));
                     break;
                 case (BondDataType.BT_WSTRING):
-                    input.SkipBytes((int)(input.ReadVarUInt32() << 1));
+                    input.SkipBytes(checked((int)(input.ReadVarUInt32() *2)));
                     break;
                 case BondDataType.BT_LIST:
                 case BondDataType.BT_SET:
@@ -872,11 +874,11 @@ namespace Bond.Protocols
             }
             else if (elementType == BondDataType.BT_FLOAT)
             {
-                input.SkipBytes(count * sizeof(float));
+                input.SkipBytes(checked(count * sizeof(float)));
             }
             else if (elementType == BondDataType.BT_DOUBLE)
             {
-                input.SkipBytes(count * sizeof(double));
+                input.SkipBytes(checked(count * sizeof(double)));
             }
             else
             {
@@ -905,7 +907,7 @@ namespace Bond.Protocols
         {
             if (2 == version)
             {
-                input.SkipBytes((int)input.ReadVarUInt32());
+                input.SkipBytes(checked((int)input.ReadVarUInt32()));
             }
             else
             {

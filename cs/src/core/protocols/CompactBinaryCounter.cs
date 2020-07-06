@@ -47,7 +47,9 @@ namespace Bond.Protocols
 
         private void AddBytes(int count)
         {
-            GetCurrentStackFrame().currentLength += count;
+            var stackFrame = GetCurrentStackFrame();
+            var length = checked(stackFrame.currentLength + count);
+            stackFrame.currentLength = length;
         }
 
         private void AddVarUInt16(ushort value)
@@ -99,7 +101,7 @@ namespace Bond.Protocols
             if (counterStack.Count > 0)
             {
                 AddVarUInt32(structLength);
-                AddBytes((int)structLength);
+                AddBytes(checked((int)structLength));
             }
         }
 

@@ -70,7 +70,7 @@ namespace Bond.IO.Safe
         /// <exception cref="EndOfStreamException"/>
         public void SkipBytes(int count)
         {
-            position += count;
+            position = checked(position + count);
         }
 
         /// <summary>

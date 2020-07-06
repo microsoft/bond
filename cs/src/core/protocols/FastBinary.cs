@@ -367,8 +367,9 @@ namespace Bond.Protocols
             }
             else
             {
+                int byteSize = checked(value.Length * 2);
                 output.WriteVarUInt32((UInt32)value.Length);
-                output.WriteString(Encoding.Unicode, value, value.Length << 1);
+                output.WriteString(Encoding.Unicode, value, byteSize);
             }
         }
         #endregion
@@ -478,7 +479,7 @@ namespace Bond.Protocols
         public void ReadContainerBegin(out int count, out BondDataType elementType)
         {
             elementType = (BondDataType)input.ReadUInt8();
-            count = (int)input.ReadVarUInt32();
+            count = checked((int)input.ReadVarUInt32());
         }
 
         /// <summary>
@@ -493,7 +494,7 @@ namespace Bond.Protocols
         {
             keyType = (BondDataType)input.ReadUInt8();
             valueType = (BondDataType)input.ReadUInt8();
-            count = (int)input.ReadVarUInt32();
+            count = checked((int)input.ReadVarUInt32());
         }
 
         /// <summary>
@@ -625,7 +626,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public String ReadString()
         {
-            var length = (int)input.ReadVarUInt32();
+            var length = checked((int)input.ReadVarUInt32());
             return length == 0 ? string.Empty : input.ReadString(Encoding.UTF8, length);
         }
 
@@ -636,8 +637,8 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadWString()
         {
-            var length = (int)input.ReadVarUInt32();
-            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length << 1);
+            var length = checked((int)(input.ReadVarUInt32() * 2));
+            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length);
         }
 
         /// <summary>
@@ -686,10 +687,10 @@ namespace Bond.Protocols
                     input.SkipBytes(sizeof(ulong));
                     break;
                 case (BondDataType.BT_STRING):
-                    input.SkipBytes((int)input.ReadVarUInt32());
+                    input.SkipBytes(checked(((int)input.ReadVarUInt32())));
                     break;
                 case (BondDataType.BT_WSTRING):
-                    input.SkipBytes((int)(input.ReadVarUInt32() << 1));
+                    input.SkipBytes(checked((int)(input.ReadVarUInt32()) * 2));
                     break;
                 case BondDataType.BT_LIST:
                 case BondDataType.BT_SET:
@@ -724,21 +725,21 @@ namespace Bond.Protocols
                     break;
                 case (BondDataType.BT_UINT16):
                 case (BondDataType.BT_INT16):
-                    input.SkipBytes(count * sizeof(ushort));
+                    input.SkipBytes(checked(count * sizeof(ushort)));
                     break;
                 case (BondDataType.BT_UINT32):
                 case (BondDataType.BT_INT32):
-                    input.SkipBytes(count * sizeof(uint));
+                    input.SkipBytes(checked(count * sizeof(uint)));
                     break;
                 case (BondDataType.BT_UINT64):
                 case (BondDataType.BT_INT64):
-                    input.SkipBytes(count * sizeof(ulong));
+                    input.SkipBytes(checked(count * sizeof(ulong)));
                     break;
                 case BondDataType.BT_FLOAT:
-                    input.SkipBytes(count * sizeof(float));
+                    input.SkipBytes(checked(count * sizeof(float)));
                     break;
                 case BondDataType.BT_DOUBLE:
-                    input.SkipBytes(count * sizeof(double));
+                    input.SkipBytes(checked(count * sizeof(double)));
                     break;
                 default:
                     while (0 <= --count)

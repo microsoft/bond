@@ -356,7 +356,7 @@ namespace Bond.Protocols
             else
             {
                 WriteLength(value.Length);
-                output.WriteString(Encoding.Unicode, value, value.Length << 1);
+                output.WriteString(Encoding.Unicode, value, checked(value.Length * 2));
             }
         }
         #endregion
@@ -628,13 +628,13 @@ namespace Bond.Protocols
         public string ReadWString()
         {
             var length = ReadLength();
-            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, length << 1);
+            return length == 0 ? string.Empty : input.ReadString(Encoding.Unicode, checked(length * 2));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipWString()
         {
-            input.SkipBytes(ReadLength() << 1);
+            input.SkipBytes(checked(ReadLength() * 2));
         }
 
         /// <summary>
@@ -659,7 +659,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         int ReadLength()
         {
-            return (int)((version == 2) ? input.ReadVarUInt32() : input.ReadUInt32());
+            return (version == 2) ? checked((int)input.ReadVarUInt32()) : checked((int)input.ReadUInt32());
         }
     }
 }

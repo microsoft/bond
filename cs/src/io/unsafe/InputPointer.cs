@@ -65,7 +65,7 @@ namespace Bond.IO.Unsafe
         /// <param name="count">Number of bytes to skip</param>
         public void SkipBytes(int count)
         {
-            position += count;
+            position = checked(position + count);
         }
 
         /// <summary>
