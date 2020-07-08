@@ -18,8 +18,11 @@ different versioning scheme, following the Haskell community's
 * `gbc` & compiler library: 0.12.1.0
 
 ### C++ ###
-* RapidJSON repository points to [Tencent](https://github.com/Tencent/rapidjson.git)
-  and is at commit [8f4c021](https://github.com/Tencent/rapidjson/commit/8f4c021fa2f1e001d2376095928fc0532adf2ae6).
+* The RapidJSON submodule now points to commit
+  [8f4c021](https://github.com/Tencent/rapidjson/commit/8f4c021fa2f1e001d2376095928fc0532adf2ae6).
+  This addresses some aliasing warnings in recent versions of Clang and GCC.
+    * The RapidJSON submodule now uses its new home under the [Tencent
+      organization](https://github.com/Tencent/rapidjson.git).
 
 ### C# ###
 
