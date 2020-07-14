@@ -31,7 +31,7 @@ different versioning scheme, following the Haskell community's
   #1050](https://github.com/microsoft/bond/issues/1050))
 * Fix handling of large container lengths that could cause an infinite loop
   when deserializing some payloads. This fix addresses
-  [CVE-2020-1469](https://msrc-portal-preview.azurewebsites.net/en-US/security-guidance/advisory/CVE-2020-1469).
+  [CVE-2020-1469](https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2020-1469).
 
 ## 9.0: 2020-05-26  ##
 * IDL core version: 3.0
