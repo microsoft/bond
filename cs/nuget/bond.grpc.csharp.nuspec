@@ -7,8 +7,9 @@
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <projectUrl>https://github.com/microsoft/bond/</projectUrl>
-        <licenseUrl>https://github.com/microsoft/bond/blob/master/LICENSE</licenseUrl>
+        <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <icon>images\bond-logo-64x64-transparent.png</icon>
         <iconUrl>https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
         <summary>Bindings for using Microsoft Bond with gRPC</summary>
         <description>
@@ -28,12 +29,14 @@
         </dependencies>
     </metadata>
     <files>
-        <file target="lib\net45" src="net45\Bond.Grpc.dll" />
-        <file target="lib\net45" src="net45\Bond.Grpc.pdb" />
-        <file target="lib\net45" src="net45\Bond.Grpc.xml" />
+        <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Grpc.dll" />
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Grpc.pdb" />
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.Grpc.xml" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Grpc.dll" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Grpc.pdb" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Grpc.xml" />
+
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Grpc.dll" />
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Grpc.pdb" />
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Grpc.xml" />
     </files>
 </package>

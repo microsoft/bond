@@ -7,8 +7,9 @@
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <projectUrl>https://github.com/microsoft/bond/</projectUrl>
-        <licenseUrl>https://github.com/microsoft/bond/blob/master/LICENSE</licenseUrl>
+        <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <icon>images\bond-logo-64x64-transparent.png</icon>
         <iconUrl>https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
         <summary>Bond is an open source, cross-platform, cross-language framework for working with schematized data.</summary>
         <description>
@@ -28,20 +29,22 @@
         </dependencies>
     </metadata>
     <files>
-        <file target="lib\net45" src="net45\Bond.JSON.dll" />
-        <file target="lib\net45" src="net45\Bond.JSON.pdb" />
-        <file target="lib\net45" src="net45\Bond.JSON.xml" />
+        <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.dll" />
-        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.0" src="netstandard1.0\Bond.JSON.xml" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.dll" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.pdb" />
+        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.xml" />
 
-        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.dll" />
-        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.3" src="netstandard1.0\Bond.JSON.xml" />
+        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.dll" />
+        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.xml" />
 
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.dll" />
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.6" src="netstandard1.6\Bond.JSON.xml" />
+        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.dll" />
+        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.xml" />
+
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.dll" />
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.pdb" />
+        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.xml" />
     </files>
 </package>
