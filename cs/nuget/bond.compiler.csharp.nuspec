@@ -7,8 +7,9 @@
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <projectUrl>https://github.com/microsoft/bond/</projectUrl>
-    <licenseUrl>https://github.com/microsoft/bond/blob/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <icon>images\bond-logo-64x64-transparent.png</icon>
     <iconUrl>https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-transparent.png</iconUrl>
     <summary>The Bond project's code generation C# MSBuild targets</summary>
     <description>
@@ -49,6 +50,8 @@
     <file target="build\netstandard1.6" src="cs\build\nuget\Common.props" />
     <file target="build\netstandard1.6" src="cs\build\nuget\Common.targets" />
     <file target="build\netstandard1.6\cps" src="cs\build\nuget\cps\*.xaml" />
+
+    <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
     <file target="readme.txt" src="cs\nuget\readme.txt" />
 
