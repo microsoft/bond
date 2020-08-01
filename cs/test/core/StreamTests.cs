@@ -1,6 +1,7 @@
 ﻿namespace UnitTest
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Runtime.InteropServices;
     using NUnit.Framework;
@@ -120,6 +121,12 @@
         }
 
         [Test]
+        public void Stream_PositionLength_NotAccessedOnWriteStructBegin()
+        {
+            Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation();
+        }
+
+        [Test]
         public void ReadBytes_DifferentSizesAndPositions_ReadCorrectly()
         {
             var buffer = MakeSequential(5 * 1024);
@@ -211,6 +218,57 @@
             }
 
             return buf;
+        }
+
+        // WriteStructBegin should only access Stream.Position in the DEBUG
+        // configuration, so we only execute this test in the RELEASE
+        // configuration.
+        [Conditional("RELEASE")]
+        private void Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation()
+        {
+            var stream = new NonSeekableStream();
+            var output = new OutputStream(stream, bufferLength:11);
+            var writer = new CompactBinaryWriter<OutputStream>(output, version:2);
+            var firstPass = writer.GetFirstPassWriter();
+            firstPass.WriteStructBegin(new Metadata());
+            firstPass.WriteStructEnd();
+            writer.WriteStructBegin(new Metadata());
+        }
+
+        private class NonSeekableStream : Stream
+        {
+            public override void Flush()
+            {
+            }
+
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override void SetLength(long value)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                return 0;
+            }
+
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+            }
+
+            public override bool CanRead { get; }
+            public override bool CanSeek => false;
+            public override bool CanWrite { get; }
+            public override long Length => throw new NotSupportedException();
+            public override long Position
+            {
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
+            }
         }
     }
 

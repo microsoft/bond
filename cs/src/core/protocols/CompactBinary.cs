@@ -210,8 +210,7 @@ namespace Bond.Protocols
                 lengths.RemoveFirst();
 
                 output.WriteVarUInt32(length);
-                long position = checked(output.Position + length);
-                PushLengthCheck(position);
+                PushLengthCheck(checked(output.Position + length));
             }
         }
 
