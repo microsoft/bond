@@ -11,6 +11,11 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+* Move computation of length in PushLengthCheck back into the function argument
+  This reverts [b0fd4a1](https://github.com/microsoft/bond/commit/b0fd4a15a7cae946dd2855122559ca59cc34dbea#diff-9534daaa1fb3d4776494b25c8bba3939L212) to previous behavior where length is only computed in the Debug build configuration
+  This resolves exceptions occurring in a `Stream` that is not seekable
+
 ## 9.0.1: 2020-07-14 ##
 * IDL core version: 3.0
 * C++ version: 9.0.1
