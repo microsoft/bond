@@ -19,8 +19,8 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
-* Fixed a regression writing to non-seekable streams using `OutputStream`.
-  The fix in commit
+* Fixed a regression writing to non-seekable streams using
+  `CompactBinaryWriter`. The fix in commit
   [b0fd4a1](https://github.com/microsoft/bond/commit/b0fd4a15a7cae946dd2855122559ca59cc34dbea#diff-9534daaa1fb3d4776494b25c8bba3939L212)
   inadvertently added a call to `Stream.Position` in the Release
   configuration. This call is only indented to be made when Bond is built in
