@@ -13,9 +13,14 @@ different versioning scheme, following the Haskell community's
 
 ## Unreleased ##
 * IDL core version: TBD
-* C++ version: TBD
+* C++ version: bug fix bump needed
 * C# NuGet version: bug fix bump needed
 * `gbc` & compiler library: TBD
+
+### C++ ###
+
+* gbc is now installed with 555 (r-xr-xr-x) permissions. ([Issue
+  \#1062](https://github.com/microsoft/bond/issues/1062))
 
 ### C# ###
 
