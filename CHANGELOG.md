@@ -12,7 +12,19 @@ different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
 ## Unreleased ##
-* Move computation of length in PushLengthCheck back into the function argument reverting [b0fd4a1](https://github.com/microsoft/bond/commit/b0fd4a15a7cae946dd2855122559ca59cc34dbea#diff-9534daaa1fb3d4776494b25c8bba3939L212) to previous behavior where length is only computed in the Debug build configuration. This resolves exceptions occurring in Streams that are not seekable.
+* IDL core version: TBD
+* C++ version: TBD
+* C# NuGet version: bug fix bump needed
+* `gbc` & compiler library: TBD
+
+### C# ###
+
+* Fixed a regression writing to non-seekable streams using `OutputStream`.
+  The fix in commit
+  [b0fd4a1](https://github.com/microsoft/bond/commit/b0fd4a15a7cae946dd2855122559ca59cc34dbea#diff-9534daaa1fb3d4776494b25c8bba3939L212)
+  inadvertently added a call to `Stream.Position` in the Release
+  configuration. This call is only indented to be made when Bond is built in
+  the Debug configuration.
 
 ## 9.0.1: 2020-07-14 ##
 * IDL core version: 3.0

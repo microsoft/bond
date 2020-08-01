@@ -220,8 +220,9 @@
             return buf;
         }
 
-        // WriteStructBegin uses position in DEBUG configuration which would fail this test
-        // Test needs to validate position is not accessed in RELEASE so conditional is set
+        // WriteStructBegin should only access Stream.Position in the DEBUG
+        // configuration, so we only execute this test in the RELEASE
+        // configuration.
         [Conditional("RELEASE")]
         private void Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation()
         {
