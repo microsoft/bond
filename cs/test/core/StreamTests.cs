@@ -123,7 +123,7 @@
         [Test]
         public void Stream_PositionLength_NotAccessedOnWriteStructBegin()
         {
-            this.Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation();
+            Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation();
         }
 
         [Test]
@@ -220,12 +220,14 @@
             return buf;
         }
 
+        // WriteStructBegin uses position in DEBUG configuration which would fail this test
+        // Test needs to validate position is not accessed in RELEASE so conditional is set
         [Conditional("RELEASE")]
         private void Stream_PositionLength_NotAccessedOnWriteStructBeginImplementation()
         {
             var stream = new NonSeekableStream();
-            var output = new OutputStream(stream, 11);
-            var writer = new CompactBinaryWriter<OutputStream>(output, 2);
+            var output = new OutputStream(stream, bufferLength:11);
+            var writer = new CompactBinaryWriter<OutputStream>(output, version:2);
             var firstPass = writer.GetFirstPassWriter();
             firstPass.WriteStructBegin(new Metadata());
             firstPass.WriteStructEnd();
