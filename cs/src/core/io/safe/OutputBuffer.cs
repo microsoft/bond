@@ -221,7 +221,7 @@ namespace Bond.IO.Safe
         internal virtual void Grow(int count)
         {
             int minLength = checked(position + count);
-            length = checked(length + length >> 1);
+            length = checked(length + (length >> 1));
 
             const int ArrayIndexMaxValue = 0x7FFFFFC7;
             if ((uint)length > ArrayIndexMaxValue)

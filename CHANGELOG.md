@@ -11,6 +11,20 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* IDL core version: TBD
+* C++ version: TBD
+* C# NuGet version: bug fix bump needed
+* `gbc` & compiler library: TBD
+
+### C# ###
+
+* Fixed a performance regression in `OutputBuffer.Grow`: it was incorrectly
+  growing the buffer by one byte at a time instead of geometrically. ([Issue
+  \#1065](https://github.com/microsoft/bond/issues/1065), [Pull request
+  \#1066](https://github.com/microsoft/bond/pull/1066))
+
 ## 9.0.2: 2020-08-03 ##
 * IDL core version: 3.0
 * C++ version: 9.0.2
