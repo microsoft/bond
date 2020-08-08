@@ -20,7 +20,7 @@ public:
     template <typename T>
     bool Base(const T& value) const
     {
-        // Since Validator is stateless we use the same instance to validate the base 
+        // Since Validator is stateless we use the same instance to validate the base
         bond::Apply(*this, value);
         return false;
     }
@@ -39,8 +39,8 @@ public:
         {
             if (value < boost::lexical_cast<T>(it->second))
             {
-                BOND_THROW(bond::CoreException, 
-                    "Invalid value " << value << " for field " << metadata.name << 
+                BOND_THROW(bond::CoreException,
+                    "Invalid value " << value << " for field " << metadata.name <<
                     " is lower than allowed minimum of " << it->second << ".");
             }
         }
@@ -51,15 +51,15 @@ public:
         {
             if (value > boost::lexical_cast<T>(it->second))
             {
-                BOND_THROW(bond::CoreException, 
-                    "Invalid value " << value << " for field " << metadata.name << 
+                BOND_THROW(bond::CoreException,
+                    "Invalid value " << value << " for field " << metadata.name <<
                     " is higher than allowed maximum of " << it->second << ".");
             }
         }
 
         return false;
     }
-    
+
     template <typename T>
     typename boost::disable_if_c<std::is_integral<T>::value
                               || bond::is_bond_type<T>::value, bool>::type
@@ -68,12 +68,12 @@ public:
         return false;
     }
 
-    // struct 
+    // struct
     template <typename T>
     typename boost::enable_if<bond::is_bond_type<T>, bool>::type
     Field(uint16_t /*id*/, const bond::Metadata& /*metadata*/, const T& value) const
     {
-        // Since Validator is stateless we use the same instance to validate nested objects 
+        // Since Validator is stateless we use the same instance to validate nested objects
         bond::Apply(*this, value);
         return false;
     }
@@ -92,7 +92,7 @@ int main()
     {
         bond::Apply(Validator(), obj);
     }
-    catch(bond::Exception e)
+    catch(const bond::Exception&)
     {
         // values in range
         obj.s.n = 13;
@@ -100,6 +100,6 @@ int main()
 
         bond::Apply(Validator(), obj);
     }
-    
-    return 0;    
+
+    return 0;
 }
