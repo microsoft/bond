@@ -25,7 +25,7 @@ namespace bond { namespace ext { namespace grpc
 {
     namespace detail
     {
-        BOND_NORETURN void Win32Exception(const char* message)
+        [[noreturn]] void Win32Exception(const char* message)
         {
             throw std::system_error{
                 std::error_code{ static_cast<int>(::GetLastError()), std::system_category() },

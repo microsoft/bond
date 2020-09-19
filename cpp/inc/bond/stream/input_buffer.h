@@ -223,7 +223,7 @@ public:
     }
 
 protected:
-    BOND_NORETURN void EofException(uint32_t size) const
+    [[noreturn]] void EofException(uint32_t size) const
     {
         BOND_THROW(StreamException,
               "Read out of bounds: " << size << " bytes requested, offset: "

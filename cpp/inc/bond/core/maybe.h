@@ -20,7 +20,7 @@ namespace bond
 {
 
 
-BOND_NORETURN void NothingException();
+[[noreturn]] void NothingException();
 
 namespace detail
 {

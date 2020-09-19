@@ -51,7 +51,7 @@ public:
 // Return type is not required to be specifically bond::blob.
 // See GetBufferRange for more details.
 template <typename InputBuffer>
-BOND_NORETURN inline blob GetCurrentBuffer(const InputBuffer& /*input*/)
+[[noreturn]] inline blob GetCurrentBuffer(const InputBuffer& /*input*/)
 {
     BOOST_STATIC_ASSERT_MSG(
         detail::mpl::always_false<InputBuffer>::value,
@@ -66,7 +66,7 @@ BOND_NORETURN inline blob GetCurrentBuffer(const InputBuffer& /*input*/)
 // output buffer associated with the writer (i.e. there is an overloaded Write
 // function that accepts it).
 template <typename Blob>
-BOND_NORETURN inline Blob GetBufferRange(const Blob& /*begin*/, const Blob& /*end*/)
+[[noreturn]] inline Blob GetBufferRange(const Blob& /*begin*/, const Blob& /*end*/)
 {
     BOOST_STATIC_ASSERT_MSG(
         detail::mpl::always_false<Blob>::value,
@@ -106,7 +106,7 @@ public:
 // compatible properties as the original one (e.g. while serializing
 // bonded<T> for untagged protocols).
 template <typename OutputBuffer>
-BOND_NORETURN inline OutputBuffer CreateOutputBuffer(const OutputBuffer& /*other*/)
+[[noreturn]] inline OutputBuffer CreateOutputBuffer(const OutputBuffer& /*other*/)
 {
     BOOST_STATIC_ASSERT_MSG(
         detail::mpl::always_false<OutputBuffer>::value,
