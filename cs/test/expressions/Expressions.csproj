@@ -28,21 +28,11 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\src\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>..\..\src\io\$(OutputPath)\Bond.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.JSON">
-      <HintPath>..\..\src\json\$(OutputPath)\Bond.JSON.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Reflection">
-      <HintPath>..\..\src\reflection\$(OutputPath)\Bond.Reflection.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\src\io\IO.csproj" />
+    <ProjectReference Include="..\..\src\json\JSON.csproj" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\internal\Common.Internal.targets" />
 </Project>

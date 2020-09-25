@@ -31,18 +31,10 @@
     <PackageReference Include="Grpc.Core" Version="1.17.1" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\src\attributes\$(DependentOutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <HintPath>..\..\src\core\$(DependentOutputPath)\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Reflection">
-      <HintPath>..\..\src\reflection\$(DependentOutputPath)\Bond.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>..\..\src\io\$(DependentOutputPath)\Bond.IO.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
+    <ProjectReference Include="..\..\src\io\IO.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
