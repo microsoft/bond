@@ -28,8 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\cs\src\attributes\Attributes.csproj" />
     <ProjectReference Include="..\..\..\..\..\cs\src\core\Bond.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\cs\src\grpc\grpc.csproj" />
     <ProjectReference Include="..\types\grpc_sta-types.csproj" />
   </ItemGroup>

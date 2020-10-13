@@ -20,10 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\cs\src\attributes\Attributes.csproj" />
     <ProjectReference Include="..\..\..\..\cs\src\core\Bond.csproj" />
-    <ProjectReference Include="..\..\..\..\cs\src\io\IO.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\cs\src\grpc\grpc.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\io\IO.csproj" />
   </ItemGroup>
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
 </Project>
