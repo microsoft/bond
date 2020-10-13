@@ -26,14 +26,8 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Attributes">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\cs\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\..\..\..\cs\src\core\Bond.csproj" />
     <ProjectReference Include="..\..\..\..\..\cs\src\grpc\grpc.csproj" />
     <ProjectReference Include="..\types\grpc_sta-types.csproj" />
   </ItemGroup>

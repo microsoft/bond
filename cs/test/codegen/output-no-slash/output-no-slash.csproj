@@ -23,9 +23,7 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Bond.Attributes">
-      <HintPath>..\..\..\src\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\src\attributes\Attributes.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.targets" />
 </Project>

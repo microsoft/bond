@@ -16,15 +16,9 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Attributes">
-      <HintPath>..\..\src\attributes\$(OutputPath)\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.Reflection">
-      <HintPath>..\..\src\reflection\$(OutputPath)\Bond.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <HintPath>..\..\src\core\$(OutputPath)\Bond.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" />
     <PackageReference Include="NUnit" Version="3.10.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
   </ItemGroup>

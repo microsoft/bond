@@ -13,18 +13,10 @@
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Attributes">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.Attributes.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.IO">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="Bond.JSON">
-      <HintPath>$(BOND_BINARY_PATH)\net45\Bond.JSON.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\..\cs\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\io\IO.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\json\JSON.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
