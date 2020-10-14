@@ -424,7 +424,7 @@ protected:
     {}
 
 private:
-    BOND_NORETURN void MissingFieldException() const;
+    [[noreturn]] void MissingFieldException() const;
 
     mutable uint16_t _required;
 };
@@ -599,7 +599,7 @@ private:
         }
     }
 
-    BOND_NORETURN void UnexpectedStructStopException() const
+    [[noreturn]] void UnexpectedStructStopException() const
     {
         // Force instantiation of template statics
         (void)typename schema<T>::type();

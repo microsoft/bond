@@ -23,7 +23,7 @@ namespace bond
 {
 
 template <typename Key>
-BOND_NORETURN void ElementNotFoundException(const Key& key);
+[[noreturn]] void ElementNotFoundException(const Key& key);
 
 // is_string<std::basic_string<char, T, A> >
 template<typename T, typename A> struct

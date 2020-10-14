@@ -11,6 +11,18 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* IDL core version: TBD
+* C++ version: TBD, bug fix bump needed
+* C# NuGet version: TBD
+* `gbc` & compiler library: TBD
+
+### C++ ###
+
+* Bond now uses the `[[noreturn]]` attribute to annotate functions that do
+  not return. Previously, it used compiler-specific annotations.
+
 ## 9.0.3: 2020-08-06 ##
 
 * IDL core version: 3.0

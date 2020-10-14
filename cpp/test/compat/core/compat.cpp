@@ -17,7 +17,7 @@
 #include <bond/protocol/simple_json_writer.h>
 #include <bond/stream/stdio_output_stream.h>
 
-BOND_NORETURN void die(const char* fmt, ...)
+[[noreturn]] void die(const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
