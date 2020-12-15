@@ -11,6 +11,18 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* IDL core version: TBD
+* C++ version: TBD (bug fix bump needed)
+* C# NuGet version: TBD
+* `gbc` & compiler library: TBD
+
+### C++/Python ###
+
+* Removed use of deprecated `std::ptr_fun` in the Python library. ([Issue
+  \#1080](https://github.com/microsoft/bond/issues/1080))
+
 ## 9.0.4: 2020-11-23 ##
 
 * IDL core version: 3.0
