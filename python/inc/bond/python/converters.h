@@ -25,6 +25,9 @@
 #include <bond/core/blob.h>
 #include <bond/core/nullable.h>
 
+#include <algorithm>
+#include <cctype>
+
 namespace bond
 {
 namespace python
@@ -78,7 +81,11 @@ private:
     void pythonize()
     {
         // TODO: this may result in name conflict, e.g. list<string> and list_string_
-        std::replace_if(_name.begin(), _name.end(), std::not1(std::ptr_fun(isalnum)), '_');
+        std::replace_if(
+            _name.begin(),
+            _name.end(),
+            [](unsigned char c) { return isalnum(c) == 0; },
+            '_');
     }
 
     std::string _name;
