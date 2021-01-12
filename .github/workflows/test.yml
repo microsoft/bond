@@ -6,11 +6,10 @@ on:
     branches: ["master"]
   pull_request:
     branches: ["master"]
-  workflow_dispatch:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }}"
+    name: "Python ${{ matrix.env.python-version }} ${{ matrix.env.WORD }}"
     runs-on: "ubuntu-latest"
 
     strategy:
@@ -19,7 +18,6 @@ jobs:
           - { python-version: 3.6, WORD: hola }
           - { python-version: 3.7, WORD: adios }
           - { python-version: 3.8, WORD: nihao }
-        # python-version: ["3.6", "3.7", "3.8"]
     
     env: ${{ matrix.env }}
 
