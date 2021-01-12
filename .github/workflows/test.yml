@@ -1,5 +1,5 @@
 ---
-name: CI
+name: Linux CI
 
 on:
   push:
@@ -15,17 +15,24 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
+        env:
+          - { python-version: 3.6, WORD: hola }
+          - { python-version: 3.7, WORD: adios }
+          - { python-version: 3.8, WORD: nihao }
+        # python-version: ["3.6", "3.7", "3.8"]
+    
+    env: ${{ matrix.env }}
 
     steps:
       - uses: "actions/checkout@v2"
       - uses: "actions/setup-python@v2"
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: "${{ env.python-version }}"
       - name: "Install dependencies"
         run: |
           set -xe
+          echo $WORD
           python -VV
 
-      - name: "Run tests for ${{ matrix.python-version }}"
+      - name: "Run tests for ${{ env.python-version }}"
         run: "python --version"
