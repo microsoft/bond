@@ -19,60 +19,57 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - { python-version: 3.6, FLAVOR: cs }
-          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
-          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
-          - { python-version: 3.6, FLAVOR: hs }
-          - { python-version: 3.6, FLAVOR: java }
+          - { FLAVOR: cs }
+          - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
+          - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
+          - { FLAVOR: hs }
+          - { FLAVOR: java }
 
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
 
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
 
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
 
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
 
-          # - { python-version: 3.6, FLAVOR: cpp-grpc-master, BOOST: 1.66.0, COMPILER: clang, CRON_ONLY: true }
+          # - { FLAVOR: cpp-grpc-master, BOOST: 1.66.0, COMPILER: clang, CRON_ONLY: true }
     
     env: ${{ matrix.env }}
 
     steps:
-      - name: "update git"
+      - name: "Update git - ver has to be at least Git 2.18"
         run: |
           add-apt-repository ppa:git-core/ppa -y
           apt-get update
           apt-get install git -y
-      - uses: "actions/checkout@v2"
+      - name: "Git checkout"
+        uses: "actions/checkout@v2"
         with:
           submodules: true
-      - name: "Install dependencies"
+      - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |
           set -xe
-          ls /github/home
           mkdir /github/home/.stack
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build_cpp-common.zsh
           sed -i 's@--tags@--tags --no-recurse-submodules@g' tools/ci-scripts/linux/build_java.zsh
           zsh tools/ci-scripts/linux/build.zsh $(pwd) ${{ env.FLAVOR }} ${{ env.BOOST }} ${{ env.COMPILER}}
-
-      - name: "Run tests for ${{ env.python-version }}"
-        run: "python --version"
