@@ -70,6 +70,8 @@ jobs:
           ls /github/home
           mkdir /github/home/.stack
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
+          sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build_cpp-common.zsh
+          sed -i 's@--tags@--tags --no-recurse-submodules@g' tools/ci-scripts/linux/build_java.zsh
           zsh tools/ci-scripts/linux/build.zsh $(pwd) ${{ env.FLAVOR }} ${{ env.BOOST }} ${{ env.COMPILER}}
 
       - name: "Run tests for ${{ env.python-version }}"
