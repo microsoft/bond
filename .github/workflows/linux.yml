@@ -16,6 +16,7 @@ jobs:
       image: bondciimages.azurecr.io/ubuntu-1604:build-32869346
 
     strategy:
+      fail-fast: false
       matrix:
         env:
           - { python-version: 3.6, FLAVOR: cs }
@@ -63,6 +64,8 @@ jobs:
         run: |
           set -xe
           pwd
+          sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
+          cat tools/ci-scripts/linux/build.zsh
           python -VV
 
       - name: "Run tests for ${{ env.python-version }}"
