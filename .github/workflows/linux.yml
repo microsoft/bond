@@ -63,10 +63,10 @@ jobs:
       - name: "Install dependencies"
         run: |
           set -xe
-          pwd
+          ls /github/home
+          mkdir /github/home/.stack
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
-          cat tools/ci-scripts/linux/build.zsh
-          python -VV
+          zsh tools/ci-scripts/linux/build.zsh $(pwd) ${{ env.FLAVOR }} ${{ env.BOOST }} ${{ env.COMPILER}}
 
       - name: "Run tests for ${{ env.python-version }}"
         run: "python --version"
