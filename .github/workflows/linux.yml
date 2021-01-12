@@ -65,12 +65,12 @@ jobs:
         uses: "actions/checkout@v2"
         with:
           submodules: true
-      - uses: actions/cache@v2
+      - name: Cache stack global package db
+        id:   stack-global
+        uses: actions/cache@v1
         with:
-          path: cs/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+          path: ~/.stack
+          key: stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}
       - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |
           set -xe
