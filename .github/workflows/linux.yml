@@ -1,0 +1,65 @@
+---
+name: Linux CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  tests:
+    name: "${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        env:
+          - { python-version: 3.6, FLAVOR: cs }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
+          - { python-version: 3.6, FLAVOR: hs }
+          - { python-version: 3.6, FLAVOR: java }
+
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
+
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
+
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
+
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
+          - { python-version: 3.6, FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
+
+          - { python-version: 3.6, FLAVOR: cpp-grpc-master, BOOST: 1.66.0, COMPILER: clang, CRON_ONLY: true }
+    
+    env: ${{ matrix.env }}
+
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "actions/setup-python@v2"
+        with:
+          python-version: "${{ env.python-version }}"
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+
+      - name: "Run tests for ${{ env.python-version }}"
+        run: "python --version"
