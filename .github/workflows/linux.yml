@@ -57,9 +57,8 @@ jobs:
 
     steps:
       - uses: "actions/checkout@v2"
-      # - uses: "actions/setup-python@v2"
-      #   with:
-      #     python-version: "${{ env.python-version }}"
+        with:
+          submodules: true
       - name: "Install dependencies"
         run: |
           set -xe
