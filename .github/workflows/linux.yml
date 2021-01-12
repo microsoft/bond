@@ -65,7 +65,7 @@ jobs:
       - name: "Git checkout"
         uses: "actions/checkout@v2"
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Cache stack
         uses: actions/cache@v1
