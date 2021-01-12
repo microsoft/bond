@@ -25,11 +25,11 @@ jobs:
           - { FLAVOR: hs }
           - { FLAVOR: java }
 
-          # - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
 
           # - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: clang, CRON_ONLY: true }
           # - { FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: clang, CRON_ONLY: true }
@@ -37,12 +37,12 @@ jobs:
           # - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: clang, CRON_ONLY: true }
           # - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: clang, CRON_ONLY: true }
 
-          # - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
-          # - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc, CRON_ONLY: true }
+          - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc, CRON_ONLY: true }
 
           # - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: gcc, CRON_ONLY: true }
           # - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: gcc, CRON_ONLY: true }
@@ -61,28 +61,12 @@ jobs:
           add-apt-repository ppa:git-core/ppa -y
           apt-get update
           apt-get install git -y
+
       - name: "Git checkout"
         uses: "actions/checkout@v2"
         with:
           submodules: true
-      - name: Cache nuget
-        uses: actions/cache@v2
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            nuget-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}-
-      - name: Cache stack
-        id:   stack-global
-        uses: actions/cache@v1
-        with:
-          path: ~/.stack
-          key: stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}
-      - name: Cache ccache
-        uses: actions/cache@v1
-        with:
-          path: ~/.ccache
-          key: ccache-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}
+
       - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |
           set -xe
