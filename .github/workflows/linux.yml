@@ -67,6 +67,14 @@ jobs:
         with:
           submodules: true
 
+      - name: Cache stack
+        uses: actions/cache@v1
+        with:
+          path: ~/.stack
+          key: stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}--${{ hashFiles('~/bond/compiler/*.yaml') }}
+          restore-keys: |
+            stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}-
+
       - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |
           set -xe
