@@ -12,6 +12,9 @@ jobs:
     name: "${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
     runs-on: "ubuntu-latest"
 
+    container:
+      image: bondciimages.azurecr.io/ubuntu-1604:build-32869346
+
     strategy:
       matrix:
         env:
@@ -53,14 +56,13 @@ jobs:
 
     steps:
       - uses: "actions/checkout@v2"
-      - uses: "actions/setup-python@v2"
-        with:
-          python-version: "${{ env.python-version }}"
+      # - uses: "actions/setup-python@v2"
+      #   with:
+      #     python-version: "${{ env.python-version }}"
       - name: "Install dependencies"
         run: |
           set -xe
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
+          pwd
           python -VV
 
       - name: "Run tests for ${{ env.python-version }}"
