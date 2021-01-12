@@ -86,7 +86,7 @@ jobs:
       - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |
           set -xe
-          mkdir /github/home/.stack
+          mkdir -p /github/home/.stack
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
           sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build_cpp-common.zsh
           sed -i 's@--tags@--tags --no-recurse-submodules@g' tools/ci-scripts/linux/build_java.zsh
