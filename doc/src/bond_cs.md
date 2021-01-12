@@ -130,7 +130,7 @@ Classes with read-only properties are fully supported by all Bond APIs.
 `--preview-constructor-parameters`
 
 A constructor is generated with a parameter to initialize each of the schema
-fields. This option is typically used in conjunction with 
+fields. This option is typically used in conjunction with
 `--readonly-properties`.  This functionailty is in preview and may change.
 
 `--collection-interfaces`
@@ -816,17 +816,17 @@ Performance
 Bond offers very fast serialization and deserialization. Here are some tips on
 how to achieve the best performance.
 
-1. Explicitly create instances of `Serializer/Deserializer/Transcoder`
+1. Explicitly create instances of `Serializer`/`Deserializer`/`Transcoder`
 
     Instead of using simplified APIs like `Serialize.To` and
     `Deserialize<T>.From` it is usually better to explicitly instantiate and
-    cache appropriate `Serializer/Deserializer/Transcoder` objects. Creation of
-    these objects involves generation and JIT'ing of specific code to handle
-    the particular operation for a given schema type and protocol(s). This may
-    take a relatively long time, especially for large schemas, and usually it
-    is best to do it during program initialization. Once the object is created
-    it can be reused repeatedly and calling the Serialize/Deserialize/Transcode
-    methods will be very fast.
+    cache appropriate `Serializer`/`Deserializer`/`Transcoder` objects.
+    Creation of these objects involves generation and JIT'ing of specific
+    code to handle the particular operation for a given schema type and
+    protocol(s). This may take a relatively long time, especially for large
+    schemas, and usually it is best to do it during program initialization.
+    Once the object is created it can be reused repeatedly and calling the
+    Serialize/Deserialize/Transcode methods will be very fast.
 
     ```csharp
     var exampleSerializer = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(Example));
@@ -843,9 +843,9 @@ how to achieve the best performance.
     var dst = exampleDeserializer.Deserialize<Example>(reader);
     ```
 
-    Note that the type of `Serializer/Deserializer` doesn't depend on the
-    schema type so it is easy to cache these objects for multiple schemas used
-    in an application:
+    Note that the type of `Serializer`/`Deserializer` doesn't depend on the
+    schema type so it is easy to cache these objects for multiple schemas
+    used in an application:
 
     ```csharp
     var serializerCache = new Dictionary<Type, Serializer<CompactBinaryWriter<OutputBuffer>>>
@@ -907,6 +907,20 @@ how to achieve the best performance.
     that the cost of creating the [`Deserializer`](#deserializer) can be
     amortized. The canonical use case for an untagged protocol is record-based
     data storage.
+
+6. Experiment with `inlineNested` when creating
+   `Serializer`/`Deserializer`/`Transcoder` instances
+
+    When a `Serializer`/`Deserializer`/`Transcoder` refers to another Bond
+    struct, by default, the instructions to serialize/deserialize/transcode
+    that type are inlined in the method for the top-level type. This _often_
+    results in better runtime performance. However, it can sometimes cause
+    long JIT'ing times when creating
+    `Serializer`/`Deserializer`/`Transcoder` instances or worse runtime
+    performance. (For example, some optimizations are not performed when
+    methods get large.) You will need to profile and experiment with
+    instances created with `inlineNested` set to `true` (the default) and
+    `false`) to see what is the best fit for your scenario.
 
 Runtime schema
 ==============
