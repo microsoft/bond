@@ -68,7 +68,7 @@ jobs:
           submodules: recursive
 
       - name: Cache stack
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.stack
           key: stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}--${{ hashFiles('**/bond/compiler/stack.yaml','**/bond/compiler/package.yaml','**/bond/compiler/stack.yaml.lock') }}
