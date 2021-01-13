@@ -1,11 +1,9 @@
 ---
-name: Linux CI
+name: Linux CI - Weekly
 
 on:
-  push:
-    branches: ["master"]
-  pull_request:
-    branches: ["master"]
+  schedule:
+    - cron: "0 13 * * 1"
 
 jobs:
   tests:
@@ -19,12 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - { FLAVOR: cs }
-          - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
-          - { FLAVOR: hs }
-          - { FLAVOR: java }
-
           - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: clang}
           - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: clang}
           - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: clang}
