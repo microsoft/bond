@@ -14,6 +14,8 @@ jobs:
 
     container:
       image: bondciimages.azurecr.io/ubuntu-1604:build-32869346
+      volumes:
+        - /home/runner/work/bond:/root/
 
     strategy:
       fail-fast: false
@@ -60,7 +62,7 @@ jobs:
         run: |
           add-apt-repository ppa:git-core/ppa -y
           apt-get update
-          apt-get install git -y
+          apt-get install --no-install-recommends git -y
 
       - name: "Git checkout"
         uses: "actions/checkout@v2"
@@ -79,6 +81,5 @@ jobs:
         run: |
           set -xe
           mkdir -p /github/home/.stack
-          sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build.zsh
-          sed -i 's@/root/bond@'"$(pwd)"'@g' tools/ci-scripts/linux/build_cpp-common.zsh
-          zsh tools/ci-scripts/linux/build.zsh $(pwd) ${{ env.FLAVOR }} ${{ env.BOOST }} ${{ env.COMPILER}}
+          ls -la /root/bond/
+          zsh /root/bond/tools/ci-scripts/linux/build.zsh /root/bond ${{ env.FLAVOR }} ${{ env.BOOST }} ${{ env.COMPILER}}
