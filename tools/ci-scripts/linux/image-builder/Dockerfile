@@ -58,5 +58,10 @@ RUN add-apt-repository ppa:hvr/ghc -y && \
     apt-get update && \
     apt-get -y install ghc-8.6.5
 
+# Install more recent git
+RUN add-apt-repository ppa:git-core/ppa -y && \
+    apt-get update && \
+    apt-get install --no-install-recommends git -y
+
 # Build script
 ENTRYPOINT ["zsh", "/root/bond/tools/ci-scripts/linux/build.zsh"]
