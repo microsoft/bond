@@ -1,7 +1,7 @@
 ![The Bond logo: a stylized glue gun](https://raw.githubusercontent.com/microsoft/bond/master/doc/src/logos/bond-logo-64x64-white.png)
 <hr />
 
-[![Build Status](https://travis-ci.org/microsoft/bond.svg?branch=master)](https://travis-ci.org/microsoft/bond)
+[![Build Status](https://github.com/microsoft/bond/workflows/Linux%20CI/badge.svg)](https://github.com/microsoft/bond/actions)
 [![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Bond.CSharp.svg?style=flat)](https://microsoft.github.io/bond/manual/bond_cs.html#nuget-packages)
 
 # Bond
