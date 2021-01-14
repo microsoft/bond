@@ -13,7 +13,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     container:
-      image: bondciimages.azurecr.io/ubuntu-1604:build-32869346
+      image: bondciimages.azurecr.io/ubuntu-1604:build-38421604
 
     strategy:
       fail-fast: false
@@ -28,12 +28,6 @@ jobs:
     env: ${{ matrix.env }}
 
     steps:
-      - name: "Update git - ver has to be at least Git 2.18"
-        run: |
-          add-apt-repository ppa:git-core/ppa -y
-          apt-get update
-          apt-get install --no-install-recommends git -y
-
       - name: "Git checkout"
         uses: "actions/checkout@v2"
         with:
