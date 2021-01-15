@@ -16,8 +16,9 @@ from collector.live_images import live_tags
 
 PROGRAM_DESCRIPTION = """Remove images from an Azure Container Registry repository if they are no
 longer needed. Images are considered needed a) if they are referenced by the
-.travis.yml file in any of the commits included by the provided
-root_filters, or b) if they are younger than the provided min-age."""
+.travis.yml or Linux build GitHub Action workflow files in any of the
+commits included by the provided root_filters, or b) if they are younger
+than the provided min-age."""
 
 def semi_list(semi_str: str) -> Iterable[str]:
     """Splits a semi-colon delimited string into a list of string."""

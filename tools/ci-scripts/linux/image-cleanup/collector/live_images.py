@@ -26,15 +26,15 @@ ImageTag = NewType('ImageTag', str) # pylint: disable=invalid-name
 def _blobs_from_roots(
         repo_path: str,
         roots: RevListRoots) -> AbstractSet[_BlobId]:
-    """Return the blob IDs of the revisions of .travis.yml for all the commits
-specified by the given `roots`.
+    """Return the blob IDs of the revisions of .travis.yml and Linux build
+GitHub Actions for all the commits specified by the given `roots`.
 
     :param repo_path: Path to the repository to inspect.
 
     :param roots: A collection of argument lists to pass to ``git
     rev-list`` to limit the matched commits.
 
-    :return The blob IDs of the .travis.yml revisions.
+    :return The blob IDs of the workflow file revisions.
     """
 
     commit_ids = set()
@@ -50,10 +50,18 @@ specified by the given `roots`.
 
     blob_ids = set()
     for commit in commit_ids:
+        # ls-tree takes paths, not pathspecs, so globbing can't be used to
+        # match multiple files in the same directory.
+        #
+        # If the set files grows much larger than what we have here, they
+        # should be taken from the command line or a config file.
         git_ls_tree_cmd_line = ['git',
                                 '-C', repo_path,
                                 'ls-tree', commit,
-                                '--', ':/.travis.yml']
+                                '--',
+                                ':/.travis.yml',
+                                ':/.github/workflows/linux.yml',
+                                ':/.github/workflows/linux_cron.yml']
         _LOGGER.debug('Invoking %s', git_ls_tree_cmd_line)
         ls_tree_output = subprocess.check_output(git_ls_tree_cmd_line, stderr=subprocess.PIPE)
 
@@ -62,7 +70,9 @@ specified by the given `roots`.
 
             # Expecing output like:
             #
-            # 100644 blob cbe47c031fb164dca034aac640de08cf35170a68	.travis.yml
+            # 100644 blob d68588e35c6411d545deabd40d9c987c11dc4748	.github/workflows/linux.yml
+            # 100644 blob 614fec24bedc561418a9b1df54674d4b7a04396b	.github/workflows/linux_cron.yml
+            # 100644 blob 5f425a18a84a66d137cffc9db77b3c3eb3e20282	.travis.yml
             parts = line.split()
 
             # The length of parts may not be exactly 4 if the name
@@ -89,15 +99,16 @@ CI build in the given blobs.
 
     :param repo_path: Path to the repository to inspect.
 
-    :param commits: The Git blob IDs of files in which to look for
-    image names. It's assumed that these are blob IDs of .travis.yml or
-    similar files.
+    :param commits: The Git blob IDs of files in which to look for image
+    names. It's assumed that these are blob IDs of .travis.yml, GitHub
+    Action workflow YAML, or similar files.
 
     :return The full image names used by the specificed blobs.
 
-    Images are found by looking for a line like
+    Images are found by looking for a lines like
 
-    CI_BUILD_IMAGE=...
+    Travis CI: CI_BUILD_IMAGE=...
+    GitHub Actions: image: ...
     """
 
     image_names = set() # type: Set[ImageName]
@@ -107,10 +118,10 @@ CI build in the given blobs.
         _LOGGER.debug('Invoking %s', git_show_cmd_line)
         git_show_output = subprocess.check_output(git_show_cmd_line, stderr=subprocess.PIPE)
 
-        matches = re.finditer(b'^.+CI_BUILD_IMAGE=(.+)\\s*$',
+        matches = re.finditer(b'^.+(CI_BUILD_IMAGE=|image:)(.+)\\s*$',
                               git_show_output,
                               re.MULTILINE)
-        matched_names = (ImageName(str(match.group(1), 'utf-8'))
+        matched_names = (ImageName(str(match.group(2), 'utf-8').strip())
                          for match in matches)
         image_names.update(matched_names)
         _LOGGER.debug('Image names currently: %s', image_names)
@@ -133,8 +144,8 @@ given `roots`.
 
 def live_tags(repo_path: str,
               roots: RevListRoots) -> AbstractSet[ImageTag]:
-    """Return the image tags that are referenced by .travis.yml files in
-the commits specified by the given `roots`.
+    """Return the image tags that are referenced by .travis.yml or Linux GitHub
+Action workflow files in the commits specified by the given `roots`.
 
     :param repo_path: Path to the repository to inspect.
 
