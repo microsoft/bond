@@ -1266,7 +1266,11 @@ Implemented in [`CompactBinaryReader`][compact_binary_reader_reference] and
 Version 2 of Compact Binary adds length prefix for structs. This enables
 deserialization of [`bonded<T>`](#understanding-bondedt) and skipping of
 unknown fields in constant time. The trade-off is double pass encoding,
-resulting in up to 30% slower serialization performance.
+resulting in up to 30% slower serialization performance. You can enable Compact
+Binary version 2 by instantiating the
+[`CompactBinaryReader`][compact_binary_reader_reference] and
+[`CompactBinaryWriter`][compact_binary_writer_reference] classes with their
+second optional constructor argument (`version`) set to the integer 2.
 
 See also [Compact Binary encoding reference][compact_binary_format_reference].
 
