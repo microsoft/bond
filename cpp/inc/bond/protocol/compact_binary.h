@@ -40,7 +40,7 @@
    field             | id+type  |  value   |
                      '----------'----------'
 
-                                            .---.---.---.---.---.---.---.---.                       i - id bits
+                                            .---.---.---.---.---.---.---.---.                       i - id bits (BE unsigned int)
    id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits
                                             '---'---'---'---'---'---'---'---'                       v - value bits
                                               2       0   4               0
@@ -66,12 +66,14 @@
                                             '---'---'---'---'---'---'---'---'
                                               7                           0
 
+                                            signed uses two's complement
+
                                             .---.---.   .---.---.---.   .---.
                      uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]
                      uint64                 '---'---'   '---'---'---'   '---'
                                                   6       0       13      7
 
-                                            variable encoding, high bit of every byte
+                                            LEB128 variable encoding, high bit of every byte
                                             indicates if there is another byte
 
 
@@ -86,8 +88,10 @@
                                             and then encoded as unsigned integer
 
 
-                     float, double          little endian
+                     float, double          32-bit or 64-bit little endian IEEE 764
 
+
+                     enum                   enum constants are encoded using int32
 
                                             .-------.------------.
                      string, wstring        | count | characters |
