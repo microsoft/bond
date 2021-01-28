@@ -211,8 +211,9 @@ including a definition of another alias:
 using times = array<time>;
 ```
 
-Type aliases can optionally be [mapped to custom types](#custom-type-mappings)
-in the generated code.
+Type aliases can optionally be mapped to custom types in the generated code
+for both [C++](bond_cpp.html#custom-type-mappings) and
+[C#](bond_cs.html#custom-type-mappings).
 
 See examples:
 
