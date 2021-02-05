@@ -1,6 +1,7 @@
 #include "move_semantics_reflection.h"
 
 #include <stdlib.h>
+#include <algorithm>
 
 using namespace examples::move_semantics;
 
