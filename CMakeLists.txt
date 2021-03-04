@@ -16,6 +16,9 @@ set (CMAKE_MODULE_PATH
 set (BOND_ENABLE_GRPC
     "TRUE"
     CACHE BOOL "If FALSE, then do not build gRPC integration")
+set (BOND_FIND_GRPC
+    "FALSE"
+    CACHE BOOL "If FALSE, then build and use GRPC from thirdparty subdirectory")
 set (BOND_FIND_RAPIDJSON
     "FALSE"
     CACHE BOOL "If FALSE, then use and install rapidjson from thirdparty subdirectory")
