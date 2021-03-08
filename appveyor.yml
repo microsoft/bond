@@ -273,8 +273,6 @@
 
                 cmake ../doc
 
-                Get-ChildItem
-
             }
 
 
