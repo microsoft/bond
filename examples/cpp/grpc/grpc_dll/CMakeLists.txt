@@ -14,14 +14,14 @@ target_compile_definitions (grpc_dll_example_lib PRIVATE -DBUILDING_DLLEXAMPLE_D
 
 add_target_to_folder (grpc_dll_example_lib)
 
-if(BOND_FIND_GRPC)
+if (BOND_FIND_GRPC)
     find_package(grpc CONFIG REQUIRED)
     target_link_libraries(grpc_dll_example_lib PUBLIC
         gRPC::grpc++)
-else()
+else ()
     target_link_libraries(grpc_dll_example_lib PUBLIC
         grpc++)
-endif()
+endif ()
 
 target_link_libraries (grpc_dll_example_lib PUBLIC
     bond)
