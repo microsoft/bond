@@ -164,7 +164,7 @@
 
                 $env:Path += "C:\Program Files\doxygen\bin"
 
-                Get-Command pandoc, doxygen
+                Get-Command doxygen,pandoc
 
             }
 
