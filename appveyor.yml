@@ -286,27 +286,33 @@
 
                 cmake --build . --target documentation -- /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-                if ($? -And $env:BOND_TOKEN -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
+                if (($LASTEXITCODE -eq 0) -And ($env:BOND_TOKEN) -And ($env:APPVEYOR_REPO_BRANCH -eq "master")) {
 
                     git config --global user.email "bondlab@microsoft.com"
 
                     git config --global user.name "Appveyor"
 
-                    git clone -b gh-pages "https://${env:BOND_TOKEN}@github.com/microsoft/bond.git" gh-pages 2>&1 | out-null
+                    git clone -b gh-pages "https://${env:BOND_TOKEN}@github.com/microsoft/bond.git" gh-pages 2>&1 | Out-Null
+
+                    if ($LASTEXITCODE -ne 0) { throw "Cloning gh-pages branch failed: $LASTEXITCODE" }
 
                     cd gh-pages
 
-                    if (-not $?) { throw "Cloning gh-pages failed" }
+                    robocopy ..\html . /E /J /MIR /MT /NFL /XD .git 2>&1
 
-                    Remove-Item * -Recurse
-
-                    Copy-Item ..\html\* . -Recurse
+                    if ($LASTEXITCODE -ne 0) { throw "Robocopy documentation failed: $LASTEXITCODE" }
 
                     git add --all .
 
+                    if ($LASTEXITCODE -ne 0) { throw "git add failed: $LASTEXITCODE" }
+
                     git commit -m "Update documentation"
 
+                    if ($LASTEXITCODE -ne 0) { throw "git commit failed: $LASTEXITCODE" }
+
                     git push origin gh-pages 2>&1 | out-null
+
+                    if ($LASTEXITCODE -ne 0) { throw "git push failed: $LASTEXITCODE" }
 
                     cd ..
                 }
