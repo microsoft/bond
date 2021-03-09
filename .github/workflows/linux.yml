@@ -1,11 +1,43 @@
 ---
 name: Linux CI
 
+# We want to skip workflow runs for commits that don't affect the build. We
+# use negative path patterns instead of paths-ignore: if anything in
+# paths-ignore matches, the workflow will be skipped, which is too
+# aggressive. Instead, we want to skip if the commit(s) solely affects
+# ignored files.
+#
+# See
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-using-positive-and-negative-patterns-1
 on:
   push:
     branches: ["master"]
+    paths:
+      # Include everything by default
+      - '**'
+      # CHANGELOG.md is high-churn, but don't affect the build.
+      #
+      # NB: README.md is NOT in this list; the documentation build consumes
+      # it.
+      - '!CHANGELOG.md'
+      # These files are only used by the Windows CI builds and don't affect
+      # the Linux builds.
+      - '!appveyor.yml'
+      - '!tools/ci-scripts/windows/**'
   pull_request:
     branches: ["master"]
+    paths:
+      # Include everything by default
+      - '**'
+      # CHANGELOG.md is high-churn, but don't affect the build.
+      #
+      # NB: README.md is NOT in this list; the documentation build consumes
+      # it.
+      - '!CHANGELOG.md'
+      # These files are only used by the Windows CI builds and don't affect
+      # the Linux builds.
+      - '!appveyor.yml'
+      - '!tools/ci-scripts/windows/**'
 
 jobs:
   tests:
