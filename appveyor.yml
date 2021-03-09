@@ -162,6 +162,10 @@
 
                 $env:Path = "$machinePath;$userPath"
 
+                $env:Path += "C:\Program Files\doxygen\bin"
+
+                Get-Command doxygen,pandoc
+
             }
 
             if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
