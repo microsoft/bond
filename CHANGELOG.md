@@ -20,6 +20,9 @@ different versioning scheme, following the Haskell community's
 
 ### C++/Python ###
 
+* Added CMake variable `BOND_FIND_GRPC` to allow for external gRPC
+  installations. The search for external GRPC installations is only done
+  when `BOND_ENABLE_GRPC` is `TRUE`.
 * Removed use of deprecated `std::ptr_fun` in the Python library. ([Issue
   \#1080](https://github.com/microsoft/bond/issues/1080))
 

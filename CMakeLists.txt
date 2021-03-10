@@ -16,9 +16,12 @@ set (CMAKE_MODULE_PATH
 set (BOND_ENABLE_GRPC
     "TRUE"
     CACHE BOOL "If FALSE, then do not build gRPC integration")
+set (BOND_FIND_GRPC
+    "FALSE"
+    CACHE BOOL "If TRUE, search for an installed gRPC library; if FALSE, then build and use gRPC from the /thirdparty subdirectory")
 set (BOND_FIND_RAPIDJSON
     "FALSE"
-    CACHE BOOL "If FALSE, then use and install rapidjson from thirdparty subdirectory")
+    CACHE BOOL "If FALSE, then use and install rapidjson from the /thirdparty subdirectory")
 # We need to include third-party CMake modules before we configure our own
 # settings so that we don't apply our settings to third-party code.
 add_subdirectory (thirdparty)

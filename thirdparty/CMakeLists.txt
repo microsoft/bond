@@ -1,6 +1,10 @@
 include (Compiler)
 
 if (BOND_ENABLE_GRPC)
-    cxx_add_compile_options (Clang -Wno-unused-value)
-    add_subdirectory(grpc)
-endif()
+    if (BOND_FIND_GRPC)
+        find_package(grpc CONFIG REQUIRED)
+    else ()
+        cxx_add_compile_options(Clang -Wno-unused-value)
+        add_subdirectory(grpc)
+    endif ()
+endif ()
