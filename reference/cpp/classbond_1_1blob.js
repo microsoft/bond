@@ -19,8 +19,8 @@ var classbond_1_1blob =
     [ "empty", "classbond_1_1blob.html#a9a345ee7480ac05f741367574cccbe3f", null ],
     [ "end", "classbond_1_1blob.html#a03ea0a5f6b65270fea9b888d38f6f8c0", null ],
     [ "length", "classbond_1_1blob.html#ae49896b5bfaf6f067e03fcaafe6f66f2", null ],
-    [ "range", "classbond_1_1blob.html#a133227fa483cb16cf07a28c0a687df54", null ],
     [ "range", "classbond_1_1blob.html#aabad7b7c0bcbcad3d1f7c77a0aca49ee", null ],
+    [ "range", "classbond_1_1blob.html#a133227fa483cb16cf07a28c0a687df54", null ],
     [ "size", "classbond_1_1blob.html#ac189c066499276e16c2481bea8d93530", null ],
     [ "swap", "classbond_1_1blob.html#acc5b2ea4adfb32cac53fb40edf093ce8", null ],
     [ "blob_prolong", "classbond_1_1blob.html#ad5645896b96c6d5eafb1983b9375c31b", null ]

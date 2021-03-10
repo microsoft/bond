@@ -540,8 +540,8 @@ ArraySegment&lt;<span class="dt">byte</span>&gt; data = output.<span class="fu">
 <h1 id="performance">Performance</h1>
 <p>Bond offers very fast serialization and deserialization. Here are some tips on how to achieve the best performance.</p>
 <ol style="list-style-type: decimal">
-<li><p>Explicitly create instances of <code>Serializer/Deserializer/Transcoder</code></p>
-<p>Instead of using simplified APIs like <code>Serialize.To</code> and <code>Deserialize&lt;T&gt;.From</code> it is usually better to explicitly instantiate and cache appropriate <code>Serializer/Deserializer/Transcoder</code> objects. Creation of these objects involves generation and JIT’ing of specific code to handle the particular operation for a given schema type and protocol(s). This may take a relatively long time, especially for large schemas, and usually it is best to do it during program initialization. Once the object is created it can be reused repeatedly and calling the Serialize/Deserialize/Transcode methods will be very fast.</p>
+<li><p>Explicitly create instances of <code>Serializer</code>/<code>Deserializer</code>/<code>Transcoder</code></p>
+<p>Instead of using simplified APIs like <code>Serialize.To</code> and <code>Deserialize&lt;T&gt;.From</code> it is usually better to explicitly instantiate and cache appropriate <code>Serializer</code>/<code>Deserializer</code>/<code>Transcoder</code> objects. Creation of these objects involves generation and JIT’ing of specific code to handle the particular operation for a given schema type and protocol(s). This may take a relatively long time, especially for large schemas, and usually it is best to do it during program initialization. Once the object is created it can be reused repeatedly and calling the Serialize/Deserialize/Transcode methods will be very fast.</p>
 <div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="dt">var</span> exampleSerializer = <span class="kw">new</span> Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
 <span class="dt">var</span> exampleDeserializer = <span class="kw">new</span> Deserializer&lt;CompactBinaryReader&lt;InputBuffer&gt;&gt;(<span class="kw">typeof</span>(Example));
 
@@ -554,7 +554,7 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <span class="dt">var</span> reader = <span class="kw">new</span> CompactBinaryReader&lt;InputBuffer&gt;(input);
 
 <span class="dt">var</span> dst = exampleDeserializer.<span class="fu">Deserialize</span>&lt;Example&gt;(reader);</code></pre></div>
-<p>Note that the type of <code>Serializer/Deserializer</code> doesn’t depend on the schema type so it is easy to cache these objects for multiple schemas used in an application:</p>
+<p>Note that the type of <code>Serializer</code>/<code>Deserializer</code> doesn’t depend on the schema type so it is easy to cache these objects for multiple schemas used in an application:</p>
 <div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs"><span class="dt">var</span> serializerCache = <span class="kw">new</span> Dictionary&lt;Type, Serializer&lt;CompactBinaryWriter&lt;OutputBuffer&gt;&gt;&gt;
     {
         {
@@ -577,6 +577,8 @@ exampleSerializer.<span class="fu">Serialize</span>(src, writer);
 <div class="sourceCode"><pre class="sourceCode csharp"><code class="sourceCode cs">buffer.<span class="fu">Position</span> = <span class="dv">0</span>;</code></pre></div></li>
 <li><p>Choose the right protocol</p>
 <p>The Fast Binary protocol is a little faster than Compact Binary, although the difference is not big. Untagged protocols like Simple Binary can provide much better performance (up to 4 times faster for some schemas). They are most applicable in scenarios where runtime schema of the data is available during deserialization and the same schema applies to many instances of the data, so that the cost of creating the <a href="#deserializer"><code>Deserializer</code></a> can be amortized. The canonical use case for an untagged protocol is record-based data storage.</p></li>
+<li><p>Experiment with <code>inlineNested</code> when creating <code>Serializer</code>/<code>Deserializer</code>/<code>Transcoder</code> instances</p>
+<p>When a <code>Serializer</code>/<code>Deserializer</code>/<code>Transcoder</code> refers to another Bond struct, by default, the instructions to serialize/deserialize/transcode that type are inlined in the method for the top-level type. This <em>often</em> results in better runtime performance. However, it can sometimes cause long JIT’ing times when creating <code>Serializer</code>/<code>Deserializer</code>/<code>Transcoder</code> instances or worse runtime performance. (For example, some optimizations are not performed when methods get large.) You will need to profile and experiment with instances created with <code>inlineNested</code> set to <code>true</code> (the default) and <code>false</code>) to see what is the best fit for your scenario.</p></li>
 </ol>
 <h1 id="runtime-schema">Runtime schema</h1>
 <p>Some generic applications may need to work with Bond schemas unknown at compile-time. In order to address such scenarios Bond defines a type <code>SchemaDef</code> to represent schemas at runtime. Applications can obtain an instance of <code>SchemaDef</code> for a particular type using the <code>Schema</code> class:</p>

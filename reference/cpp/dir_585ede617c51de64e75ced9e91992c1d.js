@@ -32,6 +32,5 @@ var dir_585ede617c51de64e75ced9e91992c1d =
     [ "transforms.h", "transforms_8h_source.html", null ],
     [ "tuple.h", "tuple_8h_source.html", null ],
     [ "validate.h", "validate_8h_source.html", null ],
-    [ "value.h", "value_8h_source.html", null ],
-    [ "warning.h", "warning_8h_source.html", null ]
+    [ "value.h", "value_8h_source.html", null ]
 ];
