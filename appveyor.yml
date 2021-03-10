@@ -300,7 +300,11 @@
 
                     robocopy ..\html . /E /J /MIR /MT /NFL /XD .git 2>&1
 
-                    if ($LASTEXITCODE -ne 0) { throw "Robocopy documentation failed: $LASTEXITCODE" }
+                    # Robocopy uses exit codes 0-7 to convey details about
+                    # what was copied. Exit code 8 starts the range of
+                    # errors.
+
+                    if ($LASTEXITCODE -ge 8) { throw "Robocopy documentation failed: $LASTEXITCODE" }
 
                     git add --all .
 
