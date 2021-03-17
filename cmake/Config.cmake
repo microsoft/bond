@@ -163,6 +163,8 @@ cxx_add_compile_options(AppleClang
     --std=c++11
     -Wall
     -Werror
+    # Suppress warnings in Boost about using deprecated types like std::auto_ptr
+    -Wno-deprecated-declarations
     -Wno-null-dereference
     -Wno-unknown-warning-option
     -Wno-unused-local-typedefs)
