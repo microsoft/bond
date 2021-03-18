@@ -310,9 +310,12 @@
 
                     if ($LASTEXITCODE -ne 0) { throw "git add failed: $LASTEXITCODE" }
 
-                    git commit -m "Update documentation"
+                    # Don't test exit code of 'git commit'. When there is
+                    # nothing to commit, it exits with 1. The push below
+                    # should still exit with 0 after not doing anything, so
+                    # the build will still pass.
 
-                    if ($LASTEXITCODE -ne 0) { throw "git commit failed: $LASTEXITCODE" }
+                    git commit -m "Update documentation"
 
                     git push origin gh-pages 2>&1 | out-null
 
