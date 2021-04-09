@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 
 * IDL core version: TBD
 * C++ version: TBD (bug fix bump needed)
-* C# NuGet version: TBD
+* C# NuGet version: TBD (bug fix bump needed)
 * `gbc` & compiler library: TBD
 
 ### C++/Python ###
@@ -25,6 +25,12 @@ different versioning scheme, following the Haskell community's
   when `BOND_ENABLE_GRPC` is `TRUE`.
 * Removed use of deprecated `std::ptr_fun` in the Python library. ([Issue
   \#1080](https://github.com/microsoft/bond/issues/1080))
+
+### C# ###
+
+* Implicit codegen now excludes any .bond files in the project's output
+  directories (e.g., `bin/`, `obj/debug/netstandard1.0`). This behavior
+  matches the implicit compilation behavior for .cs files.
 
 ## 9.0.4: 2020-11-23 ##
 

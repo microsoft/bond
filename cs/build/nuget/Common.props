@@ -32,7 +32,9 @@
        expected, instead of after importing the targets. -->
   <ItemGroup
       Condition=" '$(EnableDefaultItems)' == 'true' ">
-    <BondCodegen Include="**/*.bond" />
+    <BondCodegen
+        Include="**/*.bond"
+        Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(EnableDefaultItems)' == 'true' ">
     <DefaultItemExcludes>$(DefaultItemExcludes);**/*.bond</DefaultItemExcludes>
