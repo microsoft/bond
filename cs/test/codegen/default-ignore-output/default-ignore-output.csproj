@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.props" />
+  <PropertyGroup>
+    <Configurations>Debug;Release</Configurations>
+    <OutputType>Library</OutputType>
+    <ProjectGuid>98BF6B10-F821-4402-8923-5F7B726BBFC8</ProjectGuid>
+    <TargetFrameworks>netstandard1.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\attributes\Attributes.csproj" />
+  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\..\build\internal\Common.Internal.targets" />
+</Project>
