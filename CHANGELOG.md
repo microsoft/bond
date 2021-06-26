@@ -34,6 +34,10 @@ different versioning scheme, following the Haskell community's
 * Added an ability to apply transform to a schema.
 * Added `noexcept` to `bond::blob`'s non-throwing functions.
 
+### C# ###
+
+* `OutputBuffer` can be extended to use buffer allocators other than `new byte[]` (e.g. `ArrayPool<byte>.Rent()`). ([Pull request \#1128](https://github.com/microsoft/bond/pull/1128))
+
 ## 9.0.5: 2021-04-14 ##
 
 * IDL core version: 3.0
