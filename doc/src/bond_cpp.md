@@ -239,8 +239,9 @@ consideration about how the change is rolled out:
 These following changes will break wire compatibility and are not recommended:
 
 - Adding or removing `required` fields
-- Incompatible change of field types (any type change *not* covered above); e.g.:
-  `int32` to `string`, `string` to `wstring`
+- Incompatible change of field types (any type change *not* covered above);
+  e.g.: `int32` to `string`, `string` to `wstring`, `float` to
+  `nullable<float>`
 - Changing of field ordinals
 - Changing of inheritance hierarchy (add/remove/substituting base struct)
 - Changing between `required` and `optional` directly
