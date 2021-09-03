@@ -256,7 +256,7 @@ T Deserialize(Reader input);</code></pre></div>
 
 <span class="kw">template</span> &lt;<span class="kw">typename</span> Buffer&gt;
 <span class="kw">class</span> CompactBinaryWriter;</code></pre></div>
-<p>The <code>Buffer</code> template parameter specifies where the serialized payload is respectively read from and written to. This constitutes the second layer of customization. Bond comes with built-in buffers implemented on top of memory <a href="../reference/cpp/classbond_1_1blob.html">blobs</a>, <code>InputBuffer</code> and <code>OutputBuffer</code>, but applications can also define <a href="#custom-buffers">custom buffers</a> by implementing simple stream interfaces.</p>
+<p>The <code>Buffer</code> template parameter specifies where the serialized payload is respectively read from and written to. This constitutes the second layer of customization. Bond comes with built-in buffers implemented on top of memory <a href="../reference/cpp/classbond_1_1blob.html">blobs</a>, <code>InputBuffer</code> and <code>OutputBuffer</code>, but applications can also define custom buffers by <a href="#custom-streams">implementing simple stream interfaces</a>.</p>
 <p>The full protocol class names can be unwieldy and it is often convenient to define shorter type aliases:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">typedef</span> bond::InputBuffer Input;
 <span class="kw">typedef</span> bond::CompactBinaryReader&lt;Input&gt; Reader;
