@@ -347,7 +347,7 @@ Marshal.<span class="fu">To</span>(writer, src);
 <p>These following changes will break wire compatibility and are not recommended:</p>
 <ul>
 <li>Adding or removing <code>required</code> fields</li>
-<li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code></li>
+<li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code>, <code>float</code> to <code>nullable&lt;float&gt;</code></li>
 <li>Changing of field ordinals</li>
 <li>Changing of inheritance hierarchy (add/remove/substituting base struct)</li>
 <li>Changing between <code>required</code> and <code>optional</code> directly</li>
