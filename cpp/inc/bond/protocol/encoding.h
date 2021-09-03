@@ -30,6 +30,12 @@ implements_varint_write<Buffer, T,
     : std::true_type {};
 
 
+// GenericWriteVariableUnsigned and WriteVariableUnsigned are mutually
+// recursive, so we need a forward declaration of one of them.
+template<typename Buffer, typename T>
+inline void GenericWriteVariableUnsigned(Buffer& output, T value);
+
+
 template<typename Buffer, typename T>
 inline
 typename boost::enable_if<implements_varint_write<Buffer, T> >::type
@@ -56,7 +62,7 @@ WriteVariableUnsigned(Buffer& output, T value)
 
 template<typename Buffer, typename T>
 BOND_NO_INLINE
-void GenericWriteVariableUnsigned(Buffer& output, T value)
+inline void GenericWriteVariableUnsigned(Buffer& output, T value)
 {
     T x = value;
 
