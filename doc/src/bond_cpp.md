@@ -114,9 +114,9 @@ class CompactBinaryWriter;
 The `Buffer` template parameter specifies where the serialized payload is
 respectively read from and written to. This constitutes the second layer of
 customization. Bond comes with built-in buffers implemented on top of memory
-[blobs][blob_reference], `InputBuffer` and `OutputBuffer`, but applications can
-also define [custom buffers](#custom-buffers) by implementing simple stream
-interfaces.
+[blobs][blob_reference], `InputBuffer` and `OutputBuffer`, but applications
+can also define custom buffers by [implementing simple stream
+interfaces](#custom-streams).
 
 The full protocol class names can be unwieldy and it is often convenient to
 define shorter type aliases:
