@@ -11,6 +11,21 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Unreleased ##
+
+* IDL core version: TBD
+* C++ version: TBD (bug fix bump needed)
+* C# NuGet version: TBD
+* `gbc` & compiler library: TBD
+
+### C++ ###
+
+* Add forward declaration for `GenericWriteVariableUnsigned` to fix "C3861:
+  'GenericWriteVariableUnsigned': identifier not found" when using custom
+  streams that do not have their own implementation of
+  `WriteVariableUnsigned`. ([Issue
+  \#1115](https://github.com/microsoft/bond/issues/1115))
+
 ## 9.0.5: 2021-04-14 ##
 
 * IDL core version: 3.0
