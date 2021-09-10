@@ -226,8 +226,7 @@ public:
     void End() const
     {
         _this << "};\n";
-        _this.flush();
-        _out << _this.str();
+        _out << _this.rdbuf();
     }
 
 private:
@@ -321,7 +320,7 @@ private:
 
     std::ostream& _out;
     mutable std::string _qualifiedName;
-    mutable std::ostringstream _this;
+    mutable std::stringstream _this;
     mutable bond::BondDataType _container;
 };
 
