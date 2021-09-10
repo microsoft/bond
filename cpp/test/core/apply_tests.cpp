@@ -239,7 +239,7 @@ private:
     template <typename T, typename Reader, typename boost::enable_if<std::is_enum<T> >::type* = nullptr>
     std::string GetTypeName(const bond::value<T, Reader>& /*value*/) const
     {
-        return bond::detail::type<typename std::underlying_type<T>::type>::name();
+        return bond::detail::type<std::int32_t>::name();
     }
 
     template <typename T, typename Reader, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
