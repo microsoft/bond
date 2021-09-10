@@ -163,7 +163,7 @@ public:
         if (!_cache)
             return true;
 
-        GetTypeName(value);
+        TypeName(value);
         return false;
     }
 
@@ -174,7 +174,7 @@ public:
             return true;
 
         _this << "    " << id << ": " << ToString(metadata.modifier) << " ";
-        _this << GetTypeName(value);
+        _this << TypeName(value);
         _this << " " << metadata.name;
 
         if (metadata.default_value.nothing)
@@ -205,7 +205,7 @@ public:
         }
 
         _this << "<";
-        _this << GetTypeName(value);
+        _this << TypeName(value);
         _this << ">";
     }
 
@@ -225,9 +225,9 @@ public:
         }
 
         _this << "<";
-        _this << GetTypeName(key);
+        _this << TypeName(key);
         _this << ", ";
-        _this << GetTypeName(value);
+        _this << TypeName(value);
         _this << ">";
     }
 
@@ -250,20 +250,14 @@ public:
     }
 
 private:
-    template <typename T, typename Reader, typename boost::enable_if_c<bond::is_basic_type<T>::value && !std::is_enum<T>::value>::type* = nullptr>
-    std::string GetTypeName(const bond::value<T, Reader>& /*value*/) const
+    template <typename T, typename Reader, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
+    std::string TypeName(const bond::value<T, Reader>& /*value*/) const
     {
-        return bond::detail::type<T>::name();
-    }
-
-    template <typename T, typename Reader, typename boost::enable_if<std::is_enum<T> >::type* = nullptr>
-    std::string GetTypeName(const bond::value<T, Reader>& /*value*/) const
-    {
-        return bond::detail::type<std::int32_t>::name();
+        return bond::detail::type<typename std::conditional<std::is_enum<T>::value, std::int32_t, T>::type>::name();
     }
 
     template <typename T>
-    std::string GetTypeName(const T& value) const
+    std::string TypeName(const T& value) const
     {
         const auto type = bond::GetTypeId(value);
         if (type == bond::BT_STRUCT)
@@ -280,50 +274,59 @@ private:
         }
     }
 
+    template <typename T, typename Enable = void> struct
+    default_value_field;
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<std::is_unsigned<T> >::type> : std::integral_constant<std::uint64_t bond::Variant::*, &bond::Variant::uint_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_signed_int_or_enum<T> >::type> : std::integral_constant<std::int64_t bond::Variant::*, &bond::Variant::int_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<std::is_floating_point<T> >::type> : std::integral_constant<double bond::Variant::*, &bond::Variant::double_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_string<T> >::type> : std::integral_constant<std::string bond::Variant::*, &bond::Variant::string_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_wstring<T> >::type> : std::integral_constant<std::wstring bond::Variant::*, &bond::Variant::wstring_value> {};
+
     template <typename T>
-    void FormatDefaultValue(const T& value) const
+    void FormatValue(const T& value) const
     {
-        if (value != T{})
-            _this << " = " << value;
+        _this << value;
     }
 
-    template <typename T, typename boost::enable_if<std::is_same<T, bool> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
+    void FormatValue(bool value) const
     {
-        _this << std::boolalpha;
-        FormatDefaultValue(bool(value.uint_value));
+        _this << std::boolalpha << value;
     }
 
-    template <typename T, typename boost::enable_if_c<std::is_unsigned<T>::value && !std::is_same<T, bool>::value>::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
+    void FormatValue(const std::wstring& value) const
     {
-        FormatDefaultValue(value.uint_value);
+        std::string str(value.size(), ' ');
+        std::transform(value.begin(), value.end(), str.begin(), [](wchar_t wc) { return char(wc); });
+        _this << str;
     }
 
-    template <typename T, typename boost::enable_if<bond::is_signed_int_or_enum<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
+    template <typename T, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
+    void DefaultValue(const bond::Variant& var) const
     {
-        FormatDefaultValue(value.int_value);;
-    }
+        const auto& value = var.*default_value_field<T>::value;
 
-    template <typename T, typename boost::enable_if<std::is_floating_point<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
-    {
-        FormatDefaultValue(value.double_value);
-    }
+        if (value == decltype(value){})
+            return;
 
-    template <typename T, typename boost::enable_if<bond::is_string<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
-    {
-        FormatDefaultValue(value.string_value);
-    }
+        _this << " = ";
 
-    template <typename T, typename boost::enable_if<bond::is_wstring<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& value) const
-    {
-        std::string str(value.wstring_value.size(), ' ');
-        std::transform(value.wstring_value.begin(), value.wstring_value.end(), str.begin(), [](wchar_t wc) { return char(wc); });
-        FormatDefaultValue(str);
+        if (bond::is_string_type<T>::value)
+            _this << '"';
+
+        FormatValue(static_cast<T>(value));
+
+        if (bond::is_string_type<T>::value)
+            _this << '"';
     }
 
     template <typename T, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
@@ -332,7 +335,7 @@ private:
 
     mutable std::map<std::string, std::string>* _cache;
     mutable std::string _qualifiedName;
-    mutable std::stringstream _this;
+    mutable std::ostringstream _this;
     mutable bond::BondDataType _container;
 };
 
