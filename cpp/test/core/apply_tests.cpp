@@ -179,7 +179,7 @@ public:
     template <typename T, typename Reader>
     void Container(const bond::value<T, Reader>& value, std::size_t size) const
     {
-        UT_AssertAreEqual(size, 0);
+        BOOST_VERIFY(size == 0);
 
         switch (_container)
         {
@@ -199,7 +199,7 @@ public:
     template <typename K, typename T, typename Reader>
     void Container(const bond::value<K, Reader>& key, const bond::value<T, Reader>& value, std::size_t size) const
     {
-        UT_AssertAreEqual(size, 0);
+        BOOST_VERIFY(size == 0);
 
         switch (_container)
         {
