@@ -3,6 +3,10 @@
 #include "apply_test_reflection.h"
 #include "apply_test_apply.h"   // Note that pre-generated Apply overloads will be chosen
                                 // even though apply_test_reflection.h is included.
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/numeric.hpp>
+
+#include <map>
 #include <sstream>
 
 void Init(unittest::apply::Struct& obj)
@@ -139,38 +143,44 @@ Bonded(uint16_t version = bond::v1)
 class BuildIDL : public bond::Transform
 {
 public:
-    explicit BuildIDL(std::ostream& out)
-        : _out{ out }
+    explicit BuildIDL(std::map<std::string, std::string>& cache)
+        : _cache{ &cache }
     {}
-
-    template <typename T>
-    bool Base(const T& value) const
-    {
-        GetTypeName(value);
-        return false;
-    }
 
     void Begin(const bond::Metadata& metadata) const
     {
         _qualifiedName = metadata.qualified_name;
-        _this << "struct " << _qualifiedName << "\n{\n";
+
+        if (_cache->find(_qualifiedName) == _cache->end())
+            _this << "struct " << _qualifiedName << "\n{\n";
+        else
+            _cache = {};
+    }
+
+    template <typename T>
+    bool Base(const T& value) const
+    {
+        if (!_cache)
+            return true;
+
+        GetTypeName(value);
+        return false;
     }
 
     template <typename T>
     bool Field(uint16_t id, const bond::Metadata& metadata, const T& value) const
     {
+        if (!_cache)
+            return true;
+
         _this << "    " << id << ": " << ToString(metadata.modifier) << " ";
         _this << GetTypeName(value);
         _this << " " << metadata.name;
 
         if (metadata.default_value.nothing)
-        {
             _this << " = nothing";
-        }
         else
-        {
             DefaultValue<typename bond::remove_bonded_value<T>::type>(metadata.default_value);
-        }
 
         _this << ";\n";
         return false;
@@ -225,8 +235,11 @@ public:
 
     void End() const
     {
-        _this << "};\n";
-        _out << _this.rdbuf();
+        if (_cache)
+        {
+            _this << "};\n";
+            _cache->emplace(_qualifiedName, _this.str());
+        }
     }
 
 private:
@@ -248,7 +261,7 @@ private:
         const auto type = bond::GetTypeId(value);
         if (type == bond::BT_STRUCT)
         {
-            BuildIDL that{ _out };
+            BuildIDL that{ *_cache };
             Apply(that, value);
             return that._qualifiedName;
         }
@@ -310,12 +323,31 @@ private:
     void DefaultValue(const bond::Variant& /*value*/) const
     {}
 
-    std::ostream& _out;
+    mutable std::map<std::string, std::string>* _cache;
     mutable std::string _qualifiedName;
     mutable std::stringstream _this;
     mutable bond::BondDataType _container;
 };
 
+
+struct ApplySchemaTests
+{
+    template <typename T>
+    void operator()(const T&)
+    {
+        bond::RuntimeSchema schema = bond::GetRuntimeSchema<T>();
+
+        std::map<std::string, std::string> cache1;
+        Apply<T>(BuildIDL{ cache1 });
+        auto idl1 = boost::accumulate(cache1 | boost::adaptors::map_values, std::string{});
+
+        std::map<std::string, std::string> cache2;
+        Apply(BuildIDL{ cache2 }, schema);
+        auto idl2 = boost::accumulate(cache2 | boost::adaptors::map_values, std::string{});
+
+        UT_AssertAreEqual(idl1, idl2);
+    }
+};
 
 
 template <typename Reader, typename Writer>
@@ -335,16 +367,6 @@ struct Tests
 
         Bonded<Reader, Writer, X>();
         Bonded<Reader, Writer, X>(Reader::version);
-
-        bond::RuntimeSchema schema = bond::GetRuntimeSchema<X>();
-
-        std::ostringstream s1;
-        Apply<X>(BuildIDL{ s1 });
-        std::ostringstream s2;
-        Apply(BuildIDL{ s2 }, schema);
-        std::string idl1 = s1.str();
-        std::string idl2 = s2.str();
-        UT_AssertAreEqual(idl1, idl2);
     }
 };
 
@@ -361,15 +383,21 @@ struct Tests<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0>
 };
 
 
+typedef boost::mpl::list<
+    unittest::apply::Struct,
+    unittest::apply::Derived
+> Types;
+
 template <typename Reader, typename Writer>
 TEST_CASE_BEGIN(AllTests)
 {
-    typedef boost::mpl::list<
-        unittest::apply::Struct,
-        unittest::apply::Derived
-    > Types;
-
     boost::mpl::for_each<Types>(Tests<Reader, Writer>());
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(SchemaTests)
+{
+    boost::mpl::for_each<Types>(ApplySchemaTests{});
 }
 TEST_CASE_END
 
@@ -380,6 +408,14 @@ void ApplyTests(const char* name)
     UnitTestSuite suite(name);
     
     AddTestCase<TEST_ID(N), AllTests, Reader, Writer>(suite, "Use generated *_apply.cpp");
+}
+
+template <uint16_t N>
+void ApplyTests(const char* name)
+{
+    UnitTestSuite suite(name);
+
+    AddTestCase<TEST_ID(N), SchemaTests>(suite, "Apply transform to compile-time and runtime schema");
 }
 
 
@@ -413,6 +449,8 @@ void ApplyTest::Initialize()
             bond::FastBinaryReader<bond::InputBuffer>,
             bond::FastBinaryWriter<bond::OutputBuffer> >("Apply tests for FastBinary");
     );
+
+    ApplyTests<0x1605>("Apply tests for compile-time and runtime schemas");
 }
 
 
