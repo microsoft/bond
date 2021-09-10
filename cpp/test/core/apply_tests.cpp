@@ -242,8 +242,8 @@ private:
         return bond::detail::type<std::int32_t>::name();
     }
 
-    template <typename T, typename Reader, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
-    std::string GetTypeName(const bond::value<T, Reader>& value) const
+    template <typename T>
+    std::string GetTypeName(const T& value) const
     {
         const auto type = bond::GetTypeId(value);
         if (type == bond::BT_STRUCT)
@@ -258,14 +258,6 @@ private:
             Apply(*this, value);
             return {};
         }
-    }
-
-    template <typename T, typename Reader>
-    std::string GetTypeName(const bond::bonded<T, Reader>& value) const
-    {
-        BuildIDL that{ _out };
-        Apply(that, value);
-        return that._qualifiedName;
     }
 
     template <typename T, typename boost::enable_if<std::is_same<T, bool> >::type* = nullptr>
