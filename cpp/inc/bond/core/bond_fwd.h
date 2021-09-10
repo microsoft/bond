@@ -26,11 +26,11 @@ class bonded;
 template <typename Reader>
 class bonded<void, Reader>;
 
-template <typename V> struct
+template <typename T> struct
 remove_bonded;
 
-template <typename V> struct
-remove_bonded<bonded<V> >;
+template <typename T, typename Reader> struct
+remove_bonded<bonded<T, Reader> >;
 
 template <typename T, typename Reader, typename Enable = void>
 class value;

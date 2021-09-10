@@ -187,6 +187,12 @@ BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const
     {}
 }
 
+struct SchemaReader;
+
+template <typename T>
+void Skip(SchemaReader&, const bonded<T, SchemaReader&>&, const std::nothrow_t&)
+{}
+
 
 template <typename T>
 inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/)

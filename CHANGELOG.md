@@ -25,6 +25,7 @@ different versioning scheme, following the Haskell community's
   streams that do not have their own implementation of
   `WriteVariableUnsigned`. ([Issue
   \#1115](https://github.com/microsoft/bond/issues/1115))
+* Added an ability to apply transform to a schema.
 
 ## 9.0.5: 2021-04-14 ##
 

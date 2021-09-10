@@ -383,10 +383,29 @@ remove_bonded
 };
 
 
-template <typename T> struct
-remove_bonded<bonded<T> >
+template <typename T, typename Reader> struct
+remove_bonded<bonded<T, Reader> >
 {
     typedef typename remove_bonded<T>::type type;
+};
+
+
+template <typename T> struct
+remove_bonded_value
+{
+    typedef T type;
+};
+
+template <typename T, typename Reader> struct
+remove_bonded_value<bonded<T, Reader> >
+{
+    typedef T type;
+};
+
+template <typename T, typename Reader> struct
+remove_bonded_value<value<T, Reader> >
+{
+    typedef T type;
 };
 
 

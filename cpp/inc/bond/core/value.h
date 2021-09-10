@@ -150,6 +150,10 @@ BOND_NO_INLINE void Skip(Reader& input, const std::nothrow_t&)
     {}
 }
 
+template <typename T, typename Reader = detail::SchemaReader, typename boost::enable_if<std::is_same<Reader, detail::SchemaReader> >::type* = nullptr>
+void Skip(detail::SchemaReader&, const std::nothrow_t&)
+{}
+
 template <typename Reader>
 BOND_NO_INLINE void Skip(Reader& input, const RuntimeSchema& schema, const std::nothrow_t&)
 {
@@ -161,6 +165,9 @@ BOND_NO_INLINE void Skip(Reader& input, const RuntimeSchema& schema, const std::
     {}
 }
 
+inline void Skip(detail::SchemaReader&, const RuntimeSchema&, const std::nothrow_t&)
+{}
+
 template <typename Reader>
 BOND_NO_INLINE void Skip(Reader& input, BondDataType type, const std::nothrow_t&)
 {
@@ -171,6 +178,10 @@ BOND_NO_INLINE void Skip(Reader& input, BondDataType type, const std::nothrow_t&
     catch(...)
     {}
 }
+
+inline void Skip(detail::SchemaReader&, BondDataType, const std::nothrow_t&)
+{}
+
 
 // value_common implements common functionality related to skipping unread values
 template <typename T, typename Reader>
@@ -392,6 +403,20 @@ template <typename Protocols, typename X, typename T, typename Reader>
 typename boost::enable_if<is_basic_container<X> >::type
 inline DeserializeContainer(X& var, const T& element, Reader& input);
 
+template <typename Protocols, typename Transform, typename T>
+void DeserializeContainer(const Transform& transform, const value<T, detail::SchemaReader&>& element, detail::SchemaReader&)
+{
+    transform.Container(element, 0);
+}
+
+template <typename Protocols, typename Transform, typename T1, typename T2>
+void DeserializeContainer(const Transform& transform, const value<std::pair<T1, T2>, detail::SchemaReader&>&, detail::SchemaReader& input)
+{
+    transform.Container(value<T1, detail::SchemaReader&>{ input, false }, value<T2, detail::SchemaReader&>{ input, false }, 0);
+}
+
+template <typename Protocols, typename Transform>
+void DeserializeContainer(const Transform& transform, const value<void, detail::SchemaReader&>& element, detail::SchemaReader& input);
 
 
 // Specialization of value for containers with compile-time schema
@@ -449,6 +474,9 @@ inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& in
 template <typename Protocols, typename X, typename T, typename Reader>
 typename boost::enable_if<is_basic_container<X> >::type
 inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& input);
+
+template <typename Protocols, typename Transform>
+void DeserializeMap(const Transform& transform, BondDataType keyType, const value<void, detail::SchemaReader&>& element, detail::SchemaReader& input);
 
 
 // Specialization of value for data described by runtime schema
@@ -603,6 +631,24 @@ private:
     RuntimeSchema _schema;
     mutable bool _skip;
 };
+
+
+template <typename Protocols, typename Transform>
+void DeserializeContainer(const Transform& transform, const value<void, detail::SchemaReader&>& element, detail::SchemaReader& input)
+{
+    switch (element.GetTypeId())
+    {
+    case bond::BT_SET:
+    case bond::BT_MAP:
+    case bond::BT_LIST:
+    case bond::BT_STRUCT:
+        transform.Container(element, 0);
+        break;
+    default:
+        detail::BasicTypeContainer<Protocols>(transform, element.GetTypeId(), input, 0);
+        break;
+    }
+}
 
 
 template <typename Protocols, typename X, typename I, typename T>
@@ -831,6 +877,24 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
     }
 
     input.ReadContainerEnd();
+}
+
+
+template <typename Protocols, typename Transform>
+void DeserializeMap(const Transform& transform, BondDataType keyType, const value<void, detail::SchemaReader&>& element, detail::SchemaReader& input)
+{
+    switch (element.GetTypeId())
+    {
+    case bond::BT_SET:
+    case bond::BT_MAP:
+    case bond::BT_LIST:
+    case bond::BT_STRUCT:
+        detail::MapByKey<Protocols>(transform, keyType, element, input, 0);
+        break;
+    default:
+        detail::MapByElement<Protocols>(transform, keyType, element.GetTypeId(), input, 0);
+        break;
+    }
 }
 
 

@@ -15,8 +15,7 @@ namespace bond
                const ::bond::bonded< ::tests::BasicTypes>& value);
 
     template 
-    bool Apply(const ::bond::InitSchemaDef& transform,
-               const ::tests::BasicTypes& value);
+    bool Apply< ::tests::BasicTypes>(const ::bond::InitSchemaDef& transform);
 
     template 
     bool Apply(const ::bond::Null& transform,
