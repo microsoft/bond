@@ -315,6 +315,31 @@ TEST_CASE_BEGIN(MergingContainers)
 TEST_CASE_END
 
 
+template <typename Reader, typename Writer>
+TEST_CASE_BEGIN(MergingOptionals)
+{
+    SimpleOptionals payload;
+    payload.a = 'a';
+    payload.c = 'c';
+
+    SimpleOptionalsView obj;
+    obj.b = 'b';
+    
+    Reader merged = Merge<Reader, Writer>(payload, obj);
+
+    payload.b = obj.b;
+
+    SimpleOptionals merged_payload;
+    bond::Deserialize(merged, merged_payload);
+    UT_Equal(merged_payload, payload);
+
+    SimpleOptionalsView merged_obj;
+    bond::Deserialize(merged, merged_obj);
+    UT_Equal(merged_obj, obj);
+}
+TEST_CASE_END
+
+
 template <typename Reader, typename Writer, typename T1, typename T2>
 TEST_CASE_BEGIN(MergingAll)
 {
@@ -337,6 +362,9 @@ template <uint16_t N, typename Reader, typename Writer>
 void MergeTests(const char* name)
 {
     UnitTestSuite suite(name);
+
+    AddTestCase<TEST_ID(N),
+        MergingOptionals, Reader, Writer>(suite, "Merging simple struct with optionals");
 
     AddTestCase<TEST_ID(N), 
         MergingAll, Reader, Writer, NestedStructView, NestedStruct>(suite, "Merging nested struct");

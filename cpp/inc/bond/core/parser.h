@@ -264,6 +264,7 @@ private:
 
         for (;;)
         {
+            const bool moveSchemaField = Head::id <= id;
             if (Head::id == id && get_type_id<typename Head::field_type>::value == type)
             {
                 // Exact match
@@ -287,7 +288,7 @@ private:
 
             ReadSubsequentField(type, id);
 
-            if (Head::id < id || type == bond::BT_STOP || type == bond::BT_STOP_BASE)
+            if (moveSchemaField)
             {
                 NextSchemaField: return ReadFields(typename boost::mpl::next<Fields>::type(), id, type, transform);
             }

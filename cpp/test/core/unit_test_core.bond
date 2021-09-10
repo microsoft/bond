@@ -17,6 +17,19 @@ enum EnumType1
 };
 
 
+struct SimpleOptionals
+{
+    0: int8 a;
+    1: int8 b;
+    2: int8 c;
+};
+
+struct SimpleOptionalsView view_of SimpleOptionals
+{
+    b;
+};
+
+
 struct SimpleStruct
 {
     0: required_optional bool m_bool;
