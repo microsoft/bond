@@ -144,23 +144,23 @@ class BuildIDL : public bond::Transform
 {
 public:
     explicit BuildIDL(std::map<std::string, std::string>& cache)
-        : _cache{ &cache }
+        : _structs{ &cache }
     {}
 
     void Begin(const bond::Metadata& metadata) const
     {
         _qualifiedName = metadata.qualified_name;
 
-        if (_cache->find(_qualifiedName) == _cache->end())
+        if (_structs->find(_qualifiedName) == _structs->end())
             _this << "struct " << _qualifiedName << "\n{\n";
         else
-            _cache = {};
+            _structs = {};
     }
 
     template <typename T>
     bool Base(const T& value) const
     {
-        if (!_cache)
+        if (!_structs)
             return true;
 
         TypeName(value);
@@ -170,7 +170,7 @@ public:
     template <typename T>
     bool Field(uint16_t id, const bond::Metadata& metadata, const T& value) const
     {
-        if (!_cache)
+        if (!_structs)
             return true;
 
         _this << "    " << id << ": " << ToString(metadata.modifier) << " ";
@@ -242,11 +242,11 @@ public:
 
     void End() const
     {
-        if (!_cache)
+        if (!_structs)
             return;
 
         _this << "};\n";
-        _cache->emplace(_qualifiedName, _this.str());
+        _structs->emplace(_qualifiedName, _this.str());
     }
 
 private:
@@ -262,7 +262,7 @@ private:
         const auto type = bond::GetTypeId(value);
         if (type == bond::BT_STRUCT)
         {
-            BuildIDL that{ *_cache };
+            BuildIDL that{ *_structs };
             Apply(that, value);
             return that._qualifiedName;
         }
@@ -333,7 +333,7 @@ private:
     void DefaultValue(const bond::Variant& /*value*/) const
     {}
 
-    mutable std::map<std::string, std::string>* _cache;
+    mutable std::map<std::string, std::string>* _structs;
     mutable std::string _qualifiedName;
     mutable std::ostringstream _this;
     mutable bond::BondDataType _container;
@@ -347,13 +347,13 @@ struct ApplySchemaTests
     {
         bond::RuntimeSchema schema = bond::GetRuntimeSchema<T>();
 
-        std::map<std::string, std::string> cache1;
-        Apply<T>(BuildIDL{ cache1 });
-        auto idl1 = boost::accumulate(cache1 | boost::adaptors::map_values, std::string{});
+        std::map<std::string, std::string> structs1;
+        Apply<T>(BuildIDL{ structs1 });
+        auto idl1 = boost::accumulate(structs1 | boost::adaptors::map_values, std::string{});
 
-        std::map<std::string, std::string> cache2;
-        Apply(BuildIDL{ cache2 }, schema);
-        auto idl2 = boost::accumulate(cache2 | boost::adaptors::map_values, std::string{});
+        std::map<std::string, std::string> structs2;
+        Apply(BuildIDL{ structs2 }, schema);
+        auto idl2 = boost::accumulate(structs2 | boost::adaptors::map_values, std::string{});
 
         UT_AssertAreEqual(idl1, idl2);
     }
