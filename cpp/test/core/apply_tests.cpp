@@ -164,7 +164,7 @@ public:
         if (!_structs)
             return true;
 
-        TypeName(value);
+        StructName(value);
         return false;
     }
 
@@ -175,7 +175,7 @@ public:
             return true;
 
         _this << "    " << id << ": " << ToString(metadata.modifier) << " ";
-        _this << TypeName(value);
+        TypeName(value);
         _this << " " << metadata.name;
 
         if (metadata.default_value.nothing)
@@ -206,7 +206,7 @@ public:
         }
 
         _this << "<";
-        _this << TypeName(value);
+        TypeName(value);
         _this << ">";
     }
 
@@ -226,9 +226,9 @@ public:
         }
 
         _this << "<";
-        _this << TypeName(key);
+        TypeName(key);
         _this << ", ";
-        _this << TypeName(value);
+        TypeName(value);
         _this << ">";
     }
 
@@ -251,28 +251,29 @@ public:
     }
 
 private:
-    template <typename T, typename Reader, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
-    std::string TypeName(const bond::value<T, Reader>& /*value*/) const
+    template <typename T>
+    const std::string& StructName(const T& value) const
     {
-        return bond::detail::type<typename std::conditional<std::is_enum<T>::value, std::int32_t, T>::type>::name();
+        BuildIDL that{ *_structs };
+        Apply(that, value);
+        return *that._qualifiedName;
+    }
+
+    template <typename T, typename Reader, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
+    void TypeName(const bond::value<T, Reader>& /*value*/) const
+    {
+        _this << bond::detail::type<typename std::conditional<std::is_enum<T>::value, std::int32_t, T>::type>::name();
     }
 
     template <typename T>
-    std::string TypeName(const T& value) const
+    void TypeName(const T& value) const
     {
-        const auto type = bond::GetTypeId(value);
-        if (type == bond::BT_STRUCT)
-        {
-            BuildIDL that{ *_structs };
-            Apply(that, value);
-            return *that._qualifiedName;
-        }
+        _container = bond::GetTypeId(value);
+
+        if (_container == bond::BT_STRUCT)
+            _this << StructName(value);
         else
-        {
-            _container = type;
             Apply(*this, value);
-            return {};
-        }
     }
 
     template <typename T, typename Enable = void> struct
