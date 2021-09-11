@@ -144,15 +144,16 @@ class BuildIDL : public bond::Transform
 {
 public:
     explicit BuildIDL(std::map<std::string, std::string>& cache)
-        : _structs{ &cache }
+        : _structs{ &cache },
+          _qualifiedName{ nullptr }
     {}
 
     void Begin(const bond::Metadata& metadata) const
     {
-        _qualifiedName = metadata.qualified_name;
+        _qualifiedName = &metadata.qualified_name;
 
-        if (_structs->find(_qualifiedName) == _structs->end())
-            _this << "struct " << _qualifiedName << "\n{\n";
+        if (_structs->find(*_qualifiedName) == _structs->end())
+            _this << "struct " << *_qualifiedName << "\n{\n";
         else
             _structs = {};
     }
@@ -246,7 +247,7 @@ public:
             return;
 
         _this << "};\n";
-        _structs->emplace(_qualifiedName, _this.str());
+        _structs->emplace(*_qualifiedName, _this.str());
     }
 
 private:
@@ -264,7 +265,7 @@ private:
         {
             BuildIDL that{ *_structs };
             Apply(that, value);
-            return that._qualifiedName;
+            return *that._qualifiedName;
         }
         else
         {
@@ -334,7 +335,7 @@ private:
     {}
 
     mutable std::map<std::string, std::string>* _structs;
-    mutable std::string _qualifiedName;
+    mutable const std::string* _qualifiedName;
     mutable std::ostringstream _this;
     mutable bond::BondDataType _container;
 };
