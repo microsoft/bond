@@ -140,11 +140,11 @@ Bonded(uint16_t version = bond::v1)
 }
 
 
-class BuildIDL : public bond::Transform
+class IDLBuilder : public bond::Transform
 {
 public:
-    explicit BuildIDL(std::map<std::string, std::string>& cache)
-        : _structs{ &cache },
+    explicit IDLBuilder(std::map<std::string, std::string>& structs)
+        : _structs{ &structs },
           _qualifiedName{ nullptr }
     {}
 
@@ -174,9 +174,9 @@ public:
         if (!_structs)
             return true;
 
-        _this << "    " << id << ": " << ToString(metadata.modifier) << " ";
+        _this << "    " << id << ": " << ToString(metadata.modifier) << ' ';
         TypeName(value);
-        _this << " " << metadata.name;
+        _this << ' ' << metadata.name;
 
         if (metadata.default_value.nothing)
             _this << " = nothing";
@@ -187,49 +187,16 @@ public:
         return false;
     }
 
-    template <typename T, typename Reader>
-    void Container(const bond::value<T, Reader>& value, std::size_t size) const
+    template <typename T>
+    void Container(const T& value, std::size_t size) const
     {
-        BOOST_VERIFY(size == 0);
-
-        switch (_container)
-        {
-        case bond::BT_LIST:
-            _this << "list";
-            break;
-        case bond::BT_SET:
-            _this << "set";
-            break;
-        default:
-            assert(false);
-            break;
-        }
-
-        _this << "<";
-        TypeName(value);
-        _this << ">";
+        Container(size, value);
     }
 
-    template <typename K, typename T, typename Reader>
-    void Container(const bond::value<K, Reader>& key, const bond::value<T, Reader>& value, std::size_t size) const
+    template <typename K, typename T>
+    void Container(const K& key, const T& value, std::size_t size) const
     {
-        BOOST_VERIFY(size == 0);
-
-        switch (_container)
-        {
-        case bond::BT_MAP:
-            _this << "map";
-            break;
-        default:
-            assert(false);
-            break;
-        }
-
-        _this << "<";
-        TypeName(key);
-        _this << ", ";
-        TypeName(value);
-        _this << ">";
+        Container(size, key, value);
     }
 
     template <typename T>
@@ -254,7 +221,7 @@ private:
     template <typename T>
     const std::string& StructName(const T& value) const
     {
-        BuildIDL that{ *_structs };
+        IDLBuilder that{ *_structs };
         Apply(that, value);
         return *that._qualifiedName;
     }
@@ -274,6 +241,20 @@ private:
             _this << StructName(value);
         else
             Apply(*this, value);
+    }
+
+    template <typename... T>
+    void Container(std::size_t size, const T&... value) const
+    {
+        BOOST_VERIFY(size == 0);
+        assert(_container >= bond::BT_LIST && _container <= bond::BT_MAP);
+        assert((sizeof...(T) == 2) == (_container == bond::BT_MAP));
+
+        const char* labels[] = { "list", "set", "map" };
+        _this << labels[_container - bond::BT_LIST] << '<';
+        (void)std::initializer_list<int>{ (TypeName(value), _this << ", ", 0)... };
+        _this.seekp(-2, std::ios_base::end);
+        _this << '>';
     }
 
     template <typename T, typename Enable = void> struct
@@ -316,23 +297,27 @@ private:
     void DefaultValue(const bond::Variant& var) const
     {
         const auto& value = var.*default_value_field<T>::value;
-
         if (value == decltype(value){})
             return;
 
         _this << " = ";
-
         if (bond::is_string_type<T>::value)
             _this << '"';
 
+#if defined(_MSC_VER) && _MSC_VER < 1910
+#pragma warning(push)
+#pragma warning(disable: 4800)  // warning C4800: 'const uint64_t': forcing value to bool 'true' or 'false'
+#endif
         FormatValue(static_cast<T>(value));
-
+#if defined(_MSC_VER) && _MSC_VER < 1910
+#pragma warning(pop)
+#endif
         if (bond::is_string_type<T>::value)
             _this << '"';
     }
 
     template <typename T, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& /*value*/) const
+    void DefaultValue(const bond::Variant& /*var*/) const
     {}
 
     mutable std::map<std::string, std::string>* _structs;
@@ -350,11 +335,11 @@ struct ApplySchemaTests
         bond::RuntimeSchema schema = bond::GetRuntimeSchema<T>();
 
         std::map<std::string, std::string> structs1;
-        Apply<T>(BuildIDL{ structs1 });
+        Apply<T>(IDLBuilder{ structs1 });
         auto idl1 = boost::accumulate(structs1 | boost::adaptors::map_values, std::string{});
 
         std::map<std::string, std::string> structs2;
-        Apply(BuildIDL{ structs2 }, schema);
+        Apply(IDLBuilder{ structs2 }, schema);
         auto idl2 = boost::accumulate(structs2 | boost::adaptors::map_values, std::string{});
 
         UT_AssertAreEqual(idl1, idl2);
