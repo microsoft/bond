@@ -145,7 +145,8 @@ class IDLBuilder : public bond::Transform
 public:
     explicit IDLBuilder(std::map<std::string, std::string>& structs)
         : _structs{ &structs },
-          _qualifiedName{ nullptr }
+          _qualifiedName{},
+          _container{ bond::BT_UNAVAILABLE }
     {}
 
     void Begin(const bond::Metadata& metadata) const
@@ -164,7 +165,10 @@ public:
         if (!_structs)
             return true;
 
-        StructName(value);
+        _this.seekp(-3, std::ios_base::end);
+        _this << " : ";
+        _this << StructName(value);
+        _this << "\n{\n";
         return false;
     }
 
@@ -202,7 +206,7 @@ public:
     template <typename T>
     bool UnknownField(std::uint16_t /*id*/, const T& /*value*/) const noexcept
     {
-        return false;
+        return !_structs;
     }
 
     void UnknownEnd() const noexcept
@@ -247,7 +251,7 @@ private:
     void Container(std::size_t size, const T&... value) const
     {
         BOOST_VERIFY(size == 0);
-        assert(_container >= bond::BT_LIST && _container <= bond::BT_MAP);
+        assert(bond::BT_LIST <= _container && _container <= bond::BT_MAP);
         assert((sizeof...(T) == 2) == (_container == bond::BT_MAP));
 
         const char* labels[] = { "list", "set", "map" };
@@ -337,10 +341,12 @@ struct ApplySchemaTests
         std::map<std::string, std::string> structs1;
         Apply<T>(IDLBuilder{ structs1 });
         auto idl1 = boost::accumulate(structs1 | boost::adaptors::map_values, std::string{});
+        UT_AssertAreEqual(structs1.size(), schema.GetSchema().structs.size());
 
         std::map<std::string, std::string> structs2;
         Apply(IDLBuilder{ structs2 }, schema);
         auto idl2 = boost::accumulate(structs2 | boost::adaptors::map_values, std::string{});
+        UT_AssertAreEqual(structs2.size(), schema.GetSchema().structs.size());
 
         UT_AssertAreEqual(idl1, idl2);
     }
