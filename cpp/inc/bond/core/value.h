@@ -151,7 +151,7 @@ BOND_NO_INLINE void Skip(Reader& input, const std::nothrow_t&)
 }
 
 template <typename T, typename Reader = detail::SchemaReader, typename boost::enable_if<std::is_same<Reader, detail::SchemaReader> >::type* = nullptr>
-void Skip(detail::SchemaReader&, const std::nothrow_t&)
+void Skip(detail::SchemaReader&, const std::nothrow_t&) BOND_NOEXCEPT
 {}
 
 template <typename Reader>
@@ -165,7 +165,7 @@ BOND_NO_INLINE void Skip(Reader& input, const RuntimeSchema& schema, const std::
     {}
 }
 
-inline void Skip(detail::SchemaReader&, const RuntimeSchema&, const std::nothrow_t&)
+inline void Skip(detail::SchemaReader&, const RuntimeSchema&, const std::nothrow_t&) BOND_NOEXCEPT
 {}
 
 template <typename Reader>
@@ -179,7 +179,7 @@ BOND_NO_INLINE void Skip(Reader& input, BondDataType type, const std::nothrow_t&
     {}
 }
 
-inline void Skip(detail::SchemaReader&, BondDataType, const std::nothrow_t&)
+inline void Skip(detail::SchemaReader&, BondDataType, const std::nothrow_t&) BOND_NOEXCEPT
 {}
 
 

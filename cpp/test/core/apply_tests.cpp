@@ -204,12 +204,12 @@ public:
     }
 
     template <typename T>
-    bool UnknownField(std::uint16_t /*id*/, const T& /*value*/) const noexcept
+    bool UnknownField(std::uint16_t /*id*/, const T& /*value*/) const BOND_NOEXCEPT
     {
         return !_structs;
     }
 
-    void UnknownEnd() const noexcept
+    void UnknownEnd() const BOND_NOEXCEPT
     {}
 
     void End() const
@@ -321,7 +321,7 @@ private:
     }
 
     template <typename T, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
-    void DefaultValue(const bond::Variant& /*var*/) const
+    void DefaultValue(const bond::Variant& /*var*/) const BOND_NOEXCEPT
     {}
 
     mutable std::map<std::string, std::string>* _structs;
