@@ -140,7 +140,7 @@ inline Skip(Reader& input, BondDataType type)
 
 
 template <typename T, typename Reader>
-BOND_NO_INLINE void Skip(Reader& input, const std::nothrow_t&)
+BOND_NO_INLINE void Skip(Reader& input, const std::nothrow_t&) BOND_NOEXCEPT
 {
     try
     {
@@ -155,7 +155,7 @@ void Skip(detail::SchemaReader&, const std::nothrow_t&) BOND_NOEXCEPT
 {}
 
 template <typename Reader>
-BOND_NO_INLINE void Skip(Reader& input, const RuntimeSchema& schema, const std::nothrow_t&)
+BOND_NO_INLINE void Skip(Reader& input, const RuntimeSchema& schema, const std::nothrow_t&) BOND_NOEXCEPT
 {
     try
     {
@@ -169,7 +169,7 @@ inline void Skip(detail::SchemaReader&, const RuntimeSchema&, const std::nothrow
 {}
 
 template <typename Reader>
-BOND_NO_INLINE void Skip(Reader& input, BondDataType type, const std::nothrow_t&)
+BOND_NO_INLINE void Skip(Reader& input, BondDataType type, const std::nothrow_t&) BOND_NOEXCEPT
 {
     try
     {
