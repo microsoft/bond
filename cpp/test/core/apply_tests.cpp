@@ -154,7 +154,7 @@ public:
         _qualifiedName = &metadata.qualified_name;
 
         if (_structs->find(*_qualifiedName) == _structs->end())
-            _this << "struct " << *_qualifiedName << "\n{\n";
+            _this << std::boolalpha << "struct " << *_qualifiedName << "\n{\n";
         else
             _structs = {};
     }
@@ -283,11 +283,6 @@ private:
     void FormatValue(const T& value) const
     {
         _this << value;
-    }
-
-    void FormatValue(bool value) const
-    {
-        _this << std::boolalpha << value;
     }
 
     void FormatValue(const std::wstring& value) const
