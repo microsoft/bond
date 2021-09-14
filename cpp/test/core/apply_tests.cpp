@@ -6,6 +6,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/numeric.hpp>
 
+#include <iterator>
 #include <map>
 #include <sstream>
 
@@ -287,9 +288,7 @@ private:
 
     void FormatValue(const std::wstring& value) const
     {
-        std::string str(value.size(), ' ');
-        std::transform(value.begin(), value.end(), str.begin(), [](wchar_t wc) { return char(wc); });
-        _this << str;
+        std::transform(value.begin(), value.end(), std::ostreambuf_iterator<char>(_this), [](wchar_t wc) { return char(wc); });
     }
 
     template <typename T, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
