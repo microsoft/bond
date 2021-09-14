@@ -4,6 +4,10 @@
 #pragma once
 
 #include <bond/core/config.h>
+#include <bond/core/bond_fwd.h>
+#include <bond/core/maybe.h>
+#include <bond/core/reflection.h>
+#include "odr.h"
 
 namespace bond
 {

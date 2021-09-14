@@ -7,6 +7,8 @@
 
 #include "protocol.h"
 #include "schema.h"
+#include "bonded.h"
+#include <bond/core/detail/typeid_value.h>
 
 #include <boost/static_assert.hpp>
 

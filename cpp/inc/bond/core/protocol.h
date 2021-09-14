@@ -4,6 +4,7 @@
 #pragma once
 
 #include <bond/core/config.h>
+#include <bond/core/bond_fwd.h>
 
 #include "customize.h"
 #include "detail/any.h"
@@ -49,20 +50,6 @@ template <typename Buffer> struct
 is_protocol_enabled<FastBinaryReader<Buffer> >
     : std::true_type {};
 #endif
-
-// uses_static_parser
-template <typename Reader, typename Enable = void> struct
-uses_static_parser
-    : std::false_type {};
-
-template <typename Reader> struct
-uses_static_parser<Reader, typename boost::enable_if<
-    std::is_same<typename Reader::Parser, StaticParser<Reader&> > >::type>
-    : std::true_type {};
-
-template <typename Reader> struct
-uses_static_parser<Reader&>
-    : uses_static_parser<Reader> {};
 
 // uses_dynamic_parser
 template <typename Reader, typename Enable = void> struct

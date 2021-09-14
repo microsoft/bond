@@ -89,4 +89,19 @@ class Serializer;
 template <typename Protocols = BuiltInProtocols, typename Writer>
 Serializer<Writer, Protocols> SerializeTo(Writer& output);
 
+// uses_static_parser
+template <typename Reader, typename Enable = void> struct
+uses_static_parser
+    : std::false_type {};
+
+template <typename Reader> struct
+uses_static_parser<Reader, typename boost::enable_if<
+    std::is_same<typename Reader::Parser, StaticParser<Reader&> > >::type>
+    : std::true_type {};
+
+template <typename Reader> struct
+uses_static_parser<Reader&>
+    : uses_static_parser<Reader> {};
+
+
 } // bond
