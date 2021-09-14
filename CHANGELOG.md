@@ -28,8 +28,8 @@ different versioning scheme, following the Haskell community's
 * Fixed `bond::DynamicParser` that may not emit transform's `OmittedField`
   for compile-time schema and an omitted optional field in the payload.
   ([Issue \#1120](https://github.com/microsoft/bond/issues/1120))
-* Removed `bond::blob`'s unnecessary `_content` member, making the type
-  smaller (32 -> 24 bytes).
+* Removed `bond::blob`'s unnecessary `_content` member, reducing its size
+  by 1 pointer.
 
 ## 9.0.5: 2021-04-14 ##
 
