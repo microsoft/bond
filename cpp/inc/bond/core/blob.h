@@ -29,7 +29,6 @@ public:
     /// @brief Default constructor
     blob()
         : _buffer(),
-          _content(),
           _length()
     {
     }
@@ -38,47 +37,42 @@ public:
     ///
     /// Not recommended because of buffer lifetime management.
     blob(const void* content, uint32_t length)
-        : _buffer(),
-          _content(static_cast<const char*>(content)),
+        : _buffer(boost::shared_ptr<const void>(), static_cast<const char*>(content)),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
     blob(const boost::shared_ptr<const char[]>& buffer, uint32_t length)
         : _buffer(buffer),
-          _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a boost::shared_ptr to const memory buffer
     blob(const boost::shared_ptr<const char[]>& buffer, uint32_t offset, uint32_t length)
-        : _buffer(buffer),
-          _content(bond::detail::checked_add(_buffer.get(), offset)),
+        : _buffer(buffer, bond::detail::checked_add(buffer.get(), offset)),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
     blob(const boost::shared_ptr<char[]>& buffer, uint32_t length)
         : _buffer(buffer),
-          _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a boost::shared_ptr to memory buffer
     blob(const boost::shared_ptr<char[]>& buffer, uint32_t offset, uint32_t length)
-        : _buffer(buffer),
-          _content(bond::detail::checked_add(_buffer.get(), offset)),
+        : _buffer(buffer, bond::detail::checked_add(buffer.get(), offset)),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -87,10 +81,9 @@ public:
     template <typename T, template <typename U> class SmartPtr>
     blob(const SmartPtr<T>& buffer, uint32_t length)
         : _buffer(wrap_in_shared_ptr(buffer)),
-          _content(_buffer.get()),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Construct from a smart pointer other than boost::shared_ptr
@@ -98,21 +91,18 @@ public:
     /// Not recommended for performance reasons. Use boost::shared_ptr whenever possible.
     template <typename T, template <typename U> class SmartPtr>
     blob(const SmartPtr<T>& buffer, uint32_t offset, uint32_t length)
-        : _buffer(wrap_in_shared_ptr(buffer)),
-          _content(bond::detail::checked_add(_buffer.get(), offset)),
+        : _buffer(wrap_in_shared_ptr(buffer, offset)),
           _length(length)
     {
-        bond::detail::checked_add(_content, length);
+        bond::detail::checked_add(_buffer.get(), length);
     }
 
     /// @brief Move constructor
     blob(blob&& that) BOND_NOEXCEPT_IF(
         std::is_nothrow_move_constructible<boost::shared_ptr<const char[]> >::value)
         : _buffer(std::move(that._buffer)),
-          _content(std::move(that._content)),
           _length(std::move(that._length))
     {
-        that._content = 0;
         that._length = 0;
     }
 
@@ -120,9 +110,7 @@ public:
         std::is_nothrow_move_assignable<boost::shared_ptr<const char[]> >::value)
     {
         _buffer = std::move(that._buffer);
-        _content = std::move(that._content);
         _length = std::move(that._length);
-        that._content = 0;
         that._length = 0;
         return *this;
     }
@@ -138,8 +126,7 @@ public:
             throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
 
-        _buffer = from._buffer;
-        _content = from._content + offset;
+        _buffer = boost::shared_ptr<const char[]>(from._buffer, from._buffer.get() + offset);
         _length = length;
     }
 
@@ -169,12 +156,7 @@ public:
             throw std::invalid_argument("Total of offset and length too large; must be less than or equal to length of blob");
         }
 
-        blob temp;
-        temp._buffer = _buffer;
-        temp._content = _content + offset;
-        temp._length = length;
-
-        return temp;
+        return blob(_buffer, offset, length);
     }
 
     /// @brief Return a blob object for a range from the specified offset to
@@ -186,17 +168,12 @@ public:
             throw std::invalid_argument("Offset too large; must be less than or equal to length of blob");
         }
 
-        blob temp = *this;
-        temp._content += offset;
-        temp._length -= offset;
-
-        return temp;
+        return blob(_buffer, offset, _length - offset);
     }
 
     /// @brief Swap with another blob
     void swap(blob& src)
     {
-        std::swap(_content, src._content);
         std::swap(_length, src._length);
         _buffer.swap(src._buffer);
     }
@@ -213,13 +190,13 @@ public:
     /// @brief Pointer to the content
     const char* content() const
     {
-        return _content;
+        return _buffer.get();
     }
 
     /// @brief Void pointer to the content
     const void* data() const
     {
-        return _content;
+        return _buffer.get();
     }
 
     /// @brief Length of the content
@@ -244,19 +221,19 @@ public:
     {
         return this == &src
                || ((_length == src._length)
-                   && (0 == ::memcmp(_content, src._content, _length)));
+                   && (0 == ::memcmp(_buffer.get(), src._buffer.get(), _length)));
     }
 
     /// @brief Iterator for the beginning of the blob
     const_iterator begin() const
     {
-        return _content;
+        return _buffer.get();
     }
 
     /// @brief Iterator for the end of the blob
     const_iterator end() const
     {
-        return _content + _length;
+        return _buffer.get() + _length;
     }
 
 
@@ -283,16 +260,14 @@ private:
     };
 
     template <typename T, template <typename U> class SmartPtr>
-    static boost::shared_ptr<const char[]> wrap_in_shared_ptr(const SmartPtr<T>& p)
+    static boost::shared_ptr<const char[]> wrap_in_shared_ptr(const SmartPtr<T>& p, uint32_t offset = 0)
     {
-        boost::shared_ptr<const char[]> ptr(static_cast<const char*>(static_cast<const void*>(p.get())),
+        boost::shared_ptr<const char[]> ptr(bond::detail::checked_add(static_cast<const char*>(static_cast<const void*>(p.get())), offset),
                                             deleter<SmartPtr<T> >(p));
         return ptr;
     }
 
     boost::shared_ptr<const char[]> _buffer;
-
-    const char* _content;
 
     uint32_t _length;
 };
@@ -398,16 +373,16 @@ is_list_container<blob>
 template <typename T>
 inline T blob_cast(const blob& from)
 {
-    if (from._buffer)
+    if (from._buffer.use_count() != 0)
     {
         boost::shared_array<char> ptr(const_cast<char*>(static_cast<const char*>(static_cast<const void*>(from._buffer.get()))),
                                       blob::deleter<boost::shared_ptr<const char[]> >(from._buffer));
 
-        return T(ptr, static_cast<uint32_t>(from._content - from._buffer.get()), from._length);
+        return T(ptr, static_cast<uint32_t>(0), from._length);
     }
     else
     {
-        return T(from._content, from._length);
+        return T(from._buffer.get(), from._length);
     }
 }
 
@@ -416,7 +391,7 @@ inline T blob_cast(const blob& from)
 template <typename A>
 inline blob blob_prolong(blob src, const A& allocator)
 {
-    if (src._buffer)
+    if (src._buffer.use_count() != 0)
     {
         return src;
     }
