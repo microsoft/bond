@@ -167,9 +167,7 @@ public:
             return true;
 
         _this.seekp(-3, std::ios_base::end);
-        _this << " : ";
-        _this << StructName(value);
-        _this << "\n{\n";
+        _this << " : " << StructName(value) << "\n{\n";
         return false;
     }
 
