@@ -5,8 +5,10 @@
 
 #include <bond/core/config.h>
 
+#include "bonded.h"
 #include "protocol.h"
 #include "schema.h"
+#include "detail/typeid_value.h"
 
 #include <boost/static_assert.hpp>
 
