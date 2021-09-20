@@ -272,8 +272,21 @@ $(document).ready(function(){initNavTree('traits_8h_source.html',''); initResiza
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="preprocessor">    template &lt;&gt; struct unique_buffer_magic_check&lt;Id&gt; {}; \</span></div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="preprocessor">    template &lt;&gt; struct buffer_magic&lt;Buffer&gt; : std::integral_constant&lt;uint16_t, Id&gt; {}</span></div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160; </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;} <span class="comment">// namespace bond</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">// uses_static_parser</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Reader, <span class="keyword">typename</span> Enable = <span class="keywordtype">void</span>&gt; <span class="keyword">struct</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;uses_static_parser</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    : std::false_type {};</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Reader&gt; <span class="keyword">struct</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;uses_static_parser&lt;Reader, <span class="keyword">typename</span> boost::enable_if&lt;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    std::is_same&lt;typename Reader::Parser, StaticParser&lt;Reader&amp;&gt; &gt; &gt;::type&gt;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    : std::true_type {};</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Reader&gt; <span class="keyword">struct</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;uses_static_parser&lt;Reader&amp;&gt;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    : uses_static_parser&lt;Reader&gt; {};</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160; </div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;} <span class="comment">// namespace bond</span></div>
 <div class="ttc" id="anamespacebond_html"><div class="ttname"><a href="namespacebond.html">bond</a></div><div class="ttdoc">namespace bond</div><div class="ttdef"><b>Definition:</b> apply.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
