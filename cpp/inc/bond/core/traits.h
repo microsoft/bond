@@ -174,5 +174,18 @@ unique_buffer_magic_check;
     template <> struct unique_buffer_magic_check<Id> {}; \
     template <> struct buffer_magic<Buffer> : std::integral_constant<uint16_t, Id> {}
 
+// uses_static_parser
+template <typename Reader, typename Enable = void> struct
+uses_static_parser
+    : std::false_type {};
+
+template <typename Reader> struct
+uses_static_parser<Reader, typename boost::enable_if<
+    std::is_same<typename Reader::Parser, StaticParser<Reader&> > >::type>
+    : std::true_type {};
+
+template <typename Reader> struct
+uses_static_parser<Reader&>
+    : uses_static_parser<Reader> {};
 
 } // namespace bond

@@ -5,10 +5,10 @@
 
 #include <bond/core/config.h>
 
+#include "bonded.h"
 #include "protocol.h"
 #include "schema.h"
-#include "bonded.h"
-#include <bond/core/detail/typeid_value.h>
+#include "detail/typeid_value.h"
 
 #include <boost/static_assert.hpp>
 

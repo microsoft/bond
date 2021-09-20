@@ -4,7 +4,6 @@
 #pragma once
 
 #include <bond/core/config.h>
-#include <bond/core/bond_fwd.h>
 
 #include "customize.h"
 #include "detail/any.h"
