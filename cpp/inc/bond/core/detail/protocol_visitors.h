@@ -22,6 +22,7 @@ namespace bond
 {
 
 class RuntimeSchema;
+struct SchemaReader;
 
 template <typename Writer, typename Protocols>
 class Serializer;
@@ -186,8 +187,6 @@ BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const
     catch(...)
     {}
 }
-
-struct SchemaReader;
 
 template <typename T>
 void Skip(SchemaReader&, const bonded<T, SchemaReader&>&, const std::nothrow_t&) BOND_NOEXCEPT
