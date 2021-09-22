@@ -97,8 +97,8 @@ bool Apply(const Transform& transform, const T& value)
 template <typename T, typename Transform>
 bool Apply(const Transform& transform)
 {
-    detail::SchemaReader input;
-    return detail::SchemaReader::Parser{ input }.Apply(transform, typename schema<T>::type{});
+    SchemaReader input;
+    return SchemaReader::Parser{ input }.Apply(transform, typename schema<T>::type{});
 }
 
 
@@ -106,8 +106,8 @@ bool Apply(const Transform& transform)
 template <typename Transform>
 bool Apply(const Transform& transform, const RuntimeSchema& schema)
 {
-    detail::SchemaReader input;
-    return detail::SchemaReader::Parser{ input }.Apply(transform, schema);
+    SchemaReader input;
+    return SchemaReader::Parser{ input }.Apply(transform, schema);
 }
 
 } // namespace bond

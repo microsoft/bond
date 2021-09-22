@@ -169,7 +169,7 @@ struct SchemaReader
 
 
 template <typename Unused> struct
-uses_marshaled_bonded<detail::SchemaReader&, Unused> : std::false_type
+uses_marshaled_bonded<SchemaReader&, Unused> : std::false_type
 {};
 
 
