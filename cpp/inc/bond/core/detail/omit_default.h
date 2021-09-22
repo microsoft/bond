@@ -3,7 +3,14 @@
 
 #pragma once
 
-#include <bond/core/config.h>
+#include <bond/core/bond_fwd.h>
+#include <bond/core/maybe.h>
+#include <bond/core/reflection.h>
+#include <bond/core/stl_containers.h>
+#include <bond/core/traits.h>
+#include "odr.h"
+
+#include <boost/utility/enable_if.hpp>
 
 namespace bond
 {
