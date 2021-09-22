@@ -159,13 +159,13 @@ namespace detail
 
     template <typename T, typename Unused>
     once_flag SchemaCache<T, Unused>::flag;
-
-
-    struct SchemaReader
-    {
-        using Parser = StaticParser<SchemaReader&>;
-    };
 }
+
+
+struct SchemaReader
+{
+    using Parser = StaticParser<SchemaReader&>;
+};
 
 
 template <typename Unused> struct
