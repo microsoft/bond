@@ -37,7 +37,8 @@ public:
     ///
     /// Not recommended because of buffer lifetime management.
     blob(const void* content, uint32_t length)
-        : _buffer(boost::shared_ptr<const void>(), static_cast<const char*>(content)),
+        : _buffer(boost::shared_ptr<const void>(), static_cast<const char*>(content)),  // Alias to an empty shared_ptr in order to store
+                                                                                        // only a content pointer without the control block.
           _length(length)
     {
         bond::detail::checked_add(_buffer.get(), length);
