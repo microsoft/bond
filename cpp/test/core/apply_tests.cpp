@@ -166,7 +166,7 @@ public:
         if (!_structs)
             return true;
 
-        _this.seekp(-3, std::ios_base::end);
+        _this.seekp(-3, std::ios_base::end);    // Undo the added "\n{\n" in Base.
         _this << " : " << StructName(value) << "\n{\n";
         return false;
     }
@@ -256,7 +256,7 @@ private:
         const char* labels[] = { "list", "set", "map" };
         _this << labels[_container - bond::BT_LIST] << '<';
         (void)std::initializer_list<int>{ (TypeName(value), _this << ", ", 0)... };
-        _this.seekp(-2, std::ios_base::end);
+        _this.seekp(-2, std::ios_base::end);    // Undo the last ", ".
         _this << '>';
     }
 
