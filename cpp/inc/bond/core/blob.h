@@ -27,7 +27,7 @@ public:
     typedef const char* const_iterator;
 
     /// @brief Default constructor
-    blob()
+    blob() BOND_NOEXCEPT
         : _buffer(),
           _length()
     {
@@ -173,7 +173,7 @@ public:
     }
 
     /// @brief Swap with another blob
-    void swap(blob& src)
+    void swap(blob& src) BOND_NOEXCEPT
     {
         std::swap(_length, src._length);
         _buffer.swap(src._buffer);
@@ -181,7 +181,7 @@ public:
 
     /// @brief Clear reference to the underlying memory buffer and reset the
     /// blob to empty
-    void clear()
+    void clear() BOND_NOEXCEPT
     {
         blob temp;
 
@@ -189,36 +189,36 @@ public:
     }
 
     /// @brief Pointer to the content
-    const char* content() const
+    const char* content() const BOND_NOEXCEPT
     {
         return _buffer.get();
     }
 
     /// @brief Void pointer to the content
-    const void* data() const
+    const void* data() const BOND_NOEXCEPT
     {
         return _buffer.get();
     }
 
     /// @brief Length of the content
-    uint32_t length() const
+    uint32_t length() const BOND_NOEXCEPT
     {
         return _length;
     }
 
     /// @brief Length of the content
-    uint32_t size() const
+    uint32_t size() const BOND_NOEXCEPT
     {
         return _length;
     }
 
     /// @brief Check if the blob is empty (i.e. lenght == 0)
-    bool empty() const
+    bool empty() const BOND_NOEXCEPT
     {
         return 0 == length();
     }
 
-    bool operator==(const blob& src) const
+    bool operator==(const blob& src) const BOND_NOEXCEPT
     {
         return this == &src
                || ((_length == src._length)
@@ -226,13 +226,13 @@ public:
     }
 
     /// @brief Iterator for the beginning of the blob
-    const_iterator begin() const
+    const_iterator begin() const BOND_NOEXCEPT
     {
         return _buffer.get();
     }
 
     /// @brief Iterator for the end of the blob
-    const_iterator end() const
+    const_iterator end() const BOND_NOEXCEPT
     {
         return _buffer.get() + _length;
     }
@@ -274,12 +274,12 @@ private:
 };
 
 /// @brief Swap two blobs
-inline void swap(blob& src, blob& dst)
+inline void swap(blob& src, blob& dst) BOND_NOEXCEPT
 {
     src.swap(dst);
 }
 
-inline bool operator != (const blob& x, const blob& y)
+inline bool operator != (const blob& x, const blob& y) BOND_NOEXCEPT
 {
     return !(x == y);
 }
