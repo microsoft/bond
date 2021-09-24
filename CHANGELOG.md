@@ -31,6 +31,7 @@ different versioning scheme, following the Haskell community's
 * Fixed missing include directives.
 * Removed `bond::blob`'s unnecessary `_content` member, reducing its size
   by 1 pointer.
+* Added `noexcept` to `bond::blob`'s non-throwing functions.
 
 ## 9.0.5: 2021-04-14 ##
 
