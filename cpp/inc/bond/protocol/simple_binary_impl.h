@@ -7,6 +7,8 @@
 
 #include "simple_binary.h"
 
+#include <bond/core/detail/protocol_visitors.h>
+
 namespace bond
 {
 
