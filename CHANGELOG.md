@@ -32,6 +32,7 @@ different versioning scheme, following the Haskell community's
 * Removed `bond::blob`'s unnecessary `_content` member, reducing its size
   by 1 pointer.
 * Added an ability to apply transform to a schema.
+* Added `noexcept` to `bond::blob`'s non-throwing functions.
 
 ## 9.0.5: 2021-04-14 ##
 
