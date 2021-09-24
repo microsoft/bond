@@ -166,7 +166,7 @@ public:
         if (!_structs)
             return true;
 
-        _this.seekp(-3, std::ios_base::end);    // Undo the added "\n{\n" in Base.
+        _this.seekp(-3, std::ios_base::end);    // Undo the added "\n{\n" in Begin.
         _this << " : " << StructName(value) << "\n{\n";
         return false;
     }
