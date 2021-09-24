@@ -6,6 +6,7 @@
 #include <bond/core/config.h>
 
 #include "bond_fwd.h"
+#include <utility>
 
 namespace bond
 {
