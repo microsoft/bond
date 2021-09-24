@@ -14,7 +14,7 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * IDL core version: TBD
-* C++ version: TBD (bug fix bump needed)
+* C++ version: TBD (minor version bump needed)
 * C# NuGet version: TBD
 * `gbc` & compiler library: TBD
 
