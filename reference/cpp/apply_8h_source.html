@@ -186,7 +186,24 @@ $(document).ready(function(){initNavTree('apply_8h_source.html',''); initResizab
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordflow">return</span> detail::ApplyTransform&lt;Protocols&gt;(transform, value);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace bond</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Transform&gt;</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="namespacebond.html#aa3dd1fd18c4352154f0152a2727f2ca9">   98</a></span>&#160;<span class="keywordtype">bool</span> Apply(<span class="keyword">const</span> Transform&amp; transform)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;{</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    SchemaReader input;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">return</span> SchemaReader::Parser{ input }.Apply(transform, <span class="keyword">typename</span> schema&lt;T&gt;::type{});</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Transform&gt;</div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="namespacebond.html#ad1b72ca36c664ff9e137426b29ba1d77">  107</a></span>&#160;<span class="keywordtype">bool</span> Apply(<span class="keyword">const</span> Transform&amp; transform, <span class="keyword">const</span> <a class="code" href="classbond_1_1_runtime_schema.html">RuntimeSchema</a>&amp; schema)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;{</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    SchemaReader input;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordflow">return</span> SchemaReader::Parser{ input }.Apply(transform, schema);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;} <span class="comment">// namespace bond</span></div>
+<div class="ttc" id="aclassbond_1_1_runtime_schema_html"><div class="ttname"><a href="classbond_1_1_runtime_schema.html">bond::RuntimeSchema</a></div><div class="ttdoc">Represents runtime schema See User's Manual</div><div class="ttdef"><b>Definition:</b> runtime_schema.h:26</div></div>
 <div class="ttc" id="aclassbond_1_1bonded_html"><div class="ttname"><a href="classbond_1_1bonded.html">bond::bonded</a></div><div class="ttdoc">Represents data for a struct T known at compile-time.</div><div class="ttdef"><b>Definition:</b> bonded.h:63</div></div>
 <div class="ttc" id="anamespacebond_html"><div class="ttname"><a href="namespacebond.html">bond</a></div><div class="ttdoc">namespace bond</div><div class="ttdef"><b>Definition:</b> apply.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->

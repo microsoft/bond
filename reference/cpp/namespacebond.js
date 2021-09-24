@@ -81,6 +81,8 @@ var namespacebond =
     [ "InputBuffer", "classbond_1_1_input_buffer.html", "classbond_1_1_input_buffer" ],
     [ "OutputMemoryStream", "classbond_1_1_output_memory_stream.html", "classbond_1_1_output_memory_stream" ],
     [ "OutputBuffer", "namespacebond.html#a0e28a508e6180e6b0ce18d45a539a353", null ],
+    [ "Apply", "namespacebond.html#aa3dd1fd18c4352154f0152a2727f2ca9", null ],
+    [ "Apply", "namespacebond.html#ad1b72ca36c664ff9e137426b29ba1d77", null ],
     [ "blob_prolong", "namespacebond.html#a82a1129db4a4f73e0fb597a759c11fc2", null ],
     [ "Deserialize", "namespacebond.html#a0cf47924d171456a07bafdb036a43f23", null ],
     [ "Deserialize", "namespacebond.html#a7b47a58f00ec543f96dc21fbc9b23ffb", null ],
