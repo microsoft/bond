@@ -22,6 +22,7 @@ namespace bond
 {
 
 class RuntimeSchema;
+struct SchemaReader;
 
 template <typename Writer, typename Protocols>
 class Serializer;
@@ -177,7 +178,7 @@ inline void Skip(const bonded<T, Reader<Buffer, MarshaledBondedProtocols>&>& bon
 
 
 template <typename Reader, typename T>
-BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const std::nothrow_t&)
+BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const std::nothrow_t&) BOND_NOEXCEPT
 {
     try
     {
@@ -187,16 +188,20 @@ BOND_NO_INLINE void Skip(Reader& reader, const bonded<T, Reader&>& bonded, const
     {}
 }
 
+template <typename T>
+void Skip(SchemaReader&, const bonded<T, SchemaReader&>&, const std::nothrow_t&) BOND_NOEXCEPT
+{}
+
 
 template <typename T>
-inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/)
+inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/) BOND_NOEXCEPT
 {
     // Not skipping for outer structures
 }
 
 
 template <typename T>
-inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/, const std::nothrow_t&)
+inline void Skip(ProtocolReader& /*reader*/, const bonded<T>& /*bonded*/, const std::nothrow_t&) BOND_NOEXCEPT
 {
     // Not skipping for outer structures
 }

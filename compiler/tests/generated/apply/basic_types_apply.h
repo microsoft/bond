@@ -19,8 +19,7 @@ namespace bond
                const ::bond::bonded< ::tests::BasicTypes>& value);
 
     extern template DllExport
-    bool Apply(const ::bond::InitSchemaDef& transform,
-               const ::tests::BasicTypes& value);
+    bool Apply< ::tests::BasicTypes>(const ::bond::InitSchemaDef& transform);
 
     extern template DllExport
     bool Apply(const ::bond::Null& transform,

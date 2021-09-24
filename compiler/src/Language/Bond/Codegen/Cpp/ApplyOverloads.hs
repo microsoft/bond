@@ -33,8 +33,7 @@ applyOverloads protocols cpp attr extern s@Struct {..} | null declParams = [lt|
                const ::bond::bonded< #{qualifiedName}>& value);
 
     #{extern}template #{attr}
-    bool Apply(const ::bond::InitSchemaDef& transform,
-               const #{qualifiedName}& value);
+    bool Apply< #{qualifiedName}>(const ::bond::InitSchemaDef& transform);
 
     #{extern}template #{attr}
     bool Apply(const ::bond::Null& transform,

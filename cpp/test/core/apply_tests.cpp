@@ -1,7 +1,14 @@
 #include "precompiled.h"
 #include "apply_tests.h"
-#include "apply_test_apply.h"   // Note that we don't want to include apply_test_reflection.h so that
-                                // we only see pre-generated Apply overloads.
+#include "apply_test_reflection.h"
+#include "apply_test_apply.h"   // Note that pre-generated Apply overloads will be chosen
+                                // even though apply_test_reflection.h is included.
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/numeric.hpp>
+
+#include <iterator>
+#include <map>
+#include <sstream>
 
 void Init(unittest::apply::Struct& obj)
 {
@@ -134,6 +141,210 @@ Bonded(uint16_t version = bond::v1)
 }
 
 
+class IDLBuilder : public bond::Transform
+{
+public:
+    explicit IDLBuilder(std::map<std::string, std::string>& structs)
+        : _structs{ &structs },
+          _qualifiedName{},
+          _container{ bond::BT_UNAVAILABLE }
+    {}
+
+    void Begin(const bond::Metadata& metadata) const
+    {
+        _qualifiedName = &metadata.qualified_name;
+
+        if (_structs->find(*_qualifiedName) == _structs->end())
+            _this << std::boolalpha << "struct " << *_qualifiedName << "\n{\n";
+        else
+            _structs = {};
+    }
+
+    template <typename T>
+    bool Base(const T& value) const
+    {
+        if (!_structs)
+            return true;
+
+        _this.seekp(-3, std::ios_base::end);    // Undo the added "\n{\n" in Begin.
+        _this << " : " << StructName(value) << "\n{\n";
+        return false;
+    }
+
+    template <typename T>
+    bool Field(uint16_t id, const bond::Metadata& metadata, const T& value) const
+    {
+        if (!_structs)
+            return true;
+
+        _this << "    " << id << ": " << ToString(metadata.modifier) << ' ';
+        TypeName(value);
+        _this << ' ' << metadata.name;
+
+        if (metadata.default_value.nothing)
+            _this << " = nothing";
+        else
+            DefaultValue<typename bond::remove_bonded_value<T>::type>(metadata.default_value);
+
+        _this << ";\n";
+        return false;
+    }
+
+    template <typename T>
+    void Container(const T& value, std::size_t size) const
+    {
+        Container(size, value);
+    }
+
+    template <typename K, typename T>
+    void Container(const K& key, const T& value, std::size_t size) const
+    {
+        Container(size, key, value);
+    }
+
+    template <typename T>
+    bool UnknownField(std::uint16_t /*id*/, const T& /*value*/) const BOND_NOEXCEPT
+    {
+        return !_structs;
+    }
+
+    void UnknownEnd() const BOND_NOEXCEPT
+    {}
+
+    void End() const
+    {
+        if (!_structs)
+            return;
+
+        _this << "};\n";
+        _structs->emplace(*_qualifiedName, _this.str());
+    }
+
+private:
+    template <typename T>
+    const std::string& StructName(const T& value) const
+    {
+        IDLBuilder that{ *_structs };
+        Apply(that, value);
+        return *that._qualifiedName;
+    }
+
+    template <typename T, typename Reader, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
+    void TypeName(const bond::value<T, Reader>& /*value*/) const
+    {
+        _this << bond::detail::type<typename std::conditional<std::is_enum<T>::value, std::int32_t, T>::type>::name();
+    }
+
+    template <typename T>
+    void TypeName(const T& value) const
+    {
+        _container = bond::GetTypeId(value);
+
+        if (_container == bond::BT_STRUCT)
+            _this << StructName(value);
+        else
+            Apply(*this, value);
+    }
+
+    template <typename... T>
+    void Container(std::size_t size, const T&... value) const
+    {
+        BOOST_VERIFY(size == 0);
+        assert(bond::BT_LIST <= _container && _container <= bond::BT_MAP);
+        assert((sizeof...(T) == 2) == (_container == bond::BT_MAP));
+
+        const char* labels[] = { "list", "set", "map" };
+        _this << labels[_container - bond::BT_LIST] << '<';
+        (void)std::initializer_list<int>{ (TypeName(value), _this << ", ", 0)... };
+        _this.seekp(-2, std::ios_base::end);    // Undo the last ", ".
+        _this << '>';
+    }
+
+    template <typename T, typename Enable = void> struct
+    default_value_field;
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<std::is_unsigned<T> >::type> : std::integral_constant<std::uint64_t bond::Variant::*, &bond::Variant::uint_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_signed_int_or_enum<T> >::type> : std::integral_constant<std::int64_t bond::Variant::*, &bond::Variant::int_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<std::is_floating_point<T> >::type> : std::integral_constant<double bond::Variant::*, &bond::Variant::double_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_string<T> >::type> : std::integral_constant<std::string bond::Variant::*, &bond::Variant::string_value> {};
+
+    template <typename T> struct
+    default_value_field<T, typename boost::enable_if<bond::is_wstring<T> >::type> : std::integral_constant<std::wstring bond::Variant::*, &bond::Variant::wstring_value> {};
+
+    template <typename T>
+    void FormatValue(const T& value) const
+    {
+        _this << value;
+    }
+
+    void FormatValue(const std::wstring& value) const
+    {
+        std::transform(value.begin(), value.end(), std::ostreambuf_iterator<char>(_this), [](wchar_t wc) { return char(wc); });
+    }
+
+    template <typename T, typename boost::enable_if<bond::is_basic_type<T> >::type* = nullptr>
+    void DefaultValue(const bond::Variant& var) const
+    {
+        const auto& value = var.*default_value_field<T>::value;
+        if (value == decltype(value){})
+            return;
+
+        _this << " = ";
+        if (bond::is_string_type<T>::value)
+            _this << '"';
+
+#if defined(_MSC_VER) && _MSC_VER < 1910
+#pragma warning(push)
+#pragma warning(disable: 4800)  // warning C4800: 'const uint64_t': forcing value to bool 'true' or 'false'
+#endif
+        FormatValue(static_cast<T>(value));
+#if defined(_MSC_VER) && _MSC_VER < 1910
+#pragma warning(pop)
+#endif
+        if (bond::is_string_type<T>::value)
+            _this << '"';
+    }
+
+    template <typename T, typename boost::disable_if<bond::is_basic_type<T> >::type* = nullptr>
+    void DefaultValue(const bond::Variant& /*var*/) const BOND_NOEXCEPT
+    {}
+
+    mutable std::map<std::string, std::string>* _structs;
+    mutable const std::string* _qualifiedName;
+    mutable std::ostringstream _this;
+    mutable bond::BondDataType _container;
+};
+
+
+struct ApplySchemaTests
+{
+    template <typename T>
+    void operator()(const T&)
+    {
+        bond::RuntimeSchema schema = bond::GetRuntimeSchema<T>();
+
+        std::map<std::string, std::string> structs1;
+        Apply<T>(IDLBuilder{ structs1 });
+        auto idl1 = boost::accumulate(structs1 | boost::adaptors::map_values, std::string{});
+        UT_AssertAreEqual(structs1.size(), schema.GetSchema().structs.size());
+
+        std::map<std::string, std::string> structs2;
+        Apply(IDLBuilder{ structs2 }, schema);
+        auto idl2 = boost::accumulate(structs2 | boost::adaptors::map_values, std::string{});
+        UT_AssertAreEqual(structs2.size(), schema.GetSchema().structs.size());
+
+        UT_AssertAreEqual(idl1, idl2);
+    }
+};
+
+
 template <typename Reader, typename Writer>
 struct Tests
 {
@@ -151,8 +362,6 @@ struct Tests
 
         Bonded<Reader, Writer, X>();
         Bonded<Reader, Writer, X>(Reader::version);
-
-        bond::RuntimeSchema schema = bond::GetRuntimeSchema<X>();
     }
 };
 
@@ -169,15 +378,21 @@ struct Tests<Reader, bond::CompactBinaryWriter<bond::OutputBuffer>::Pass0>
 };
 
 
+typedef boost::mpl::list<
+    unittest::apply::Struct,
+    unittest::apply::Derived
+> Types;
+
 template <typename Reader, typename Writer>
 TEST_CASE_BEGIN(AllTests)
 {
-    typedef boost::mpl::list<
-        unittest::apply::Struct,
-        unittest::apply::Derived
-    > Types;
-
     boost::mpl::for_each<Types>(Tests<Reader, Writer>());
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(SchemaTests)
+{
+    boost::mpl::for_each<Types>(ApplySchemaTests{});
 }
 TEST_CASE_END
 
@@ -188,6 +403,14 @@ void ApplyTests(const char* name)
     UnitTestSuite suite(name);
     
     AddTestCase<TEST_ID(N), AllTests, Reader, Writer>(suite, "Use generated *_apply.cpp");
+}
+
+template <uint16_t N>
+void ApplyTests(const char* name)
+{
+    UnitTestSuite suite(name);
+
+    AddTestCase<TEST_ID(N), SchemaTests>(suite, "Apply transform to compile-time and runtime schema");
 }
 
 
@@ -221,6 +444,8 @@ void ApplyTest::Initialize()
             bond::FastBinaryReader<bond::InputBuffer>,
             bond::FastBinaryWriter<bond::OutputBuffer> >("Apply tests for FastBinary");
     );
+
+    ApplyTests<0x1605>("Apply tests for compile-time and runtime schemas");
 }
 
 

@@ -92,4 +92,22 @@ bool Apply(const Transform& transform, const T& value)
     return detail::ApplyTransform<Protocols>(transform, value);
 }
 
+
+/// @brief Apply transform to compile-time schema
+template <typename T, typename Transform>
+bool Apply(const Transform& transform)
+{
+    SchemaReader input;
+    return SchemaReader::Parser{ input }.Apply(transform, typename schema<T>::type{});
+}
+
+
+/// @brief Apply transform to runtime schema
+template <typename Transform>
+bool Apply(const Transform& transform, const RuntimeSchema& schema)
+{
+    SchemaReader input;
+    return SchemaReader::Parser{ input }.Apply(transform, schema);
+}
+
 } // namespace bond

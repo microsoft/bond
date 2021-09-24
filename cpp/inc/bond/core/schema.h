@@ -162,6 +162,17 @@ namespace detail
 }
 
 
+struct SchemaReader
+{
+    using Parser = StaticParser<SchemaReader&>;
+};
+
+
+template <typename Unused> struct
+uses_marshaled_bonded<SchemaReader&, Unused> : std::false_type
+{};
+
+
 //
 // InitSchemaDef transform creates an instance of runtime schema for the input
 //
@@ -189,7 +200,7 @@ public:
     template <typename T>
     bool Base(const T& /*value*/) const
     {
-        TypeDef type = GetTypeDef<T>();
+        TypeDef type = GetTypeDef<typename remove_bonded<T>::type>();
         This().base_def.set(type);
         return false;
     }
@@ -202,7 +213,7 @@ public:
 
         field.id = id;
         field.metadata = metadata;
-        field.type = GetTypeDef<typename remove_maybe<T>::type>();
+        field.type = GetTypeDef<typename remove_bonded_value<T>::type>();
 
         This().fields.push_back(field);
         return false;
@@ -309,15 +320,7 @@ namespace detail
 template <typename T, typename Unused>
 void SchemaCache<T, Unused>::AppendStructDef(SchemaDef* s)
 {
-    // To apply InitSchemaDef transform we need a reference to an
-    // object T. However the transform never accesses the object or
-    // its fields. We can't construct an actual object since we
-    // need to support stateful allocators that can't allocate from
-    // a default-constructed instance and containers which allocate in
-    // default constructor.
-    //
-    // Thus, we make a dummy const T& from a nullptr.
-    Apply(InitSchemaDef(*s), static_cast<const T&>(*static_cast<T*>(0)));
+    Apply<T>(InitSchemaDef{ *s });
 }
 
 } // detail
