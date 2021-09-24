@@ -7,6 +7,7 @@
 
 #include <bond/core/blob.h>
 #include <bond/core/reflection.h>
+
 #include <boost/utility/enable_if.hpp>
 
 namespace bond

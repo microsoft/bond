@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <bond/core/config.h>
+
 #include <bond/core/bond_fwd.h>
+
 #include <boost/utility/enable_if.hpp>
 
 namespace bond
