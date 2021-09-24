@@ -100,7 +100,7 @@ var namespacebond =
     [ "operator==", "namespacebond.html#a8ba7cc2dfc756a6910b8352d12f2f4a7", null ],
     [ "operator==", "namespacebond.html#a439e77c37a37f088931b50b6d7ebfbc7", null ],
     [ "Serialize", "namespacebond.html#a3c5e0c8c158f355e63cc748d6798bf9a", null ],
-    [ "swap", "namespacebond.html#aaee26a3b93751ee32ca45d5c33badaf7", null ],
+    [ "swap", "namespacebond.html#a4a0bd22aed8af92e7d6d58335d34b37a", null ],
     [ "swap", "namespacebond.html#ab800887609f29135201580ad0044452b", null ],
     [ "Unmarshal", "namespacebond.html#afe51d9bd184a8d8108485380861d8b33", null ],
     [ "Unmarshal", "namespacebond.html#affc02b3be7b924616e5dbb3b1686960c", null ],
