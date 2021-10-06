@@ -15,7 +15,7 @@ different versioning scheme, following the Haskell community's
 
 * IDL core version: TBD
 * C++ version: TBD (minor version bump needed)
-* C# NuGet version: TBD
+* C# NuGet version: (minor version bump needed)
 * `gbc` & compiler library: TBD
 
 ### C++ ###
@@ -36,7 +36,10 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
-* `OutputBuffer` can be extended to use buffer allocators other than `new byte[]` (e.g. `ArrayPool<byte>.Rent()`). ([Pull request \#1128](https://github.com/microsoft/bond/pull/1128))
+* Added virtual method `OutputBuffer.ResizeBuffer` that can be overridden to
+  use buffer allocators other than `new byte[]` (e.g.
+  `ArrayPool<byte>.Rent()`). ([Pull request
+  \#1128](https://github.com/microsoft/bond/pull/1128))
 
 ## 9.0.5: 2021-04-14 ##
 
