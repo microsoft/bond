@@ -251,6 +251,13 @@ namespace Bond.IO.Safe
         /// <param name="buffer">Existing buffer.</param>
         /// <param name="newSize">New buffer size.</param>
         /// <returns>The new buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementations are responsible for ensuring that the new buffer
+        /// is at least <paramref name="newSize"/> bytes large and that the
+        /// bytes in <paramref name="buffer"/> are copied to the new buffer.
+        /// </para>
+        /// </remarks>
         protected virtual byte[] ResizeBuffer(byte[] buffer, int newSize)
         {
             Array.Resize(ref buffer, newSize);
