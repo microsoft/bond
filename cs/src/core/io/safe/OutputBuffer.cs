@@ -36,14 +36,22 @@ namespace Bond.IO.Safe
         }
 
         public OutputBuffer(int length = 64 * 1024)
-            : this(new byte[length])
-        {}
+            : this()
+        {
+            buffer = ResizeBuffer(null, length);
+            this.length = buffer.Length;
+        }
 
         public OutputBuffer(byte[] buffer)
+            : this()
         {
-            Debug.Assert(BitConverter.IsLittleEndian);
             this.buffer = buffer;
             length = buffer.Length;
+        }
+
+        private OutputBuffer()
+        {
+            Debug.Assert(BitConverter.IsLittleEndian);
             position = 0;
         }
 
@@ -233,7 +241,27 @@ namespace Bond.IO.Safe
                 length = minLength;
             }
 
-            Array.Resize(ref buffer, length);
+            buffer = ResizeBuffer(buffer, length);
+            length = buffer.Length;
+        }
+
+        /// <summary>
+        /// Resize the internal buffer.
+        /// </summary>
+        /// <param name="buffer">Existing buffer.</param>
+        /// <param name="newSize">New buffer size.</param>
+        /// <returns>The new buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementations are responsible for ensuring that the new buffer
+        /// is at least <paramref name="newSize"/> bytes large and that the
+        /// bytes in <paramref name="buffer"/> are copied to the new buffer.
+        /// </para>
+        /// </remarks>
+        protected virtual byte[] ResizeBuffer(byte[] buffer, int newSize)
+        {
+            Array.Resize(ref buffer, newSize);
+            return buffer;
         }
 
         #region layouts
