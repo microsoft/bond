@@ -123,7 +123,7 @@ $(document).ready(function(){initNavTree('win__thread__pool_8h_source.html','');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">namespace </span>detail</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        [[noreturn]] <span class="keywordtype">void</span> Win32Exception(<span class="keyword">const</span> <span class="keywordtype">char</span>* message)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        [[noreturn]] <span class="keyword">inline</span> <span class="keywordtype">void</span> Win32Exception(<span class="keyword">const</span> <span class="keywordtype">char</span>* message)</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordflow">throw</span> std::system_error{</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                std::error_code{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(::GetLastError()), std::system_category() },</div>
