@@ -20,6 +20,9 @@ different versioning scheme, following the Haskell community's
 
 ### C++ ###
 
+* Fixed multiple symbol definition for Win32Exception in
+  `grpc/win_thread_pool.h`. ([Issue
+  \#1129](https://github.com/microsoft/bond/issues/1129))
 * Add forward declaration for `GenericWriteVariableUnsigned` to fix "C3861:
   'GenericWriteVariableUnsigned': identifier not found" when using custom
   streams that do not have their own implementation of
