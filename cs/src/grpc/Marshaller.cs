@@ -8,6 +8,7 @@ namespace Bond.Grpc
     using Bond.IO.Unsafe;
     using Bond.Protocols;
 
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public static class Marshaller<T>
     {
         static Marshaller()

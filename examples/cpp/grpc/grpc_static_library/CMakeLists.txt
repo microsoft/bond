@@ -42,3 +42,8 @@ cxx_target_compile_definitions (MSVC grpc_static_library_server PRIVATE
 
 cxx_target_compile_definitions (MSVC grpc_static_library_client PRIVATE
     -D_WIN32_WINNT=0x0600)
+
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc_static_library_lib)
+cxx_target_no_warn_deprecated (grpc_static_library_server)
+cxx_target_no_warn_deprecated (grpc_static_library_client)

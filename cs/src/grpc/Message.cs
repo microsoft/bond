@@ -9,6 +9,7 @@ namespace Bond.Grpc
     /// Interface representing a Bond message of a specific payload type.
     /// </summary>
     /// <typeparam name="T">The type of the message payload.</typeparam>
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public interface IMessage<out T>
     {
         /// <summary>
@@ -31,6 +32,7 @@ namespace Bond.Grpc
     /// <summary>
     /// Factory methods for creating <see cref="IMessage{T}" /> instances.
     /// </summary>
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public static class Message
     {
         /// <summary>
@@ -99,6 +101,7 @@ namespace Bond.Grpc
     /// A Bond message of a given type
     /// </summary>
     /// <typeparam name="TPayload">The type of the message payload.</typeparam>
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public class Message<TPayload> : IMessage<TPayload>
     {
         /// <summary>

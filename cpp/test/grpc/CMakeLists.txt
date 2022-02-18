@@ -26,6 +26,9 @@ function (add_unit_test)
 
     cxx_target_compile_options (Clang ${name} PRIVATE -DBOOST_ASIO_HAS_STD_CHRONO)
     cxx_target_compile_options (AppleClang ${name} PRIVATE -DBOOST_ASIO_HAS_STD_CHRONO)
+
+    # Supress warning about [[deprecated]] Bond-over-gRPC code.
+    cxx_target_no_warn_deprecated (${name})
 endfunction()
 
 
@@ -35,6 +38,8 @@ add_target_to_folder (grpc_test_common)
 target_include_directories (grpc_test_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc_test_common)
 target_link_libraries (grpc_test_common PUBLIC
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     grpc++)
@@ -57,6 +62,8 @@ target_include_directories (grpc_test_services PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
 cxx_target_compile_options (MSVC grpc_test_services PRIVATE -D_WIN32_WINNT=0x0600)
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc_test_services)
 target_link_libraries(grpc_test_services PRIVATE bond grpc++)
 add_dependencies(grpc_test_services grpc_test_services_codegen)
 

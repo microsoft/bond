@@ -265,6 +265,12 @@ See example: `examples/cpp/core/schema_view`
 Service definition
 ------------------
 
+**Bond-over-gRPC is deprecated and will be completely removed from Bond in
+May 2022.** See GitHub issue [\#1131, Bond-over-gRPC will be deprecated
+February 2022](https://github.com/microsoft/bond/issues/1131), for full
+details. `gbc` will still be able to parse service definitions and emit them
+in JSON AST, but C++ and C# codegen will be removed in May 2022.
+
 A service definition consists of a service name and methods:
 
 ```

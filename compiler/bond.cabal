@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5f829cf187d9630385924b752fae193c51da82b2d9bfc0ef8f38f23a638fc604
+-- hash: b3e1e8755f812c54ff2252111e7b261404f305c68fbcdde72babcd762faf6acb
 
 name:           bond
 version:        0.12.1.0
@@ -89,7 +89,7 @@ executable gbc
       Options
       Paths_bond
   hs-source-dirs:
-      ./.
+      ./
   build-depends:
       aeson
     , async
@@ -130,7 +130,7 @@ test-suite gbc-tests
       Options
   hs-source-dirs:
       tests
-      ./.
+      ./
   build-depends:
       Diff
     , HUnit

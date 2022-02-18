@@ -8,6 +8,10 @@
     <AssemblyName>GrpcCompatShared</AssemblyName>
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Suppress warning about calling Obsolete Bond.Grpc code. -->
+    <NoWarn>618;$(NoWarn)</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="1.17.1" />
   </ItemGroup>

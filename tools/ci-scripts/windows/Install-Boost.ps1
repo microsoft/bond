@@ -95,9 +95,9 @@ mkdir $lib64Dir | Out-Null
 
 function Install-BoostHeaders
 {
-    Write-Progress -Activity 'Installing Boost' -Status "Installing 'boost' (headers)"
+    Write-Progress -Activity 'Installing Boost' -Status "Installing 'boost' (headers) version $Version"
 
-    if ($PSCmdlet.ShouldProcess('boost', 'Install NuGet package'))
+    if ($PSCmdlet.ShouldProcess("boost version $Version", 'Install NuGet package'))
     {
         Install-NuGetPackage `
             -PackageId 'boost' `
@@ -114,9 +114,9 @@ function Install-BoostComponent([string]$Component)
 {
     $packageId = "$Component-vc$(ConvertVcToolsetVer-ToBoostPackageFormat $VcToolsetVer)"
 
-    Write-Progress -Activity 'Installing Boost' -Status "Installing '$packageId'"
+    Write-Progress -Activity 'Installing Boost' -Status "Installing '$packageId' version $Version"
 
-    if ($PSCmdlet.ShouldProcess($packageId, 'Install NuGet package'))
+    if ($PSCmdlet.ShouldProcess("$packageId version $Version", 'Install NuGet package'))
     {
         Install-NuGetPackage `
             -PackageId $packageId `

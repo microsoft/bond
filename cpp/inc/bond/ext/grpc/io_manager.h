@@ -36,7 +36,7 @@
 #include <thread>
 #include <vector>
 
-namespace bond { namespace ext { namespace grpc
+namespace bond { namespace ext { namespace [[deprecated("Bond-over-gRPC will be removed in the next major version of Bond. See https://github.com/microsoft/bond/issues/1131")]] grpc
 {
     namespace detail
     {

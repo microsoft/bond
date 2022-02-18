@@ -11,7 +11,7 @@
 
 #include <utility>
 
-namespace bond { namespace ext { namespace grpc
+namespace bond { namespace ext { namespace [[deprecated("Bond-over-gRPC will be removed in the next major version of Bond. See https://github.com/microsoft/bond/issues/1131")]] grpc
 {
     template <typename Request, typename Response>
     class shared_unary_call;

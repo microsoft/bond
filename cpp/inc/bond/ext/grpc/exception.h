@@ -10,7 +10,7 @@
 #include <grpcpp/client_context.h>
 #include <grpcpp/impl/codegen/status.h>
 
-namespace bond { namespace ext { namespace grpc
+namespace bond { namespace ext { namespace [[deprecated("Bond-over-gRPC will be removed in the next major version of Bond. See https://github.com/microsoft/bond/issues/1131")]] grpc
 {
     /// @brief %Exception thrown to indicate that a callback has been
     /// invoked multiple times when only one invocation is expected.
