@@ -334,6 +334,7 @@ struct View view_of Example
 <p>A view of a generic struct is also a generic struct with the same number of type parameters.</p>
 <p>See example: <code>examples/cpp/core/schema_view</code></p>
 <h2 id="service-definition">Service definition</h2>
+<p><strong>Bond-over-gRPC is deprecated and will be completely removed from Bond in May 2022.</strong> See GitHub issue <a href="https://github.com/microsoft/bond/issues/1131">#1131, Bond-over-gRPC will be deprecated February 2022</a>, for full details. <code>gbc</code> will still be able to parse service definitions and emit them in JSON AST, but C++ and C# codegen will be removed in May 2022.</p>
 <p>A service definition consists of a service name and methods:</p>
 <pre><code>service Calculator
 {

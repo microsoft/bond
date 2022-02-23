@@ -6,12 +6,12 @@ var classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail
     [ "nullable", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a499bb80d71f9803bd01204698e30aa7d", null ],
     [ "clear", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a134c747deb2f9fb6c5a775e98ecd63cd", null ],
     [ "empty", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a33a00996f6ba7a31a3a581988f06eac0", null ],
-    [ "operator*", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a745addd797fb2c3d61f72deaf447fea0", null ],
-    [ "operator*", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#aa33ce3eca0eb4c82eada03b9e157608b", null ],
-    [ "operator=", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#ab1101c263b71731dac2554693b7a8167", null ],
+    [ "operator*", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#afe1cc1c67216df514a12a208ae43645a", null ],
+    [ "operator*", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a4dfd0233c91ba716c3bf670fadbf0b1c", null ],
+    [ "operator=", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a5fb6f916d37d48244625b9da53057bd7", null ],
     [ "reset", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a45dffe25dc82e3a570982ddf38bb5b92", null ],
-    [ "set", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a58c9e9cb3c06d6b765edf183548b12a0", null ],
+    [ "set", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a5fc7f37aa93720b17c65e6c398725b70", null ],
     [ "set", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a2a56469f8ff22e2e9e09f1ee881b290a", null ],
-    [ "value", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#aba5230cb4986d568899ccc53979ce0b7", null ],
-    [ "value", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a5f3dcfc2b63a9f350dcff7318b446402", null ]
+    [ "value", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a47f062931bf0bbb41e2999b143763f4d", null ],
+    [ "value", "classbond_1_1nullable_3_01_t_00_01typename_01boost_1_1disable__if_3_01detail_1_1use__value_3_01_t_01_4_01_4_1_1type_01_4.html#a8287386e73be0dc13bc1b91416475ac2", null ]
 ];
