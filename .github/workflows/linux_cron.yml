@@ -45,8 +45,6 @@ jobs:
           - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: gcc }
           - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: gcc }
 
-          - { FLAVOR: cpp-grpc-master, BOOST: 1.66.0, COMPILER: clang }
-
     env: ${{ matrix.env }}
 
     steps:

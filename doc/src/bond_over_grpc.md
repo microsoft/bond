@@ -5,6 +5,27 @@
 Bond-over-gRPC provides code generation from Bond IDL service definitions
 to send Bond objects via [gRPC](http://www.grpc.io/).
 
+**Bond-over-gRPC is deprecated and will be completely removed from Bond in
+May 2022.** See GitHub issue [\#1131, Bond-over-gRPC will be deprecated
+February 2022](https://github.com/microsoft/bond/issues/1131), for full
+details.
+
+If you are looking for something similar in spirit to Bond-over-gRPC, we recommend the following.
+
+* For C++, gRPC++ now supports a [callback-based asynchronous
+  API](https://github.com/grpc/proposal/pull/180) like Bond-over-gRPC’s.
+  Check out the
+  [client](https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/greeter_callback_client.cc)
+  and
+  [server](https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/greeter_callback_server.cc)
+  examples.
+* For C# and .NET, we recommend [gRPC for
+  .NET](https://github.com/grpc/grpc-dotnet/). The Grpc.Core library that
+  Bond-over-gRPC is built atop [will no longer be supported as of May
+  2022](https://grpc.io/blog/grpc-csharp-future/).
+* Both gRPC++ and gRPC for .NET support pluggable serialization formats, so
+  you can use them with Bond, JSON, Protocol Buffers, or anything else.
+
 # Features #
 
 ## Defining Services ##

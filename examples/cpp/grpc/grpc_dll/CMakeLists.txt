@@ -29,6 +29,9 @@ target_link_libraries (grpc_dll_example_lib PUBLIC
 cxx_target_compile_definitions (MSVC grpc_dll_example_lib PRIVATE
     -D_WIN32_WINNT=0x0600)
 
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc_dll_example_lib)
+
 add_bond_test (grpc_dll_example
     using_grpc_dll.cpp)
 
@@ -41,3 +44,6 @@ target_link_libraries (grpc_dll_example PUBLIC
 
 cxx_target_compile_definitions (MSVC grpc_dll_example PRIVATE
     -D_WIN32_WINNT=0x0600)
+
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc_dll_example)

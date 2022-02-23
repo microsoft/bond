@@ -22,6 +22,10 @@
     <OutputPath>$(OutputPath)\Fields\</OutputPath>
     <BondOptions>--collection-interfaces --fields --grpc</BondOptions>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Suppress warning about calling Obsolete Bond.Grpc code. -->
+    <NoWarn>618;$(NoWarn)</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(IntermediateOutputPath)services_grpc.cs" Condition="false" />
   </ItemGroup>

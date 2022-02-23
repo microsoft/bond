@@ -1,6 +1,8 @@
 add_bond_test (grpc-scalar scalar.bond scalar.cpp GRPC)
 
 cxx_target_compile_definitions (MSVC grpc-scalar PRIVATE -D_WIN32_WINNT=0x0600)
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (grpc-scalar)
 
 if (BOND_FIND_GRPC)
     find_package(grpc CONFIG REQUIRED)

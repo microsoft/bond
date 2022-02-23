@@ -14,12 +14,21 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * IDL core version: TBD
-* C++ version: TBD (minor version bump needed)
-* C# NuGet version: (minor version bump needed)
+* C++ version: TBD (major version bump needed)
+* C# NuGet version: TBD (major version bump needed)
 * `gbc` & compiler library: TBD
 
 ### C++ ###
 
+* **Breaking change**: Bond-over-gRPC has been marked deprecated.
+  Bond-over-gRPC will be removed in the next major version of Bond. See
+  [issue \#1131, Bond-over-gRPC will be deprecated February
+  2022](https://github.com/microsoft/bond/issues/1131), for the full
+  announcement.
+  * The `[[deprecated]]` attribute has been added to the `bond::ext::grpc`
+    namespace in every top-level Bond-over-gRPC++ header. This will cause
+    compiler warnings/errors for uses of Bond-over-gRPC++ that you may need
+    to handle.
 * Fixed multiple symbol definition for Win32Exception in
   `grpc/win_thread_pool.h`. ([Issue
   \#1129](https://github.com/microsoft/bond/issues/1129))
@@ -39,6 +48,14 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* **Breaking change**: Bond-over-gRPC code has been marked deprecated.
+  Bond-over-gRPC will be removed in the next major version of Bond. See
+  [issue \#1131, Bond-over-gRPC will be deprecated February
+  2022](https://github.com/microsoft/bond/issues/1131), for the full
+  announcement.
+  * The `[Obsolete]` attribute has been added to every public type in the
+    `Bond.Grpc` assembly. This will cause compiler warnings/errors for uses
+    of Bond-over-gRPC# that you may need to handle.
 * Added virtual method `OutputBuffer.ResizeBuffer` that can be overridden to
   use buffer allocators other than `new byte[]` (e.g.
   `ArrayPool<byte>.Rent()`). ([Pull request

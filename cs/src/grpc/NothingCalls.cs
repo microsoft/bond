@@ -17,6 +17,7 @@ namespace Bond.Grpc.Internal
     /// considered part of Bond's public API surface. They may change at
     /// any time for any reason.
     /// </remarks>
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public static class NothingCallInvoker
     {
         /// <summary>
@@ -75,6 +76,7 @@ namespace Bond.Grpc.Internal
     /// considered part of Bond's public API surface. They may change at
     /// any time for any reason.
     /// </remarks>
+    [Obsolete(message: ObsoleteMessage.Value, error: false)]
     public static class NothingCallHandler
     {
         /// <summary>

@@ -19,6 +19,8 @@ add_dependencies(cpp_grpc_compat_codegen_lib cpp_grpc_compat_codegen)
 target_compile_definitions (cpp_grpc_compat_codegen_lib PUBLIC
     -DBOND_COMPACT_BINARY_PROTOCOL
     -DBOND_FAST_BINARY_PROTOCOL)
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (cpp_grpc_compat_codegen_lib)
 
 # server and client executables
 add_bond_executable (cpp_grpc_compat_server GRPC EXCLUDE_FROM_ALL
@@ -36,6 +38,10 @@ cxx_target_compile_definitions (MSVC cpp_grpc_compat_server PRIVATE
 
 cxx_target_compile_definitions (MSVC cpp_grpc_compat_client PRIVATE
     -D_WIN32_WINNT=0x0600)
+
+# Supress warning about [[deprecated]] Bond-over-gRPC code.
+cxx_target_no_warn_deprecated (cpp_grpc_compat_server)
+cxx_target_no_warn_deprecated (cpp_grpc_compat_client)
 
 target_compile_definitions (grpc_compatibility_test PRIVATE
     -DBOND_COMPACT_BINARY_PROTOCOL
