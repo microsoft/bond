@@ -102,8 +102,8 @@
           ItemName="_BondCodegenFiltered"/>
     </RemoveDuplicates>
 
-    <PropertyGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
-      <_DefaultItemsMessage> The Bond package includes BondCodegen items for all .bond files from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultCompileItems' property to 'false' if you want to explicitly include them in your project file. To set per-item metadata, use the item update syntax (https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).</_DefaultItemsMessage>
+    <PropertyGroup Condition=" '$(EnableDefaultItems)' == 'true' ">
+      <_DefaultItemsMessage> The Bond package includes BondCodegen items for all .bond files from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultItems' property to 'false' if you want to explicitly include them in your project file. To set per-item metadata, use the item update syntax (https://docs.microsoft.com/en-us/visualstudio/msbuild/item-element-msbuild#examples).</_DefaultItemsMessage>
     </PropertyGroup>
 
     <!-- The RemoveDuplicates task preserves the input order, so this is an
