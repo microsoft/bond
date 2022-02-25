@@ -60,6 +60,10 @@ different versioning scheme, following the Haskell community's
   use buffer allocators other than `new byte[]` (e.g.
   `ArrayPool<byte>.Rent()`). ([Pull request
   \#1128](https://github.com/microsoft/bond/pull/1128))
+* The error message emitted when duplicate .bond items are detected by the
+  MSBuild codegen now correctly refers to `$(EnableDefaultItems)` as the
+  switch that controls this behavior. ([Issue
+  \#1110](https://github.com/microsoft/bond/issues/1110))
 
 ## 9.0.5: 2021-04-14 ##
 
