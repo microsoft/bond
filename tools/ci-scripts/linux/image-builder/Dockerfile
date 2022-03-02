@@ -52,7 +52,7 @@ RUN nuget install NUnit.ConsoleRunner -OutputDirectory /root -Version 3.8.0 -Non
 RUN add-apt-repository ppa:cwchien/gradle && \
     apt-get update && \
     apt-get -y install \
-    gradle \
+    gradle-6.8.3 \
     openjdk-8-jdk-headless
 
 # Components for ghc
