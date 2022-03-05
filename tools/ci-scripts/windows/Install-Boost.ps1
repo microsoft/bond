@@ -122,14 +122,18 @@ function Install-BoostComponent([string]$Component)
             -PackageId $packageId `
             -InstallDir $workDir `
             -PackageVersion $Version
-
+        if($Version < 1.66){
         Move-Item `
-            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-32', 'lib', '*')) `
+            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', '*-x32-*', 'lib', '*')) `
             -Destination $lib32Dir
 
         Move-Item `
-            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-64', 'lib', '*')) `
+            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', '*-x64-*', 'lib', '*')) `
             -Destination $lib64Dir
+            }
+        else{
+        
+        }
     }
 }
 
