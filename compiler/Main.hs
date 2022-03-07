@@ -94,9 +94,7 @@ cppCodegen options@Cpp {..} = do
         , (Simple,  ProtocolWriter " ::bond::SimpleBinaryWriter<::bond::OutputBuffer>")
         ]
     templates = concat $ map snd $ filter fst codegen_templates
-    codegen_templates = [ (core_enabled, core_files)
-                        , (grpc_enabled, [grpc_h export_attribute, grpc_cpp])
-                        ]
+    codegen_templates = [ (core_enabled, core_files) ]
     core_files = [
           reflection_h export_attribute
         , types_h export_attribute header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
@@ -123,9 +121,7 @@ csCodegen options@Cs {..} = do
             then ConstructorParameters
             else DefaultWithProtectedBase
     templates = concat $ map snd $ filter fst codegen_templates
-    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping constructorOptions])
-                        , (grpc_enabled, [grpc_cs])
-                        ]
+    codegen_templates = [ (structs_enabled, [types_cs Class fieldMapping constructorOptions]) ]
 csCodegen _ = error "csCodegen: impossible happened."
 
 anyServiceInheritance :: [Declaration] -> Bool
@@ -142,9 +138,8 @@ codeGen options typeMapping templates file = do
     namespaceMapping <- parseNamespaceMappings $ namespace options
     (Bond imports namespaces declarations) <- parseFile (import_dir options) file
     let mappingContext = MappingContext typeMapping aliasMapping namespaceMapping namespaces
-    case (anyServiceInheritance declarations, service_inheritance_enabled options, grpc_enabled options) of
-        (True, False, _)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
-        (True, True, True) -> fail "Service inheritance is not supported in gRPC codegen."
+    case (anyServiceInheritance declarations, service_inheritance_enabled options) of
+        (True, False)   -> fail "Use --enable-service-inheritance to enable service inheritance syntax."
         _                     -> forM_ templates $ \template -> do
                                     let (suffix, code) = template mappingContext baseName imports declarations
                                     let fileName = baseName ++ suffix

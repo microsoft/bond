@@ -124,11 +124,6 @@ tests = testGroup "Compiler tests"
                     [ "c++"
                     , "--export-attribute=DllExport"
                     ]
-                    "service"
-                , verifyExportsCodegen
-                    [ "c++"
-                    , "--export-attribute=DllExport"
-                    ]
                     "with_enum_header"
                 ]
             , verifyCodegen
@@ -136,20 +131,6 @@ tests = testGroup "Compiler tests"
                 , "--namespace=tests=nsmapped"
                 ]
                 "basic_types_nsmapped"
-            , testGroup "Grpc"
-                [ verifyCppGrpcCodegen
-                    [ "c++"
-                    ]
-                    "service"
-                , verifyCppGrpcCodegen
-                    [ "c++"
-                    ]
-                    "generic_service"
-                , verifyCppGrpcCodegen
-                    [ "c++"
-                    ]
-                    "service_attributes"
-                ]
             ]
         , testGroup "C#"
             [ verifyCsCodegen "attributes"
@@ -199,24 +180,6 @@ tests = testGroup "Compiler tests"
                 ]
                 "empty_struct"
                 "constructor-parameters"
-            , testGroup "Grpc"
-                [ verifyCsGrpcCodegen
-                    [ "c#"
-                    ]
-                    "service"
-                , verifyCsGrpcCodegen
-                    [ "c#"
-                    ]
-                    "generic_service"
-                , verifyCsGrpcCodegen
-                    [ "c#"
-                    ]
-                    "service_attributes"
-                , verifyCsGrpcCodegen
-                    [ "c#"
-                    ]
-                    "streaming"
-                ]
             ]
         , testGroup "Java"
             [ verifyJavaCodegen "attributes"
