@@ -74,20 +74,6 @@ if (WIN32)
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/debug"
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/retail")
-
-    find_program (BOND_CSHARP_GRPC_COMPAT_SERVER GrpcCompatServer.exe
-        PATH_SUFFIXES net45
-        NO_DEFAULT_PATH
-        PATHS
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/server/bin/retail")
-
-    find_program (BOND_CSHARP_GRPC_COMPAT_CLIENT GrpcCompatClient.exe
-        PATH_SUFFIXES net45
-        NO_DEFAULT_PATH
-        PATHS
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/grpc/client/bin/retail")
 endif()
 
 # find Java libraries and programs
@@ -220,7 +206,3 @@ set (BOND_SKIP_COMPAT_TESTS
 set (BOND_STACK_OPTIONS
     ""
     CACHE STRING "Options to pass to Haskell Stack")
-
-if (BOND_ENABLE_GRPC AND ((CXX_STANDARD LESS 11) OR (MSVC_VERSION LESS 1800)))
-    message(FATAL_ERROR "BOND_ENABLE_GRPC is TRUE but compiler specified does not support C++11 standard")
-endif()

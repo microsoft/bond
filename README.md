@@ -37,15 +37,13 @@ to build Bond you will need CMake (3.1+),
 [Haskell Stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 (1.5.1+) and Boost (1.61+).
 
-Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the `--recursive` flag:
+Additionally, Bond requires RapidJSON. The Bond repository has a Git submodules for RapidJSON. It should be cloned with the `--recursive` flag:
 
 ```bash
 git clone --recursive https://github.com/microsoft/bond.git
 ```
 
 If you already have RapidJSON and would like to build against it, add argument `-DBOND_FIND_RAPIDJSON=TRUE` to the CMake invocation. It will use find_package(RapidJSON). If you do not provide a RapidJSON library, Bond will also install RapidJSON.
-
-If you do not wish to build the gRPC component, add argument `-DBOND_ENABLE_GRPC=FALSE` to the CMake invocation.
 
 Following are specific instructions for building on various platforms.
 
@@ -81,7 +79,6 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake -DBOND_ENABLE_GRPC=FALSE ..
 make
 sudo make install
 ```
@@ -89,14 +86,13 @@ sudo make install
 The `build` directory is just an example. Any directory can be used as the
 build destination.
 
-To build the Bond Python module, all the C++/Python tests and
-examples, and Bond-over-gRPC, a few more packages are needed.
+To build the Bond Python module and all the C++/Python tests and
+examples, a few more packages are needed.
 
 ```bash
 sudo apt-get install \
     autoconf \
     build-essential \
-    golang \
     libboost-date-time-dev \
     libboost-python-dev \
     libboost-test-dev \
@@ -110,7 +106,6 @@ the new options.
 
 ```bash
 cd build # or wherever you ran CMake before
-cmake -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package ..
 ```
 
 Running the following command in the `build` directory will build and execute all
@@ -145,7 +140,6 @@ order to generate and build from makefiles, in the root `bond` directory run:
 ```bash
 mkdir build
 cd build
-cmake -DBOND_ENABLE_GRPC=FALSE ..
 make
 sudo make install
 ```
@@ -154,7 +148,7 @@ Alternatively, you can generate Xcode projects by passing the `-G Xcode` option
 to cmake:
 
 ```bash
-cmake -DBOND_ENABLE_GRPC=FALSE -G Xcode ..
+cmake -G Xcode ..
 ```
 
 You can build and run unit tests by building the `check` target in Xcode or by
@@ -225,9 +219,9 @@ set BOOST_LIBRARYDIR=D:\boost_1_61_0\lib64-msvc-14.0
 ```
 
 The core Bond library and most examples only require Boost headers. The
-pre-built libraries are only needed for unit tests, Python, and gRPC
-support. If Boost or Python libraries are not found on the system, then some
-tests and examples will not be built.
+pre-built libraries are only needed for unit tests, and Python. If Boost or
+Python libraries are not found on the system, then some tests and examples
+will not be built.
 
 To generate a solution to build the Bond Core C++ and Python with Visual
 Studio 2015 run the following commands from the root `bond` directory:
@@ -236,7 +230,7 @@ Studio 2015 run the following commands from the root `bond` directory:
 mkdir build
 cd build
 set PreferredToolArchitecture=x64
-cmake -DBOND_ENABLE_GRPC=FALSE -G "Visual Studio 14 2015 Win64" ..
+cmake -G "Visual Studio 14 2015 Win64" ..
 ```
 
 Setting `PreferredToolArchitecture=x64` selects the 64-bit toolchain which
@@ -257,21 +251,6 @@ To build and execute the unit tests and examples run:
 
 ```bash
 cmake --build . --target check -- /maxcpucount:8
-```
-
-To build Bond's gRPC++ integration from source, some of
-[gRPC's prerequisites](https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl)
-are also needed:
-
-```bash
-choco install activeperl golang ninja yasm
-```
-
-You will also need to enable gRPC in the `cmake` configuration step by running the following
-in the `build` directory from above and then following the other `cmake` commands above:
-
-```bash
-cmake -DBOND_ENABLE_GRPC=TRUE -G "Visual Studio 14 2015 Win64" ..
 ```
 
 Alternatively, you can build and install Bond using the [vcpkg](https://github.com/microsoft/vcpkg/) dependency manager:

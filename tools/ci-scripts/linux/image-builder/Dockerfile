@@ -32,8 +32,7 @@ RUN ["zsh", "/root/build_boosts.zsh"]
 RUN apt-get -y install \
     ccache \
     clang \
-    cmake \
-    golang
+    cmake
 
 # Components for Haskell. See https://docs.haskellstack.org/en/stable/install_and_upgrade/#linux
 RUN wget -qO- https://get.haskellstack.org/ | sh

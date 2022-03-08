@@ -38,7 +38,7 @@ service Foo
     bar foo43(BasicTypes);
     bar foo44(bar);
 
-    // test name conflict with gRPC++ cq parameter
+    // test name conflict with historical gRPC++ cq parameter
     BasicTypes cq();
 
     // test name conflict with generated MethodTemplate struct names

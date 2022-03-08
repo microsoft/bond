@@ -1,9 +1,0 @@
-// The services in this test are split across two .bond files as a
-// regression test for https://github.com/microsoft/bond/issues/1050
-
-namespace UnitTest;
-
-service SimpleService2
-{
-    nothing Noop();
-}

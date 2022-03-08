@@ -44,7 +44,6 @@
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
               BOND_ARCH: 64
               BOND_BOOST: "1.61.0"
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
@@ -56,18 +55,10 @@
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
               BOND_ARCH: 32
               BOND_BOOST: "1.62.0"
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
             - BOND_BUILD: Python
               APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
               BOND_ARCH: 64
               BOND_BOOST: "1.63.0"
-              BOND_CMAKE_FLAGS: "-DBOND_ENABLE_GRPC=FALSE"
-              # C++ gRPC build and tests
-            - BOND_BUILD: C++
-              APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-              BOND_ARCH: 64
-              BOND_BOOST: "1.63.0"
-              BOND_CMAKE_FLAGS: "-DBOND_SKIP_CORE_TESTS=TRUE;-DBOND_SKIP_GBC_TESTS=TRUE"
     install:
           # Installing .NET Core needs Windows Update enabled.
         - sc config wuauserv start= auto
@@ -85,12 +76,6 @@
             if (($env:BOND_BUILD -eq 'C++') -or ($env:BOND_BUILD -eq 'Python')) {
 
                 git submodule update --init thirdparty\rapidjson
-
-                # If gRPC is not disabled, init gRPC and its dependencies
-
-                if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
-                    git submodule update --init --recursive thirdparty\grpc
-                }
 
                 $boostComponents = (
                     'boost_chrono',
@@ -168,21 +153,6 @@
 
             }
 
-            if (($env:BOND_BUILD -eq 'C++') -and (-not ($env:BOND_CMAKE_FLAGS -match '-DBOND_ENABLE_GRPC=FALSE'))) {
-
-                # We're building C++ and gRPC isn't disabled, so we need
-                # gRPC dependencies.
-
-                choco install yasm -y
-
-                $machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
-
-                $userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
-
-                $env:Path = "$machinePath;$userPath"
-
-            }
-
     cache:
         - cs\packages -> cs\test\core\packages.config
         - "c:\\sr"
@@ -249,7 +219,7 @@
                 # on what part of C++ we're building--but they're pretty
                 # fast to build, so build them all.
 
-                $compatTests = ('Tests\Compat', 'Tests\GrpcCompatClient', 'Tests\GrpcCompatServer')
+                $compatTests = ('Tests\Compat' )
 
                 dotnet msbuild cs\cs.sln /verbosity:minimal "/target:$($compatTests -join ';')"
 
@@ -363,9 +333,6 @@
                 if (-not $?) { throw "tests failed" }
 
                 dotnet test cs\test\internal\Internal.csproj
-                if (-not $?) { throw "tests failed" }
-
-                dotnet test cs\test\grpc\grpc.csproj
                 if (-not $?) { throw "tests failed" }
 
                 & cs\test\test-examples.ps1 -IgnorePatterns '*\shared-types-assembly\*' -ErrorVariable exampleErrors

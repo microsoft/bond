@@ -50,16 +50,12 @@
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Apply_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Enum_h.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Grpc_cpp.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Grpc_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Reflection_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_cpp.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Types_h.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cpp\Util.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Types_cs.hs" />
     <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Util.hs" />
-    <None Include="$(ProjectDir)..\compiler\src\Language\Bond\Codegen\Cs\Grpc_cs.hs" />
   </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\build\internal\Common.Internal.targets" />

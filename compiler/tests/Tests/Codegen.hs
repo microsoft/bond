@@ -8,11 +8,9 @@ module Tests.Codegen
     ( verifyCodegen
     , verifyCodegenVariation
     , verifyCppCodegen
-    , verifyCppGrpcCodegen
     , verifyApplyCodegen
     , verifyExportsCodegen
     , verifyCsCodegen
-    , verifyCsGrpcCodegen
     , verifyJavaCodegen
     ) where
 
@@ -85,35 +83,6 @@ verifyExportsCodegen args baseName =
         [ reflection_h export_attribute
         , types_h export_attribute header enum_header allocator alloc_ctors_enabled type_aliases_enabled scoped_alloc_enabled
         ]
-
-verifyCppGrpcCodegen :: [String] -> FilePath -> TestTree
-verifyCppGrpcCodegen args baseName =
-    testGroup baseName $
-        map (verifyFile options baseName (cppExpandAliases (type_aliases_enabled options) cppTypeMapping) "") templates
-  where
-    options = processOptions args
-    templates =
-        [ grpc_h (export_attribute options)
-        , grpc_cpp
-        , types_cpp
-        ]
-
-verifyCsGrpcCodegen :: [String] -> FilePath -> TestTree
-verifyCsGrpcCodegen args baseName =
-    testGroup baseName $
-        map (verifyFile (processOptions args) baseName csTypeMapping "")
-            [ grpc_cs
-            , types_cs Class (fieldMapping (processOptions args)) (constructorOptions (processOptions args))
-            ]
-  where
-    fieldMapping Cs {..} = if readonly_properties
-        then ReadOnlyProperties
-        else if fields
-             then PublicFields
-             else Properties
-    constructorOptions Cs {..} = if constructor_parameters
-        then ConstructorParameters
-        else DefaultWithProtectedBase
 
 verifyFiles :: Options -> FilePath -> FilePath -> [TestTree]
 verifyFiles options baseName variation =
