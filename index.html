@@ -169,10 +169,9 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>For a discussion about how Bond compares to similar frameworks see <a href="https://microsoft.github.io/bond/why_bond.html">Why Bond</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Bond C++ library requires some C++11 features (currently limited to those supported by Visual C++ 2015); a C++11 compiler is required. Additionally, to build Bond you will need CMake (3.1+), <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install">Haskell Stack</a> (1.5.1+) and Boost (1.61+).</p>
-<p>Additionally, Bond requires RapidJSON and optionally requires gRPC. The Bond repository primarily uses Git submodules for these two dependencies. It should be cloned with the <code>--recursive</code> flag:</p>
+<p>Additionally, Bond requires RapidJSON. The Bond repository has a Git submodules for RapidJSON. It should be cloned with the <code>--recursive</code> flag:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone --recursive https://github.com/microsoft/bond.git</code></pre></div>
 <p>If you already have RapidJSON and would like to build against it, add argument <code>-DBOND_FIND_RAPIDJSON=TRUE</code> to the CMake invocation. It will use find_package(RapidJSON). If you do not provide a RapidJSON library, Bond will also install RapidJSON.</p>
-<p>If you do not wish to build the gRPC component, add argument <code>-DBOND_ENABLE_GRPC=FALSE</code> to the CMake invocation.</p>
 <p>Following are specific instructions for building on various platforms.</p>
 <h3 id="linux">Linux</h3>
 <p>Bond must be built with C++11 compiler. We test with Clang (3.8) and GNU C++ (5.4). We recommend Clang as it’s faster with template-heavy code like Bond.</p>
@@ -188,23 +187,20 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
-<span class="fu">cmake</span> -DBOND_ENABLE_GRPC=FALSE ..
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
-<p>To build the Bond Python module, all the C++/Python tests and examples, and Bond-over-gRPC, a few more packages are needed.</p>
+<p>To build the Bond Python module and all the C++/Python tests and examples, a few more packages are needed.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install \
     autoconf \
     build-essential \
-    golang \
     libboost-date-time-dev \
     libboost-python-dev \
     libboost-test-dev \
     libtool \
     python2.7-dev</code></pre></div>
 <p>CMake needs to be re-run with different options. This can be done after building just the core libraries: the build tree will simply be updated with the new options.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">cd</span> build <span class="co"># or wherever you ran CMake before</span>
-<span class="fu">cmake</span> -DBOND_ENABLE_GRPC=TRUE -DgRPC_ZLIB_PROVIDER=package ..</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">cd</span> build <span class="co"># or wherever you ran CMake before</span></code></pre></div>
 <p>Running the following command in the <code>build</code> directory will build and execute all the tests and examples:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check
 <span class="fu">sudo</span> make install <span class="co"># To install the other libraries just built</span></code></pre></div>
@@ -220,11 +216,10 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond can be built on macOS using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
-<span class="fu">cmake</span> -DBOND_ENABLE_GRPC=FALSE ..
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>Alternatively, you can generate Xcode projects by passing the <code>-G Xcode</code> option to cmake:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -DBOND_ENABLE_GRPC=FALSE -G Xcode ..</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -G Xcode ..</code></pre></div>
 <p>You can build and run unit tests by building the <code>check</code> target in Xcode or by running make in the <code>build</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">make</span> --jobs 8 check</code></pre></div>
 <p>Note that if you are using Homebrew’s Python, you’ll need to build boost-python from source:</p>
@@ -261,22 +256,18 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>You may need to set the environment variables <code>BOOST_ROOT</code> and <code>BOOST_LIBRARYDIR</code> to specify where Boost and its pre-built libraries for your environment (MSVC 12 or MSVC 14) can be found, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">set</span> <span class="va">BOOST_ROOT=</span>D:\<span class="ex">boost_1_61_0</span>
 <span class="kw">set</span> <span class="va">BOOST_LIBRARYDIR=</span>D:\<span class="ex">boost_1_61_0</span>\lib64-msvc-14.0</code></pre></div>
-<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests, Python, and gRPC support. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
+<p>The core Bond library and most examples only require Boost headers. The pre-built libraries are only needed for unit tests, and Python. If Boost or Python libraries are not found on the system, then some tests and examples will not be built.</p>
 <p>To generate a solution to build the Bond Core C++ and Python with Visual Studio 2015 run the following commands from the root <code>bond</code> directory:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
 <span class="kw">set</span> <span class="va">PreferredToolArchitecture=</span>x64
-<span class="fu">cmake</span> -DBOND_ENABLE_GRPC=FALSE -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
+<span class="fu">cmake</span> -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <p>Setting <code>PreferredToolArchitecture=x64</code> selects the 64-bit toolchain which dramatically improves build speed. (The Bond unit tests are too big to build with 32-bit tools.)</p>
 <p>Instead of <code>cmake</code> you can also use <code>cmake-gui</code> and specify configuration settings in the UI. This configuration step has to be performed only once. From then on you can use the generated solution <code>build\bond.sln</code> from Visual Studio or build from the command line using <code>cmake</code>:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target
 <span class="fu">cmake</span> --build . --target INSTALL</code></pre></div>
 <p>To build and execute the unit tests and examples run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> --build . --target check -- /maxcpucount:8</code></pre></div>
-<p>To build Bond’s gRPC++ integration from source, some of <a href="https://github.com/grpc/grpc/blob/master/INSTALL.md#building-using-cmake-with-boringssl">gRPC’s prerequisites</a> are also needed:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">choco</span> install activeperl golang ninja yasm</code></pre></div>
-<p>You will also need to enable gRPC in the <code>cmake</code> configuration step by running the following in the <code>build</code> directory from above and then following the other <code>cmake</code> commands above:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">cmake</span> -DBOND_ENABLE_GRPC=TRUE -G <span class="st">&quot;Visual Studio 14 2015 Win64&quot;</span> ..</code></pre></div>
 <p>Alternatively, you can build and install Bond using the <a href="https://github.com/microsoft/vcpkg/">vcpkg</a> dependency manager:</p>
 <pre class="batch"><code>git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg

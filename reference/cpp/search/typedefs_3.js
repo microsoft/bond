@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['outputbuffer_0',['OutputBuffer',['../namespacebond.html#a0e28a508e6180e6b0ce18d45a539a353',1,'bond']]]
+  ['struct_5ftype_0',['struct_type',['../structbond_1_1reflection_1_1_field_template.html#a565000634035eed1b3559b9bebcc9a12',1,'bond::reflection::FieldTemplate']]]
 ];

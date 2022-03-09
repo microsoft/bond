@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tag_0',['tag',['../structbond_1_1ext_1_1grpc_1_1detail_1_1io__manager__tag.html#abb11a6c2e219c8736bb10dad6d8c88d3',1,'bond::ext::grpc::detail::io_manager_tag']]]
+  ['unmarshal_0',['Unmarshal',['../namespacebond.html#af36ea3dea21b0e56bd37c018503f4210',1,'bond::Unmarshal(Buffer input, T &amp;obj)'],['../namespacebond.html#afe51d9bd184a8d8108485380861d8b33',1,'bond::Unmarshal(Buffer input)'],['../namespacebond.html#affc02b3be7b924616e5dbb3b1686960c',1,'bond::Unmarshal(Buffer input, bonded&lt; T &gt; &amp;obj)'],['../namespacebond.html#a95cd3b64329f45595366422ffd163e34',1,'bond::Unmarshal(Buffer input, T &amp;obj, const RuntimeSchema &amp;schema)'],['../namespacebond.html#a6061350106199d74c065cf74364d25e7',1,'bond::Unmarshal(Buffer input, const RuntimeSchema &amp;schema)'],['../namespacebond.html#a3cf518a34fca4473697a0b8880ec7451',1,'bond::Unmarshal(Buffer input, bonded&lt; T &gt; &amp;obj, const RuntimeSchema &amp;schema)']]]
 ];

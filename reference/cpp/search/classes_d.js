@@ -1,16 +1,6 @@
 var searchData=
 [
-  ['scheduler_0',['scheduler',['../classbond_1_1ext_1_1grpc_1_1scheduler.html',1,'bond::ext::grpc']]],
-  ['serializingtransform_1',['SerializingTransform',['../structbond_1_1_serializing_transform.html',1,'bond']]],
-  ['server_2',['server',['../classbond_1_1ext_1_1grpc_1_1server.html',1,'bond::ext::grpc']]],
-  ['serverbuildexception_3',['ServerBuildException',['../classbond_1_1ext_1_1grpc_1_1_server_build_exception.html',1,'bond::ext::grpc']]],
-  ['service_4',['service',['../classbond_1_1ext_1_1grpc_1_1detail_1_1service.html',1,'bond::ext::grpc::detail']]],
-  ['service_5fcollection_5',['service_collection',['../classbond_1_1ext_1_1grpc_1_1service__collection.html',1,'bond::ext::grpc']]],
-  ['shared_5fcounter_6',['shared_counter',['../classbond_1_1ext_1_1shared__counter.html',1,'bond::ext']]],
-  ['shared_5funary_5fcall_7',['shared_unary_call',['../classbond_1_1ext_1_1grpc_1_1shared__unary__call.html',1,'bond::ext::grpc']]],
-  ['simplebinaryreader_8',['SimpleBinaryReader',['../classbond_1_1_simple_binary_reader.html',1,'bond']]],
-  ['simplebinarywriter_9',['SimpleBinaryWriter',['../classbond_1_1_simple_binary_writer.html',1,'bond']]],
-  ['simplejsonreader_10',['SimpleJsonReader',['../classbond_1_1_simple_json_reader.html',1,'bond']]],
-  ['simplejsonwriter_11',['SimpleJsonWriter',['../classbond_1_1_simple_json_writer.html',1,'bond']]],
-  ['single_5fthreaded_5fcounter_12',['single_threaded_counter',['../classbond_1_1ext_1_1single__threaded__counter.html',1,'bond::ext']]]
+  ['value_3c_20t_2c_20reader_2c_20typename_20boost_3a_3aenable_5fif_5fc_3c_20is_5fbasic_5ftype_3c_20t_20_3e_3a_3avalue_20_26_26_21is_5ftype_5falias_3c_20t_20_3e_3a_3avalue_20_3e_3a_3atype_20_3e_0',['value&lt; T, Reader, typename boost::enable_if_c&lt; is_basic_type&lt; T &gt;::value &amp;&amp;!is_type_alias&lt; T &gt;::value &gt;::type &gt;',['../classbond_1_1value_3_01_t_00_01_reader_00_01typename_01boost_1_1enable__if__c_3_01is__basic__typce7e294bd4d6cdc037de46bb14c43848.html',1,'bond']]],
+  ['value_5for_5freference_1',['value_or_reference',['../classbond_1_1ext_1_1detail_1_1value__or__reference.html',1,'bond::ext::detail']]],
+  ['value_5for_5freference_3c_20counter_20_3e_2',['value_or_reference&lt; Counter &gt;',['../classbond_1_1ext_1_1detail_1_1value__or__reference.html',1,'bond::ext::detail']]]
 ];
