@@ -45,7 +45,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     container:
-      image: bondciimages.azurecr.io/ubuntu-1604:build-38421604
+      image: bondciimages.azurecr.io/ubuntu-1604:build-52720445
 
     strategy:
       fail-fast: false
@@ -53,7 +53,6 @@ jobs:
         env:
           - { FLAVOR: cs }
           - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
           - { FLAVOR: hs }
           - { FLAVOR: java }
 

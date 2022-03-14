@@ -32,8 +32,7 @@ RUN ["zsh", "/root/build_boosts.zsh"]
 RUN apt-get -y install \
     ccache \
     clang \
-    cmake \
-    golang
+    cmake
 
 # Components for Haskell. See https://docs.haskellstack.org/en/stable/install_and_upgrade/#linux
 RUN wget -qO- https://get.haskellstack.org/ | sh
@@ -52,7 +51,7 @@ RUN nuget install NUnit.ConsoleRunner -OutputDirectory /root -Version 3.8.0 -Non
 RUN add-apt-repository ppa:cwchien/gradle && \
     apt-get update && \
     apt-get -y install \
-    gradle \
+    gradle-6.8.3 \
     openjdk-8-jdk-headless
 
 # Components for ghc

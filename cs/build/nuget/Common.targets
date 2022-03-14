@@ -15,7 +15,7 @@
 *     $BondOptions         : Additional options to pass to the gbc generator
 *     $BondCodegenMode     : Code generation mode for gbc.exe to use (default c#)
 *
-*   These targets understand the structs/grpc switches that can be passed
+*   These targets understand the structs switch that can be passed
 *   to gbc and adjust the files that are added to the Compile item as
 *   needed.
 -->
@@ -197,27 +197,9 @@
         <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
       </_BondGen_Structs_Options>
 
-      <_BondGen_Grpc_BondOptions
-          Include="@(_BondCodegenWithDefaultOptions -> '$(_BondOutputDirectoryNormalized)%(FileName)_grpc.cs')"
-          Condition="$(BondOptions.Contains('--grpc'))
-                     AND !$(BondOptions.Contains('--grpc=false'))">
-        <AutoGen>true</AutoGen>
-        <DependentUpon>%(_BondCodegenWithDefaultOptions.Identity)</DependentUpon>
-      </_BondGen_Grpc_BondOptions>
-
-      <_BondGen_Grpc_Options
-          Include="@(BondCodegen -> '$(_BondOutputDirectoryNormalized)%(FileName)_grpc.cs')"
-          Condition="$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc'))
-                     AND !$([System.String]::new('%(BondCodegen.Options)').Contains('--grpc=false'))">
-        <AutoGen>true</AutoGen>
-        <DependentUpon>%(BondCodegen.Identity)</DependentUpon>
-      </_BondGen_Grpc_Options>
-
       <_BondGeneratedFileNames
           Include="@(_BondGen_Structs_BondOptions);
-                   @(_BondGen_Structs_Options);
-                   @(_BondGen_Grpc_BondOptions);
-                   @(_BondGen_Grpc_Options)" />
+                   @(_BondGen_Structs_Options)" />
       <Compile Include="@(_BondGeneratedFileNames)" />
 
       <!--

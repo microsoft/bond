@@ -14,9 +14,42 @@ different versioning scheme, following the Haskell community's
 ## Unreleased ##
 
 * IDL core version: TBD
-* C++ version: TBD (major version bump needed)
-* C# NuGet version: TBD (major version bump needed)
-* `gbc` & compiler library: TBD
+* C++ version: TBD (major bump needed)
+* C# NuGet version: TBD (major bump needed)
+* `gbc` & compiler library: TBD (major bump needed)
+
+### `gbc` and Bond compiler library ###
+* **Breaking change**: Codegen for Bond-over-gRPC has been removed: the
+  `--grpc` switch is no longer supported. Service definitions are still
+  parsed, but codegen can no longer be done for C++ or C#. See [issue
+  \#1131, Bond-over-gRPC will be deprecated February
+  2022](https://github.com/microsoft/bond/issues/1131), for the full
+  announcement.
+
+### C++ ###
+
+* **Breaking change**: All Bond-over-gRPC code has been removed. This is
+  everything under the `bond::ext:grpc` namespace. Service definitions can
+  still appear in .bond files, but no C++ code will be generated for them.
+  See [issue \#1131, Bond-over-gRPC will be deprecated February
+  2022](https://github.com/microsoft/bond/issues/1131), for the full
+  announcement.
+
+### C# ###
+
+* **Breaking change**: All Bond-over-gRPC code has been removed. This is
+  everything under the `Bond.Grpc` namespace and the Bond.Grpc.CSharp NuGet
+  package. Service definitions can still appear in .bond files, but no C#
+  code will be generated for them. See [issue \#1131, Bond-over-gRPC will be
+  deprecated February 2022](https://github.com/microsoft/bond/issues/1131),
+  for the full announcement.
+
+## 10.0: 2022-03-07 ##
+
+* IDL core version: 3.0
+* C++ version: 10.0
+* C# NuGet version: 10.0
+* `gbc` & compiler library: 0.12.1.0
 
 ### C++ ###
 

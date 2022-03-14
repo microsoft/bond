@@ -11,7 +11,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     container:
-      image: bondciimages.azurecr.io/ubuntu-1604:build-38421604
+      image: bondciimages.azurecr.io/ubuntu-1604:build-52720445
 
     strategy:
       fail-fast: false
@@ -24,26 +24,12 @@ jobs:
           - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: clang }
           - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: clang }
 
-          - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: clang }
-          - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: clang }
-
           - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: gcc }
           - { FLAVOR: cpp-core, BOOST: 1.65.1, COMPILER: gcc }
           - { FLAVOR: cpp-core, BOOST: 1.64.0, COMPILER: gcc }
           - { FLAVOR: cpp-core, BOOST: 1.63.0, COMPILER: gcc }
           - { FLAVOR: cpp-core, BOOST: 1.62.0, COMPILER: gcc }
           - { FLAVOR: cpp-core, BOOST: 1.61.0, COMPILER: gcc }
-
-          - { FLAVOR: cpp-grpc, BOOST: 1.66.0, COMPILER: gcc }
-          - { FLAVOR: cpp-grpc, BOOST: 1.65.1, COMPILER: gcc }
-          - { FLAVOR: cpp-grpc, BOOST: 1.64.0, COMPILER: gcc }
-          - { FLAVOR: cpp-grpc, BOOST: 1.63.0, COMPILER: gcc }
-          - { FLAVOR: cpp-grpc, BOOST: 1.62.0, COMPILER: gcc }
-          - { FLAVOR: cpp-grpc, BOOST: 1.61.0, COMPILER: gcc }
 
     env: ${{ matrix.env }}
 
