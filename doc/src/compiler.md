@@ -110,8 +110,8 @@ struct Example : Base
 }
 ```
 
-Field definition consists of an ordinal, type, name and optional default value.
-Field type can be:
+Field definition consists of an ordinal/id, type, name, and a default value.
+The fields type's can be:
 
 - Basic type: `bool`, `uint8`, `uint16`, `uint32`, `uint64`, `int8`, `int16`,
 `int32`, `int64`, `float`, `double`, `string`, `wstring`.
@@ -124,7 +124,7 @@ Field type can be:
 An optional default value can be specified for fields of basic types. For
 integers the default can be specified as either a decimal number or a
 hexadecimal number prefixed with `0x`. The only explicit default value allowed
-for containers is [`nothing`](#default-value-of-nothing). Enum fields must have
+for containers is [`nothing`](#default-value-of-nothing). Enum fields _must_ have
 an explicit default value which must be one of the enum named constants or
 [`nothing`](#default-value-of-nothing).
 
