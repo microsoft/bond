@@ -242,7 +242,7 @@ These following changes will break wire compatibility and are not recommended:
 - Incompatible change of field types (any type change *not* covered above);
   e.g.: `int32` to `string`, `string` to `wstring`, `float` to
   `nullable<float>`
-- Changing of field ordinals
+- Changing of field ordinals/ids
 - Changing of inheritance hierarchy (add/remove/substituting base struct)
 - Changing between `required` and `optional` directly
 - Changing the default value of a field
@@ -251,8 +251,9 @@ These following changes will break wire compatibility and are not recommended:
 
 Some best practices and other considerations to keep in mind:
 
-- When removing a field, comment it out rather than removing it altogether so
-  that the field ordinal is not reused in future edits of the schema
+- When removing a field, comment it out rather than removing it altogether
+  so that neither the field ordinal nor name are reused in future edits of
+  the schema
 - When working with untagged protocols like
   [SimpleBinaryProtocol](#simple-binary), great care must be taken to ensure
   the same [schema](#runtime-schema) is used when deserializing the payload as
