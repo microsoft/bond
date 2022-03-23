@@ -249,13 +249,13 @@ struct Node
 {
     0: uint32 fieldName = 10;
 }</code></pre>
-<p>Field definition consists of an ordinal, type, name and optional default value. Field type can be:</p>
+<p>Field definition consists of an ordinal/id, type, name, and a default value. The fields type’s can be:</p>
 <ul>
 <li><p>Basic type: <code>bool</code>, <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>, <code>float</code>, <code>double</code>, <code>string</code>, <code>wstring</code>.</p></li>
 <li><p>Container: <code>blob</code>, <code>list&lt;T&gt;</code>, <code>vector&lt;T&gt;</code>, <code>set&lt;T&gt;</code>, <code>map&lt;K, T&gt;</code>, <code>nullable&lt;T&gt;</code>.</p></li>
 <li><p>User-defined type: enum, struct or <code>bonded&lt;T&gt;</code> where T is a struct.</p></li>
 </ul>
-<p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields must have an explicit default value which must be one of the enum named constants or <a href="#default-value-of-nothing"><code>nothing</code></a>.</p>
+<p>An optional default value can be specified for fields of basic types. For integers the default can be specified as either a decimal number or a hexadecimal number prefixed with <code>0x</code>. The only explicit default value allowed for containers is <a href="#default-value-of-nothing"><code>nothing</code></a>. Enum fields <em>must</em> have an explicit default value which must be one of the enum named constants or <a href="#default-value-of-nothing"><code>nothing</code></a>.</p>
 <p>Names of structs and enums defined in another namespace must be qualified with the namespace name:</p>
 <pre><code>import &quot;bond/core/bond.bond&quot;
 

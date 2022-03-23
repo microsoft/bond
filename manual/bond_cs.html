@@ -348,7 +348,7 @@ Marshal.<span class="fu">To</span>(writer, src);
 <ul>
 <li>Adding or removing <code>required</code> fields</li>
 <li>Incompatible change of field types (any type change <em>not</em> covered above); e.g.: <code>int32</code> to <code>string</code>, <code>string</code> to <code>wstring</code>, <code>float</code> to <code>nullable&lt;float&gt;</code></li>
-<li>Changing of field ordinals</li>
+<li>Changing of field ordinals/ids</li>
 <li>Changing of inheritance hierarchy (add/remove/substituting base struct)</li>
 <li>Changing between <code>required</code> and <code>optional</code> directly</li>
 <li>Changing the default value of a field</li>
@@ -356,7 +356,7 @@ Marshal.<span class="fu">To</span>(writer, src);
 </ul>
 <p>Some best practices and other considerations to keep in mind:</p>
 <ul>
-<li>When removing a field, comment it out rather than removing it altogether so that the field ordinal is not reused in future edits of the schema</li>
+<li>When removing a field, comment it out rather than removing it altogether so that the neither the field ordinal nor name are reused in future edits of the schema</li>
 <li>When working with untagged protocols like <a href="#simple-binary">SimpleBinaryProtocol</a>, great care must be taken to ensure the same <a href="#runtime-schema">schema</a> is used when deserializing the payload as was used to serialize it.</li>
 <li>Caution should be used when changing or reusing field names as this could break text-based protocols like <a href="#simple-json">SimpleJsonProtocol</a></li>
 <li><code>required</code> should be used sparingly and only with careful consideration</li>
