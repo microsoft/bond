@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # Cache folders
 VOLUME /root/.ccache /root/.stack
@@ -37,9 +37,11 @@ RUN apt-get -y install \
 # Components for Haskell. See https://docs.haskellstack.org/en/stable/install_and_upgrade/#linux
 RUN wget -qO- https://get.haskellstack.org/ | sh
 
+RUN apt install gnupg ca-certificates
+
 # Components for C#. See http://www.mono-project.com/download/#download-lin
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb https://download.mono-project.com/repo/ubuntu xenial main" | tee /etc/apt/sources.list.d/mono-official.list && \
+    echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official.list && \
     apt-get update && \
     apt-get -y install \
     mono-devel \
