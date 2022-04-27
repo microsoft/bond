@@ -65,10 +65,9 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
 
 RUN if ["$UBUNTU_VERSION" = "16.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main"; \
     elif ["$UBUNTU_VERSION" = "18.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main"; \
-    elif ["$UBUNTU_VERSION" = "20.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main"; fi | tee /etc/apt/sources.list.d/mono-official.list
+    elif ["$UBUNTU_VERSION" = "20.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main"; fi | tee /etc/apt/sources.list.d/mono-official.list && apt-get update
 
-RUN apt-get update && \
-    apt-get -y install \
+RUN apt-get -y install \
     mono-devel \
     nuget \
     referenceassemblies-pcl
