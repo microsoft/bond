@@ -58,16 +58,18 @@ RUN add-apt-repository ppa:git-core/ppa -y && \
     apt-get install --no-install-recommends git -y
 
 
+# we need to set bash to be able to use if statement
+SHELL ["/bin/bash", "-c"]
+
 # Components for C#. See http://www.mono-project.com/download/#download-lin
-RUN if ["$UBUNTU_VERSION" = "18.04"] || ["$UBUNTU_VERSION" = "20.04"] ; then apt install gnupg ca-certificates; fi
+RUN if [ "$UBUNTU_VERSION" = "18.04" ] || [ "$UBUNTU_VERSION" = "20.04" ] ; then apt install gnupg ca-certificates; fi
 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 
-RUN if ["$UBUNTU_VERSION" = "16.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main"; \
-    elif ["$UBUNTU_VERSION" = "18.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main"; \
-    elif ["$UBUNTU_VERSION" = "20.04"] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main"; fi | tee /etc/apt/sources.list.d/mono-official.list && apt-get update
-
-RUN apt-get -y install \
+RUN if [[ "$UBUNTU_VERSION" = "16.04" ]] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main"; \
+    elif [[ "$UBUNTU_VERSION" = "18.04" ]] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main"; \
+    elif [[ "$UBUNTU_VERSION" = "20.04" ]] ; then echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main"; fi \
+    | tee /etc/apt/sources.list.d/mono-official.list && apt-get update && apt-get -y install \
     mono-devel \
     nuget \
     referenceassemblies-pcl
