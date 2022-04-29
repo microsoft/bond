@@ -56,7 +56,7 @@ zsh is only needed to debug and work on `build_boost.zsh` locally.
 
 To create the image, start in the directory containing this README and run:
 
-    $ docker build --no-cache -t bond-ubuntu-1804 --build-arg UBUNTU_VERSION="18.04"
+    $ docker build --no-cache -t bond-ubuntu-1804 --build-arg UBUNTU_VERSION="18.04" .
 
 This will make the Docker image with all the required dependencies and will
 compile all the required versions of Boost (using the `build_boosts.zsh`
