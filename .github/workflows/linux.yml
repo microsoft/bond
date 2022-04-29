@@ -44,6 +44,9 @@ jobs:
     name: "${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
     runs-on: "ubuntu-latest"
 
+    container:
+      image: bondciimages.azurecr.io/ubuntu-1804:build-54806381
+
     strategy:
       fail-fast: false
       matrix:
@@ -52,10 +55,6 @@ jobs:
           - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
           - { FLAVOR: hs }
           - { FLAVOR: java }
-        container: ["bondciimages.azurecr.io/ubuntu-1604:build-52720445","bondciimages.azurecr.io/ubuntu-1804:build-54806381"]
-
-    container:
-      image: ${{ matrix.container }}
 
     env: ${{ matrix.env }}
 
