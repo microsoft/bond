@@ -45,7 +45,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     container:
-      image: bondciimages.azurecr.io/${{ matrix.DOCKER_TAG }}
+      image: bondciimages.azurecr.io/${{ matrix.docker_tag }}
 
     strategy:
       fail-fast: false
@@ -55,9 +55,9 @@ jobs:
           - { FLAVOR: cpp-core, BOOST: 1.66.0, COMPILER: clang }
           - { FLAVOR: hs }
           - { FLAVOR: java }
-        docker_tag:
-          - ubuntu-1604:build-52720445
-          - ubuntu-1804:build-54806381
+        include:
+          - docker_tag: ubuntu-1604:build-52720445
+          - docker_tag: ubuntu-1804:build-54806381
 
     env: ${{ matrix.env }}
 
