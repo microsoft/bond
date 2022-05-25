@@ -45,7 +45,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     container:
-      image: bondciimages.azurecr.io/ubuntu-1604:build-52720445
+      image: bondciimages.azurecr.io/ubuntu-1804:build-54806381
 
     strategy:
       fail-fast: false
@@ -68,9 +68,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.stack
-          key: stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}--${{ hashFiles('**/compiler/stack.yaml','**/compiler/package.yaml','**/compiler/stack.yaml.lock') }}
+          key: stack18-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}--${{ hashFiles('**/compiler/stack.yaml','**/compiler/package.yaml','**/compiler/stack.yaml.lock') }}
           restore-keys: |
-            stack-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}-
+            stack18-${{ matrix.env.FLAVOR }}-${{ matrix.env.BOOST }}-${{ matrix.env.COMPILER }}-
 
       - name: "Build and test for ${{ matrix.env.FLAVOR }} ${{ matrix.env.BOOST }} ${{ matrix.env.COMPILER }}"
         run: |

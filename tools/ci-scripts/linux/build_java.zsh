@@ -6,6 +6,7 @@ set -eux
 # released in a while, the last tag might be many commits back, so we'll fetch
 # the entire history here.
 pushd $BOND_ROOT
+git config --global --add safe.directory $BOND_ROOT
 git fetch --unshallow --tags --no-recurse-submodules
 popd
 
