@@ -17,7 +17,7 @@
     <ProjectReference Include="..\..\..\..\cs\src\core\Bond.csproj" />
     <ProjectReference Include="..\..\..\..\cs\src\io\IO.csproj" />
     <ProjectReference Include="..\..\..\..\cs\src\json\JSON.csproj" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
 </Project>
