@@ -112,11 +112,11 @@ csCodegen options@Cs {..} = do
     typeMapping = if collection_interfaces
             then csCollectionInterfacesTypeMapping
             else csTypeMapping
-    fieldMapping = if readonly_properties
-            then ReadOnlyProperties
-            else if fields
-                 then PublicFields
-                 else Properties
+    fieldMapping
+      | readonly_properties = ReadOnlyProperties
+      | init_only_properties = InitOnlyProperties
+      | fields = PublicFields
+      | otherwise = Properties
     constructorOptions = if constructor_parameters
             then ConstructorParameters
             else DefaultWithProtectedBase

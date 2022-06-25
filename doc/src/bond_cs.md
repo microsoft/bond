@@ -127,11 +127,16 @@ Schema fields are represented by properties with public getter and private
 setter and initialized to the default values in the default constructor.
 Classes with read-only properties are fully supported by all Bond APIs.
 
+`--init-only-properties`
+
+Schema fields are represented by properties with public getter and
+[C# 9 init-only setter](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/init) and initialized to the default values in the default constructor. Classes with init-only properties are fully supported by all Bond APIs.
+
 `--preview-constructor-parameters`
 
 A constructor is generated with a parameter to initialize each of the schema
 fields. This option is typically used in conjunction with
-`--readonly-properties`.  This functionailty is in preview and may change.
+`--readonly-properties` or `--init-only-properties`.  This functionailty is in preview and may change.
 
 `--collection-interfaces`
 

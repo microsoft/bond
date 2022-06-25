@@ -37,6 +37,10 @@
       <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --readonly-properties</Options>
       <Options Condition=" '$(Configuration)' == 'Fields' ">--readonly-properties --collection-interfaces</Options>
     </BondCodegen>
+    <BondCodegen Update="InitOnly.bond">
+      <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --init-only-properties</Options>
+      <Options Condition=" '$(Configuration)' == 'Fields' ">--init-only-properties --collection-interfaces</Options>
+    </BondCodegen>
     <BondCodegen Include="..\core\Containers.bond">
       <Options Condition=" '$(Configuration)' != 'Fields' ">$(BondOptions) --collection-interfaces</Options>
       <Options Condition=" '$(Configuration)' == 'Fields' ">--fields</Options>
@@ -53,6 +57,7 @@
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflict_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflictBond_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\InitOnly_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>

@@ -31,7 +31,8 @@ data StructMapping =
 data FieldMapping =
     PublicFields |          -- ^ public fields
     Properties |            -- ^ auto-properties
-    ReadOnlyProperties      -- ^ auto-properties with private setter
+    ReadOnlyProperties |    -- ^ auto-properties with private setter
+    InitOnlyProperties      -- ^ auto-properties with init-only setter
     deriving Eq
 
 -- | Options for how constructors should be generated.
@@ -186,6 +187,7 @@ namespace #{csNamespace}
                 PublicFields        -> [lt|#{optional fieldInitializer $ csDefault f};|]
                 Properties          -> [lt| { get; set; }|]
                 ReadOnlyProperties  -> [lt| { get; private set; }|]
+                InitOnlyProperties  -> [lt| { get; init; }|]
             fieldInitializer x = [lt| = #{x}|]
             new = if isBaseField fieldName structBase then "new " else "" :: String
 

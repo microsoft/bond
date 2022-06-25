@@ -91,11 +91,11 @@ verifyFiles options baseName variation =
     extra options
   where
     verify = verifyFile options baseName
-    fieldMapping Cs {..} = if readonly_properties
-        then ReadOnlyProperties
-        else if fields
-             then PublicFields
-             else Properties
+    fieldMapping Cs {..}
+      | readonly_properties = ReadOnlyProperties
+      | init_only_properties = InitOnlyProperties
+      | fields = PublicFields
+      | otherwise = Properties
     constructorOptions Cs {..} = if constructor_parameters
         then ConstructorParameters
         else DefaultWithProtectedBase

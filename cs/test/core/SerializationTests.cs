@@ -83,6 +83,20 @@
             TestSerialization<Readonly.SimpleContainers>();
         }
 
+#if NET5_0_OR_GREATER
+        [Test]
+        public void InitOnlyBasicTypes()
+        {
+            TestSerialization<InitOnly.BasicTypes>();
+        }
+
+        [Test]
+        public void InitOnlySimpleContainers()
+        {
+            TestSerialization<InitOnly.SimpleContainers>();
+        }
+#endif
+
         [Test]
         public void Nested()
         {

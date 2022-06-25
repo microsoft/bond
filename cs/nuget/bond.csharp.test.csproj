@@ -40,4 +40,9 @@
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net5.0')) or $(TargetFramework.StartsWith('net6.0'))">
+      <BondCodegen Update="..\test\core\InitOnly.bond">
+      <Options>$(BondOptions) --init-only-properties</Options>
+    </BondCodegen>
+  </ItemGroup>
 </Project>

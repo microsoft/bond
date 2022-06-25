@@ -154,6 +154,13 @@ tests = testGroup "Compiler tests"
             , verifyCodegenVariation
                 [ "c#"
                 , "--preview-constructor-parameters"
+                , "--init-only-properties"
+                ]
+                "complex_inheritance"
+                "constructor-parameters_init"
+            , verifyCodegenVariation
+                [ "c#"
+                , "--preview-constructor-parameters"
                 , "--fields"
                 ]
                 "complex_inheritance"
@@ -180,6 +187,13 @@ tests = testGroup "Compiler tests"
                 ]
                 "empty_struct"
                 "constructor-parameters"
+            , verifyCodegenVariation
+                [ "c#"
+                , "--preview-constructor-parameters"
+                , "--init-only-properties"
+                ]
+                "empty_struct"
+                "constructor-parameters_init"
             ]
         , testGroup "Java"
             [ verifyJavaCodegen "attributes"

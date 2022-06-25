@@ -53,6 +53,7 @@ data Options
         , namespace :: [String]
         , collection_interfaces :: Bool
         , readonly_properties :: Bool
+        , init_only_properties :: Bool
         , fields :: Bool
         , jobs :: Maybe Int
         , no_banner :: Bool
@@ -106,9 +107,10 @@ cs :: Options
 cs = Cs
     { collection_interfaces = def &= name "c" &= help "Use interfaces rather than concrete collection types"
     , readonly_properties = def &= name "r" &= help "Generate private property setters"
+    , init_only_properties = def &= name "init-only" &= help "Generate init-only property setters"
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
     , structs_enabled = True &= explicit &= name "structs" &= help "Generate C# types for Bond structs and enums (true by default, use \"--structs=false\" to disable)"
-    , constructor_parameters = def &= explicit &= name "preview-constructor-parameters" &= help "PREVIEW FEATURE: Generate a constructor that takes all the fields as parameters. Typically used with readonly-properties."
+    , constructor_parameters = def &= explicit &= name "preview-constructor-parameters" &= help "PREVIEW FEATURE: Generate a constructor that takes all the fields as parameters. Typically used with readonly-properties or init-only-properties."
     } &=
     name "c#" &=
     help "Generate C# code"
