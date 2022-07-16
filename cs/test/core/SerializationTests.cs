@@ -439,6 +439,12 @@
             Assert.IsNotNull(new EnsureSpacesInPathsWork());
         }
 
+        [Test]
+        public void ImmutableCollections()
+        {
+            TestSerialization<ImmutableCollections.ImmutableCollectionsHolder>();
+        }
+
         void TestTypePromotion<From, To>()
         {
             TestFieldSerialization<From, To>();

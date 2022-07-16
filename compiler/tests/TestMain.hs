@@ -144,6 +144,16 @@ tests = testGroup "Compiler tests"
             , verifyCsCodegen "inheritance"
             , verifyCsCodegen "aliases"
             , verifyCsCodegen "complex_inheritance"
+            , verifyCodegen
+                [ "c#"
+                , "--using=ImmutableArray=System.Collections.Immutable.ImmutableArray<{0}>"
+                , "--using=ImmutableList=System.Collections.Immutable.ImmutableList<{0}>"
+                , "--using=ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet<{0}>"
+                , "--using=ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet<{0}>"
+                , "--using=ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary<{0},{1}>"
+                , "--using=ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary<{0},{1}>"
+                ]
+                "immutable_collections"
             , verifyCodegenVariation
                 [ "c#"
                 , "--preview-constructor-parameters"

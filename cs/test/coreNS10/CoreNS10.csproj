@@ -44,6 +44,9 @@
     <BondCodegen Include="..\core\UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
+    <BondCodegen Include="..\core\ImmutableCollections.bond">
+      <Options>$(BondOptions) --using="ImmutableArray=System.Collections.Immutable.ImmutableArray&lt;{0}&gt;" --using="ImmutableList=System.Collections.Immutable.ImmutableList&lt;{0}&gt;" --using="ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet&lt;{0}&gt;" --using="ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet&lt;{0}&gt;" --using="ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary&lt;{0},{1}&gt;" --using="ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary&lt;{0},{1}&gt;"</Options>
+    </BondCodegen>
     <!-- uses mixed slashes to test the targets can deal with that -->
     <BondCodegen Include="..\core\import dir with spaces\dir1/dir2/Bond File With Spaces.bond" />
     <!-- Resharper Workaround -->
@@ -54,12 +57,14 @@
     <Compile Include="$(IntermediateOutputPath)\NamespaceConflictBond_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\ReadOnly_types.cs" Condition="False" />
     <Compile Include="$(IntermediateOutputPath)\UnitTest_types.cs" Condition="False" />
+    <Compile Include="$(IntermediateOutputPath)\ImmutableCollections_types.cs" Condition="False" />
     <!-- End Resharper Workaround -->
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="NUnit" Version="3.10.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\attributes\Attributes.csproj" AdditionalProperties="TargetFramework=$(BondTargetFramework)" />

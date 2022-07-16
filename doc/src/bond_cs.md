@@ -1177,6 +1177,21 @@ type aliases don't require a user defined converter.
 
 - `examples/cs/core/container_alias`
 
+Bond provides special support for using the [System.Collections.Immutable](https://www.nuget.org/packages/System.Collections.Immutable/#readme-body-tab) collections as container type aliases. The following aliases are supported:
+
+- vector\<T\> -> `ImmutableArray<T>`, `ImmutableList<T>`
+- list\<T\> -> `ImmutableArray<T>`, `ImmutableList<T>`, `ImmutableHashSet<T>`, `ImmutableSortedSet<T>`
+- set\<T\> -> `ImmutableHashSet<T>`, `ImmutableSortedSet<T>`
+- map\<K, V\> -> `ImmutableDictionary<K, V>`, `ImmutableSortedDictionary<K, V>`
+
+During code generation, immutable collection fields are handled specially - they do not have parameterless constructors, and so the Bond compiler will instead use the static `Empty` field is used as the default value, e.g. [ImmutableList\<T\>.Empty](https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablelist-1.empty).
+
+When deserializing immutable collections, Bond will use the inner `Builder` classes to efficiently reconstruct the collection, e.g. [ImmutableList\<T\>.Builder](https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablelist-1.builder).
+
+See the below project for examples on using immutable collections as container aliases:
+
+- `examples/cs/core/immutable_collections_alias`
+
 Converter
 ---------
 
