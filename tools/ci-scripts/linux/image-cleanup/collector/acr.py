@@ -6,9 +6,7 @@ import logging
 import subprocess
 
 from datetime import datetime, timezone
-from typing import Mapping, Iterable
-
-from .config import REGISTRY_NAME, REPOSITORY_NAME
+from typing import Mapping, Iterable, Generator, NamedTuple
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,32 +68,40 @@ class ImageManifest: # pylint: disable=too-few-public-methods
         except:
             raise ManifestParseError(kwargs)
 
-def get_image_manifests() -> Iterable[ImageManifest]:
+class NamedImageManifest(NamedTuple):
+    """Represents an ACR image manifest with a human readeable name."""
+    manifest: ImageManifest
+    registry_name: str
+    repository_name: str
+
+def get_image_manifests(registry_name: str, repository_names: Iterable[str]) -> Generator[NamedImageManifest, None, None]:
     """Get the current ACR image manifests.
 
     Invokes the ``az`` CLI tool to discover the current images.
     """
-    az_show_manifests_cmd_line = ['az', 'acr', 'repository', 'show-manifests',
-                                  '--name', REGISTRY_NAME,
-                                  '--repository', REPOSITORY_NAME,
-                                  '--output', 'json']
-    _LOGGER.debug('Invoking %s', az_show_manifests_cmd_line)
-    output = subprocess.check_output(az_show_manifests_cmd_line,
-                                     stderr=subprocess.PIPE)
-    manifests = json.loads(str(output, encoding='utf-8'))
+    for repository_name in repository_names:
+        az_show_manifests_cmd_line = ['az', 'acr', 'repository', 'show-manifests',
+                                    '--name', registry_name,
+                                    '--repository', repository_name,
+                                    '--output', 'json']
+        _LOGGER.debug('Invoking %s', az_show_manifests_cmd_line)
+        output = subprocess.check_output(az_show_manifests_cmd_line,
+                                        stderr=subprocess.PIPE)
+        manifests = json.loads(str(output, encoding='utf-8'))
 
-    if not isinstance(manifests, list):
-        msg = 'Expected an array of manifests ("[{{...}},{{...}}]" but got {}'.format(
-            type(manifests).__name__)
-        raise ValueError(msg)
+        if not isinstance(manifests, list):
+            msg = 'Expected an array of manifests ("[{{...}},{{...}}]" but got {}'.format(
+                type(manifests).__name__)
+            raise ValueError(msg)
+        
+        for o in manifests:
+            yield NamedImageManifest(ImageManifest(**o), registry_name, repository_name)
 
-    return [ImageManifest(**o) for o in manifests]
-
-def delete_image_by_manifest(manifest: ImageManifest) -> None:
+def delete_image_by_manifest(named_manifest: NamedImageManifest) -> None:
     """Delete an ACR image (and all its tags)."""
-    image_name = '{}@{}'.format(REPOSITORY_NAME, manifest.digest)
+    image_name = '{}@{}'.format(named_manifest.repository_name, named_manifest.manifest.digest)
     az_delete_cmd_line = ['az', 'acr', 'repository', 'delete',
-                          '--name', REGISTRY_NAME,
+                          '--name', named_manifest.registry_name,
                           '--image', image_name,
                           '--yes']
     _LOGGER.debug('Invoking %s', az_delete_cmd_line)
