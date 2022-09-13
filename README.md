@@ -79,6 +79,7 @@ In the root `bond` directory run:
 ```bash
 mkdir build
 cd build
+cmake ..
 make
 sudo make install
 ```
@@ -140,6 +141,7 @@ order to generate and build from makefiles, in the root `bond` directory run:
 ```bash
 mkdir build
 cd build
+cmake ..
 make
 sudo make install
 ```
