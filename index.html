@@ -187,6 +187,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>In the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
+<span class="fu">cmake</span> ..
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>The <code>build</code> directory is just an example. Any directory can be used as the build destination.</p>
@@ -216,6 +217,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <p>Bond can be built on macOS using either standard *nix makefiles or Xcode. In order to generate and build from makefiles, in the root <code>bond</code> directory run:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> build
 <span class="bu">cd</span> build
+<span class="fu">cmake</span> ..
 <span class="fu">make</span>
 <span class="fu">sudo</span> make install</code></pre></div>
 <p>Alternatively, you can generate Xcode projects by passing the <code>-G Xcode</code> option to cmake:</p>
