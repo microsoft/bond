@@ -9,10 +9,10 @@ using ImmutableSortedDictionary<K, V> = map<K, V>;
 
 struct ImmutableCollectionsHolder
 {
-	0: ImmutableArray<string> ImmutableArrayOfStrings;
-	1: ImmutableList<string> ImmutableListOfStrings;
-	2: ImmutableHashSet<string> ImmutableHashSetOfStrings;
-	3: ImmutableSortedSet<int32> ImmutableSortedSetOfInts;
-	4: ImmutableDictionary<string, string> ImmutableStringToStringDictionary;
-	5: ImmutableSortedDictionary<int32, string> ImmutableSortedIntToStringDictionary;
+    0: ImmutableArray<string> ImmutableArrayOfStrings;
+    1: ImmutableList<string> ImmutableListOfStrings;
+    2: ImmutableHashSet<string> ImmutableHashSetOfStrings;
+    3: ImmutableSortedSet<int32> ImmutableSortedSetOfInts;
+    4: ImmutableDictionary<string, string> ImmutableStringToStringDictionary;
+    5: ImmutableSortedDictionary<int32, string> ImmutableSortedIntToStringDictionary;
 }

@@ -83,8 +83,9 @@ namespace Bond.Expressions
         static readonly MethodInfo bufferBlockCopy =
             Reflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
 
-        // Immutable collection types are represented/identified as strings to avoid depending on the
-        // System.Collections.Immutable nuget package
+        // Immutable collection types are represented/identified as strings
+        // to avoid depending on the System.Collections.Immutable assembly
+        // or NuGet package
         static readonly HashSet<string> immutableListSetTypeNames = new HashSet<string>
         {
             "System.Collections.Immutable.ImmutableArray`1",
