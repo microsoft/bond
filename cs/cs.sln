@@ -247,6 +247,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "default-ignore-output", "te
 		{21E175D5-BBDD-4B63-8FB7-38899BF2F9D1} = {21E175D5-BBDD-4B63-8FB7-38899BF2F9D1}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "immutable_collections", "..\examples\cs\core\immutable_collections\immutable_collections.csproj", "{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -881,6 +883,24 @@ Global
 		{98BF6B10-F821-4402-8923-5F7B726BBFC8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{98BF6B10-F821-4402-8923-5F7B726BBFC8}.Release|Win32.ActiveCfg = Release|Any CPU
 		{98BF6B10-F821-4402-8923-5F7B726BBFC8}.Release|Win32.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Debug|Win32.Build.0 = Debug|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Any CPU.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Mixed Platforms.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Win32.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Fields|Win32.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Win32.ActiveCfg = Release|Any CPU
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -920,6 +940,7 @@ Global
 		{4FACD9A1-B8AC-4D76-B4B5-B71607EA8F8C} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 		{3805B86E-2BE3-4FFA-A11C-B4981069EC88} = {4268A1D3-AF40-4120-B021-D95A0F754221}
 		{98BF6B10-F821-4402-8923-5F7B726BBFC8} = {8CF1F5CD-548F-4323-869E-AA5903C88B6A}
+		{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6} = {621A2166-EEE0-4A27-88AA-5BE5AC996452}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6EB58560-CA9C-4F6C-B916-CCA6C7FE2A2B}

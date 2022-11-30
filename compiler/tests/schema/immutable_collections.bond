@@ -1,0 +1,18 @@
+namespace tests
+
+using ImmutableArray<T> = list<T>;
+using ImmutableList<T> = list<T>;
+using ImmutableHashSet<T> = set<T>;
+using ImmutableSortedSet<T> = set<T>;
+using ImmutableDictionary<K, V> = map<K, V>;
+using ImmutableSortedDictionary<K, V> = map<K, V>;
+
+struct ImmutableCollectionsHolder
+{
+    0: ImmutableArray<string> ImmutableArrayString;
+    1: ImmutableList<string> ImmutableListString;
+    2: ImmutableHashSet<string> ImmutableHashSetString;
+    3: ImmutableSortedSet<int32> ImmutableSortedSetInt;
+    4: ImmutableDictionary<string, string> ImmutableDictionaryStringMap;
+    5: ImmutableSortedDictionary<int32, string> ImmutableSortedDictionaryStringMap;
+}

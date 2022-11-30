@@ -43,6 +43,11 @@ different versioning scheme, following the Haskell community's
   code will be generated for them. See [issue \#1131, Bond-over-gRPC will be
   deprecated February 2022](https://github.com/microsoft/bond/issues/1131),
   for the full announcement.
+* Added codegen and deserialization support for container type aliases to
+  use
+  [System.Collections.Immutable](https://learn.microsoft.com/dotnet/api/system.collections.immutable)
+  collections. (Pull request
+  [\#1161](https://github.com/microsoft/bond/pull/1161))
 
 ## 10.0: 2022-03-07 ##
 

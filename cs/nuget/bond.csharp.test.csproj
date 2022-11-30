@@ -15,6 +15,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="NUnit" Version="3.10.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.*" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,9 @@
     </BondCodegen>
     <BondCodegen Update="..\test\core\UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
+    </BondCodegen>
+    <BondCodegen Update="ImmutableCollections.bond">
+      <Options>$(BondOptions) --using="ImmutableArray=System.Collections.Immutable.ImmutableArray&lt;{0}&gt;" --using="ImmutableList=System.Collections.Immutable.ImmutableList&lt;{0}&gt;" --using="ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet&lt;{0}&gt;" --using="ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet&lt;{0}&gt;" --using="ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary&lt;{0},{1}&gt;" --using="ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary&lt;{0},{1}&gt;"</Options>
     </BondCodegen>
   </ItemGroup>
 </Project>

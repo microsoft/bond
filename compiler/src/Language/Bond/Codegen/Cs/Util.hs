@@ -16,7 +16,8 @@ module Language.Bond.Codegen.Cs.Util
 import Data.Int (Int64)
 import Data.Monoid
 import Prelude
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, isPrefixOf)
+import Data.Text.Lazy.Builder (toLazyText)
 import Text.Shakespeare.Text
 import Paths_bond (version)
 import Data.Version (showVersion)
@@ -112,15 +113,20 @@ paramConstraints = newlineBeginSep 2 constraint
     constraint (TypeParam _ Nothing) = mempty
     constraint (TypeParam name (Just Value)) = [lt|where #{name} : struct|]
 
+isImmutableCollection :: MappingContext -> Type -> Bool
+isImmutableCollection cs t = [lt|System.Collections.Immutable.Immutable|] `isPrefixOf` toLazyText (getInstanceTypeName cs t)
+
 -- Initial value for C# field/property or Nothing if C# implicit default is OK
 defaultValue :: MappingContext -> Field -> Maybe Text
 defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
   where
     newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]
+    staticEmptyField t = Just [lt|#{getInstanceTypeName cs t}.Empty|]
     implicitDefault (BT_Bonded t) = Just [lt|global::Bond.Bonded<#{getTypeName cs t}>.Empty|]
     implicitDefault t@(BT_TypeParam _) = Just [lt|global::Bond.GenericFactory.Create<#{getInstanceTypeName cs t}>()|]
     implicitDefault t@BT_Blob = newInstance t
     implicitDefault t@(BT_UserDefined a@Alias {..} args)
+        | isImmutableCollection cs t = staticEmptyField t
         | customAliasMapping cs a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
     implicitDefault t

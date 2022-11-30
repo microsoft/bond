@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\cs\build\nuget\Bond.CSharp.props" />
+  <PropertyGroup>
+    <ProjectGuid>{9CC2754E-501D-4DB3-8EAA-8B91025E5DF6}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>immutable_collections</RootNamespace>
+    <AssemblyName>immutable_collections</AssemblyName>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <BondOptions>--using="ImmutableArray=System.Collections.Immutable.ImmutableArray&lt;{0}&gt;" --using="ImmutableList=System.Collections.Immutable.ImmutableList&lt;{0}&gt;" --using="ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet&lt;{0}&gt;" --using="ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet&lt;{0}&gt;" --using="ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary&lt;{0},{1}&gt;" --using="ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary&lt;{0},{1}&gt;"</BondOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Resharper Workaround -->
+    <Compile Include="$(IntermediateOutputPath)\schema_types.cs" Condition="False" />
+    <!-- End Resharper Workaround -->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\cs\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\..\..\cs\src\io\IO.csproj" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
+  </ItemGroup>
+  <Import Project="$(BOND_PATH)\build\nuget\Bond.CSharp.targets" />
+</Project>

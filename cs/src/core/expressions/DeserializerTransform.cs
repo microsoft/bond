@@ -83,6 +83,25 @@ namespace Bond.Expressions
         static readonly MethodInfo bufferBlockCopy =
             Reflection.MethodInfoOf((byte[] a) => Buffer.BlockCopy(a, default(int), a, default(int), default(int)));
 
+        // Immutable collection types are represented/identified as strings
+        // to avoid depending on the System.Collections.Immutable assembly
+        // or NuGet package
+        static readonly HashSet<string> immutableListSetTypeNames = new HashSet<string>
+        {
+            "System.Collections.Immutable.ImmutableArray`1",
+            "System.Collections.Immutable.ImmutableList`1",
+            "System.Collections.Immutable.ImmutableHashSet`1",
+            "System.Collections.Immutable.ImmutableSortedSet`1",
+        };
+
+        static readonly HashSet<string> immutableMapTypeNames = new HashSet<string>
+        {
+            "System.Collections.Immutable.ImmutableDictionary`2",
+            "System.Collections.Immutable.ImmutableSortedDictionary`2",
+        };
+
+        static readonly HashSet<string> immutableCollectionTypeNames = new HashSet<string>(immutableListSetTypeNames.Concat(immutableMapTypeNames));
+
         public DeserializerTransform(
             Expression<Func<R, int, object>> deferredDeserialize,
             Factory factory,
@@ -408,20 +427,44 @@ namespace Bond.Expressions
                             }
                         }
 
-                        var add = container.Type.GetMethod(typeof(ICollection<>), "Add", item.Type);
+                        // For System.Collections.Immutable lists/sets, use the builders to construct them, since ICollection<T>.Add()
+                        // is not supported for them.
+                        var containerGenericTypeDef = container.Type.GetGenericTypeDefinition();
+                        if (immutableListSetTypeNames.Contains(containerGenericTypeDef.FullName))
+                        {
+                            var builderType = container.Type.GetTypeInfo().GetDeclaredNestedType("Builder").MakeGenericType(item.Type);
+                            var builder = Expression.Variable(builderType, container + "_builder");
+                            var builderAdd = builderType.GetMethod(typeof(ICollection<>), "Add", item.Type);
 
-                        addItem = Expression.Block(
-                            Value(valueParser, item, elementType, itemSchemaType, initialize: true),
-                            Expression.Call(container, add, item));
+                            addItem = Expression.Block(
+                                Value(valueParser, item, elementType, itemSchemaType, initialize: true),
+                                Expression.Call(builder, builderAdd, item));
 
-                        parameters = new[] { item };
+                            var toBuilderMethod = container.Type.FindMethod("ToBuilder");
+                            var toImmutableMethod = builderType.FindMethod("ToImmutable");
+                            var constructBuilder = Expression.Assign(builder, Expression.Call(container, toBuilderMethod));
+                            var reconstructImmutable = Expression.Assign(container, Expression.Call(builder, toImmutableMethod));
+
+                            parameters = new[] { item, builder };
+                            beforeLoop = Expression.Block(beforeLoop, constructBuilder);
+                            afterLoop = Expression.Block(afterLoop, reconstructImmutable);
+                        }
+                        else
+                        {
+                            var add = container.Type.GetMethod(typeof(ICollection<>), "Add", item.Type);
+
+                            addItem = Expression.Block(
+                                Value(valueParser, item, elementType, itemSchemaType, initialize: true),
+                                Expression.Call(container, add, item));
+
+                            parameters = new[] { item };
+                        }
                     }
 
                     return Expression.Block(
                         parameters,
                         beforeLoop,
-                        ControlExpression.While(next,
-                            addItem),
+                        ControlExpression.While(next, addItem),
                         afterLoop);
                 });
         }
@@ -451,19 +494,48 @@ namespace Bond.Expressions
                             Expression.Assign(map, newContainer(map.Type, schemaType, cappedCount)));
                     }
 
-                    var add = map.Type.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
+                    // For System.Collections.Immutable maps, use the builders to construct them, since
+                    // the setter IDictionary<K,V>.Item[] is not supported for them.
+                    var mapGenericTypeDef = map.Type.GetGenericTypeDefinition();
+                    if (immutableMapTypeNames.Contains(mapGenericTypeDef.FullName))
+                    {
+                        var builderType = map.Type.GetTypeInfo().GetDeclaredNestedType("Builder").MakeGenericType(itemSchemaType.Key, itemSchemaType.Value);
+                        var builder = Expression.Variable(builderType, map + "_builder");
+                        var builderAdd = builderType.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
 
-                    Expression addItem = Expression.Block(
-                        Value(keyParser, key, keyType, itemSchemaType.Key, initialize: true),
-                        nextValue,
-                        Value(valueParser, value, valueType, itemSchemaType.Value, initialize: true),
-                        Expression.Assign(Expression.Property(map, add, new Expression[] { key }), value));
+                        var addItem = Expression.Block(
+                            Value(keyParser, key, keyType, itemSchemaType.Key, initialize: true),
+                            nextValue,
+                            Value(valueParser, value, valueType, itemSchemaType.Value, initialize: true),
+                            Expression.Assign(Expression.Property(builder, builderAdd, new Expression[] { key }), value));
 
-                    return Expression.Block(
-                        new [] { key, value },
-                        init,
-                        ControlExpression.While(nextKey,
-                            addItem));
+                        var toBuilderMethod = map.Type.FindMethod("ToBuilder");
+                        var toImmutableMethod = builderType.FindMethod("ToImmutable");
+                        var constructBuilder = Expression.Assign(builder, Expression.Call(map, toBuilderMethod));
+                        var reconstructImmutable = Expression.Assign(map, Expression.Call(builder, toImmutableMethod));
+
+                        return Expression.Block(
+                            new[] { key, value, builder },
+                            init,
+                            constructBuilder,
+                            ControlExpression.While(nextKey, addItem),
+                            reconstructImmutable);
+                    }
+                    else
+                    {
+                        var add = map.Type.GetDeclaredProperty(typeof(IDictionary<,>), "Item", value.Type);
+
+                        var addItem = Expression.Block(
+                            Value(keyParser, key, keyType, itemSchemaType.Key, initialize: true),
+                            nextValue,
+                            Value(valueParser, value, valueType, itemSchemaType.Value, initialize: true),
+                            Expression.Assign(Expression.Property(map, add, new Expression[] { key }), value));
+
+                        return Expression.Block(
+                            new[] { key, value },
+                            init,
+                            ControlExpression.While(nextKey, addItem));
+                    }
                 });
         }
 
@@ -558,7 +630,15 @@ namespace Bond.Expressions
             }
             else if (schemaType.IsGenericType())
             {
-                schemaType = schemaType.GetGenericTypeDefinition().MakeGenericType(type.GetTypeInfo().GenericTypeArguments);
+                // All System.Collections.Immutable collections have a static field ImmutableX<T>.Empty
+                // which is the simplest constructor.
+                var schemaGenericTypeDef = schemaType.GetGenericTypeDefinition();
+                if (immutableCollectionTypeNames.Contains(schemaGenericTypeDef.FullName))
+                {
+                    return Expression.Field(null, schemaType.GetTypeInfo().GetDeclaredField("Empty"));
+                }
+
+                schemaType = schemaGenericTypeDef.MakeGenericType(type.GetTypeInfo().GenericTypeArguments);
             }
             else if (schemaType.IsArray)
             {

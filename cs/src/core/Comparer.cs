@@ -59,7 +59,16 @@ namespace Bond
                     return Expression.Call(null, comparerEqual.MakeGenericMethod(type), left, right);
 
                 if (type.IsBondContainer())
-                    return EnumerablesEqual(left, right);
+                {
+                    if (type.IsValueType())
+                    {
+                        return StructsEqual(left, right);
+                    }
+                    else
+                    {
+                        return EnumerablesEqual(left, right);
+                    }
+                }
 
                 if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
                     return KeyValuePairEqual(left, right);
