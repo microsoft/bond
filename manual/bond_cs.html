@@ -167,6 +167,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#custom-type-mappings">Custom type mappings</a><ul>
 <li><a href="#codegen-parameters">Codegen parameters</a></li>
 <li><a href="#custom-containers">Custom containers</a></li>
+<li><a href="#system.collection.immutable-support">System.Collection.Immutable support</a></li>
 <li><a href="#converter">Converter</a></li>
 </ul></li>
 <li><a href="#xml">Xml</a></li>
@@ -708,6 +709,44 @@ struct Example
 <p>Type aliases of container types can be mapped to user defined collection classes as long as they implement the same interfaces as the default collections: <code>IEnumerable&lt;T&gt;</code> as well as <code>ICollection&lt;T&gt;</code> for aliases of <code>list&lt;T&gt;</code> and <code>vector&lt;T&gt;</code>, <code>ISet&lt;T&gt;</code> for aliases of <code>set&lt;T&gt;</code> and <code>IDictionary&lt;K, V&gt;</code> for aliases of <code>map&lt;K ,V&gt;</code>. Custom mappings of container type aliases don’t require a user defined converter.</p>
 <ul>
 <li><code>examples/cs/core/container_alias</code></li>
+</ul>
+<h2 id="system.collection.immutable-support">System.Collection.Immutable support</h2>
+<p>Bond provides special support for using the <a href="https://learn.microsoft.com/dotnet/api/system.collections.immutable">System.Collections.Immutable</a> collections as container type aliases. The following aliases are supported:</p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="79%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Underlying Bond type</th>
+<th>Supported System.Collections.Immutable container</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>vector&lt;T&gt;</code></td>
+<td><code>ImmutableArray&lt;T&gt;</code>, <code>ImmutableList&lt;T&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>list&lt;T&gt;</code></td>
+<td><code>ImmutableArray&lt;T&gt;</code>, <code>ImmutableHashSet&lt;T&gt;</code>, <code>ImmutableList&lt;T&gt;</code>, <code>ImmutableSortedSet&lt;T&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><code>set&lt;T&gt;</code></td>
+<td><code>ImmutableHashSet&lt;T&gt;</code>, <code>ImmutableSortedSet&lt;T&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>map&lt;K, V&gt;</code></td>
+<td><code>ImmutableDictionary&lt;K, V&gt;</code>, <code>ImmutableSortedDictionary&lt;K, V&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>During code generation, immutable collection fields are handled specially. Since they do not have parameterless constructors, the Bond compiler will instead use the static <code>Empty</code> field is used as the default value, e.g. <a href="https://learn.microsoft.com/dotnet/api/system.collections.immutable.immutablelist-1.empty">ImmutableList&lt;T&gt;.Empty</a>.</p>
+<p>When deserializing immutable collections, Bond will use the inner <code>Builder</code> classes to efficiently reconstruct the collection, e.g. <a href="https://learn.microsoft.com/dotnet/api/system.collections.immutable.immutablelist-1.builder">ImmutableList&lt;T&gt;.Builder</a>.</p>
+<p>See the below project for examples on using immutable collections as container aliases:</p>
+<ul>
+<li><code>examples/cs/core/immutable_collections_alias</code></li>
 </ul>
 <h2 id="converter">Converter</h2>
 <p>Applications using custom mappings for aliases of scalar types, string or blob must provide converter between the custom type and the default type. The converter is a public class named <code>BondTypeAliasConverter</code> defining a pair of public static <code>Convert</code> methods for each type alias:</p>
