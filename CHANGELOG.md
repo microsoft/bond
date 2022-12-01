@@ -11,12 +11,12 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## Unreleased ##
+## 11.0: 2022-12-01 ##
 
-* IDL core version: TBD
-* C++ version: TBD (major bump needed)
-* C# NuGet version: TBD (major bump needed)
-* `gbc` & compiler library: TBD (major bump needed)
+* IDL core version: 3.0
+* C++ version: 11.0
+* C# NuGet version: 11.0
+* `gbc` & compiler library: 0.13.0.0
 
 ### `gbc` and Bond compiler library ###
 * **Breaking change**: Codegen for Bond-over-gRPC has been removed: the

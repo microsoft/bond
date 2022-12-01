@@ -19,7 +19,7 @@ namespace nsmapped
 
     [global::Bond.Namespace("tests")]
     [global::Bond.Schema]
-    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.12.1.0")]
+    [System.CodeDom.Compiler.GeneratedCode("gbc", "0.13.0.0")]
     public partial class BasicTypes
     {
         [global::Bond.Id(0)]

@@ -1,13 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: b3e1e8755f812c54ff2252111e7b261404f305c68fbcdde72babcd762faf6acb
 
 name:           bond
-version:        0.12.1.0
+version:        0.13.0.0
 synopsis:       Bond schema compiler and code generator
 description:    Bond is a cross-platform framework for handling schematized data. It supports cross-language de/serialization and powerful generic mechanisms for efficiently manipulating data. . This package contains a library for parsing the Bond schema definition language and performing template-based code generation. The library includes built-in templates for generating standard Bond C++ and C# code, as well as utilities for writing custom codegen templates. . The package also contains a command-line compiler/codegen tool, named gbc, which is primarily used to generate code for C++ and C# programs using Bond.
 category:       Language, Compiler, Code Generation
@@ -71,13 +69,13 @@ library
     , shakespeare
     , text
     , unordered-containers
+  default-language: Haskell2010
   if os(windows) && arch(i386)
     ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
   if os(windows) && arch(x86_64)
     ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va
   if flag(warningsAsErrors)
     ghc-options: -Wall -Werror
-  default-language: Haskell2010
 
 executable gbc
   main-is: Main.hs
@@ -104,6 +102,7 @@ executable gbc
     , shakespeare
     , text
     , unordered-containers
+  default-language: Haskell2010
   if os(windows) && arch(i386)
     ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
   if os(windows) && arch(x86_64)
@@ -112,7 +111,6 @@ executable gbc
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   else
     ghc-options: -threaded -rtsopts -with-rtsopts=-N
-  default-language: Haskell2010
 
 test-suite gbc-tests
   type: exitcode-stdio-1.0
@@ -153,6 +151,7 @@ test-suite gbc-tests
     , tasty-quickcheck
     , text
     , unordered-containers
+  default-language: Haskell2010
   if os(windows) && arch(i386)
     ld-options: -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware
   if os(windows) && arch(x86_64)
@@ -161,4 +160,3 @@ test-suite gbc-tests
     ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   else
     ghc-options: -threaded -rtsopts -with-rtsopts=-N
-  default-language: Haskell2010

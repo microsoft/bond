@@ -1720,10 +1720,6 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[Bond-over-gRPC overview][bond_over_grpc]
-----------------------------
-
-[bond_over_grpc]: bond_over_grpc.html
 [bond_cpp]: bond_cpp.html
 [bond_java]: bond_java.html
 [bond_py]: bond_py.html

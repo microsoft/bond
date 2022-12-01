@@ -2019,9 +2019,6 @@ References
 [Python User's Manual][bond_py]
 ----------------------------
 
-[Bond-over-gRPC overview][bond_over_grpc]
-----------------------------
-
 [API_reference]: ../reference/cpp/index.html
 
 [compiler]: compiler.html
@@ -2031,8 +2028,6 @@ References
 [bond_cs]: bond_cs.html
 
 [bond_java]: bond_java.html
-
-[bond_over_grpc]: bond_over_grpc.html
 
 [serializing_transform_ref]:
 ../reference/cpp/structbond_1_1_serializing_transform.html

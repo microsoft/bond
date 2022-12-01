@@ -19,9 +19,6 @@ For details, see the User's Manuals:
 * [C#](https://microsoft.github.io/bond/manual/bond_cs.html)
 * [Java](https://microsoft.github.io/bond/manual/bond_java.html)
 * [Python](https://microsoft.github.io/bond/manual/bond_py.html)
-* [Bond-over-gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
-  ([deprecated: will be removed in May
-  2022](https://github.com/microsoft/bond/issues/1131))
 * [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
     * See also
       [the compiler library](https://hackage.haskell.org/package/bond) that
