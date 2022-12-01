@@ -6,8 +6,6 @@ import subprocess
 
 from typing import AbstractSet, Iterable, NewType, Sequence, Set # pylint: disable=unused-import
 
-from .config import REGISTRY_NAME, REPOSITORY_NAME
-
 _LOGGER = logging.getLogger(__name__)
 
 _BlobId = NewType('_BlobId', str) # pylint: disable=invalid-name
@@ -143,7 +141,7 @@ given `roots`.
                               _blobs_from_roots(repo_path, roots))
 
 def live_tags(repo_path: str,
-              roots: RevListRoots) -> AbstractSet[ImageTag]:
+              roots: RevListRoots, registry_name: str, repository_names: Iterable[str]) -> AbstractSet[ImageTag]:
     """Return the image tags that are referenced by .travis.yml or Linux GitHub
 Action workflow files in the commits specified by the given `roots`.
 
@@ -152,18 +150,19 @@ Action workflow files in the commits specified by the given `roots`.
     :param roots: A collection of argument lists to pass to ``git rev-list``
     to limit the matched commits.
     """
-    expected_prefix = '{}.azurecr.io/{}'.format(REGISTRY_NAME, REPOSITORY_NAME)
+    prefixes = ['{}.azurecr.io/{}'.format(registry_name, repository_name) for repository_name in repository_names]
+
     def matches_expected_prefix(image_name: ImageName) -> bool:
         """Check (and log) whether an image name is from the expected repository."""
-        if image_name.startswith(expected_prefix):
+        if any(image_name.startswith(x) for x in prefixes):
             return True
 
         _LOGGER.info(
-            'Discarding image "%s" that does not match expected prefix "%s"',
+            'Discarding image "%s" that does not match any expected prefixes "%s"',
             image_name,
-            expected_prefix)
+            prefixes)
         return False
 
     return frozenset((ImageTag(image_name.split(':')[1])
-                      for image_name in live_images(repo_path, roots)
-                      if matches_expected_prefix(image_name)))
+                    for image_name in live_images(repo_path, roots)
+                    if matches_expected_prefix(image_name)))
