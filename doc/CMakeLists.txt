@@ -119,7 +119,6 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         doxygen/bond_layout.xml
         doxygen/bond_reference.css
         doxygen/mainpage.md
-        doxygen/examples/wait_callback_example.cpp
         ${cpp_headers})
 
     set (doxygen_output_dir
