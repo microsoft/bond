@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.IO;
     using Bond;
+    using Bond.IO.Safe;
+    using Bond.Protocols;
     using NUnit.Framework;
 
     // Name conflicts with Bond.Tag
@@ -452,6 +454,20 @@
             TestFieldSerialization<HashSet<From>, HashSet<To>>();
             TestFieldSerialization<Dictionary<From, string>, Dictionary<To, string>>();
             TestFieldSerialization<Dictionary<string, From>, Dictionary<string, To>>();
+        }
+
+        [Test]
+        public void CompactBinary_NullRequiredString_DoesNotThrow()
+        {
+            var instance = new DateAsString
+            {
+                timestamp = null,
+            };
+
+            var s = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(DateAsString));
+            var buffer = new OutputBuffer();
+            var writer = new CompactBinaryWriter<OutputBuffer>(buffer);
+            s.Serialize(instance, writer);
         }
 
         void TestFieldSkip<T>()

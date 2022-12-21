@@ -442,7 +442,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(string value)
         {
-            if (value.Length == 0)
+            if (string.IsNullOrEmpty(value))
             {
                 WriteUInt32(0);
             }
@@ -460,7 +460,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteWString(string value)
         {
-            if (value.Length == 0)
+            if (string.IsNullOrEmpty(value))
             {
                 WriteUInt32(0);
             }
