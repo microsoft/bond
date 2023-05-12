@@ -86,7 +86,7 @@
       <_BondCmakeProgramPath Condition=" '$(STACK_PATH)' != '' ">"-DCMAKE_PROGRAM_PATH=$(STACK_PATH)\."</_BondCmakeProgramPath>
     </PropertyGroup>
 
-    <Exec Command="cmake $(ProjectDir)\..\compiler $(_BondCmakeProgramPath) -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
+    <Exec Command="cmake &quot;$(ProjectDir)\..\compiler&quot; $(_BondCmakeProgramPath) -Wno-dev" WorkingDirectory="$(IntermediateOutputPath)" />
     <Exec Command="cmake --build . --config $(BondCompilerCMakeBuildType) --target gbc" WorkingDirectory="$(IntermediateOutputPath)" />
 
     <Copy SourceFiles="$(IntermediateOutputPath)\build\gbc\gbc.exe" DestinationFolder="$(ProjectDir)\tools\" />

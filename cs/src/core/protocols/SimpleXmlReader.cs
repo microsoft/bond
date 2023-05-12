@@ -25,10 +25,8 @@ namespace Bond.Protocols
                 {
                     IgnoreComments = true,
                     IgnoreProcessingInstructions = true,
-#if SUPPORTS_XMLRESOLVER
                     // do not attempt to resolve any external resources
                     XmlResolver = null,
-#endif
                 }))
         { }
 
@@ -37,10 +35,8 @@ namespace Bond.Protocols
                 {
                     IgnoreComments = true,
                     IgnoreProcessingInstructions = true,
-#if SUPPORTS_XMLRESOLVER
                     // do not attempt to resolve any external resources
                     XmlResolver = null,
-#endif
                 }))
         { }
 

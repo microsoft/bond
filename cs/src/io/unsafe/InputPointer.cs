@@ -233,11 +233,7 @@ namespace Bond.IO.Unsafe
                 EndOfStream(size);
             }
 
-#if !(NETSTANDARD1_3 || NETSTANDARD1_6)
-            string result = new string((sbyte*) buffer, position, size, encoding);
-#else
             string result = encoding.GetString(buffer + position, size);
-#endif
 
             position += size;
             return result;

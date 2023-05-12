@@ -991,11 +991,7 @@ namespace UnitTest
                 return DeserializeTagged<To>(reader);
             });
 
-#if SUPPORTS_BIGINTEGER
             const bool hasBigInteger = true;
-#else
-            const bool hasBigInteger = false;
-#endif
 
             // Simple doesn't support omitting fields
             if (typeof(From) != typeof(Nothing) && typeof(From) != typeof(GenericsWithNothing))

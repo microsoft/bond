@@ -8,11 +8,7 @@ namespace Bond.Expressions.Json
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq.Expressions;
-
-#if SUPPORTS_BIGINTEGER
     using System.Numerics;
-#endif
-
     using Bond.Expressions.Pull;
     using Bond.Protocols;
 
@@ -133,7 +129,6 @@ namespace Bond.Expressions.Json
 
             Expression embeddedExpression = handler(convertedValue);
 
-#if SUPPORTS_BIGINTEGER
             if (expectedType == BondDataType.BT_UINT64 && scalarTokenType == JsonToken.Integer)
             {
                 embeddedExpression =
@@ -142,7 +137,6 @@ namespace Bond.Expressions.Json
                         embeddedExpression,
                         handler(Expression.Convert(Reader.Value, typeof(BigInteger))));
             }
-#endif
 
             var handleValue =
                 Expression.IfThenElse(

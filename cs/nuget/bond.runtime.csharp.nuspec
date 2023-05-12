@@ -31,20 +31,8 @@
     <files>
         <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.xml" />
-
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.dll" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.xml" />
-
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.dll" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.JSON.xml" />
-
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.dll" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.pdb" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.JSON.xml" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.JSON.dll" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.JSON.pdb" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.JSON.xml" />
     </files>
 </package>

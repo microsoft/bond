@@ -1697,13 +1697,13 @@ This table lists which frameworks are targeted by the Bond assemblies.
 
 This table is accurate for Bond NuGet packages 8.2.0 and later.
 
-| Assembly                 | .NET 4.0 | .NET 4.5 | .NET 4.6 | .NET Standard 1.0 | .NET Standard 1.3 | .NET Standard 1.6 |
-|--------------------------|----------|----------|----------|-------------------|-------------------|-------------------|
-| Bond.Attributes.dll      | No       | Yes      | ←        | Yes               | ←                 | Yes               |
-| Bond.Reflection.dll      | No       | Yes      | ←        | Yes               | ←                 | Yes               |
-| Bond.dll                 | No       | Yes      | ←        | Yes               | ←                 | Yes               |
-| Bond.JSON.dll            | No       | Yes      | ←        | Yes               | ←                 | Yes               |
-| Bond.IO.dll              | No       | Win only | Win only | No                | Win only          | Win only          |
+| Assembly                 | .NET Standard 2.0 | .NET 4.6.2 |
+|--------------------------|-------------------|------------|
+| Bond.Attributes.dll      | Yes               | ←          |
+| Bond.Reflection.dll      | Yes               | ←          |
+| Bond.dll                 | Yes               | ←          |
+| Bond.JSON.dll            | Yes               | ←          |
+| Bond.IO.dll              | Win only          | Win only   |
 
 A left arrow (←) indicates that support for that framework is provided by
 the version of the assembly that targets a lower version of the framework.

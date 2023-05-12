@@ -120,6 +120,8 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
+* Removed support for .Net-Framework v4.5 as it's out of support.   
+  Target `v4.6.2`+ with `netstandard2.0` instead.
 * Implicit codegen now excludes any .bond files in the project's output
   directories (e.g., `bin/`, `obj/debug/netstandard1.0`). This behavior
   matches the implicit compilation behavior for .cs files.

@@ -69,7 +69,7 @@ if (WIN32)
 
     # If C# has been built we will also run C# compatibility tests
     find_program (BOND_CSHARP_COMPAT_TEST Bond.CompatibilityTest.exe
-        PATH_SUFFIXES net45
+        PATH_SUFFIXES netstandard2.0
         NO_DEFAULT_PATH
         PATHS
             "${CMAKE_CURRENT_SOURCE_DIR}/cs/test/compat/core/bin/debug"
