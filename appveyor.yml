@@ -117,7 +117,7 @@
 
             choco install haskell-stack -y
 
-            choco install dotnetcore-sdk -y
+            choco install dotnet-sdk -y
 
             # choco install updated the path, so re-read them from the registry and reset $env:path
 
@@ -319,9 +319,6 @@
 
             if ($env:BOND_BUILD -eq "C#") {
                 dotnet test cs\test\core\Core.csproj
-                if (-not $?) { throw "tests failed" }
-
-                dotnet test cs\test\coreNS10\CoreNS10.csproj
                 if (-not $?) { throw "tests failed" }
 
                 dotnet test cs\test\internal\Internal.csproj

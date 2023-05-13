@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>guid</RootNamespace>
     <AssemblyName>guid</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <BondOptions>--using="guid_str=System.Guid" --using="guid_bin=System.Guid"</BondOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -27,29 +27,12 @@
          files, but there doesn't seem to be a good way to reference
          dependent packages from MSBuild targets. Instead, we duplicate the
          files in this package. They're pretty small. -->
-    <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\net45" src="cs\build\nuget\Common.props" />
-    <file target="build\net45" src="cs\build\nuget\Common.targets" />
-    <file target="build\net45\cps" src="cs\build\nuget\cps\*.xaml" />
 
-    <file target="build\netstandard1.0" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\netstandard1.0" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\netstandard1.0" src="cs\build\nuget\Common.props" />
-    <file target="build\netstandard1.0" src="cs\build\nuget\Common.targets" />
-    <file target="build\netstandard1.0\cps" src="cs\build\nuget\cps\*.xaml" />
-
-    <file target="build\netstandard1.3" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\netstandard1.3" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\netstandard1.3" src="cs\build\nuget\Common.props" />
-    <file target="build\netstandard1.3" src="cs\build\nuget\Common.targets" />
-    <file target="build\netstandard1.3\cps" src="cs\build\nuget\cps\*.xaml" />
-
-    <file target="build\netstandard1.6" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\netstandard1.6" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\netstandard1.6" src="cs\build\nuget\Common.props" />
-    <file target="build\netstandard1.6" src="cs\build\nuget\Common.targets" />
-    <file target="build\netstandard1.6\cps" src="cs\build\nuget\cps\*.xaml" />
+    <file target="build\netstandard2.0" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
+    <file target="build\netstandard2.0" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
+    <file target="build\netstandard2.0" src="cs\build\nuget\Common.props" />
+    <file target="build\netstandard2.0" src="cs\build\nuget\Common.targets" />
+    <file target="build\netstandard2.0\cps" src="cs\build\nuget\cps\*.xaml" />
 
     <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 

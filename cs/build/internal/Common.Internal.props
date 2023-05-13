@@ -10,14 +10,14 @@
   </PropertyGroup>
   <Import Project="..\nuget\Common.props" />
   <PropertyGroup Condition="'$(BuildFramework)' == '' and '$(UsingMicrosoftNETSdk)' != 'true'">
-    <BuildFramework>net45</BuildFramework>
+    <BuildFramework>net462</BuildFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' != 'true'">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>
-    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\$(BuildType)\$(BuildFramework)\</IntermediateOutputPath>
     <FileAlignment>512</FileAlignment>
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -26,6 +26,7 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)bond.snk</AssemblyOriginatorKeyFile>
     <!-- We need to disable automatic AssemblyInfo generation to avoid duplication with our AssemblyInfo file -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup>
     <!--Set the version number for auto-generation from the environment

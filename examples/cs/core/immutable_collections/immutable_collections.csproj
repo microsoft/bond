@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>immutable_collections</RootNamespace>
     <AssemblyName>immutable_collections</AssemblyName>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
     <BondOptions>--using="ImmutableArray=System.Collections.Immutable.ImmutableArray&lt;{0}&gt;" --using="ImmutableList=System.Collections.Immutable.ImmutableList&lt;{0}&gt;" --using="ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet&lt;{0}&gt;" --using="ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet&lt;{0}&gt;" --using="ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary&lt;{0},{1}&gt;" --using="ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary&lt;{0},{1}&gt;"</BondOptions>
   </PropertyGroup>
   <ItemGroup>

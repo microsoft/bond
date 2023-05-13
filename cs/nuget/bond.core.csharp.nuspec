@@ -27,66 +27,17 @@
     <files>
         <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.xml" />
-
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.xml" />
-
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Attributes.dll" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Attributes.pdb" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Attributes.xml" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Reflection.dll" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Reflection.pdb" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Reflection.xml" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.dll" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.pdb" />
-        <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.xml" />
-
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Attributes.dll" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Attributes.pdb" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Attributes.xml" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Reflection.dll" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Reflection.pdb" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.Reflection.xml" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.dll" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.pdb" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.0\Bond.xml" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.3\Bond.IO.dll" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.3\Bond.IO.pdb" />
-        <file target="lib\netstandard1.3" src="cs\bin\retail\netstandard1.3\Bond.IO.xml" />
-
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Attributes.dll" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Attributes.pdb" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Attributes.xml" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.IO.dll" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.IO.pdb" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.IO.xml" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Reflection.dll" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Reflection.pdb" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.Reflection.xml" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.dll" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.pdb" />
-        <file target="lib\netstandard1.6" src="cs\bin\retail\netstandard1.6\Bond.xml" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Attributes.dll" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Attributes.pdb" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Attributes.xml" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Reflection.dll" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Reflection.pdb" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.Reflection.xml" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.dll" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.pdb" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.xml" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.IO.dll" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.IO.pdb" />
+        <file target="lib\netstandard2.0" src="cs\bin\retail\netstandard2.0\Bond.IO.xml" />
     </files>
 </package>

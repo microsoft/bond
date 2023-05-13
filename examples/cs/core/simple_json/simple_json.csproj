@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>simple_json</RootNamespace>
     <AssemblyName>simple_json</AssemblyName>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <!-- Resharper Workaround -->

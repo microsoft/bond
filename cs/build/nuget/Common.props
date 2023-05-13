@@ -39,4 +39,7 @@
   <PropertyGroup Condition=" '$(EnableDefaultItems)' == 'true' ">
     <DefaultItemExcludes>$(DefaultItemExcludes);**/*.bond</DefaultItemExcludes>
   </PropertyGroup>
+  <PropertyGroup>
+	<AutoGenerateBindingRedirects Condition=" '$(AutoGenerateBindingRedirects)' == '' ">true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
 </Project>
