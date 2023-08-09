@@ -18,7 +18,7 @@ find_program (BOND_GBC_PATH "gbc"
     NO_DEFAULT_PATH)
 
 if (BOND_GBC_PATH)
-    set (GBC_EXECUTABLE ${BOND_GBC_PATH})
+    set(GBC_EXECUTABLE ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/gbc.py) 
     message (STATUS "Existing GBC executable found: '${GBC_EXECUTABLE}'")
 endif()
 
@@ -94,7 +94,7 @@ find_file (BOND_JAVA_COMPAT_TEST compat-1.0.jar
 # and optionally with:
 # -DPython_ADDITIONAL_VERSIONS=Major.Minor
 # if your python version is not implicitly supported by cmake
-find_package (PythonInterp 2.7)
+find_package (Python3 COMPONENTS Interpreter Development)
 if (APPLE)
     if (NOT PYTHON_LIBRARY)
         # find_package (PythonLibs) doesn't find libpython in /usr/local/Cellar,
