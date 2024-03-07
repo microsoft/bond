@@ -61,7 +61,7 @@ isScalar BT_Float = True
 isScalar BT_Double = True
 isScalar BT_Bool = True
 isScalar (BT_TypeParam (TypeParam _ (Just Value))) = True
-isScalar (BT_UserDefined Enum {..} _) = True
+isScalar (BT_UserDefined Enum {} _) = True
 isScalar (BT_UserDefined a@Alias {} args) = isScalar $ resolveAlias a args
 isScalar _ = False
 
@@ -174,7 +174,7 @@ fmapType f x = f x
 foldMapFields :: (Monoid m) => (Field -> m) -> Type -> m
 foldMapFields f t = case t of
     (BT_UserDefined   Struct {..} _) -> optional (foldMapFields f) structBase <> F.foldMap f structFields
-    (BT_UserDefined a@Alias {..} args) -> foldMapFields f $ resolveAlias a args
+    (BT_UserDefined a@Alias {} args) -> foldMapFields f $ resolveAlias a args
     _ -> mempty
 
 -- | Like 'foldMapFields' but takes a 'Declaration' as an argument instead of 'Type'.

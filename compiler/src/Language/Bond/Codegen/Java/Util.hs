@@ -58,7 +58,7 @@ isPrimitiveNonEnumBondType _ = False
 
 -- returns a value indicating whether a type is a Bond primitive type or enum
 isPrimitiveBondType :: Type -> Bool
-isPrimitiveBondType (BT_UserDefined Enum {..} _) = True
+isPrimitiveBondType (BT_UserDefined Enum {} _) = True
 isPrimitiveBondType t = isPrimitiveNonEnumBondType t
 
 -- returns a value indicating whether a type is a generic struct type with generic type parameters

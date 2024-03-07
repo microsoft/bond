@@ -54,7 +54,7 @@ classParams :: Declaration -> String
 classParams = angles . sepBy ", " paramName . declParams
 
 qualifiedClassName :: MappingContext -> Declaration -> String
-qualifiedClassName cpp s@Struct {..} = qualifiedName <> classParams s
+qualifiedClassName cpp s@Struct {} = qualifiedName <> classParams s
   where
     qualifiedName = unpack $ toLazyText $ getDeclTypeName cpp s
 qualifiedClassName _ _ = error "qualifiedClassName: impossible happened."
@@ -102,13 +102,13 @@ defaultValue _ _ (DefaultBool False) = "false"
 defaultValue _ _ (DefaultInteger x) = [lt|#{x}|]
 defaultValue _ _ (DefaultFloat x) = [lt|#{x}|]
 defaultValue _ _ (DefaultNothing) = mempty
-defaultValue m (BT_UserDefined a@Alias {..} args) d = defaultValue m (resolveAlias a args) d
+defaultValue m (BT_UserDefined a@Alias {} args) d = defaultValue m (resolveAlias a args) d
 defaultValue _ _ _ = error "defaultValue: impossible happened."
 
 enumValue :: ToText a => MappingContext -> Type -> a -> Text
 enumValue cpp (BT_UserDefined e@Enum {..} _) x =
     [lt|#{getQualifiedName cpp $ getDeclNamespace cpp e}::_bond_enumerators::#{declName}::#{x}|]
-enumValue cpp (BT_UserDefined a@Alias {..} args) e = enumValue cpp (resolveAlias a args) e
+enumValue cpp (BT_UserDefined a@Alias {} args) e = enumValue cpp (resolveAlias a args) e
 enumValue _ _ _ = error "enumValue: impossible happened."
 
 -- schema metadata static member definitions

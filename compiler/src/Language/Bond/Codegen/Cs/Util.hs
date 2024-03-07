@@ -64,19 +64,19 @@ propertyAttributes cs Field {..} =
 
 -- C# class/struct/interface attributes
 typeAttributes :: MappingContext -> Declaration -> Text
-typeAttributes cs s@Struct {..} =
+typeAttributes cs s@Struct {} =
     optionalTypeAttributes cs s
  <> [lt|[global::Bond.Schema]
     |]
  <> generatedCodeAttr
 
 -- C# enum attributes
-typeAttributes cs e@Enum {..} =
+typeAttributes cs e@Enum {} =
     optionalTypeAttributes cs e
  <> generatedCodeAttr
 
 -- C# service attributes
-typeAttributes cs s@Service {..} =
+typeAttributes cs s@Service {} =
     optionalTypeAttributes cs s
     <> generatedCodeAttr
 
@@ -125,7 +125,7 @@ defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
     implicitDefault (BT_Bonded t) = Just [lt|global::Bond.Bonded<#{getTypeName cs t}>.Empty|]
     implicitDefault t@(BT_TypeParam _) = Just [lt|global::Bond.GenericFactory.Create<#{getInstanceTypeName cs t}>()|]
     implicitDefault t@BT_Blob = newInstance t
-    implicitDefault t@(BT_UserDefined a@Alias {..} args)
+    implicitDefault t@(BT_UserDefined a@Alias {} args)
         | isImmutableCollection cs t = staticEmptyField t
         | customAliasMapping cs a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
