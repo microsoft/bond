@@ -50,7 +50,7 @@ RUN wget -qO- https://get.haskellstack.org/ | sh
 # Components for ghc
 RUN add-apt-repository ppa:hvr/ghc -y && \
     apt-get update && \
-    apt-get -y install ghc-8.6.5
+    apt-get -y install ghc-8.10.7
 
 # Install more recent git
 RUN add-apt-repository ppa:git-core/ppa -y && \

@@ -7,13 +7,13 @@ packages:
 - completed:
     hackage: quickcheck-arbitrary-template-0.2.1.0@sha256:01f9deb34f8af3e6b879ee984b0be8803eb9c31e389490b5ddb8ca5fde32957c,2026
     pantry-tree:
-      size: 625
       sha256: a79d0b9f39f1096774a34f502c209dc70c85bc43f164e2925cb6b7a3f7ad82c8
+      size: 625
   original:
     hackage: quickcheck-arbitrary-template-0.2.1.0
 snapshots:
 - completed:
-    size: 523884
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/4.yaml
-    sha256: 16f24be248b42c9e16d59db84378836b1e7c239448a041cae46d32daffa45a8b
-  original: lts-14.4
+    sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
+    size: 590100
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
+  original: lts-18.28

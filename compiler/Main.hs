@@ -35,10 +35,10 @@ main = do
     options <- (if null args then withArgs ["--help=all"] else id) getOptions
     setJobs $ jobs options
     case options of
-        Cpp {..}    -> cppCodegen options
-        Cs {..}     -> csCodegen options
-        Java {..}   -> javaCodegen options
-        Schema {..} -> writeSchema options
+        Cpp {}    -> cppCodegen options
+        Cs {}     -> csCodegen options
+        Java {}   -> javaCodegen options
+        Schema {} -> writeSchema options
         _           -> print options
 
 setJobs :: Maybe Int -> IO ()

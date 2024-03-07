@@ -398,7 +398,7 @@ idlType (BT_Set element) = "set<" <>> elementTypeName element <<> ">"
 idlType (BT_Map key value) = "map<" <>> elementTypeName key <<>> ", " <>> elementTypeName value <<> ">"
 idlType (BT_Bonded type_) = "bonded<" <>> elementTypeName type_ <<> ">"
 idlType (BT_TypeParam param) = pureText $ paramName param
-idlType (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
+idlType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 idlType (BT_UserDefined decl args) = declQualifiedTypeName decl <<>> (angles <$> commaSepTypeNames args)
 
 -- C++ type mapping
@@ -443,7 +443,7 @@ cppTypeCustomAlloc scoped alloc (BT_Map key value) = "std::map<" <>> elementType
 cppTypeCustomAlloc _ _ t = cppType t
 
 cppTypeExpandAliases :: (Type -> TypeNameBuilder) -> Type -> TypeNameBuilder
-cppTypeExpandAliases _ (BT_UserDefined a@Alias {..} args) = aliasTypeName a args
+cppTypeExpandAliases _ (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 cppTypeExpandAliases m t = m t
 
 comparer :: Type -> TypeNameBuilder
@@ -516,7 +516,7 @@ csTypeAnnotation _ (BT_Maybe a@(BT_UserDefined Alias{} _)) = typeName a
 csTypeAnnotation _ (BT_TypeParam (TypeParam _ Nothing)) = pure "global::Bond.Tag.classT"
 csTypeAnnotation _ (BT_TypeParam (TypeParam _ (Just Value))) = pure "global::Bond.Tag.structT"
 csTypeAnnotation _ (BT_UserDefined Alias {aliasType = BT_Blob} _) = pure "global::Bond.Tag.blob"
-csTypeAnnotation m t@(BT_UserDefined a@Alias {..} args)
+csTypeAnnotation m t@(BT_UserDefined a@Alias {} args)
    | isContainer t = m t
    | otherwise = typeName $ resolveAlias a args
 csTypeAnnotation _ (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> commaSepTypeNames args)

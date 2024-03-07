@@ -150,7 +150,7 @@ findStruct name = doFind <?> "qualified struct name"
     doFind = do
         symb <- findSymbol name
         case symb of
-            Struct {..} -> return symb
+            Struct {} -> return symb
             _ -> fail $ "The " ++ showPretty symb ++ " is invalid in this context. Expected a struct."
 
 -- namespace
@@ -473,4 +473,4 @@ isInBounds value _ = value >= (toInteger (minBound :: a)) && value <= (toInteger
 -- sets source position
 setSourcePos ::  MonadParsec e s m => SourcePos -> m ()
 setSourcePos src = updateParserState setPos
-    where setPos (State s o (PosState i o' _ t l)) =  State s o (PosState i o' src t l)
+    where setPos st = st { statePosState = (statePosState st) { pstateSourcePos = src } }

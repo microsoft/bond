@@ -143,7 +143,7 @@ fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultFloat val)) = [lt|, #{v
 fieldDefaultValueInitParamExpr _ BT_Double (Just (DefaultInteger val)) = [lt|, #{val}D|]
 fieldDefaultValueInitParamExpr _ BT_String (Just (DefaultString val)) = [lt|, "#{val}"|]
 fieldDefaultValueInitParamExpr _ BT_WString (Just (DefaultString val)) = [lt|, "#{val}"|]
-fieldDefaultValueInitParamExpr java (BT_UserDefined e@Enum {..} _) (Just (DefaultEnum val)) = [lt|, #{qualifiedDeclaredTypeName java e}.#{val}|]
+fieldDefaultValueInitParamExpr java (BT_UserDefined e@Enum {} _) (Just (DefaultEnum val)) = [lt|, #{qualifiedDeclaredTypeName java e}.#{val}|]
 fieldDefaultValueInitParamExpr _ _ _ = mempty
 
 
@@ -218,7 +218,7 @@ makeStructBuilderMember_makeGenericType declName declParams = [lt|
             }
 |]
     where
-        checkArg t@TypeParam {..} = [lt|#{ensureNotNullArgument (typeParamVarName t)};|]
+        checkArg t@TypeParam {} = [lt|#{ensureNotNullArgument (typeParamVarName t)};|]
         castExpr = [lt|(StructBondTypeImpl)|]
 
 
