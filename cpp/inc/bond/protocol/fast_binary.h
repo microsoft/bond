@@ -9,6 +9,7 @@
 
 #include <bond/core/bond_version.h>
 #include <bond/core/detail/checked.h>
+#include <bond/core/detail/recursionguard.h>
 
 #include <boost/call_traits.hpp>
 #include <boost/noncopyable.hpp>
@@ -328,6 +329,8 @@ protected:
     typename boost::enable_if_c<(T == BT_STRUCT)>::type
     SkipType()
     {
+        bond::detail::RecursionGuard guard;
+
         for (;;)
         {
             ReadStructBegin();
@@ -356,6 +359,8 @@ protected:
         BondDataType element_type;
         uint32_t size;
 
+        bond::detail::RecursionGuard guard;
+
         ReadContainerBegin(size, element_type);
         SkipType(element_type, size);
         ReadContainerEnd();
@@ -367,6 +372,8 @@ protected:
     {
         std::pair<BondDataType, BondDataType> element_type;
         uint32_t size;
+
+        bond::detail::RecursionGuard guard;
 
         ReadContainerBegin(size, element_type);
         for (int64_t i = 0; i < size; ++i)
@@ -444,6 +451,7 @@ protected:
                 break;
 
             default:
+                bond::UnknownDataTypeException();
                 break;
         }
     }

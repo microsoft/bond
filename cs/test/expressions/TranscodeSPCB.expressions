@@ -1,44 +1,335 @@
 .Lambda #Lambda1<System.Action`2[Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream],Bond.Protocols.CompactBinaryWriter`1[Bond.IO.Unsafe.OutputStream]]>(
     Bond.Protocols.SimpleBinaryReader`1[Bond.IO.Unsafe.InputStream] $reader,
     Bond.Protocols.CompactBinaryWriter`1[Bond.IO.Unsafe.OutputStream] $writer) {
-    .Block() {
-        .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Example));
-        .Block() {
-            .Call $writer.WriteBaseBegin(.Constant<Bond.Metadata>(Base));
-            .If (
-                .Call $reader.ReadFieldOmitted()
-            ) {
-                .Call $writer.WriteFieldOmitted(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(0),
-                    .Constant<Bond.Metadata>(vvb))
-            } .Else {
+    .Block(System.Int32 $depth) {
+        $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+        .Try {
+            .Block() {
+                .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
                 .Block() {
-                    .Call $writer.WriteFieldBegin(
-                        .Constant<Bond.BondDataType>(BT_LIST),
-                        .Constant<System.UInt16>(0),
-                        .Constant<Bond.Metadata>(vvb));
-                    .Block(System.Int32 $count) {
-                        $count = .Call $reader.ReadContainerBegin();
+                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Example));
+                    .Block(System.Int32 $depth) {
+                        $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                        .Try {
+                            .Block() {
+                                .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                .Block() {
+                                    .Call $writer.WriteBaseBegin(.Constant<Bond.Metadata>(Base));
+                                    .If (
+                                        .Call $reader.ReadFieldOmitted()
+                                    ) {
+                                        .Call $writer.WriteFieldOmitted(
+                                            .Constant<Bond.BondDataType>(BT_LIST),
+                                            .Constant<System.UInt16>(0),
+                                            .Constant<Bond.Metadata>(vvb))
+                                    } .Else {
+                                        .Block() {
+                                            .Call $writer.WriteFieldBegin(
+                                                .Constant<Bond.BondDataType>(BT_LIST),
+                                                .Constant<System.UInt16>(0),
+                                                .Constant<Bond.Metadata>(vvb));
+                                            .Block(System.Int32 $depth) {
+                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                .Try {
+                                                    .Block() {
+                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                        .Block(System.Int32 $count) {
+                                                            $count = .Call $reader.ReadContainerBegin();
+                                                            .Block() {
+                                                                .Call $writer.WriteContainerBegin(
+                                                                    $count,
+                                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                                .Loop  {
+                                                                    .If ($count-- > 0) {
+                                                                        .Block() {
+                                                                            .Default(System.Void);
+                                                                            .Block(System.Int32 $depth) {
+                                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                                .Try {
+                                                                                    .Block() {
+                                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                                        .Block(System.Int32 $count) {
+                                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                                            .Block() {
+                                                                                                .Call $writer.WriteContainerBegin(
+                                                                                                    $count,
+                                                                                                    .Constant<Bond.BondDataType>(BT_UINT64));
+                                                                                                .Loop  {
+                                                                                                    .If ($count-- > 0) {
+                                                                                                        .Block() {
+                                                                                                            .Default(System.Void);
+                                                                                                            .Call $writer.WriteUInt64(.Call $reader.ReadUInt64());
+                                                                                                            .Default(System.Void)
+                                                                                                        }
+                                                                                                    } .Else {
+                                                                                                        .Break end { }
+                                                                                                    }
+                                                                                                }
+                                                                                                .LabelTarget end:;
+                                                                                                .Call $writer.WriteContainerEnd()
+                                                                                            };
+                                                                                            .Call $reader.ReadContainerEnd()
+                                                                                        }
+                                                                                    }
+                                                                                } .Finally {
+                                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                                }
+                                                                            };
+                                                                            .Default(System.Void)
+                                                                        }
+                                                                    } .Else {
+                                                                        .Break end { }
+                                                                    }
+                                                                }
+                                                                .LabelTarget end:;
+                                                                .Call $writer.WriteContainerEnd()
+                                                            };
+                                                            .Call $reader.ReadContainerEnd()
+                                                        }
+                                                    }
+                                                } .Finally {
+                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                }
+                                            };
+                                            .Call $writer.WriteFieldEnd()
+                                        }
+                                    };
+                                    .Call $writer.WriteBaseEnd()
+                                }
+                            }
+                        } .Finally {
+                            .Call Bond.MaxDepthChecker.SetDepth($depth)
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_BOOL),
+                            .Constant<System.UInt16>(0),
+                            .Constant<Bond.Metadata>(_bool))
+                    } .Else {
                         .Block() {
-                            .Call $writer.WriteContainerBegin(
-                                $count,
-                                .Constant<Bond.BondDataType>(BT_LIST));
-                            .Loop  {
-                                .If ($count-- > 0) {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_BOOL),
+                                .Constant<System.UInt16>(0),
+                                .Constant<Bond.Metadata>(_bool));
+                            .Call $writer.WriteBool(.Call $reader.ReadBool());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_STRING),
+                            .Constant<System.UInt16>(2),
+                            .Constant<Bond.Metadata>(_str))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_STRING),
+                                .Constant<System.UInt16>(2),
+                                .Constant<Bond.Metadata>(_str));
+                            .Call $writer.WriteString(.Call $reader.ReadString());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_UINT32),
+                            .Constant<System.UInt16>(12),
+                            .Constant<Bond.Metadata>(_uint32))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_UINT32),
+                                .Constant<System.UInt16>(12),
+                                .Constant<Bond.Metadata>(_uint32));
+                            .Call $writer.WriteUInt32(.Call $reader.ReadUInt32());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_INT8),
+                            .Constant<System.UInt16>(14),
+                            .Constant<Bond.Metadata>(_int8))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_INT8),
+                                .Constant<System.UInt16>(14),
+                                .Constant<Bond.Metadata>(_int8));
+                            .Call $writer.WriteInt8(.Call $reader.ReadInt8());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_INT64),
+                            .Constant<System.UInt16>(17),
+                            .Constant<Bond.Metadata>(_int64))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_INT64),
+                                .Constant<System.UInt16>(17),
+                                .Constant<Bond.Metadata>(_int64));
+                            .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_DOUBLE),
+                            .Constant<System.UInt16>(18),
+                            .Constant<Bond.Metadata>(_double))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_DOUBLE),
+                                .Constant<System.UInt16>(18),
+                                .Constant<Bond.Metadata>(_double));
+                            .Call $writer.WriteDouble(.Call $reader.ReadDouble());
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_STRUCT),
+                            .Constant<System.UInt16>(20),
+                            .Constant<Bond.Metadata>(guid))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_STRUCT),
+                                .Constant<System.UInt16>(20),
+                                .Constant<Bond.Metadata>(guid));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
                                     .Block() {
-                                        .Default(System.Void);
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block() {
+                                            .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GUID));
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_UINT32),
+                                                    .Constant<System.UInt16>(0),
+                                                    .Constant<Bond.Metadata>(Data1))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_UINT32),
+                                                        .Constant<System.UInt16>(0),
+                                                        .Constant<Bond.Metadata>(Data1));
+                                                    .Call $writer.WriteUInt32(.Call $reader.ReadUInt32());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_UINT16),
+                                                    .Constant<System.UInt16>(1),
+                                                    .Constant<Bond.Metadata>(Data2))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_UINT16),
+                                                        .Constant<System.UInt16>(1),
+                                                        .Constant<Bond.Metadata>(Data2));
+                                                    .Call $writer.WriteUInt16(.Call $reader.ReadUInt16());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_UINT16),
+                                                    .Constant<System.UInt16>(2),
+                                                    .Constant<Bond.Metadata>(Data3))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_UINT16),
+                                                        .Constant<System.UInt16>(2),
+                                                        .Constant<Bond.Metadata>(Data3));
+                                                    .Call $writer.WriteUInt16(.Call $reader.ReadUInt16());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_UINT64),
+                                                    .Constant<System.UInt16>(3),
+                                                    .Constant<Bond.Metadata>(Data4))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_UINT64),
+                                                        .Constant<System.UInt16>(3),
+                                                        .Constant<Bond.Metadata>(Data4));
+                                                    .Call $writer.WriteUInt64(.Call $reader.ReadUInt64());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .Call $writer.WriteStructEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(30),
+                            .Constant<Bond.Metadata>(_int32Vector))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(30),
+                                .Constant<Bond.Metadata>(_int32Vector));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
                                         .Block(System.Int32 $count) {
                                             $count = .Call $reader.ReadContainerBegin();
                                             .Block() {
                                                 .Call $writer.WriteContainerBegin(
                                                     $count,
-                                                    .Constant<Bond.BondDataType>(BT_UINT64));
+                                                    .Constant<Bond.BondDataType>(BT_INT32));
                                                 .Loop  {
                                                     .If ($count-- > 0) {
                                                         .Block() {
                                                             .Default(System.Void);
-                                                            .Call $writer.WriteUInt64(.Call $reader.ReadUInt64());
+                                                            .Call $writer.WriteInt32(.Call $reader.ReadInt32());
                                                             .Default(System.Void)
                                                         }
                                                     } .Else {
@@ -49,154 +340,12 @@
                                                 .Call $writer.WriteContainerEnd()
                                             };
                                             .Call $reader.ReadContainerEnd()
-                                        };
-                                        .Default(System.Void)
+                                        }
                                     }
-                                } .Else {
-                                    .Break end { }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
                                 }
-                            }
-                            .LabelTarget end:;
-                            .Call $writer.WriteContainerEnd()
-                        };
-                        .Call $reader.ReadContainerEnd()
-                    };
-                    .Call $writer.WriteFieldEnd()
-                }
-            };
-            .Call $writer.WriteBaseEnd()
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_BOOL),
-                .Constant<System.UInt16>(0),
-                .Constant<Bond.Metadata>(_bool))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_BOOL),
-                    .Constant<System.UInt16>(0),
-                    .Constant<Bond.Metadata>(_bool));
-                .Call $writer.WriteBool(.Call $reader.ReadBool());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_STRING),
-                .Constant<System.UInt16>(2),
-                .Constant<Bond.Metadata>(_str))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_STRING),
-                    .Constant<System.UInt16>(2),
-                    .Constant<Bond.Metadata>(_str));
-                .Call $writer.WriteString(.Call $reader.ReadString());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_UINT32),
-                .Constant<System.UInt16>(12),
-                .Constant<Bond.Metadata>(_uint32))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_UINT32),
-                    .Constant<System.UInt16>(12),
-                    .Constant<Bond.Metadata>(_uint32));
-                .Call $writer.WriteUInt32(.Call $reader.ReadUInt32());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_INT8),
-                .Constant<System.UInt16>(14),
-                .Constant<Bond.Metadata>(_int8))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_INT8),
-                    .Constant<System.UInt16>(14),
-                    .Constant<Bond.Metadata>(_int8));
-                .Call $writer.WriteInt8(.Call $reader.ReadInt8());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_INT64),
-                .Constant<System.UInt16>(17),
-                .Constant<Bond.Metadata>(_int64))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_INT64),
-                    .Constant<System.UInt16>(17),
-                    .Constant<Bond.Metadata>(_int64));
-                .Call $writer.WriteInt64(.Call $reader.ReadInt64());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_DOUBLE),
-                .Constant<System.UInt16>(18),
-                .Constant<Bond.Metadata>(_double))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_DOUBLE),
-                    .Constant<System.UInt16>(18),
-                    .Constant<Bond.Metadata>(_double));
-                .Call $writer.WriteDouble(.Call $reader.ReadDouble());
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_STRUCT),
-                .Constant<System.UInt16>(20),
-                .Constant<Bond.Metadata>(guid))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_STRUCT),
-                    .Constant<System.UInt16>(20),
-                    .Constant<Bond.Metadata>(guid));
-                .Block() {
-                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GUID));
-                    .If (
-                        .Call $reader.ReadFieldOmitted()
-                    ) {
-                        .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_UINT32),
-                            .Constant<System.UInt16>(0),
-                            .Constant<Bond.Metadata>(Data1))
-                    } .Else {
-                        .Block() {
-                            .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_UINT32),
-                                .Constant<System.UInt16>(0),
-                                .Constant<Bond.Metadata>(Data1));
-                            .Call $writer.WriteUInt32(.Call $reader.ReadUInt32());
+                            };
                             .Call $writer.WriteFieldEnd()
                         }
                     };
@@ -204,970 +353,1211 @@
                         .Call $reader.ReadFieldOmitted()
                     ) {
                         .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_UINT16),
-                            .Constant<System.UInt16>(1),
-                            .Constant<Bond.Metadata>(Data2))
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(40),
+                            .Constant<Bond.Metadata>(_nestedVector))
                     } .Else {
                         .Block() {
                             .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_UINT16),
-                                .Constant<System.UInt16>(1),
-                                .Constant<Bond.Metadata>(Data2));
-                            .Call $writer.WriteUInt16(.Call $reader.ReadUInt16());
-                            .Call $writer.WriteFieldEnd()
-                        }
-                    };
-                    .If (
-                        .Call $reader.ReadFieldOmitted()
-                    ) {
-                        .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_UINT16),
-                            .Constant<System.UInt16>(2),
-                            .Constant<Bond.Metadata>(Data3))
-                    } .Else {
-                        .Block() {
-                            .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_UINT16),
-                                .Constant<System.UInt16>(2),
-                                .Constant<Bond.Metadata>(Data3));
-                            .Call $writer.WriteUInt16(.Call $reader.ReadUInt16());
-                            .Call $writer.WriteFieldEnd()
-                        }
-                    };
-                    .If (
-                        .Call $reader.ReadFieldOmitted()
-                    ) {
-                        .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_UINT64),
-                            .Constant<System.UInt16>(3),
-                            .Constant<Bond.Metadata>(Data4))
-                    } .Else {
-                        .Block() {
-                            .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_UINT64),
-                                .Constant<System.UInt16>(3),
-                                .Constant<Bond.Metadata>(Data4));
-                            .Call $writer.WriteUInt64(.Call $reader.ReadUInt64());
-                            .Call $writer.WriteFieldEnd()
-                        }
-                    };
-                    .Call $writer.WriteStructEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(30),
-                .Constant<Bond.Metadata>(_int32Vector))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(30),
-                    .Constant<Bond.Metadata>(_int32Vector));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT32));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Call $writer.WriteInt32(.Call $reader.ReadInt32());
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(40),
-                .Constant<Bond.Metadata>(_nestedVector))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(40),
-                    .Constant<Bond.Metadata>(_nestedVector));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_STRUCT));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(40),
+                                .Constant<Bond.Metadata>(_nestedVector));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
                                     .Block() {
-                                        .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Nested));
-                                        .If (
-                                            .Call $reader.ReadFieldOmitted()
-                                        ) {
-                                            .Call $writer.WriteFieldOmitted(
-                                                .Constant<Bond.BondDataType>(BT_DOUBLE),
-                                                .Constant<System.UInt16>(0),
-                                                .Constant<Bond.Metadata>(_double))
-                                        } .Else {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
                                             .Block() {
-                                                .Call $writer.WriteFieldBegin(
-                                                    .Constant<Bond.BondDataType>(BT_DOUBLE),
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_STRUCT));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block() {
+                                                                            .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Nested));
+                                                                            .If (
+                                                                                .Call $reader.ReadFieldOmitted()
+                                                                            ) {
+                                                                                .Call $writer.WriteFieldOmitted(
+                                                                                    .Constant<Bond.BondDataType>(BT_DOUBLE),
+                                                                                    .Constant<System.UInt16>(0),
+                                                                                    .Constant<Bond.Metadata>(_double))
+                                                                            } .Else {
+                                                                                .Block() {
+                                                                                    .Call $writer.WriteFieldBegin(
+                                                                                        .Constant<Bond.BondDataType>(BT_DOUBLE),
+                                                                                        .Constant<System.UInt16>(0),
+                                                                                        .Constant<Bond.Metadata>(_double));
+                                                                                    .Call $writer.WriteDouble(.Call $reader.ReadDouble());
+                                                                                    .Call $writer.WriteFieldEnd()
+                                                                                }
+                                                                            };
+                                                                            .Call $writer.WriteStructEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(50),
+                            .Constant<Bond.Metadata>(b))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(50),
+                                .Constant<Bond.Metadata>(b));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(51),
+                            .Constant<Bond.Metadata>(_blobList))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(51),
+                                .Constant<Bond.Metadata>(_blobList));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(52),
+                            .Constant<Bond.Metadata>(_blobVector))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(52),
+                                .Constant<Bond.Metadata>(_blobVector));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_MAP),
+                            .Constant<System.UInt16>(53),
+                            .Constant<Bond.Metadata>(_blobMap))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_MAP),
+                                .Constant<System.UInt16>(53),
+                                .Constant<Bond.Metadata>(_blobMap));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT32),
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Call $writer.WriteInt32(.Call $reader.ReadInt32());
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(54),
+                            .Constant<Bond.Metadata>(_blobNullable))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(54),
+                                .Constant<Bond.Metadata>(_blobNullable));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_MAP),
+                            .Constant<System.UInt16>(60),
+                            .Constant<Bond.Metadata>(_map))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_MAP),
+                                .Constant<System.UInt16>(60),
+                                .Constant<Bond.Metadata>(_map));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT32),
+                                                    .Constant<Bond.BondDataType>(BT_DOUBLE));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Call $writer.WriteInt32(.Call $reader.ReadInt32());
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Call $writer.WriteDouble(.Call $reader.ReadDouble());
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(70),
+                            .Constant<Bond.Metadata>(_decimal))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(70),
+                                .Constant<Bond.Metadata>(_decimal));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(71),
+                            .Constant<Bond.Metadata>(_decList))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(71),
+                                .Constant<Bond.Metadata>(_decList));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(72),
+                            .Constant<Bond.Metadata>(_decVector))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(72),
+                                .Constant<Bond.Metadata>(_decVector));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_MAP),
+                            .Constant<System.UInt16>(73),
+                            .Constant<Bond.Metadata>(_decMap))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_MAP),
+                                .Constant<System.UInt16>(73),
+                                .Constant<Bond.Metadata>(_decMap));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT32),
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Call $writer.WriteInt32(.Call $reader.ReadInt32());
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(74),
+                            .Constant<Bond.Metadata>(_decNullable))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(74),
+                                .Constant<Bond.Metadata>(_decNullable));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(75),
+                            .Constant<Bond.Metadata>(_decimal_req))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(75),
+                                .Constant<Bond.Metadata>(_decimal_req));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(80),
+                            .Constant<Bond.Metadata>(_reference))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(80),
+                                .Constant<Bond.Metadata>(_reference));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(81),
+                            .Constant<Bond.Metadata>(_refList))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(81),
+                                .Constant<Bond.Metadata>(_refList));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(82),
+                            .Constant<Bond.Metadata>(_refVector))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(82),
+                                .Constant<Bond.Metadata>(_refVector));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_MAP),
+                            .Constant<System.UInt16>(83),
+                            .Constant<Bond.Metadata>(_refMap))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_MAP),
+                                .Constant<System.UInt16>(83),
+                                .Constant<Bond.Metadata>(_refMap));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_INT32),
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Call $writer.WriteInt32(.Call $reader.ReadInt32());
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_LIST),
+                            .Constant<System.UInt16>(84),
+                            .Constant<Bond.Metadata>(_refNullable))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_LIST),
+                                .Constant<System.UInt16>(84),
+                                .Constant<Bond.Metadata>(_refNullable));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block(System.Int32 $count) {
+                                            $count = .Call $reader.ReadContainerBegin();
+                                            .Block() {
+                                                .Call $writer.WriteContainerBegin(
+                                                    $count,
+                                                    .Constant<Bond.BondDataType>(BT_LIST));
+                                                .Loop  {
+                                                    .If ($count-- > 0) {
+                                                        .Block() {
+                                                            .Default(System.Void);
+                                                            .Block(System.Int32 $depth) {
+                                                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                                                .Try {
+                                                                    .Block() {
+                                                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                                                        .Block(System.Int32 $count) {
+                                                                            $count = .Call $reader.ReadContainerBegin();
+                                                                            .Block() {
+                                                                                .Call $writer.WriteContainerBegin(
+                                                                                    $count,
+                                                                                    .Constant<Bond.BondDataType>(BT_INT8));
+                                                                                .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
+                                                                                .Call $writer.WriteContainerEnd()
+                                                                            };
+                                                                            .Call $reader.ReadContainerEnd()
+                                                                        }
+                                                                    }
+                                                                } .Finally {
+                                                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                                                }
+                                                            };
+                                                            .Default(System.Void)
+                                                        }
+                                                    } .Else {
+                                                        .Break end { }
+                                                    }
+                                                }
+                                                .LabelTarget end:;
+                                                .Call $writer.WriteContainerEnd()
+                                            };
+                                            .Call $reader.ReadContainerEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
+                            .Call $writer.WriteFieldEnd()
+                        }
+                    };
+                    .If (
+                        .Call $reader.ReadFieldOmitted()
+                    ) {
+                        .Call $writer.WriteFieldOmitted(
+                            .Constant<Bond.BondDataType>(BT_STRUCT),
+                            .Constant<System.UInt16>(85),
+                            .Constant<Bond.Metadata>(_dt))
+                    } .Else {
+                        .Block() {
+                            .Call $writer.WriteFieldBegin(
+                                .Constant<Bond.BondDataType>(BT_STRUCT),
+                                .Constant<System.UInt16>(85),
+                                .Constant<Bond.Metadata>(_dt));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block() {
+                                            .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Generic<int64>));
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_INT64),
                                                     .Constant<System.UInt16>(0),
-                                                    .Constant<Bond.Metadata>(_double));
-                                                .Call $writer.WriteDouble(.Call $reader.ReadDouble());
-                                                .Call $writer.WriteFieldEnd()
-                                            }
-                                        };
-                                        .Call $writer.WriteStructEnd()
-                                    };
-                                    .Default(System.Void)
+                                                    .Constant<Bond.Metadata>(value))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_INT64),
+                                                        .Constant<System.UInt16>(0),
+                                                        .Constant<Bond.Metadata>(value));
+                                                    .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .Call $writer.WriteStructEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
                                 }
-                            } .Else {
-                                .Break end { }
-                            }
+                            };
+                            .Call $writer.WriteFieldEnd()
                         }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
                     };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(50),
-                .Constant<Bond.Metadata>(b))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(50),
-                    .Constant<Bond.Metadata>(b));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(51),
-                .Constant<Bond.Metadata>(_blobList))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(51),
-                    .Constant<Bond.Metadata>(_blobList));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(52),
-                .Constant<Bond.Metadata>(_blobVector))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(52),
-                    .Constant<Bond.Metadata>(_blobVector));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_MAP),
-                .Constant<System.UInt16>(53),
-                .Constant<Bond.Metadata>(_blobMap))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_MAP),
-                    .Constant<System.UInt16>(53),
-                    .Constant<Bond.Metadata>(_blobMap));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT32),
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Call $writer.WriteInt32(.Call $reader.ReadInt32());
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(54),
-                .Constant<Bond.Metadata>(_blobNullable))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(54),
-                    .Constant<Bond.Metadata>(_blobNullable));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_MAP),
-                .Constant<System.UInt16>(60),
-                .Constant<Bond.Metadata>(_map))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_MAP),
-                    .Constant<System.UInt16>(60),
-                    .Constant<Bond.Metadata>(_map));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT32),
-                            .Constant<Bond.BondDataType>(BT_DOUBLE));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Call $writer.WriteInt32(.Call $reader.ReadInt32());
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Call $writer.WriteDouble(.Call $reader.ReadDouble());
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(70),
-                .Constant<Bond.Metadata>(_decimal))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(70),
-                    .Constant<Bond.Metadata>(_decimal));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(71),
-                .Constant<Bond.Metadata>(_decList))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(71),
-                    .Constant<Bond.Metadata>(_decList));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(72),
-                .Constant<Bond.Metadata>(_decVector))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(72),
-                    .Constant<Bond.Metadata>(_decVector));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_MAP),
-                .Constant<System.UInt16>(73),
-                .Constant<Bond.Metadata>(_decMap))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_MAP),
-                    .Constant<System.UInt16>(73),
-                    .Constant<Bond.Metadata>(_decMap));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT32),
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Call $writer.WriteInt32(.Call $reader.ReadInt32());
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(74),
-                .Constant<Bond.Metadata>(_decNullable))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(74),
-                    .Constant<Bond.Metadata>(_decNullable));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(75),
-                .Constant<Bond.Metadata>(_decimal_req))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(75),
-                    .Constant<Bond.Metadata>(_decimal_req));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(80),
-                .Constant<Bond.Metadata>(_reference))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(80),
-                    .Constant<Bond.Metadata>(_reference));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT8));
-                        .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(81),
-                .Constant<Bond.Metadata>(_refList))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(81),
-                    .Constant<Bond.Metadata>(_refList));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(82),
-                .Constant<Bond.Metadata>(_refVector))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(82),
-                    .Constant<Bond.Metadata>(_refVector));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_MAP),
-                .Constant<System.UInt16>(83),
-                .Constant<Bond.Metadata>(_refMap))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_MAP),
-                    .Constant<System.UInt16>(83),
-                    .Constant<Bond.Metadata>(_refMap));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_INT32),
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Call $writer.WriteInt32(.Call $reader.ReadInt32());
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_LIST),
-                .Constant<System.UInt16>(84),
-                .Constant<Bond.Metadata>(_refNullable))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_LIST),
-                    .Constant<System.UInt16>(84),
-                    .Constant<Bond.Metadata>(_refNullable));
-                .Block(System.Int32 $count) {
-                    $count = .Call $reader.ReadContainerBegin();
-                    .Block() {
-                        .Call $writer.WriteContainerBegin(
-                            $count,
-                            .Constant<Bond.BondDataType>(BT_LIST));
-                        .Loop  {
-                            .If ($count-- > 0) {
-                                .Block() {
-                                    .Default(System.Void);
-                                    .Block(System.Int32 $count) {
-                                        $count = .Call $reader.ReadContainerBegin();
-                                        .Block() {
-                                            .Call $writer.WriteContainerBegin(
-                                                $count,
-                                                .Constant<Bond.BondDataType>(BT_INT8));
-                                            .Call $writer.WriteBytes(.Call $reader.ReadBytes($count));
-                                            .Call $writer.WriteContainerEnd()
-                                        };
-                                        .Call $reader.ReadContainerEnd()
-                                    };
-                                    .Default(System.Void)
-                                }
-                            } .Else {
-                                .Break end { }
-                            }
-                        }
-                        .LabelTarget end:;
-                        .Call $writer.WriteContainerEnd()
-                    };
-                    .Call $reader.ReadContainerEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_STRUCT),
-                .Constant<System.UInt16>(85),
-                .Constant<Bond.Metadata>(_dt))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_STRUCT),
-                    .Constant<System.UInt16>(85),
-                    .Constant<Bond.Metadata>(_dt));
-                .Block() {
-                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(Generic<int64>));
                     .If (
                         .Call $reader.ReadFieldOmitted()
                     ) {
                         .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_INT64),
-                            .Constant<System.UInt16>(0),
-                            .Constant<Bond.Metadata>(value))
+                            .Constant<Bond.BondDataType>(BT_STRUCT),
+                            .Constant<System.UInt16>(86),
+                            .Constant<Bond.Metadata>(_dt2))
                     } .Else {
                         .Block() {
                             .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_INT64),
-                                .Constant<System.UInt16>(0),
-                                .Constant<Bond.Metadata>(value));
-                            .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                                .Constant<Bond.BondDataType>(BT_STRUCT),
+                                .Constant<System.UInt16>(86),
+                                .Constant<Bond.Metadata>(_dt2));
+                            .Block(System.Int32 $depth) {
+                                $depth = .Call Bond.MaxDepthChecker.ValidateDepthForIncrement();
+                                .Try {
+                                    .Block() {
+                                        .Call Bond.MaxDepthChecker.SetDepth(.Increment($depth));
+                                        .Block() {
+                                            .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GenericNothing<int64>));
+                                            .If (
+                                                .Call $reader.ReadFieldOmitted()
+                                            ) {
+                                                .Call $writer.WriteFieldOmitted(
+                                                    .Constant<Bond.BondDataType>(BT_INT64),
+                                                    .Constant<System.UInt16>(0),
+                                                    .Constant<Bond.Metadata>(value))
+                                            } .Else {
+                                                .Block() {
+                                                    .Call $writer.WriteFieldBegin(
+                                                        .Constant<Bond.BondDataType>(BT_INT64),
+                                                        .Constant<System.UInt16>(0),
+                                                        .Constant<Bond.Metadata>(value));
+                                                    .Call $writer.WriteInt64(.Call $reader.ReadInt64());
+                                                    .Call $writer.WriteFieldEnd()
+                                                }
+                                            };
+                                            .Call $writer.WriteStructEnd()
+                                        }
+                                    }
+                                } .Finally {
+                                    .Call Bond.MaxDepthChecker.SetDepth($depth)
+                                }
+                            };
                             .Call $writer.WriteFieldEnd()
                         }
                     };
                     .Call $writer.WriteStructEnd()
-                };
-                .Call $writer.WriteFieldEnd()
+                }
             }
-        };
-        .If (
-            .Call $reader.ReadFieldOmitted()
-        ) {
-            .Call $writer.WriteFieldOmitted(
-                .Constant<Bond.BondDataType>(BT_STRUCT),
-                .Constant<System.UInt16>(86),
-                .Constant<Bond.Metadata>(_dt2))
-        } .Else {
-            .Block() {
-                .Call $writer.WriteFieldBegin(
-                    .Constant<Bond.BondDataType>(BT_STRUCT),
-                    .Constant<System.UInt16>(86),
-                    .Constant<Bond.Metadata>(_dt2));
-                .Block() {
-                    .Call $writer.WriteStructBegin(.Constant<Bond.Metadata>(GenericNothing<int64>));
-                    .If (
-                        .Call $reader.ReadFieldOmitted()
-                    ) {
-                        .Call $writer.WriteFieldOmitted(
-                            .Constant<Bond.BondDataType>(BT_INT64),
-                            .Constant<System.UInt16>(0),
-                            .Constant<Bond.Metadata>(value))
-                    } .Else {
-                        .Block() {
-                            .Call $writer.WriteFieldBegin(
-                                .Constant<Bond.BondDataType>(BT_INT64),
-                                .Constant<System.UInt16>(0),
-                                .Constant<Bond.Metadata>(value));
-                            .Call $writer.WriteInt64(.Call $reader.ReadInt64());
-                            .Call $writer.WriteFieldEnd()
-                        }
-                    };
-                    .Call $writer.WriteStructEnd()
-                };
-                .Call $writer.WriteFieldEnd()
-            }
-        };
-        .Call $writer.WriteStructEnd()
+        } .Finally {
+            .Call Bond.MaxDepthChecker.SetDepth($depth)
+        }
     }
 }

@@ -4,11 +4,17 @@
 namespace Bond
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Runtime.CompilerServices;
 
     public struct DeserializerControls
     {
         int maxPreallocatedContainerElements;
         int maxPreallocatedBlobBytes;
+        int maxDepth;
 
         // Default settings
         public readonly static DeserializerControls Default;
@@ -20,6 +26,7 @@ namespace Bond
         {
             Default.MaxPreallocatedContainerElements = 64 * 1024;
             Default.MaxPreallocatedBlobBytes = 64 * 1024 * 1024;
+            Default.MaxDepth = 64;
             Active = Default;
         }
 
@@ -48,6 +55,106 @@ namespace Bond
                 maxPreallocatedBlobBytes = value;
             }
         }
+
+        public int MaxDepth
+        {
+            get { return maxDepth; }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "Value must be positive");
+                }
+                maxDepth = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Provides utility methods for tracking recursion depth and throwing an exception when the
+    /// tracked depth has exceeded DeserializerControls.Active.MaxDepth.
+    /// </summary>
+    internal static class MaxDepthChecker
+    {
+        /// <summary>The depth tracked for the current thread.</summary>
+        /// <remarks>
+        /// This needn't correspond 1:1 with schema structure.  It is an approximate representation of how deeply deserialization
+        /// has recurred, in order to provide a defense-in-depth measure against stack overflows.
+        /// </remarks>
+        [ThreadStatic]
+        static int t_depth;
+
+        /// <summary>A cached Expression for MaxDepthChecker.t_depth.</summary>
+        static readonly Expression s_depthThreadStaticField = Expression.Field(null, typeof(MaxDepthChecker), nameof(t_depth));
+
+        /// <summary>A cached Expression for DeserializerControls.Active.MaxDepth.</summary>
+        static readonly Expression s_maxDepthProperty = Expression.Property(Expression.Field(null, typeof(DeserializerControls), nameof(DeserializerControls.Active)), nameof(DeserializerControls.MaxDepth));
+
+        /// <summary>Cached MethodInfo for the <see cref="ValidateDepthForIncrement"/> method.</summary>
+        static readonly MethodInfo s_validateDepthForIncrement = typeof(MaxDepthChecker).GetTypeInfo().GetDeclaredMethod(nameof(ValidateDepthForIncrement));
+
+        /// <summary>Cached MethodInfo for the <see cref="SetDepth"/> method.</summary>
+        static readonly MethodInfo s_setDepth = typeof(MaxDepthChecker).GetTypeInfo().GetDeclaredMethod(nameof(SetDepth));
+
+        /// <summary>Wraps the supplied expression in a depth check.</summary>
+        public static Expression WithDepthCheck(Expression expression)
+        {
+            // The pattern employed here is designed to handle asynchronous exceptions like thread aborts,
+            // such that no matter where a thread abort occurs (assuming non-rude thread aborts that are delayed
+            // over finally blocks), the depth will always be left on exit as it was on entrance.
+            //
+            // int depth = ValidateDepthForIncrement();
+            // try
+            // {
+            //     MaxDepthChecker.SetDepth(depth + 1);
+            //     expression;
+            // }
+            // finally
+            // {
+            //     MaxDepthChecker.SetDepth(depth);
+            // }
+
+            ParameterExpression depth = Expression.Variable(typeof(int), "depth");
+
+            return Expression.Block(
+                new[] { depth },
+                Expression.Assign(depth, Expression.Call(s_validateDepthForIncrement)),
+                Expression.TryFinally(
+                    Expression.Block(
+                        Expression.Call(s_setDepth, Expression.Increment(depth)),
+                        expression),
+                    Expression.Call(s_setDepth, depth)));
+        }
+
+        /// <summary>Validates the current depth against the limit, assuming it's about to be incremented, and returns it.</summary>
+        /// <exception cref="InvalidDataException">Recursion depth exceeded DeserializerControls.MaxDepth.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ValidateDepthForIncrement()
+        {
+            int depth = t_depth;
+            Debug.Assert(depth >= 0);
+
+            // Check with >= rather than > as we're validating depth+1.
+            if (depth >= DeserializerControls.Active.MaxDepth)
+            {
+                ThrowTooDeepException();
+            }
+
+            return depth;
+        }
+
+        /// <summary>Sets the tracked depth.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetDepth(int depth)
+        {
+            Debug.Assert(depth >= 0 && depth <= DeserializerControls.Active.MaxDepth);
+            t_depth = depth;
+        }
+
+        /// <summary>Undoes an increment to the current depth and throws an exception indicating max depth exceeded.</summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowTooDeepException() =>
+            throw new InvalidDataException($"Recursion depth exceeded {nameof(DeserializerControls)}.{nameof(DeserializerControls.MaxDepth)}");
     }
 }
 

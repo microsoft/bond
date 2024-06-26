@@ -265,11 +265,9 @@ See example: `examples/cpp/core/schema_view`
 Service definition
 ------------------
 
-**Bond-over-gRPC is deprecated and will be completely removed from Bond in
-May 2022.** See GitHub issue [\#1131, Bond-over-gRPC will be deprecated
-February 2022](https://github.com/microsoft/bond/issues/1131), for full
-details. `gbc` will still be able to parse service definitions and emit them
-in JSON AST, but C++ and C# codegen will be removed in May 2022.
+As of Bond version 11, services are not supported during codegen nor at
+runtime. Service definitions can still appear in .bond files, and gbc be
+used to parse service definitions to the JSON AST.
 
 A service definition consists of a service name and methods:
 
@@ -313,9 +311,6 @@ bond.Void`, which uses the pre-defined `bond.Void` struct in bond.bond.
 For duplex streaming methods, the parameters and results do not have to have
 a 1:1 correspondence. The server is free to return results at any time
 during the lifetime of the method invocation.
-
-NB: Streaming methods are currently only supported when generating C# and
-using Bond-over-gRPC.
 
 Methods with a result of `nothing` are one-way, fire and forget methods: the
 service doesn't send any response regardless of whether the service method

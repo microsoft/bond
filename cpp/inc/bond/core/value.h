@@ -8,6 +8,7 @@
 #include "bonded.h"
 #include "protocol.h"
 #include "schema.h"
+#include "detail/recursionguard.h"
 #include "detail/typeid_value.h"
 
 #include <boost/static_assert.hpp>
@@ -765,6 +766,8 @@ inline void SkipContainer(const T& element, Reader& input)
 {
     BOOST_STATIC_ASSERT(uses_static_parser<Reader>::value);
 
+    bond::detail::RecursionGuard guard;
+
     uint32_t size;
 
     {
@@ -791,6 +794,8 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
 {
     BondDataType type = GetTypeId(element);
     uint32_t     size = 0;
+
+    bond::detail::RecursionGuard guard;
 
     input.ReadContainerBegin(size, type);
 
@@ -829,6 +834,8 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
     BondDataType type = GetTypeId(element);
     uint32_t     size;
 
+    bond::detail::RecursionGuard guard;
+
     input.ReadContainerBegin(size, type);
 
     if (type == GetTypeId(element))
@@ -850,6 +857,8 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
 {
     BondDataType type = GetTypeId(element);
     uint32_t     size;
+
+    bond::detail::RecursionGuard guard;
 
     input.ReadContainerBegin(size, type);
 
@@ -885,6 +894,8 @@ inline DeserializeContainer(X& var, const T& element, Reader& input)
 template <typename Protocols, typename Transform>
 void DeserializeMap(const Transform& transform, BondDataType keyType, const value<void, SchemaReader&>& element, SchemaReader& input)
 {
+    bond::detail::RecursionGuard guard;
+
     switch (element.GetTypeId())
     {
     case bond::BT_SET:
@@ -950,6 +961,8 @@ inline void SkipMap(BondDataType keyType, const T& element, Reader& input)
 {
     BOOST_STATIC_ASSERT(uses_static_parser<Reader>::value);
 
+    bond::detail::RecursionGuard guard;
+
     uint32_t size;
 
     {
@@ -968,6 +981,8 @@ template <typename Protocols, typename X, typename T, typename Reader>
 typename boost::disable_if<is_container<X> >::type
 inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& input)
 {
+    bond::detail::RecursionGuard guard;
+
     std::pair<BondDataType, BondDataType> type(keyType, GetTypeId(element));
     uint32_t                              size = 0;
 
@@ -1005,6 +1020,8 @@ template <typename Protocols, typename X, typename T, typename Reader>
 typename boost::enable_if<is_nested_container<X> >::type
 inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& input)
 {
+    bond::detail::RecursionGuard guard;
+
     std::pair<BondDataType, BondDataType> type(keyType, GetTypeId(element));
     uint32_t                              size;
 
@@ -1027,6 +1044,8 @@ template <typename Protocols, typename X, typename T, typename Reader>
 typename boost::enable_if<is_basic_container<X> >::type
 inline DeserializeMap(X& var, BondDataType keyType, const T& element, Reader& input)
 {
+    bond::detail::RecursionGuard guard;
+
     std::pair<BondDataType, BondDataType> type(keyType, GetTypeId(element));
     uint32_t                              size;
 

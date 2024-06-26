@@ -8,6 +8,7 @@
 #include "detail/inheritance.h"
 #include "detail/omit_default.h"
 #include "detail/parser_utils.h"
+#include "detail/recursionguard.h"
 #include "detail/typeid_value.h"
 #include "merge.h"
 #include "reflection.h"
@@ -199,6 +200,8 @@ public:
     bool
     Apply(const Transform& transform, const Schema& schema)
     {
+        detail::RecursionGuard guard;
+
         detail::StructBegin(_input, _base);
         bool result = this->Read(schema, transform);
         detail::StructEnd(_input, _base);

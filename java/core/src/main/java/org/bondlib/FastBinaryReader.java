@@ -241,8 +241,15 @@ public final class FastBinaryReader implements TaggedProtocolReader {
         if (elementTypeFixedWidth > 0) {
             this.reader.skipBytes((long) count * elementTypeFixedWidth);
         } else {
-            while (--count >= 0) {
-                this.skip(elementType);
+            int currentDepth = DeserializerControls.validateDepthForIncrement();
+            try {
+                DeserializerControls.setDepth(currentDepth + 1);
+                while (--count >= 0) {
+                    this.skip(elementType);
+                }
+            }
+            finally {
+                DeserializerControls.setDepth(currentDepth);
             }
         }
     }
@@ -258,29 +265,43 @@ public final class FastBinaryReader implements TaggedProtocolReader {
         if (keyTypeFixedWidth > 0 && elementTypeFixedWidth > 0) {
             this.reader.skipBytes((long) count * (keyTypeFixedWidth + elementTypeFixedWidth));
         } else {
-            while (--count >= 0) {
-                this.skip(keyType);
-                this.skip(elementType);
+            int currentDepth = DeserializerControls.validateDepthForIncrement();
+            try {
+                DeserializerControls.setDepth(currentDepth + 1);
+                while (--count >= 0) {
+                    this.skip(keyType);
+                    this.skip(elementType);
+                }
+            }
+            finally {
+                DeserializerControls.setDepth(currentDepth);
             }
         }
     }
 
     private void skipStruct() throws IOException {
-        while (true) {
-            BondDataType fieldType = this.readType();
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+            while (true) {
+                BondDataType fieldType = this.readType();
 
-            if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
-                // don't stop, as there may be more fields following the base struct
-                continue;
+                if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
+                    // don't stop, as there may be more fields following the base struct
+                    continue;
+                }
+
+                if (fieldType.value == BondDataType.BT_STOP.value) {
+                    // stop, as we've reached then end and there are no more fields
+                    break;
+                }
+
+                this.reader.skipBytes(2);
+                this.skip(fieldType);
             }
-
-            if (fieldType.value == BondDataType.BT_STOP.value) {
-                // stop, as we've reached then end and there are no more fields
-                break;
-            }
-
-            this.reader.skipBytes(2);
-            this.skip(fieldType);
+        }
+        finally {
+            DeserializerControls.setDepth(currentDepth);
         }
     }
 

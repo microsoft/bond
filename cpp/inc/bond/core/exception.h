@@ -67,6 +67,17 @@ struct CoreException
         "Map key type not valid");
 }
 
+[[noreturn]] inline void UnknownDataTypeException()
+{
+    BOND_THROW(CoreException,
+        "Unknown data type found");
+}
+
+[[noreturn]] inline void ExceededMaxRecursionDepthException()
+{
+    BOND_THROW(CoreException,
+        "Max recursion depth exceeded");
+}
 
 namespace detail
 {

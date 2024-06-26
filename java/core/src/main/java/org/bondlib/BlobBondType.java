@@ -92,28 +92,44 @@ public final class BlobBondType extends BondType<Blob> {
 
     @Override
     protected final Blob deserializeValue(TaggedDeserializationContext context) throws IOException {
-        context.reader.readListBegin(context.readContainerResult);
-        if (context.readContainerResult.elementType.value != BondDataType.BT_INT8.value) {
-            // throws
-            Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
-                    "element",
-                    context.readContainerResult.elementType,
-                    BondDataType.BT_INT8,
-                    this.getFullName());
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            context.reader.readListBegin(context.readContainerResult);
+            if (context.readContainerResult.elementType.value != BondDataType.BT_INT8.value) {
+                // throws
+                Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
+                        "element",
+                        context.readContainerResult.elementType,
+                        BondDataType.BT_INT8,
+                        this.getFullName());
+            }
+            final Blob value = new Blob(context.reader.readBytes(context.readContainerResult.count));
+            context.reader.readContainerEnd();
+            return value;
         }
-        final Blob value = new Blob(context.reader.readBytes(context.readContainerResult.count));
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
     protected final Blob deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef) throws IOException {
-        final int count = context.reader.readContainerBegin();
-        final Blob value = new Blob(context.reader.readBytes(count));
-        context.reader.readContainerEnd();
-        return value;
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            final int count = context.reader.readContainerBegin();
+            final Blob value = new Blob(context.reader.readBytes(count));
+            context.reader.readContainerEnd();
+            return value;
+        }
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

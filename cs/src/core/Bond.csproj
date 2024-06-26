@@ -3,12 +3,12 @@
 
   <PropertyGroup>
     <ProjectGuid>{43CBBA9B-C4BC-4E64-8733-7B72562D2E91}</ProjectGuid>
-    <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard1.0;netstandard1.6</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <BondRedistributable>true</BondRedistributable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
     <DefineConstants>$(DefineConstants);SUPPORTS_XMLRESOLVER</DefineConstants>
   </PropertyGroup>
 

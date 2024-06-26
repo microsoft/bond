@@ -21,35 +21,49 @@
     </description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>Bond .NET C# serialization</tags>
+    <dependencies>
+        <group targetFramework="net462" />
+        <group targetFramework="netstandard1.0" />
+        <group targetFramework="netstandard1.3" />
+        <group targetFramework="netstandard1.6" />
+    </dependencies>
   </metadata>
   <files>
     <!-- Ideally we'd reference the Bond.Compiler package to get the gbc
          files, but there doesn't seem to be a good way to reference
          dependent packages from MSBuild targets. Instead, we duplicate the
          files in this package. They're pretty small. -->
-    <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
-    <file target="build\net45" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
-    <file target="build\net45" src="cs\build\nuget\Common.props" />
-    <file target="build\net45" src="cs\build\nuget\Common.targets" />
-    <file target="build\net45\cps" src="cs\build\nuget\cps\*.xaml" />
+    <file target="build\net462" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
+    <file target="build\net462" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
+    <file target="build\net462" src="cs\build\nuget\Common.props" />
+    <file target="build\net462" src="cs\build\nuget\Common.targets" />
+    <file target="build\net462\cps" src="cs\build\nuget\cps\*.xaml" />
+    <!-- empty file to indicate compat with this framework -->
+    <file target="lib\net462\_._" src="cs\nuget\empty" />
 
     <file target="build\netstandard1.0" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
     <file target="build\netstandard1.0" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
     <file target="build\netstandard1.0" src="cs\build\nuget\Common.props" />
     <file target="build\netstandard1.0" src="cs\build\nuget\Common.targets" />
     <file target="build\netstandard1.0\cps" src="cs\build\nuget\cps\*.xaml" />
+    <!-- empty file to indicate compat with this framework -->
+    <file target="lib\netstandard1.0\_._" src="cs\nuget\empty" />
 
     <file target="build\netstandard1.3" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
     <file target="build\netstandard1.3" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
     <file target="build\netstandard1.3" src="cs\build\nuget\Common.props" />
     <file target="build\netstandard1.3" src="cs\build\nuget\Common.targets" />
     <file target="build\netstandard1.3\cps" src="cs\build\nuget\cps\*.xaml" />
+    <!-- empty file to indicate compat with this framework -->
+    <file target="lib\netstandard1.3\_._" src="cs\nuget\empty" />
 
     <file target="build\netstandard1.6" src="cs\build\nuget\Bond.Compiler.CSharp.props" />
     <file target="build\netstandard1.6" src="cs\build\nuget\Bond.Compiler.CSharp.targets" />
     <file target="build\netstandard1.6" src="cs\build\nuget\Common.props" />
     <file target="build\netstandard1.6" src="cs\build\nuget\Common.targets" />
     <file target="build\netstandard1.6\cps" src="cs\build\nuget\cps\*.xaml" />
+    <!-- empty file to indicate compat with this framework -->
+    <file target="lib\netstandard1.6\_._" src="cs\nuget\empty" />
 
     <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 

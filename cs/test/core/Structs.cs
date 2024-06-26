@@ -226,4 +226,27 @@
         [global::Bond.Id(3)]
         public NestedStructs[] a1 { get; set; }
     }
+
+    [global::Bond.Schema]
+    public class StructWithRecursiveReference
+    {
+        [global::Bond.Id(0)]
+        public uint Value;
+
+        [global::Bond.Id(1), global::Bond.Type(typeof(global::Bond.Tag.nullable<StructWithRecursiveReference>))]
+        public StructWithRecursiveReference Child;
+    }
+
+    [global::Bond.Schema]
+    public class StructWithArray
+    {
+        [global::Bond.Id(0)]
+        public uint N;
+
+        [global::Bond.Id(1)]
+        public string Str;
+
+        [global::Bond.Id(2)]
+        public double[] Items;
+    }
 }

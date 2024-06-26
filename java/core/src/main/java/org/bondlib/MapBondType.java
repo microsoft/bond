@@ -139,72 +139,88 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
 
     @Override
     protected final Map<TKey, TValue> deserializeValue(TaggedDeserializationContext context) throws IOException {
-        context.reader.readMapBegin(context.readContainerResult);
-        if (context.readContainerResult.keyType.value != this.keyType.getBondDataType().value) {
-            // throws
-            Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
-                    "map key",
-                    context.readContainerResult.keyType,
-                    this.keyType.getBondDataType(),
-                    this.getFullName());
-        }
-        if (context.readContainerResult.elementType.value != this.valueType.getBondDataType().value) {
-            // throws
-            Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
-                    "mapped value",
-                    context.readContainerResult.elementType,
-                    this.valueType.getBondDataType(),
-                    this.getFullName());
-        }
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
 
-        // store count in a local variable since readContainerResult may be modified
-        // if there are nested containers and thus can't be used inside the loop
-        final int count = context.readContainerResult.count;
-        final Map<TKey, TValue> value = newDefaultValue();
-        for (int i = 0; i < count; ++i) {
-            TKey mapEntryKey = null;
-            try {
-                mapEntryKey = this.keyType.deserializeValue(context);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
+            context.reader.readMapBegin(context.readContainerResult);
+            if (context.readContainerResult.keyType.value != this.keyType.getBondDataType().value) {
+                // throws
+                Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
+                        "map key",
+                        context.readContainerResult.keyType,
+                        this.keyType.getBondDataType(),
+                        this.getFullName());
             }
-            TValue mapEntryValue = null;
-            try {
-                mapEntryValue = this.valueType.deserializeValue(context);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
+            if (context.readContainerResult.elementType.value != this.valueType.getBondDataType().value) {
+                // throws
+                Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
+                        "mapped value",
+                        context.readContainerResult.elementType,
+                        this.valueType.getBondDataType(),
+                        this.getFullName());
             }
-            value.put(mapEntryKey, mapEntryValue);
+
+            // store count in a local variable since readContainerResult may be modified
+            // if there are nested containers and thus can't be used inside the loop
+            final int count = context.readContainerResult.count;
+            final Map<TKey, TValue> value = newDefaultValue();
+            for (int i = 0; i < count; ++i) {
+                TKey mapEntryKey = null;
+                try {
+                    mapEntryKey = this.keyType.deserializeValue(context);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
+                }
+                TValue mapEntryValue = null;
+                try {
+                    mapEntryValue = this.valueType.deserializeValue(context);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
+                }
+                value.put(mapEntryKey, mapEntryValue);
+            }
+            context.reader.readContainerEnd();
+            return value;
         }
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
     protected final Map<TKey, TValue> deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef) throws IOException {
-        final int count = context.reader.readContainerBegin();
-        final Map<TKey, TValue> value = newDefaultValue();
-        final TypeDef keyType = typeDef.key;
-        final TypeDef valueType = typeDef.element;
-        for (int i = 0; i < count; ++i) {
-            TKey mapEntryKey = null;
-            try {
-                mapEntryKey = this.keyType.deserializeValue(context, keyType);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            final int count = context.reader.readContainerBegin();
+            final Map<TKey, TValue> value = newDefaultValue();
+            final TypeDef keyType = typeDef.key;
+            final TypeDef valueType = typeDef.element;
+            for (int i = 0; i < count; ++i) {
+                TKey mapEntryKey = null;
+                try {
+                    mapEntryKey = this.keyType.deserializeValue(context, keyType);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, null, e, null);
+                }
+                TValue mapEntryValue = null;
+                try {
+                    mapEntryValue = this.valueType.deserializeValue(context, valueType);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
+                }
+                value.put(mapEntryKey, mapEntryValue);
             }
-            TValue mapEntryValue = null;
-            try {
-                mapEntryValue = this.valueType.deserializeValue(context, valueType);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseMapContainerElementSerializationError(true, this.getFullName(), i, mapEntryKey, e, null);
-            }
-            value.put(mapEntryKey, mapEntryValue);
+            context.reader.readContainerEnd();
+            return value;
         }
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
@@ -232,19 +248,27 @@ public final class MapBondType<TKey, TValue> extends BondType<Map<TKey, TValue>>
     protected final Map<TKey, TValue> deserializeField(
             TaggedDeserializationContext context,
             StructBondType.StructField<Map<TKey, TValue>> field) throws IOException {
-        // a map value may be deserialized only from BT_MAP
-        if (context.readFieldResult.type.value != BondDataType.BT_MAP.value) {
-            // throws
-            Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
-        }
-        Map<TKey, TValue> value = null;
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
         try {
-            value = this.deserializeValue(context);
-        } catch (InvalidBondDataException e) {
-            // throws
-            Throw.raiseStructFieldSerializationError(true, field, e, null);
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            // a map value may be deserialized only from BT_MAP
+            if (context.readFieldResult.type.value != BondDataType.BT_MAP.value) {
+                // throws
+                Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
+            }
+            Map<TKey, TValue> value = null;
+            try {
+                value = this.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                // throws
+                Throw.raiseStructFieldSerializationError(true, field, e, null);
+            }
+            return value;
         }
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

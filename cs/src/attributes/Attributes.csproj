@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{92915BD9-8AB1-4E4D-A2AC-95BBF4F82D89}</ProjectGuid>
-    <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard1.0;netstandard1.6</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond</RootNamespace>
     <AssemblyName>Bond.Attributes</AssemblyName>

@@ -1,7 +1,9 @@
 ﻿namespace UnitTest
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Xml;
     using Bond;
@@ -20,6 +22,60 @@
 
         // Data for a simple valid blob
         static readonly byte[] blobData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 };
+
+        // Compact Binary payloads with container types that have invalid elements
+        // and very large sizes.
+        //
+        // In all these payloads:
+        // * field id is 4
+        // * invalid element type is 0x8d (masked with 0x1f is BT_MAP) or 0x1e (which is alway invalid)
+        // * container length is int.MaxValue
+        static readonly byte[][] containersInvalidElementTypeLargeSize_CompactBinary = new byte[][]
+        {
+            // BT_LIST<0x1e>
+            new byte[] { 0x8b, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_SET<0x1e>
+            new byte[] { 0x8c, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<0x1e, BT_FLOAT>
+            new byte[] { 0x8d, 0x1e, 0x07, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<BT_FLOAT, 0x1e>
+            new byte[] { 0x8d, 0x07, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_LIST<0x8d>
+            new byte[] { 0x8b, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_SET<0x8d>
+            new byte[] { 0x8c, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<0x8d, BT_FLOAT>
+            new byte[] { 0x8d, 0x8d, 0x07, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<BT_FLOAT, 0x8d>
+            new byte[] { 0x8d, 0x07, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+        };
+
+        // Fast Binary payloads with container types that have invalid elements
+        // and very large sizes.
+        //
+        // In all these payloads:
+        // * field id is 4
+        // * invalid element type is 0x8d (masked with 0x1f is BT_MAP) or 0x1e (which is alway invalid)
+        // * container length is int.MaxValue
+        static readonly byte[][] containersInvalidElementTypeLargeSize_FastBinary = new byte[][]
+        {
+            // BT_LIST<0x1e>
+            new byte[] { 0x0b, 0x04, 0x00, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_SET<0x1e>
+            new byte[] { 0x0c, 0x04, 0x00, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<0x1e, BT_FLOAT>
+            new byte[] { 0x0d, 0x04, 0x00, 0x1e, 0x07, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<BT_FLOAT, 0x1e>
+            new byte[] { 0x0d, 0x04, 0x00, 0x07, 0x1e, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_LIST<0x8d>
+            new byte[] { 0x0b, 0x04, 0x00, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_SET<0x8d>
+            new byte[] { 0x0c, 0x04, 0x00, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<0x8d, BT_FLOAT>
+            new byte[] { 0x0d, 0x04, 0x00, 0x8d, 0x07, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+            // BT_MAP<BT_FLOAT, 0x8d>
+            new byte[] { 0x0d, 0x04, 0x00, 0x07, 0x8d, 0xff, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff },
+        };
 
         // Restore the default settings at the start and end of each test
         [SetUp]
@@ -194,6 +250,22 @@
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => DeserializerControls.Active.MaxPreallocatedContainerElements = -1);
             Assert.Throws<ArgumentOutOfRangeException>(() => DeserializerControls.Active.MaxPreallocatedBlobBytes = -1);
+
+            const int ExpectedDefaultMaxDepth = 64;
+
+            Assert.AreEqual(ExpectedDefaultMaxDepth, DeserializerControls.Active.MaxDepth);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => DeserializerControls.Active.MaxDepth = 0);
+            Assert.AreEqual(ExpectedDefaultMaxDepth, DeserializerControls.Active.MaxDepth);
+            
+            Assert.Throws<ArgumentOutOfRangeException>(() => DeserializerControls.Active.MaxDepth = -1);
+            Assert.AreEqual(ExpectedDefaultMaxDepth, DeserializerControls.Active.MaxDepth);
+
+            DeserializerControls.Active.MaxDepth = 256;
+            Assert.AreEqual(256, DeserializerControls.Active.MaxDepth);
+
+            DeserializerControls.Active.MaxDepth = DeserializerControls.Default.MaxDepth;
+            Assert.AreEqual(ExpectedDefaultMaxDepth, DeserializerControls.Active.MaxDepth);
         }
 
         [Test]
@@ -221,13 +293,140 @@
             DeserializerControls.Active.MaxPreallocatedContainerElements = 80;
             DeserializerControls.Active.MaxPreallocatedBlobBytes = 80;
             RoundtripTests();
+
             DeserializerControls.Active.MaxPreallocatedContainerElements = 20;
             DeserializerControls.Active.MaxPreallocatedBlobBytes = 20;
             RoundtripTests();
+
             DeserializerControls.Active.MaxPreallocatedContainerElements = 0;
             DeserializerControls.Active.MaxPreallocatedBlobBytes = 0;
             RoundtripTests();
+
+            DeserializerControls.Active.MaxDepth = 1;
+            Assert.Throws<InvalidDataException>(() => RoundtripTests());
+
+            DeserializerControls.Active.MaxDepth = 2;
+            Assert.Throws<InvalidDataException>(() => RoundtripTests());
+
+            DeserializerControls.Active.MaxDepth = 10;
+            RoundtripTests();
+
+            DeserializerControls.Active.MaxDepth = 128;
+            RoundtripTests();
         }
 
+        [TestCase(100, (ushort)1)]
+        [TestCase(100_000, (ushort)1)]
+        [TestCase(100, (ushort)2)]
+        [TestCase(100_000, (ushort)2)]
+        public void BadPayload_RecursionViaNesting_SimpleBinary_Throws(int depth, ushort protocolVersion)
+        {
+            ArraySegment<byte> payload = NestedPayloadFactory.MakeWithRecursiveChild(ProtocolType.SIMPLE_PROTOCOL, protocolVersion, depth);
+            DeserializeBadPayload(input => new SimpleBinaryReader<InputBuffer>(input, protocolVersion), typeof(StructWithRecursiveReference), payload, typeof(InvalidDataException));
+        }
+
+        [TestCase(100, (ushort)1)]
+        [TestCase(100_000, (ushort)1)]
+        [TestCase(100, (ushort)2)]
+        [TestCase(100_000, (ushort)2)]
+        public void BadPayload_RecursionViaNesting_CompactBinary_Throws(int depth, ushort protocolVersion)
+        {
+            ArraySegment<byte> payload = NestedPayloadFactory.MakeWithRecursiveChild(ProtocolType.COMPACT_PROTOCOL, protocolVersion, depth);
+            DeserializeBadPayload(input => new CompactBinaryReader<InputBuffer>(input, protocolVersion), typeof(StructWithRecursiveReference), payload, typeof(InvalidDataException));
+        }
+
+        [TestCase(100, (ushort)1)]
+        [TestCase(100_000, (ushort)1)]
+        [TestCase(100, (ushort)2)]
+        [TestCase(100_000, (ushort)2)]
+        public void BadPayload_RecursionViaNesting_FastBinary_Throws(int depth, ushort protocolVersion)
+        {
+            ArraySegment<byte> payload = NestedPayloadFactory.MakeWithRecursiveChild(ProtocolType.FAST_PROTOCOL, protocolVersion, depth);
+            DeserializeBadPayload(input => new FastBinaryReader<InputBuffer>(input, protocolVersion), typeof(StructWithRecursiveReference), payload, typeof(InvalidDataException));
+        }
+
+        [TestCaseSource(nameof(DeeplyNestedPayloadTestCases), new object[] { ProtocolType.COMPACT_PROTOCOL })]
+        public void BadPayload_RecursionViaSkip_CompactBinary_Throws(int depth, BondDataType fieldType, ushort protocolVersion)
+        {
+            ArraySegment<byte> payload = NestedPayloadFactory.MakeWithUnknownField(ProtocolType.COMPACT_PROTOCOL, protocolVersion, depth, fieldType);
+            DeserializeBadPayload(input => new CompactBinaryReader<InputBuffer>(input, protocolVersion), typeof(ClassWithStructProperties), payload, typeof(InvalidDataException));
+        }
+
+        [TestCaseSource(nameof(DeeplyNestedPayloadTestCases), new object[] { ProtocolType.FAST_PROTOCOL })]
+        public void BadPayload_RecursionViaSkip_FastBinary_Throws(int depth, BondDataType fieldType, ushort protocolVersion)
+        {
+            ArraySegment<byte> payload = NestedPayloadFactory.MakeWithUnknownField(ProtocolType.FAST_PROTOCOL, protocolVersion, depth, fieldType);
+            DeserializeBadPayload(input => new FastBinaryReader<InputBuffer>(input, protocolVersion), typeof(ClassWithStructProperties), payload, typeof(InvalidDataException));
+        }
+
+        [TestCaseSource(nameof(containersInvalidElementTypeLargeSize_CompactBinary))]
+        public void BadPayload_InvalidContainerTypeLargeSize_CompactBinary_Throws(byte[] payload)
+        {
+            // CompactBinary.ReadContainerBegin masks the data type with 0x1f for sequence
+            // containers, so some invalid data types map to valid data types. For these,
+            // EndOfStreamException is expected, as the skipping code will try to read a
+            // payload that does not exist.
+            //
+            // For maps, ReadContainerBegin does not mask. The skip code will always throw
+            // InvalidDataException.
+            DeserializeBadPayload(
+                input => new CompactBinaryReader<InputBuffer>(input),
+                typeof(ClassWithStructProperties),
+                payload,
+                typeof(EndOfStreamException),
+                typeof(InvalidDataException));
+        }
+
+        [TestCaseSource(nameof(containersInvalidElementTypeLargeSize_FastBinary))]
+        public void BadPayload_InvalidContainerTypeLargeSize_FastBinary_Throws(byte[] payload)
+        {
+            // Fast Binary fails to skip the invalid container element, hence InvalidDataException.
+            DeserializeBadPayload(input => new FastBinaryReader<InputBuffer>(input), typeof(ClassWithStructProperties), payload, typeof(InvalidDataException));
+        }
+
+        private void DeserializeBadPayload<TReader>(Func<InputBuffer, TReader> readerFactory, Type deserializedType, byte[] payload, params Type[] expectedExceptionTypes)
+        {
+            DeserializeBadPayload(readerFactory, deserializedType, new ArraySegment<byte>(payload), expectedExceptionTypes);
+        }
+
+        private void DeserializeBadPayload<TReader>(Func<InputBuffer, TReader> readerFactory, Type deserializedType, ArraySegment<byte> payload, params Type[] expectedExceptionTypes)
+        {
+            var input = new InputBuffer(payload);
+            TReader reader = readerFactory(input);
+            var deserializer = new Deserializer<TReader>(deserializedType);
+
+            var actualException = Assert.Catch<Exception>(() => deserializer.Deserialize(reader));
+            Assert.True(
+                expectedExceptionTypes.Any(expectedExceptionType => expectedExceptionType.IsInstanceOfType(actualException)),
+                "Expected thrown exception to be {0} but it was {1}",
+                    string.Join(" or ", expectedExceptionTypes.Select(eet => eet.Name)),
+                    actualException.GetType().Name);
+        }
+
+        public static IEnumerable<object[]> DeeplyNestedPayloadTestCases(ProtocolType protocol)
+        {
+            int[] depths = new[] { 130, 4_000_000 };
+            BondDataType[] types = new[] { BondDataType.BT_STRUCT, BondDataType.BT_LIST, BondDataType.BT_SET, BondDataType.BT_MAP };
+            ushort[] versions = new ushort[] { 1, 2 };
+
+            var allCombinations =
+                from depth in depths
+                from type in types
+                from version in versions
+                select new { depth, type, version };
+
+            if (protocol == ProtocolType.COMPACT_PROTOCOL)
+            {
+                return
+                    from c in allCombinations
+                    // CBv2 skips structs by seeking not recursion, so omit that combination from the deeply nested tests
+                    where !(c.version == 2 && c.type == BondDataType.BT_STRUCT)
+                    select new object[] { c.depth, c.type, c.version };
+            }
+            else
+            {
+                return from c in allCombinations select new object[] { c.depth, c.type, c.version };
+            }
+        }
     }
 }

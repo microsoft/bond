@@ -121,49 +121,65 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
 
     @Override
     protected final Set<TElement> deserializeValue(TaggedDeserializationContext context) throws IOException {
-        context.reader.readListBegin(context.readContainerResult);
-        if (context.readContainerResult.elementType.value != this.elementType.getBondDataType().value) {
-            // throws
-            Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
-                    "element",
-                    context.readContainerResult.elementType,
-                    this.elementType.getBondDataType(),
-                    this.getFullName());
-        }
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
 
-        // store count in a local variable since readContainerResult may be modified
-        // if there are nested containers and thus can't be used inside the loop
-        final int count = context.readContainerResult.count;
-        final Set<TElement> value = this.newDefaultValue();
-        for (int i = 0; i < count; ++i) {
-            try {
-                TElement element = this.elementType.deserializeValue(context);
-                value.add(element);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);
+            context.reader.readListBegin(context.readContainerResult);
+            if (context.readContainerResult.elementType.value != this.elementType.getBondDataType().value) {
+                // throws
+                Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
+                        "element",
+                        context.readContainerResult.elementType,
+                        this.elementType.getBondDataType(),
+                        this.getFullName());
             }
+
+            // store count in a local variable since readContainerResult may be modified
+            // if there are nested containers and thus can't be used inside the loop
+            final int count = context.readContainerResult.count;
+            final Set<TElement> value = this.newDefaultValue();
+            for (int i = 0; i < count; ++i) {
+                try {
+                    TElement element = this.elementType.deserializeValue(context);
+                    value.add(element);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);
+                }
+            }
+            context.reader.readContainerEnd();
+            return value;
         }
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
     protected final Set<TElement> deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef) throws IOException {
-        final int count = context.reader.readContainerBegin();
-        final Set<TElement> value = newDefaultValue();
-        final TypeDef elementType = typeDef.element;
-        for (int i = 0; i < count; ++i) {
-            try {
-                TElement element = this.elementType.deserializeValue(context, elementType);
-                value.add(element);
-            } catch (InvalidBondDataException e) {
-                Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            final int count = context.reader.readContainerBegin();
+            final Set<TElement> value = newDefaultValue();
+            final TypeDef elementType = typeDef.element;
+            for (int i = 0; i < count; ++i) {
+                try {
+                    TElement element = this.elementType.deserializeValue(context, elementType);
+                    value.add(element);
+                } catch (InvalidBondDataException e) {
+                    Throw.raiseListContainerElementSerializationError(true, true, this.getFullName(), i, e, null);
+                }
             }
+            context.reader.readContainerEnd();
+            return value;
         }
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
@@ -191,19 +207,27 @@ public final class SetBondType<TElement> extends BondType<Set<TElement>> {
     protected final Set<TElement> deserializeField(
             TaggedDeserializationContext context,
             StructBondType.StructField<Set<TElement>> field) throws IOException {
-        // a set value may be deserialized only from BT_SET
-        if (context.readFieldResult.type.value != BondDataType.BT_SET.value) {
-            // throws
-            Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
-        }
-        Set<TElement> value = null;
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
         try {
-            value = this.deserializeValue(context);
-        } catch (InvalidBondDataException e) {
-            // throws
-            Throw.raiseStructFieldSerializationError(true, field, e, null);
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            // a set value may be deserialized only from BT_SET
+            if (context.readFieldResult.type.value != BondDataType.BT_SET.value) {
+                // throws
+                Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
+            }
+            Set<TElement> value = null;
+            try {
+                value = this.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                // throws
+                Throw.raiseStructFieldSerializationError(true, field, e, null);
+            }
+            return value;
         }
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

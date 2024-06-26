@@ -268,8 +268,15 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         if (elementTypeFixedWidth > 0) {
             this.reader.skipBytes((long) count * elementTypeFixedWidth);
         } else {
-            while (--count >= 0) {
-                this.skip(elementType);
+            int currentDepth = DeserializerControls.validateDepthForIncrement();
+            try {
+                DeserializerControls.setDepth(currentDepth + 1);
+                while (--count >= 0) {
+                    this.skip(elementType);
+                }
+            }
+            finally {
+                DeserializerControls.setDepth(currentDepth);
             }
         }
     }
@@ -285,9 +292,16 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
         if (keyTypeFixedWidth > 0 && elementTypeFixedWidth > 0) {
             this.reader.skipBytes((long) count * (keyTypeFixedWidth + elementTypeFixedWidth));
         } else {
-            while (--count >= 0) {
-                this.skip(keyType);
-                this.skip(elementType);
+            int currentDepth = DeserializerControls.validateDepthForIncrement();
+            try {
+                DeserializerControls.setDepth(currentDepth + 1);
+                while (--count >= 0) {
+                    this.skip(keyType);
+                    this.skip(elementType);
+                }
+            }
+            finally {
+                DeserializerControls.setDepth(currentDepth);
             }
         }
     }
@@ -297,27 +311,34 @@ public final class CompactBinaryReader implements TaggedProtocolReader {
             // take advantage of the struct length stored in V2
             this.reader.skipBytes(this.reader.readVarUInt32());
         } else {
-            while (true) {
-                final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
-                BondDataType fieldType = BondDataType.get(raw & 0x1F);
-                final int embeddedId = raw >>> 5;
-                if (embeddedId == 6) {
-                    this.reader.skipBytes(1);
-                } else if (embeddedId == 7) {
-                    this.reader.skipBytes(2);
-                }
+            int currentDepth = DeserializerControls.validateDepthForIncrement();
+            try {
+                DeserializerControls.setDepth(currentDepth + 1);
+                while (true) {
+                    final int raw = UnsignedHelper.asUnsignedInt(this.reader.readInt8());
+                    BondDataType fieldType = BondDataType.get(raw & 0x1F);
+                    final int embeddedId = raw >>> 5;
+                    if (embeddedId == 6) {
+                        this.reader.skipBytes(1);
+                    } else if (embeddedId == 7) {
+                        this.reader.skipBytes(2);
+                    }
 
-                if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
-                    // don't stop, as there may be more fields following the base struct
-                    continue;
-                }
+                    if (fieldType.value == BondDataType.BT_STOP_BASE.value) {
+                        // don't stop, as there may be more fields following the base struct
+                        continue;
+                    }
 
-                if (fieldType.value == BondDataType.BT_STOP.value) {
-                    // stop, as we've reached then end and there are no more fields
-                    break;
-                }
+                    if (fieldType.value == BondDataType.BT_STOP.value) {
+                        // stop, as we've reached then end and there are no more fields
+                        break;
+                    }
 
-                this.skip(fieldType);
+                    this.skip(fieldType);
+                }
+            }
+            finally {
+                DeserializerControls.setDepth(currentDepth);
             }
         }
     }

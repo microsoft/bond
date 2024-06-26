@@ -89,7 +89,8 @@ namespace Bond.Expressions
                 select Field(transform, fieldDef, knownField));
 
             body.Add(transform.End);
-            return Expression.Block(body);
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(body));
         }
 
         Expression Field(ITransform transform, FieldDef fieldDef, IField field)
@@ -99,10 +100,10 @@ namespace Bond.Expressions
             var fieldParser = new UntaggedParser<R>(this, schema.GetFieldSchema(fieldDef));
 
             return Expression.IfThenElse(reader.ReadFieldOmitted(),
-                field != null ? field.Omitted : Expression.Empty(),
-                field != null ?
-                    field.Value(fieldParser, fieldType) :
-                    transform.UnknownField(fieldParser, fieldType, fieldId) ?? fieldParser.Skip(fieldType));
+                    field != null ? field.Omitted : Expression.Empty(),
+                    field != null ?
+                        field.Value(fieldParser, fieldType) :
+                        MaxDepthChecker.WithDepthCheck(transform.UnknownField(fieldParser, fieldType, fieldId) ?? fieldParser.Skip(fieldType)));
         }
 
         public Expression Container(BondDataType? expectedType, ContainerHandler handler)
@@ -118,11 +119,12 @@ namespace Bond.Expressions
                 count,
                 null);
 
-            return Expression.Block(
-                new[] { count },
-                Expression.Assign(count, reader.ReadContainerBegin()),
-                loop,
-                reader.ReadContainerEnd());
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    new[] { count },
+                    Expression.Assign(count, reader.ReadContainerBegin()),
+                    loop,
+                    reader.ReadContainerEnd()));
         }
 
         public Expression Map(BondDataType? expectedKeyType, BondDataType? expectedValueType, MapHandler handler)
@@ -140,11 +142,12 @@ namespace Bond.Expressions
                 Expression.Empty(),
                 count);
 
-            return Expression.Block(
-                new[] { count },
-                Expression.Assign(count, reader.ReadContainerBegin()),
-                loop,
-                reader.ReadContainerEnd());
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    new[] { count },
+                    Expression.Assign(count, reader.ReadContainerBegin()),
+                    loop,
+                    reader.ReadContainerEnd()));
         }
 
         public Expression Blob(Expression count)
@@ -161,16 +164,12 @@ namespace Bond.Expressions
 
         public Expression Bonded(ValueHandler handler)
         {
-            if (schema.IsBonded)
-            {
-                return handler(reader.ReadMarshaledBonded());
-            }
-
-            var newBonded = bondedFactory(reader.Param, Expression.Constant(schema));
-
-            return Expression.Block(
-                handler(newBonded),
-                SkipStruct());
+            return MaxDepthChecker.WithDepthCheck(
+                schema.IsBonded ?
+                    handler(reader.ReadMarshaledBonded()) :
+                    Expression.Block(
+                        handler(bondedFactory(reader.Param, Expression.Constant(schema))),
+                        SkipStruct()));
         }
 
         public Expression Skip(Expression valueType)
@@ -260,7 +259,7 @@ namespace Bond.Expressions
 
         Expression SkipStruct(Expression<Action<R>> skip)
         {
-            return Expression.Invoke(skip, reader.Param);
+            return MaxDepthChecker.WithDepthCheck(Expression.Invoke(skip, reader.Param));
         }
 
         public override bool Equals(object that)

@@ -370,44 +370,76 @@ public abstract class StructBondType<TStruct extends BondSerializable> extends B
 
     @Override
     protected final TStruct deserializeValue(TaggedDeserializationContext context) throws IOException {
-        TStruct value = this.newDefaultValue();
-        context.reader.readStructBegin();
-        if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueAsBase(context, value);
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            TStruct value = this.newDefaultValue();
+            context.reader.readStructBegin();
+            if (this.baseStructType != null) {
+                this.baseStructType.deserializeValueAsBase(context, value);
+            }
+            this.deserializeStructFields(context, value);
+            context.reader.readStructEnd();
+            return value;
         }
-        this.deserializeStructFields(context, value);
-        context.reader.readStructEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     private void deserializeValueAsBase(TaggedDeserializationContext context, TStruct value) throws IOException {
-        if (this.baseStructType != null) {
-            this.baseStructType.deserializeValueAsBase(context, value);
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            if (this.baseStructType != null) {
+                this.baseStructType.deserializeValueAsBase(context, value);
+            }
+            context.reader.readBaseBegin();
+            this.deserializeStructFields(context, value);
+            context.reader.readBaseEnd();
         }
-        context.reader.readBaseBegin();
-        this.deserializeStructFields(context, value);
-        context.reader.readBaseEnd();
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
     protected final TStruct deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef) throws IOException {
-        TStruct value = this.newDefaultValue();
-        this.deserializeValue(context, typeDef, value);
-        return value;
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            TStruct value = this.newDefaultValue();
+            this.deserializeValue(context, typeDef, value);
+            return value;
+        }
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     private void deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef,
         TStruct value) throws IOException {
-        final StructDef structDef = context.schema.structs.get(typeDef.struct_def);
-        if (this.baseStructType != null) {
-            final TypeDef baseDef = structDef.base_def;
-            this.baseStructType.deserializeValue(context, baseDef, value);
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            final StructDef structDef = context.schema.structs.get(typeDef.struct_def);
+            if (this.baseStructType != null) {
+                final TypeDef baseDef = structDef.base_def;
+                this.baseStructType.deserializeValue(context, baseDef, value);
+            }
+            this.deserializeStructFields(context, structDef, value);
         }
-        this.deserializeStructFields(context, structDef, value);
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

@@ -23,35 +23,28 @@
         </description>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization</tags>
+        <dependencies>
+            <group targetFramework="net462" />
+            <group targetFramework="netstandard1.0" />
+            <group targetFramework="netstandard1.3" />
+            <group targetFramework="netstandard1.6" />
+        </dependencies>
     </metadata>
     <files>
         <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Attributes.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.IO.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.Reflection.xml" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.xml" />
-
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Attributes.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net46\Bond.IO.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.Reflection.xml" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.dll" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.pdb" />
-        <file target="lib\net46" src="cs\bin\retail\net45\Bond.xml" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Attributes.dll" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Attributes.pdb" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Attributes.xml" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.IO.dll" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.IO.pdb" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.IO.xml" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Reflection.dll" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Reflection.pdb" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.Reflection.xml" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.dll" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.pdb" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.xml" />
 
         <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Attributes.dll" />
         <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.Attributes.pdb" />

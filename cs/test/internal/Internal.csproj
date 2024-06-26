@@ -8,7 +8,7 @@
     <AssemblyName>Bond.InternalTest</AssemblyName>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <!-- Resharper Workaround -->

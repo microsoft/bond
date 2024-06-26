@@ -158,14 +158,23 @@ public final class BondedBondType<TStruct extends BondSerializable> extends Bond
             // throws
             Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
         }
-        Bonded<TStruct> value = null;
+
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
         try {
-            value = this.deserializeValue(context);
-        } catch (InvalidBondDataException e) {
-            // throws
-            Throw.raiseStructFieldSerializationError(true, field, e, null);
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            Bonded<TStruct> value = null;
+            try {
+                value = this.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                // throws
+                Throw.raiseStructFieldSerializationError(true, field, e, null);
+            }
+            return value;
         }
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

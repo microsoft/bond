@@ -742,9 +742,19 @@ namespace Bond.Protocols
                     input.SkipBytes(checked(count * sizeof(double)));
                     break;
                 default:
-                    while (0 <= --count)
+                    int depth = MaxDepthChecker.ValidateDepthForIncrement();
+                    try
                     {
-                        Skip(elementType);
+                        MaxDepthChecker.SetDepth(depth + 1);
+
+                        while (0 <= --count)
+                        {
+                            Skip(elementType);
+                        }
+                    }
+                    finally
+                    {
+                        MaxDepthChecker.SetDepth(depth);
                     }
                     break;
             }
@@ -752,31 +762,51 @@ namespace Bond.Protocols
 
         void SkipMap()
         {
-            BondDataType keyType;
-            BondDataType valueType;
-            int count;
-
-            ReadContainerBegin(out count, out keyType, out valueType);
-            while (0 <= --count)
+            int depth = MaxDepthChecker.ValidateDepthForIncrement();
+            try
             {
-                Skip(keyType);
-                Skip(valueType);
+                MaxDepthChecker.SetDepth(depth + 1);
+
+                BondDataType keyType;
+                BondDataType valueType;
+                int count;
+
+                ReadContainerBegin(out count, out keyType, out valueType);
+                while (0 <= --count)
+                {
+                    Skip(keyType);
+                    Skip(valueType);
+                }
+            }
+            finally
+            {
+                MaxDepthChecker.SetDepth(depth);
             }
         }
 
         void SkipStruct()
         {
-            while (true)
+            int depth = MaxDepthChecker.ValidateDepthForIncrement();
+            try
             {
-                BondDataType type;
-                ushort id;
+                MaxDepthChecker.SetDepth(depth + 1);
 
-                ReadFieldBegin(out type, out id);
+                while (true)
+                {
+                    BondDataType type;
+                    ushort id;
 
-                if (type == BondDataType.BT_STOP_BASE) continue;
-                if (type == BondDataType.BT_STOP) break;
+                    ReadFieldBegin(out type, out id);
 
-                Skip(type);
+                    if (type == BondDataType.BT_STOP_BASE) continue;
+                    if (type == BondDataType.BT_STOP) break;
+
+                    Skip(type);
+                }
+            }
+            finally
+            {
+                MaxDepthChecker.SetDepth(depth);
             }
         }
         #endregion
