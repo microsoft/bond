@@ -99,41 +99,57 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
 
     @Override
     protected final TValue deserializeValue(TaggedDeserializationContext context) throws IOException {
-        context.reader.readListBegin(context.readContainerResult);
-        if (context.readContainerResult.elementType.value != this.valueType.getBondDataType().value) {
-            // throws
-            Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
-                    "value",
-                    context.readContainerResult.elementType,
-                    this.valueType.getBondDataType(),
-                    this.getFullName());
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            context.reader.readListBegin(context.readContainerResult);
+            if (context.readContainerResult.elementType.value != this.valueType.getBondDataType().value) {
+                // throws
+                Throw.raiseContainerElementTypeIsNotCompatibleDeserializationError(
+                        "value",
+                        context.readContainerResult.elementType,
+                        this.valueType.getBondDataType(),
+                        this.getFullName());
+            }
+            TValue value = null;
+            if (context.readContainerResult.count == 1) {
+                value = this.valueType.deserializeValue(context);
+            } else if (context.readContainerResult.count > 1){
+                // throws
+                Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
+            }
+            context.reader.readContainerEnd();
+            return value;
         }
-        TValue value = null;
-        if (context.readContainerResult.count == 1) {
-            value = this.valueType.deserializeValue(context);
-        } else if (context.readContainerResult.count > 1){
-            // throws
-            Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
+        finally {
+            DeserializerControls.setDepth(currentDepth);
         }
-        context.reader.readContainerEnd();
-        return value;
     }
 
     @Override
     protected final TValue deserializeValue(
         UntaggedDeserializationContext context,
         TypeDef typeDef) throws IOException {
-        TValue value = null;
-        final int count = context.reader.readContainerBegin();
-        // If count == 0, all we need to do is return null.
-        if (count == 1) {
-            value = this.valueType.deserializeValue(context, typeDef.element);
-        } else if (count > 1) {
-            // throws
-            Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
+        try {
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            TValue value = null;
+            final int count = context.reader.readContainerBegin();
+            // If count == 0, all we need to do is return null.
+            if (count == 1) {
+                value = this.valueType.deserializeValue(context, typeDef.element);
+            } else if (count > 1) {
+                // throws
+                Throw.raiseNullableListValueHasMultipleElementsDeserializationError(this.getFullName());
+            }
+            context.reader.readContainerEnd();
+            return value;
         }
-        context.reader.readContainerEnd();
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override
@@ -159,19 +175,27 @@ public final class NullableBondType<TValue> extends BondType<TValue> {
     protected final TValue deserializeField(
             TaggedDeserializationContext context,
             StructBondType.StructField<TValue> field) throws IOException {
-        // a nullable value may be deserialized only from BT_LIST
-        if (context.readFieldResult.type.value != BondDataType.BT_LIST.value) {
-            // throws
-            Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
-        }
-        TValue value = null;
+        int currentDepth = DeserializerControls.validateDepthForIncrement();
         try {
-            value = this.deserializeValue(context);
-        } catch (InvalidBondDataException e) {
-            // throws
-            Throw.raiseStructFieldSerializationError(true, field, e, null);
+            DeserializerControls.setDepth(currentDepth + 1);
+
+            // a nullable value may be deserialized only from BT_LIST
+            if (context.readFieldResult.type.value != BondDataType.BT_LIST.value) {
+                // throws
+                Throw.raiseFieldTypeIsNotCompatibleDeserializationError(context.readFieldResult.type, field);
+            }
+            TValue value = null;
+            try {
+                value = this.deserializeValue(context);
+            } catch (InvalidBondDataException e) {
+                // throws
+                Throw.raiseStructFieldSerializationError(true, field, e, null);
+            }
+            return value;
         }
-        return value;
+        finally {
+            DeserializerControls.setDepth(currentDepth);
+        }
     }
 
     @Override

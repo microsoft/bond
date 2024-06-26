@@ -5,6 +5,7 @@
 #pragma once
 
 #include <bond/core/config.h>
+#include <bond/core/detail/recursionguard.h>
 
 #include "apply.h"
 #include "select_protocol.h"
@@ -125,6 +126,12 @@ template <typename Protocols = BuiltInProtocols, typename T, typename Reader, ty
 inline void Merge(const T& obj, Reader input, Writer& output)
 {
     Apply<Protocols>(Merger<T, Writer, Protocols>(obj, output), bonded<T>(input));
+}
+
+/// @brief Sets the maximum recursion depth permitted for deserialization operations
+inline void SetDeserializeMaxDepth(uint32_t value)
+{
+    bond::detail::RecursionGuard::SetMaxDepth(value);
 }
 
 }

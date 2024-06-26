@@ -40,12 +40,12 @@ namespace Bond.IO.Unsafe
 
             throw new NotSupportedException("Stream type " + stream.GetType().FullName + " can't be cloned.");
         }
-        
+
         static MemoryStream Clone(MemoryStream stream)
         {
             return MemoryStreamCloner.CloneMemoryStream(stream);
         }
-        
+
         static FileStream Clone(FileStream stream)
         {
             var error = 0;
@@ -67,7 +67,7 @@ namespace Bond.IO.Unsafe
 
             throw new Win32Exception(error);
         }
-        
+
         static class NativeMethods
         {
             public const int NO_ERROR = 0;
@@ -83,7 +83,7 @@ namespace Bond.IO.Unsafe
 
         static class MemoryStreamCloner
         {
-#if !(NET46 || NETSTANDARD1_3 || NETSTANDARD1_6)
+#if !(NET462 || NETSTANDARD1_3 || NETSTANDARD1_6)
             delegate void GetOriginAndLength(MemoryStream stream, out int origin, out int length);
             static readonly GetOriginAndLength getOriginAndLength;
 
@@ -125,7 +125,7 @@ namespace Bond.IO.Unsafe
                 getOriginAndLength(stream, out origin, out length);
                 return new MemoryStream(stream.GetBuffer(), origin, length - origin, false, true) { Position = stream.Position };
             }
-#else // NET46 & NETSTANDARD implementation
+#else // NET462 & NETSTANDARD implementation
             internal static MemoryStream CloneMemoryStream(MemoryStream stream)
             {
                 ArraySegment<byte> buffer;

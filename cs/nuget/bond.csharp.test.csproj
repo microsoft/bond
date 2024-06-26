@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Bond.NuGetTest</AssemblyName>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\build\internal\bond.snk</AssemblyOriginatorKeyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -23,7 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\test\core\**\*.cs" />
+    <!-- don't include any of the test\core build outputs so this project
+         can be built in an unclean repo -->
+    <Compile Include="..\test\core\**\*.cs"
+             Exclude="..\test\core\bin\**;..\test\core\obj\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +43,7 @@
     <BondCodegen Update="..\test\core\UnitTest.bond">
       <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
     </BondCodegen>
-    <BondCodegen Update="ImmutableCollections.bond">
+    <BondCodegen Update="..\test\core\ImmutableCollections.bond">
       <Options>$(BondOptions) --using="ImmutableArray=System.Collections.Immutable.ImmutableArray&lt;{0}&gt;" --using="ImmutableList=System.Collections.Immutable.ImmutableList&lt;{0}&gt;" --using="ImmutableHashSet=System.Collections.Immutable.ImmutableHashSet&lt;{0}&gt;" --using="ImmutableSortedSet=System.Collections.Immutable.ImmutableSortedSet&lt;{0}&gt;" --using="ImmutableDictionary=System.Collections.Immutable.ImmutableDictionary&lt;{0},{1}&gt;" --using="ImmutableSortedDictionary=System.Collections.Immutable.ImmutableSortedDictionary&lt;{0},{1}&gt;"</Options>
     </BondCodegen>
   </ItemGroup>

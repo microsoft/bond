@@ -90,10 +90,6 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         OPTIONS --self-contained --table-of-contents
         OUTPUT_DIR manual)
 
-    add_pandoc_markdown(src/bond_over_grpc.md
-        OPTIONS --self-contained --table-of-contents
-        OUTPUT_DIR manual)
-
     add_pandoc_markdown (src/bond_cs.md
         CODE "numberLines"
         OPTIONS --table-of-contents
@@ -123,7 +119,6 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
         doxygen/bond_layout.xml
         doxygen/bond_reference.css
         doxygen/mainpage.md
-        doxygen/examples/wait_callback_example.cpp
         ${cpp_headers})
 
     set (doxygen_output_dir

@@ -241,33 +241,54 @@ public final class SimpleBinaryReader implements UntaggedProtocolReader {
                     int count = readLength();
                     skipBytes(count);
                 } else {
-                    final StructDef structDef = schemaDef.structs.get(type.struct_def);
-                    final TypeDef baseDef = structDef.base_def;
-                    if (baseDef != null) {
-                        skip(schemaDef, baseDef);
+                    int currentDepth = DeserializerControls.validateDepthForIncrement();
+                    try {
+                        DeserializerControls.setDepth(currentDepth + 1);
+                        final StructDef structDef = schemaDef.structs.get(type.struct_def);
+                        final TypeDef baseDef = structDef.base_def;
+                        if (baseDef != null) {
+                            skip(schemaDef, baseDef);
+                        }
+                        for (final org.bondlib.FieldDef field : structDef.fields) {
+                            skip(schemaDef, field.type);
+                        }
                     }
-                    for (final org.bondlib.FieldDef field : structDef.fields) {
-                        skip(schemaDef, field.type);
+                    finally {
+                        DeserializerControls.setDepth(currentDepth);
                     }
                 }
                 break;
 
             case BondDataType.Values.BT_LIST:
             case BondDataType.Values.BT_SET: {
-                int numElems = readLength();
-                final TypeDef elementTypeDef = type.element;
-                for (int i = 0; i < numElems; i++) {
-                    skip(schemaDef, elementTypeDef);
+                int currentDepth = DeserializerControls.validateDepthForIncrement();
+                try {
+                    DeserializerControls.setDepth(currentDepth + 1);
+                    int numElems = readLength();
+                    final TypeDef elementTypeDef = type.element;
+                    for (int i = 0; i < numElems; i++) {
+                        skip(schemaDef, elementTypeDef);
+                    }
+                }
+                finally {
+                    DeserializerControls.setDepth(currentDepth);
                 }
                 break;
             }
             case BondDataType.Values.BT_MAP: {
-                int numElems = readLength();
-                final TypeDef keyTypeDef = type.key;
-                final TypeDef valueTypeDef = type.element;
-                for (int i = 0; i < numElems; i++) {
-                    skip(schemaDef, keyTypeDef);
-                    skip(schemaDef, valueTypeDef);
+                int currentDepth = DeserializerControls.validateDepthForIncrement();
+                try {
+                    DeserializerControls.setDepth(currentDepth + 1);
+                    int numElems = readLength();
+                    final TypeDef keyTypeDef = type.key;
+                    final TypeDef valueTypeDef = type.element;
+                    for (int i = 0; i < numElems; i++) {
+                        skip(schemaDef, keyTypeDef);
+                        skip(schemaDef, valueTypeDef);
+                    }
+                }
+                finally {
+                    DeserializerControls.setDepth(currentDepth);
                 }
                 break;
             }

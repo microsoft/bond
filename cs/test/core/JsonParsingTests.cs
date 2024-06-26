@@ -1,8 +1,11 @@
 ﻿namespace UnitTest
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
+    using System.Threading;
     using Bond;
     using Bond.Protocols;
     using Newtonsoft.Json;
@@ -11,6 +14,31 @@
     [TestFixture]
     public class JsonParsingTests
     {
+        [Test]
+        public void JsonParsing_66NestedObjects_Throws_JsonReaderException()
+        {
+            const int recurseCount = 33; // 33 pattern repetitions is 66 nestings.
+
+            //{"a": [{"a": [ ... ]}]}
+            var json = String.Concat(Enumerable.Repeat(@"{""a"":[", recurseCount));
+            json += String.Concat(Enumerable.Repeat("]}", recurseCount));
+
+            Assert.Catch(typeof(JsonReaderException), () => ParseJson<NestedTypes>(json));
+        }
+
+        [Test]
+        public void JsonParsing_64NestedObjects_Parsed_Successfully()
+        {
+            const int recurseCount = 32; // 32 pattern repetitions is 64 nestings.
+
+            //{"a": [{"a": [ ... ]}]}
+            var json = String.Concat(Enumerable.Repeat(@"{""a"":[", recurseCount));
+            json += String.Concat(Enumerable.Repeat("]}", recurseCount));
+
+            var parsedOutput = ParseJson<NestedTypes>(json);
+            Assert.IsNotNull(parsedOutput);
+        }
+
         [Test]
         public void JsonParsing_EmptyStruct()
         {

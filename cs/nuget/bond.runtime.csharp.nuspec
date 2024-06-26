@@ -24,16 +24,30 @@
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>Bond .NET C# serialization</tags>
         <dependencies>
-            <dependency id="Newtonsoft.Json" version="9.0.1" />
-            <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
+            <group targetFramework="net462">
+                <dependency id="Newtonsoft.Json" version="9.0.1" />
+                <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
+            </group>
+            <group targetFramework="netstandard1.0">
+                <dependency id="Newtonsoft.Json" version="9.0.1" />
+                <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
+            </group>
+            <group targetFramework="netstandard1.3">
+                <dependency id="Newtonsoft.Json" version="9.0.1" />
+                <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
+            </group>
+            <group targetFramework="netstandard1.6">
+                <dependency id="Newtonsoft.Json" version="9.0.1" />
+                <dependency id="Bond.Core.CSharp" version ="[$version$] "/>
+            </group>
         </dependencies>
     </metadata>
     <files>
         <file target="images\" src="doc\src\logos\bond-logo-64x64-transparent.png" />
 
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.dll" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.pdb" />
-        <file target="lib\net45" src="cs\bin\retail\net45\Bond.JSON.xml" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.JSON.dll" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.JSON.pdb" />
+        <file target="lib\net462" src="cs\bin\retail\net462\Bond.JSON.xml" />
 
         <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.dll" />
         <file target="lib\netstandard1.0" src="cs\bin\retail\netstandard1.0\Bond.JSON.pdb" />

@@ -19,9 +19,6 @@ For details, see the User's Manuals:
 * [C#](https://microsoft.github.io/bond/manual/bond_cs.html)
 * [Java](https://microsoft.github.io/bond/manual/bond_java.html)
 * [Python](https://microsoft.github.io/bond/manual/bond_py.html)
-* [Bond-over-gRPC](https://microsoft.github.io/bond/manual/bond_over_grpc.html)
-  ([deprecated: will be removed in May
-  2022](https://github.com/microsoft/bond/issues/1131))
 * [`gbc`, the Bond compiler/codegen tool](https://microsoft.github.io/bond/manual/compiler.html)
     * See also
       [the compiler library](https://hackage.haskell.org/package/bond) that
@@ -181,10 +178,10 @@ cmake .. \
 
 Install the following tools:
 
-- Visual Studio 2015 or 2017
-    - VS2017 is required to build C# Bond from source
-- .NET Core SDK ([https://www.microsoft.com/net/core](https://www.microsoft.com/net/core#windows))
-    - Alternative to VS2017 for building C# Bond from source
+- Visual Studio 2017 or newer. The following components are required:
+  - .NET Framework 4.6.2 targeting pack
+  - C++ development tools. A working C++ compiler is needed to build gbc.
+- .NET SDK ([https://dotnet.microsoft.com/en-us/download](https://dotnet.microsoft.com/en-us/download))
 - CMake ([http://www.cmake.org/download/](http://www.cmake.org/download/))
 - Haskell Stack ([https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows](https://docs.haskellstack.org/en/stable/install_and_upgrade/#windows))
 
@@ -199,7 +196,7 @@ Now you are ready to build the C# version of Bond. Open the solution file
 `cs\cs.sln` in Visual Studio and build as usual. The C# unit tests can
 also be run from within the solution.
 
-To build using the .NET Core SDK:
+To build using the .NET SDK:
 
 ```bash
 dotnet restore cs\cs.sln
@@ -224,6 +221,22 @@ The core Bond library and most examples only require Boost headers. The
 pre-built libraries are only needed for unit tests, and Python. If Boost or
 Python libraries are not found on the system, then some tests and examples
 will not be built.
+
+You can also get an appropriate version of boost using the same approach as employed
+by CI.  The appveyor.yml file includes an invocation of:
+```
+tools\ci-scripts\windows\Install-Boost.ps1 `
+                        -Version $env:BOND_BOOST `
+                        -VcToolSetVer $vcToolSetVer `
+                        -Components $boostComponents
+```
+which can also be invoked manually in order to download the relevant version, e.g.
+```
+Install-Boost.ps1 -Version 1.61.0 -VcToolSetVer 14.0
+```
+This will return the location to which the files were downloaded.  It will be a temporary
+location, so you should subsequently copy the directories to a more permanent location and
+then configure your environment variables to point to those locations.
 
 To generate a solution to build the Bond Core C++ and Python with Visual
 Studio 2015 run the following commands from the root `bond` directory:

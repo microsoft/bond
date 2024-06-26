@@ -14,3 +14,87 @@ struct RecordV2 {
 struct FieldRemovedRecord {
     1: uint32 tstamp;
 }
+
+struct StructWithRecursiveReference
+{
+    0: uint32 value;
+    1: nullable<StructWithRecursiveReference> child;
+}
+
+enum EnumType1
+{
+    EnumValue1 = 5,
+    EnumValue2 = 10,
+    EnumValue3 = -10,
+    EnumValue4 = 0x2A,
+    EnumValue5 = 0XFFFFFFFFFFFFFFF6, //-10 in two's complement
+    MinInt = -2147483648,
+};
+
+struct SimpleStruct
+{
+    0: uint32          n;
+    1: string          str;
+    2: vector<double>  items;
+}
+
+struct NestedStruct1
+{
+    1: required_optional SimpleStruct s;
+};
+
+struct NestedStruct2
+{
+    1: required_optional NestedStruct1 n1;
+};
+
+struct NestedStruct3
+{
+    1: required_optional NestedStruct2 n2;
+};
+
+struct NestedStruct
+{
+    1: required_optional NestedStruct3 n3;
+    23: required_optional bool m_bool;
+    2: required_optional NestedStruct2 n2;
+    24: required_optional int8 m_int8;
+    3: required_optional NestedStruct1 n1;
+    25: required_optional int16 m_int16;
+    26: required_optional int32 m_int32;
+    27: required_optional int64 m_int64;
+    28: required_optional uint8 m_uint8;
+    29: required_optional uint16 m_uint16;
+    30: required_optional uint32 m_uint32;
+    31: required_optional uint64 m_uint64;
+    32: required_optional double m_double;
+    33: required_optional float  m_float;
+    34: required_optional EnumType1 m_enum1 = EnumValue1;
+    35: required_optional string m_str;
+};
+
+struct SimpleBase : SimpleStruct
+{
+    [JsonName("SimpleBase_int32")]
+    16: required_optional int32 m_int32;
+    [JsonName("SimpleBase_enum1")]
+    21: required_optional EnumType1 m_enum1 = EnumValue1;
+};
+
+struct StructWithBase : SimpleBase
+{
+    [JsonName("StructWithBase_str")]
+    0: required_optional  string   m_str;
+    [JsonName("StructWithBase_int32")]
+    16: required_optional int32    m_int32;
+    [JsonName("StructWithBase_uint32")]
+    17: required_optional uint32   m_uint32;
+    [JsonName("StructWithBase_uint8")]
+    13: required_optional uint8    m_uint8;
+};
+
+struct NestedWithBase1
+{
+    1: required_optional  StructWithBase s1;
+    2: required_optional  StructWithBase s2;
+};

@@ -605,9 +605,11 @@ build and install the Bond compiler. Follow the instructions in the top-level
 [README.md](https://github.com/microsoft/bond/blob/master/README.md) to do all
 of this.
 
-Java has two additional requirements:
+Java has additional requirements:
 
-* The Bond compiler, `gbc`, must be in your `PATH`.
+* A Java 8 JDK. A link to download an appropriate OpenJDK 8 is available from https://learn.microsoft.com/en-us/java/openjdk/download.
+
+* The Bond compiler, `gbc`, must be in your `PATH`. `gbc` is produced as part of the C++ build, so you'll need to follow those instructions, and then ensure the resulting binary is on your path:
 
   * Linux, macOS: The `make install` step in the `README` will take care of
     this. If you don't want to install Bond into system directories, you can add
@@ -620,8 +622,11 @@ Java has two additional requirements:
     "%PATH%;<bond repo>\build\compiler\build\gbc"`, where `<bond repo>` is the
     directory you cloned Bond into.
 
-* You need the `gradle` build tool, and should get it from the package manager
-  for your system. Accordingly:
+* `maven`. It may be downloaded from https://maven.apache.org/download.cgi
+
+* The `gradle` build tool. You can download it directly or get it from the package manager
+  for your system. Note that `gradle` has had multiple breaking changes since this was set
+  up; gradle 4.7 from https://gradle.org/releases/ has been validated to work.
 
   * Ubuntu: `sudo apt install gradle`
 
@@ -641,6 +646,12 @@ To build the library and install it to your local maven repository:
 
 ```
 cd java/core; gradle build install
+```
+
+That will also run the tests.  To re-build and re-run the tests:
+
+```
+gradle build install --rerun-tasks
 ```
 
 To consume either component from your local maven repository, see the

@@ -218,3 +218,9 @@ struct NestedListsStruct
     10: required_optional  map<int64, list<string>>        m64ls;
     11: required_optional  vector<map<double, string>>     vmds;
 };
+
+struct StructWithRecursiveReference
+{
+    0: uint32 Value;
+    1: nullable<StructWithRecursiveReference> Child;
+}

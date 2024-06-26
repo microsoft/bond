@@ -125,9 +125,10 @@ namespace Bond.Expressions
             body.Add(isBase ? reader.ReadBaseEnd() : reader.ReadStructEnd());
             body.Add(transform.End);
 
-            return Expression.Block(
-                new[] { fieldType, fieldId },
-                body);
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    new[] { fieldType, fieldId },
+                    body));
         }
 
         public Expression Container(BondDataType? expectedType, ContainerHandler handler)
@@ -141,11 +142,12 @@ namespace Bond.Expressions
                 expectedType,
                 type => handler(this, type, next, count, null));
 
-            return Expression.Block(
-                new[] { count, elementType },
-                reader.ReadContainerBegin(count, elementType),
-                loops,
-                reader.ReadContainerEnd());
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    new[] { count, elementType },
+                    reader.ReadContainerBegin(count, elementType),
+                    loops,
+                    reader.ReadContainerEnd()));
         }
 
         public Expression Map(BondDataType? expectedKeyType, BondDataType? expectedValueType, MapHandler handler)
@@ -159,11 +161,12 @@ namespace Bond.Expressions
                 MatchOrCompatible(valueType, expectedValueType, constantValueType =>
                     handler(this, this, constantKeyType, constantValueType, next, Expression.Empty(), count)));
 
-            return Expression.Block(
-                new[] { count, keyType, valueType },
-                reader.ReadContainerBegin(count, keyType, valueType),
-                loops,
-                reader.ReadContainerEnd());
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    new[] { count, keyType, valueType },
+                    reader.ReadContainerBegin(count, keyType, valueType),
+                    loops,
+                    reader.ReadContainerEnd()));
         }
 
         public Expression Blob(Expression count)
@@ -181,9 +184,10 @@ namespace Bond.Expressions
         {
             var newBonded = bondedFactory(reader.Param, Expression.Constant(RuntimeSchema.Empty));
 
-            return Expression.Block(
-                handler(newBonded),
-                reader.Skip(Expression.Constant(BondDataType.BT_STRUCT)));
+            return MaxDepthChecker.WithDepthCheck(
+                Expression.Block(
+                    handler(newBonded),
+                    reader.Skip(Expression.Constant(BondDataType.BT_STRUCT))));
         }
 
         public Expression Skip(Expression type)

@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>untagged_protocols</RootNamespace>
     <AssemblyName>untagged_protocols</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

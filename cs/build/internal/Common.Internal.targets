@@ -16,7 +16,7 @@
     <FileToCopy Include="$(TargetDir)\$(TargetName).pdb" />
     <FileToCopy Include="$(DocumentationFile)" />
   </ItemGroup>
-  <Target Name="CopyAdditionalFiles" AfterTargets="AfterBuild">
+  <Target Name="CopyBondRedistFilesToBondBinaryPath" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(TargetPath);@(FileToCopy)" DestinationFolder="$(BOND_BINARY_PATH)\$(BuildFramework)\$(TargetFramework)" Condition="'$(BondRedistributable)' == 'true'" />
   </Target>
 </Project>

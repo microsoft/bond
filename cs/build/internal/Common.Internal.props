@@ -10,10 +10,10 @@
   </PropertyGroup>
   <Import Project="..\nuget\Common.props" />
   <PropertyGroup Condition="'$(BuildFramework)' == '' and '$(UsingMicrosoftNETSdk)' != 'true'">
-    <BuildFramework>net45</BuildFramework>
+    <BuildFramework>net462</BuildFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' != 'true'">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>bin\$(BuildType)\$(BuildFramework)</OutputPath>

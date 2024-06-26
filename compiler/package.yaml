@@ -1,5 +1,5 @@
 name:                bond
-version:             0.12.1.0
+version:             0.13.0.0
 github:              "microsoft/bond"
 license:             MIT
 author:              Adam Sapek <adamsap@microsoft.com>
