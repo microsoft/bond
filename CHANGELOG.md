@@ -75,6 +75,10 @@ different versioning scheme, following the Haskell community's
   limit may be changed by calling the method
   `org.bondlib.bond.DeserializerControls.setMaxDepth`.
 
+## 11.0.0 ##
+
+This version was allocated but never released.
+
 ## 10.0: 2022-03-07 ##
 
 * IDL core version: 3.0
