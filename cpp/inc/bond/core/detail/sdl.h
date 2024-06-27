@@ -24,7 +24,7 @@
 namespace bond { namespace detail
 {
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && _MSC_VER < 1915
 
 template<class Iterator> inline
 stdext::checked_array_iterator<Iterator> make_checked_array_iterator(
