@@ -90,6 +90,12 @@ uint32_t container_size(const T& container);
 template <typename T>
 void resize_list(T& list, uint32_t size);
 
+template <typename T>
+void reset_list(T& list, uint32_t size_hint);
+
+template <typename T, typename E>
+void insert_list(T& list, const E& item);
+
 template <typename T, typename E, typename F>
 void modify_element(T& list, E& element, F deserialize);
 

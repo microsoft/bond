@@ -24,6 +24,7 @@ public:
         if (file.good())
         {
             file.exceptions(std::ifstream::failbit | std::ifstream::badbit | std::ifstream::eofbit);
+            InitLength();
         }
         else
         {
@@ -40,6 +41,7 @@ public:
         {
             file.exceptions(std::ifstream::failbit | std::ifstream::badbit | std::ifstream::eofbit);
             file.seekg(that.file.tellg());
+            InitLength();
         }
         else
         {
@@ -71,6 +73,11 @@ public:
         blob.assign(buffer, 0, size);
     }
 
+    bool CanRead(uint32_t size) const
+    {
+        return size <= file_size - file.tellg();
+    }
+
     void Skip(uint32_t size)
     {
         file.seekg(size, std::ios::cur);
@@ -84,6 +91,25 @@ public:
 private:
     mutable std::ifstream file;
     std::string name;
+    std::streampos file_size;
+
+    void InitLength()
+    {
+        const std::streampos orig_pos = file.tellg();
+
+        file.seekg(0, file.end);
+        if (file.fail())
+        {
+            // The file is not seekable. Set size to maximum int to remove restrictions.
+            file_size = std::numeric_limits<std::streampos>::max();
+            file.clear();
+        }
+        else
+        {
+            file_size = file.tellg();
+            file.seekg(orig_pos, file.beg);
+        }
+    }
 };
 
 

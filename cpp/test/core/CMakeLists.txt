@@ -76,13 +76,14 @@ add_bond_codegen (TARGET unit_test_codegen1
         --header=\\\"container_extensibility.h\\\")
 
 add_bond_codegen (TARGET unit_test_codegen2
-    unit_test_core.bond
     apply_test.bond
+    cmdargs.bond
     import_test1.bond
     scope_test1.bond
     scope_test2.bond
+    security.bond
+    unit_test_core.bond
     validation.bond
-    cmdargs.bond
     OPTIONS
       --import-dir=imports
       --header=\\\"custom_protocols.h\\\")
@@ -147,6 +148,7 @@ add_unit_test (numeric_conversions.cpp)
 add_unit_test (pass_through.cpp)
 add_unit_test (protocol_test.cpp)
 add_unit_test (required_fields_tests.cpp)
+add_unit_test (security.cpp)
 add_unit_test (serialization_test.cpp)
 add_unit_test (set_tests.cpp)
 add_unit_test (skip_id_tests.cpp)

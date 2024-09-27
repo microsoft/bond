@@ -130,6 +130,23 @@ void resize_list(SimpleList<T>& list, uint32_t size)
     list.size = size;
 }
 
+// reset_list
+template <typename T>
+void reset_list(SimpleList<T>& list, uint32_t size)
+{
+    BOOST_ASSERT(size <= c_max_list_size);
+    list.size = 0;
+}
+
+// insert_list
+template <typename E>
+inline
+void insert_list(SimpleList<E>& list, const E& item)
+{
+    BOOST_ASSERT(list.size < c_max_list_size);
+    list.items[list.size] = item;
+    list.size++;
+}
 
 namespace bond
 {

@@ -165,6 +165,12 @@ namespace detail
 struct SchemaReader
 {
     using Parser = StaticParser<SchemaReader&>;
+
+    template<typename T>
+    bool CanReadArray(uint32_t /*num_elems*/) const
+    {
+        return true;
+    }
 };
 
 

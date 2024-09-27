@@ -11,6 +11,43 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## 13.0.1: 2024-09-30 ##
+
+### Java ###
+
+* There were no Java changes in this release.
+
+### C++ ###
+
+* `InputBuffer` throws a `StreamException` when trying to skip beyond the 
+  end of the stream. This mitigates a CPU DoS vulnerability.
+* Deserialization from JSON payloads will no longer process very deeply
+  nested structures. Instead, a `bond::CoreException` will be thrown in
+  order to protect against stack overflows. The depth limit may be changed
+  by calling the function `bond::SetDeserializeMaxDepth(uint32_t)`.
+* **Breaking change**: Protocols must now implement `CanReadArray` method and
+  Buffers must implement `CanRead` method. These are used to perform checks that
+  mitigate memory allocation vulnerabilities.
+* **Breaking change**: Custom containers must implement `reset_list` and `list_insert`.
+  Standard implementations are provided. This API is used to incrementally fill
+  containers of complex types when preallocation may be unsafe. Expected container
+  size is provided in `reset_list`, where client code can perform sanity checks before
+  any memory is allocated by Bond.
+* `bond::CoreException` is thrown when the payload has a greater declared size
+  than the backing buffer.
+
+### C# ###
+
+* There were no C# changes in this release.
+
+## 13.0 ##
+
+This version was allocated but never released.
+
+## 12.0 ##
+
+This version was allocated but never released.
+
 ## 11.0.1: 2024-06-26 ##
 
 * IDL core version: 3.0
