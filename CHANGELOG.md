@@ -13,6 +13,12 @@ different versioning scheme, following the Haskell community's
 
 ## 13.0.1: 2024-09-30 ##
 
+* IDL core version: 3.0
+* C++ version: 13.0.1
+* C# NuGet version: 13.0.1
+* Java version: 13.0.1
+* `gbc` & compiler library: 0.13.0.0
+
 ### Java ###
 
 * There were no Java changes in this release.
