@@ -523,7 +523,7 @@ namespace Bond.Expressions
                         else
                         {
                             var capacity = container.Type.GetDeclaredProperty("Capacity", count.Type);
-                            if (capacity != null)
+                            if (capacity != null && capacity.CanWrite)
                             {
                                 var cappedCount = Expression.Variable(typeof(int), container + "_count");
                                 beforeLoop = ApplyCountCap(
