@@ -26,6 +26,9 @@
 #include <type_traits>
 #include <vector>
 
+#define TRANSLATE_EXCEPTION(S,F,T) { try { S; } \
+    catch(const F&) { throw new T(); } } 
+
 BOOST_AUTO_TEST_SUITE(CappedAllocatorTests)
 
 using all_counter_types = boost::mpl::list<
@@ -338,7 +341,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
 
         decltype(alloc) new_alloc{ obj_mem_usage - 1 };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_EXCEPTION(bond::Deserialize(reader, to), std::exception, expected_exception);
+
+        // We expect a std::bad_alloc or std::length_error, but this macro can check only against
+        // a single exception type. We catch length_error and rethrow as bad_alloc as a workaround.
+        BOOST_CHECK_THROW(
+            TRANSLATE_EXCEPTION(bond::Deserialize(reader, to), std::length_error, std::bad_alloc),
+            std::bad_alloc);
     }
 
     // BOOST_TEST_CONTEXT("Runtime schema deserialize without overflow")
@@ -359,7 +367,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(BondStructDeserializationTest, Reader, all_protoco
 
         decltype(alloc) new_alloc{ obj_mem_usage - 1 };
         decltype(from) to{ new_alloc };
-        BOOST_CHECK_EXCEPTION(bonded.Deserialize(to), std::exception, expected_exception);
+
+        // We expect a std::bad_alloc or std::length_error, but this macro can check only against
+        // a single exception type. We catch length_error and rethrow as bad_alloc as a workaround.
+        BOOST_CHECK_THROW(
+            TRANSLATE_EXCEPTION(bonded.Deserialize(to), std::length_error, std::bad_alloc),
+            std::bad_alloc);
     }
 }
 
