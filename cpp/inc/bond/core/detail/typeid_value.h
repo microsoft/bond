@@ -204,7 +204,7 @@ inline bool BasicTypeField(uint16_t id, const Metadata& metadata, BondDataType t
 template <typename Reader, typename T = uint8_t>
 inline void CheckInputData(Reader& input, uint32_t size)
 {
-    if (!input.CanReadArray<T>(size))
+    if (!input.template CanReadArray<T>(size))
     {
         OutOfBoundObjectSizeException();
     }

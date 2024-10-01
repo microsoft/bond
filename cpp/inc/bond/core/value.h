@@ -4,11 +4,10 @@
 #pragma once
 
 #include <bond/core/config.h>
-
+#include <bond/core/detail/recursionguard.h>
 #include "bonded.h"
 #include "protocol.h"
 #include "schema.h"
-#include "detail/recursionguard.h"
 #include "detail/typeid_value.h"
 
 #include <boost/static_assert.hpp>

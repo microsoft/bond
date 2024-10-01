@@ -4,9 +4,9 @@
 #pragma once
 
 #include <bond/core/config.h>
+#include <bond/core/detail/recursionguard.h>
 
 #include "simple_json_reader.h"
-#include "detail/recursionguard.h"
 
 namespace bond
 {

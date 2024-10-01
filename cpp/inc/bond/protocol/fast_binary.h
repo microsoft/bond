@@ -201,22 +201,26 @@ public:
     template<typename T>
     bool CanReadArray(uint32_t num_elems)
     {
-        // We will need to read num_elems instances of T. This will not overflow because
-        // num_elems < 2^32 and we call this only for primitive types, so sizeof(T) <= 8.
-        uint64_t num_bytes = static_cast<uint64_t>(num_elems) * sizeof(T);
-        return (num_bytes >> 32 == 0) && _input.CanRead(num_bytes & 0xffffffff);
-    }
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4127)
+#endif
 
-    template<>
-    bool CanReadArray<std::string>(uint32_t num_elems)
-    {
-        return _input.CanRead(num_elems);
-    }
+        BOND_IF_CONSTEXPR(is_string_type<T>::value)
+        {
+            return _input.CanRead(num_elems);
+        }
+        else
+        {
+            // We will need to read num_elems instances of T. This will not overflow because
+            // num_elems < 2^32 and we call this only for primitive types, so sizeof(T) <= 8.
+            uint64_t num_bytes = static_cast<uint64_t>(num_elems) * sizeof(T);
+            return (num_bytes >> 32 == 0) && _input.CanRead(num_bytes & 0xffffffff);
+            }
 
-    template<>
-    bool CanReadArray<std::wstring>(uint32_t num_elems)
-    {
-        return _input.CanRead(num_elems);
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
     }
 
     void ReadStructBegin()
@@ -607,4 +611,4 @@ protected:
 };
 
 
-} // namespace bond
+}; // namespace bond
