@@ -95,6 +95,13 @@ public:
         detail::Read(*GetValue(), var);
     }
 
+    // Does the reader have enough input buffer left to read an array of T?
+    template<typename T>
+    bool CanReadArray(uint32_t /*num_elems*/) const
+    {
+        return true;
+    }
+
     template <typename T>
     void ReadContainerBegin(uint32_t&, T&)
     {

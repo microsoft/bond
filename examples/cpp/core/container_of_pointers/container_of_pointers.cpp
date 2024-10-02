@@ -101,6 +101,18 @@ namespace bond
         A alloc;
         typename List::iterator it, end;
     };
+
+    // element
+    template<typename T>
+    inline T& get_ref(std::shared_ptr<T>& t)
+    {
+        if (!t)
+        {
+            t = std::make_shared<T>();
+        }
+
+        return *t;
+    }
 }
 
 #include <bond/core/bond.h>

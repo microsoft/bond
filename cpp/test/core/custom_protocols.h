@@ -113,6 +113,11 @@ namespace unit_test
             return _buffer.IsEof();
         }
 
+        bool CanRead(uint32_t size) const
+        {
+            return _buffer.CanRead(size);
+        }
+
     private:
         friend bond::blob GetCurrentBuffer(const CustomInputBuffer& input)
         {

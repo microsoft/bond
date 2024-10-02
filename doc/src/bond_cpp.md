@@ -1487,6 +1487,14 @@ uint32_t container_size(const T& container);
 template <typename T>
 void resize_list(T& list, uint32_t size);
 
+// Added in Bond 13. See note below.
+template <typename T>
+void reset_list(T& list, uint32_t size_hint);
+
+// Added in Bond 13. See note below.
+template <typename T, typename E>
+void insert_list(T& list, const E& item);
+
 template <typename T>
 void clear_set(T& set);
 
@@ -1499,6 +1507,20 @@ void clear_map(T& map);
 template <typename M, typename K, typename T>
 T& mapped_at(M& map, const K& key);
 ```
+
+> **NOTE** The functions `reset_list` and `insert_list` need to be implemented 
+> carefully to guard against DoS attacks through excessive memory allocation.
+> The function `reset_list` is called by Bond to prepare a container for inserting
+> deserialized elements. The application should examine `size_hint`; if this value
+> is unreasonably high, an exception should be thrown to signal error. Otherwise,
+> the client code should clear the container but __refrain from allocating__ any memory
+> for the data. This is because Bond is unable to verify that the payload actually
+> contains the declared number of items. Bond will then iteratively deserialize and
+> insert individual items into the container by calling `insert_list`. Custom 
+> implementations should insert the provided item into the collection. It is a good
+> practice to check that the number of items in the container does not exceed 
+> `size_hint`.
+
 
 Note that unlike the traits which need to be specialized in the `bond`
 namespace, these function can be overloaded in the namespace of the container
@@ -1651,6 +1673,20 @@ typename aliased_type<T>::type get_aliased_value(const T& value);
 
 - `examples/cpp/core/time_alias`
 
+Smart pointers
+--------------
+References to values are obtained with `get_ref`:
+```cpp
+template <typename T>
+inline T& get_ref(T& t);
+```
+
+To use containers of smart pointers, Bond needs to make sure that an object is 
+constructed before its reference is taken. In `get_ref` that object is created
+if needed.
+
+- `examples/cpp/core/container_of_pointers`
+
 Custom allocators
 =================
 
@@ -1711,6 +1747,13 @@ public:
 
     // Read into a memory blob
     void Read(bond::blob& blob, uint32_t size);
+
+    // Advance buffer pointer by size Bytes without returning the data. If size is
+    // smaller than the remaining buffer size, throw a StreamException.
+    void Skip(uint32_t size);
+
+    // Return true iff the next Read of size Bytes succeeds.
+    bool CanRead(uint32_t size) const;
 };
 ```
 

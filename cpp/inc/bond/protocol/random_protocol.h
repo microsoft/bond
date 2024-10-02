@@ -193,6 +193,12 @@ public:
         value.assign(buffer, size);
     }
 
+    template<typename T>
+    bool CanReadArray(uint32_t /*num_elems*/) const
+    {
+        return true;
+    }
+
     template <typename T>
     void Skip()
     {}

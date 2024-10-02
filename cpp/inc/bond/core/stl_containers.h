@@ -161,6 +161,13 @@ make_element(T& container)
     return typename element_type<T>::type(container.get_allocator());
 }
 
+template <typename T, typename E>
+inline
+void insert_list(T& list, const E& item)
+{
+    list.push_back(item);
+}
+
 
 // resize_list
 template <typename T>
@@ -181,6 +188,12 @@ resize_list(T& list, uint32_t size)
     list.resize(size, make_element(list));
 }
 
+template <typename T>
+inline
+void reset_list(T& list, uint32_t/* size_hint*/)
+{
+    list.clear();
+}
 
 // modify_element
 template <typename A, typename F>

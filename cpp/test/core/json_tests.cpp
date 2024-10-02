@@ -225,25 +225,127 @@ TEST_CASE_BEGIN(ReaderOverCStr)
 }
 TEST_CASE_END
 
-TEST_CASE_BEGIN(DeepNesting)
+TEST_CASE_BEGIN(SimpleType_DeepNestedPayloadOfArray)
 {
     const size_t nestingDepth = 10000;
 
     std::string listOpens(nestingDepth, '[');
     std::string listCloses(nestingDepth, ']');
 
-    std::string deeplyNestedList = boost::str(
+    std::string deeplyNestedJson = boost::str(
         boost::format("{\"deeplyNestedList\": %strue%s}") % listOpens % listCloses);
 
-    bond::SimpleJsonReader<const char*> json_reader(deeplyNestedList.c_str());
+    bond::SimpleJsonReader<const char*> json_reader(deeplyNestedJson.c_str());
 
-    // The type here doesn't really matter. We need something with no
-    // required fields, as we're really just testing that we can parse a
-    // deeply nested JSON array without crashing.
+    // The type here doesn't really matter. We need something with no struct
+    // or container fields, as we're really just testing that RapidJSON can
+    // parse a deeply nested JSON array without throwing.
     SimpleStruct to;
     bond::Deserialize(json_reader, to);
 }
 TEST_CASE_END
+
+TEST_CASE_BEGIN(SimpleType_DeepNestedPayloadOfStruct)
+{
+    const size_t nestingDepth = 10000;
+
+    std::string deeplyNestedJson;
+
+    for (int i = 0; i < nestingDepth; i++)
+    {
+        deeplyNestedJson += "{\"a\":";
+    }
+
+    deeplyNestedJson += "\"some-inner-most-value\"";
+
+    for (int i = 0; i < nestingDepth; i++)
+    {
+        deeplyNestedJson += "}";
+    }
+
+    bond::SimpleJsonReader<const char*> json_reader(deeplyNestedJson.c_str());
+
+    // The type here doesn't really matter. We need something with no struct
+    // or container fields, as we're really just testing that RapidJSON can
+    // parse a deeply nested JSON object without throwing.
+    SimpleStruct to;
+    bond::Deserialize(json_reader, to);
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(RecursiveType_ThrowsOnTooManyNestings)
+{
+    const size_t nestingLevel = 64;
+
+    std::string deeplyNestedJson;
+
+    for (int i = 0; i < nestingLevel; i++)
+    {
+        deeplyNestedJson += "{\"Child\":[";
+    }
+
+    for (int i = 0; i < nestingLevel; i++)
+    {
+        deeplyNestedJson += "]}";
+    }
+
+    StructWithRecursiveReference to;
+    bond::SimpleJsonReader<const char*> json_reader_from_string(deeplyNestedJson.c_str());
+
+    // Validate deserialization throws
+    UT_AssertThrows((bond::Deserialize(json_reader_from_string, to)), bond::CoreException);
+}
+TEST_CASE_END
+
+TEST_CASE_BEGIN(SetDeserializeMaxDepth_ImpactsValidWorkloads)
+{
+    NestedStruct3 from;
+    InitRandom(from);
+
+    // Default max depth
+    {
+        bond::OutputBuffer output;
+        bond::SimpleJsonWriter<bond::OutputBuffer> json_writer(output);
+
+        Serialize(from, json_writer);
+
+        bond::SimpleJsonReader<bond::InputBuffer> json_reader(output.GetBuffer());
+        NestedStruct3 to;
+        Deserialize(json_reader, to);
+        UT_Equal(from, to);
+    }
+
+    // Lower the depth to the point where a valid workload fails
+    {
+        bond::OutputBuffer output;
+        bond::SimpleJsonWriter<bond::OutputBuffer> json_writer(output);
+
+        Serialize(from, json_writer);
+
+        bond::SetDeserializeMaxDepth(1);
+
+        bond::SimpleJsonReader<bond::InputBuffer> json_reader(output.GetBuffer());
+        NestedStruct3 to;
+        UT_AssertThrows((bond::Deserialize(json_reader, to)), bond::CoreException);
+    }
+
+    // Put the depth back and validate the workload works again
+    {
+        bond::OutputBuffer output;
+        bond::SimpleJsonWriter<bond::OutputBuffer> json_writer(output);
+
+        Serialize(from, json_writer);
+
+        bond::SetDeserializeMaxDepth(64);
+
+        bond::SimpleJsonReader<bond::InputBuffer> json_reader(output.GetBuffer());
+        NestedStruct3 to;
+        Deserialize(json_reader, to);
+        UT_Equal(from, to);
+    }
+}
+TEST_CASE_END
+
 
 void JSONTest::Initialize()
 {
@@ -256,8 +358,12 @@ void JSONTest::Initialize()
             bond::SimpleJsonWriter<bond::OutputBuffer> >(suite);
     );
 
-    AddTestCase<TEST_ID(0x1c05), DeepNesting>(suite, "Deeply nested JSON struct");
-    AddTestCase<TEST_ID(0x1c06), ReaderOverCStr>(suite, "SimpleJsonReader<const char*> specialization");
+    AddTestCase<TEST_ID(0x1c05), ReaderOverCStr>(suite, "SimpleJsonReader<const char*> specialization");
+    AddTestCase<TEST_ID(0x1c06), SimpleType_DeepNestedPayloadOfArray>(suite, "Simple struct can be parsed from payload with deeply nested JSON array");
+    AddTestCase<TEST_ID(0x1c07), SimpleType_DeepNestedPayloadOfStruct>(suite, "Simple struct can be parsed from payload with deeply nested JSON object");
+    AddTestCase<TEST_ID(0x1c08), RecursiveType_ThrowsOnTooManyNestings>(suite, "Too many nestings in recursive type results in exception");
+    AddTestCase<TEST_ID(0x1c09), SetDeserializeMaxDepth_ImpactsValidWorkloads>(suite, "Test that SetDeserializeMaxDepth has an effect");
+
 }
 
 bool init_unit_test()

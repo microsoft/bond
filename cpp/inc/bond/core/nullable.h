@@ -562,6 +562,19 @@ void resize_list(nullable<T>& value, uint32_t size)
     }
 }
 
+// reset_list
+template <typename T>
+void reset_list(nullable<T>& value, uint32_t /*size_hint*/)
+{
+    value.reset();
+}
+
+// insert_list
+template <typename T, typename E>
+void insert_list(nullable<T>& value, const E& item)
+{
+    return value.set(item);
+}
 
 template <typename T> struct
 element_type<nullable<T> >
@@ -633,5 +646,14 @@ template <typename T> struct
 is_list_container<nullable<T> >
     : std::true_type {};
 
+namespace detail
+{
+template <typename T> struct
+is_nullable
+    : std::false_type {};
 
+template <typename T> struct
+is_nullable<bond::nullable<T> >
+    : std::true_type {};
+};
 } // namespace bond

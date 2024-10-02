@@ -448,6 +448,8 @@ public:
     template <typename Schema, typename Transform>
     bool Apply(const Transform& transform, const Schema& schema)
     {
+        detail::RecursionGuard guard;
+
         if (!_base) _input.Parse();
         return this->Read(schema, transform);
     }
