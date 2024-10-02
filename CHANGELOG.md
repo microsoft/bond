@@ -45,6 +45,7 @@ different versioning scheme, following the Haskell community's
   runtime if custom allocators for containers are used. Newer MSVC versions and
   other compilers are not affected, neither are Release builds with MSVC 14.0. This
   can be worked around by using newer MSVC version or building in Release configuration.
+* Added support for Boost 1.83.
 
 ### C# ###
 
