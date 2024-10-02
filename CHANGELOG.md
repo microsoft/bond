@@ -41,6 +41,10 @@ different versioning scheme, following the Haskell community's
   any memory is allocated by Bond.
 * `bond::CoreException` is thrown when the payload has a greater declared size
   than the backing buffer.
+* **Known issue**: Debug builds with MSVC 14.0 (Visual Studio 2015) may fail at
+  runtime if custom allocators for containers are used. Newer MSVC versions and
+  other compilers are not affected, neither are Release builds with MSVC 14.0. This
+  can be worked around by using newer MSVC version or building in Release configuration.
 
 ### C# ###
 
