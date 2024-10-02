@@ -11,7 +11,7 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
-## 13.0.1: 2024-09-30 ##
+## 13.0.1: 2024-10-02 ##
 
 * IDL core version: 3.0
 * C++ version: 13.0.1
