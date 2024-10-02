@@ -4,6 +4,7 @@
 #include <bond/stream/output_buffer.h>
 
 #include <boost/multiprecision/miller_rabin.hpp>
+#include <boost/random.hpp>
 
 using namespace examples::multiprecision;
 

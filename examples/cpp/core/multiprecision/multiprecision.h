@@ -75,7 +75,7 @@ namespace bond
             // Bond expects that blob with default value is empty
             return 0;
         else
-            return num.backend().size() * sizeof(limb_type);
+            return static_cast<uint32_t>(num.backend().size() * sizeof(limb_type));
     }
 
 
