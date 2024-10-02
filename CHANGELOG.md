@@ -48,7 +48,7 @@ different versioning scheme, following the Haskell community's
 
 ### C# ###
 
-* There were no C# changes in this release.
+* Fixed compatibility with .NET 9.
 
 ## 13.0 ##
 
