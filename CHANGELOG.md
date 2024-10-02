@@ -11,6 +11,12 @@ tag versions. The Bond compiler (`gbc`) and
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
 
+## Bond open-source project ending March 2025
+
+The Bond open-source project will be ending development on March 31, 2025.
+For more information, see [the shutdown announcement
+issue](https://github.com/microsoft/bond/issues/1215).
+
 ## 13.0.1: 2024-10-02 ##
 
 * IDL core version: 3.0

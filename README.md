@@ -13,6 +13,14 @@ Microsoft in high scale services.
 
 Bond is published on GitHub at [https://github.com/microsoft/bond/](https://github.com/microsoft/bond/).
 
+## Bond open-source project ending March 2025
+
+The Bond open-source project will be ending development on March 31, 2025.
+For more information, see [the shutdown announcement
+issue](https://github.com/microsoft/bond/issues/1215).
+
+## Documentation
+
 For details, see the User's Manuals:
 
 * [C++](https://microsoft.github.io/bond/manual/bond_cpp.html)
