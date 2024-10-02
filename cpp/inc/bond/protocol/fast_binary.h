@@ -181,6 +181,12 @@ public:
         uint32_t length = 0;
 
         ReadVariableUnsigned(_input, length);
+
+        constexpr uint8_t charSize = static_cast<uint8_t>(sizeof(typename detail::string_char_int_type<T>::type));
+        uint32_t numStringBytes = detail::checked_multiply(length, charSize);
+        if (!_input.CanRead(numStringBytes))
+            OutOfBoundStringSizeException();
+
         detail::ReadStringData(_input, value, length);
     }
 
@@ -189,6 +195,32 @@ public:
     void Read(blob& value, uint32_t size)
     {
         _input.Read(value, size);
+    }
+
+    // Does the reader have enough input buffer left to read an array of T?
+    template<typename T>
+    bool CanReadArray(uint32_t num_elems)
+    {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4127)
+#endif
+
+        BOND_IF_CONSTEXPR(is_string_type<T>::value)
+        {
+            return _input.CanRead(num_elems);
+        }
+        else
+        {
+            // We will need to read num_elems instances of T. This will not overflow because
+            // num_elems < 2^32 and we call this only for primitive types, so sizeof(T) <= 8.
+            uint64_t num_bytes = static_cast<uint64_t>(num_elems) * sizeof(T);
+            return (num_bytes >> 32 == 0) && _input.CanRead(num_bytes & 0xffffffff);
+            }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
     }
 
     void ReadStructBegin()
@@ -579,4 +611,4 @@ protected:
 };
 
 
-} // namespace bond
+}; // namespace bond

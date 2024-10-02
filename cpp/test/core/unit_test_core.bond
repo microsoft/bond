@@ -29,7 +29,6 @@ struct SimpleOptionalsView view_of SimpleOptionals
     b;
 };
 
-
 struct SimpleStruct
 {
     0: required_optional bool m_bool;

@@ -165,6 +165,14 @@ public:
         uint32_t length = 0;
 
         ReadSize(length);
+
+        constexpr uint8_t charSize = static_cast<uint8_t>(sizeof(typename detail::string_char_int_type<T>::type));
+        uint32_t numStringBytes = detail::checked_multiply(length, charSize);
+        if (!_input.CanRead(numStringBytes))
+        {
+            OutOfBoundStringSizeException();
+        }
+
         detail::ReadStringData(_input, var, length);
     }
 
@@ -175,6 +183,52 @@ public:
         _input.Read(var, size);
     }
 
+    // Does the reader have enough input buffer left to read an array of T?
+    template<typename T>
+    bool CanReadArray(uint32_t num_elems)
+    {
+        // We need to silence MSVC's warning about constant conditional expression. This
+        // construct could be replaced with explicit template specialization, but that is
+        // not possible due to gcc's bug (https://open-std.org/JTC1/SC22/WG21/docs/cwg_defects.html#727).
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4127)
+#endif
+
+        BOND_IF_CONSTEXPR(is_string_type<T>::value)
+        {
+            BOND_IF_CONSTEXPR(version == v1)
+            {
+                // In v1, strings encode their length as uin32 in 4 Bytes, so we multiply num_elems.
+                return _input.CanRead(detail::checked_multiply(num_elems, 4));
+            }
+            else
+            {
+                // In v2, strings use variable-length encoded integers to specify length, 1 Byte each
+                // ix their minumum length each.
+                return _input.CanRead(num_elems);
+            }
+        }
+        else BOND_IF_CONSTEXPR(boost::is_same<T, bool>::value)
+        {
+            // booleans are encoded as 1 Byte
+            return _input.CanRead(num_elems);
+        }
+        else
+        {
+            // We will need to read num_elems instances of T. This will not overflow because
+            // num_elems < 2^32 and we call this only for primitive types, so sizeof(T) <= 8.
+            uint64_t num_bytes = static_cast<uint64_t>(num_elems) * sizeof(T);
+
+            // Check if num_bytes is 32-bit as the Reader cannot grab more than that
+            return (num_bytes >> 32 == 0) && _input.CanRead(num_bytes & 0xffffffff);
+        }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+    }
 
     // Skip for basic types
     template <typename T>

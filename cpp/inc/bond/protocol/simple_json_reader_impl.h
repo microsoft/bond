@@ -4,6 +4,7 @@
 #pragma once
 
 #include <bond/core/config.h>
+#include <bond/core/detail/recursionguard.h>
 
 #include "simple_json_reader.h"
 
@@ -49,6 +50,8 @@ SimpleJsonReader<BufferT>::FindField(uint16_t id, const Metadata& metadata, Bond
 template <typename Protocols, typename A, typename T, typename Buffer>
 inline void DeserializeContainer(std::vector<bool, A>& var, const T& /*element*/, SimpleJsonReader<Buffer>& reader)
 {
+    bond::detail::RecursionGuard guard;
+
     rapidjson::Value::ConstValueIterator it = reader.ArrayBegin();
     resize_list(var, reader.ArraySize());
 
@@ -63,6 +66,8 @@ inline void DeserializeContainer(std::vector<bool, A>& var, const T& /*element*/
 template <typename Protocols, typename T, typename Buffer>
 inline void DeserializeContainer(blob& var, const T& /*element*/, SimpleJsonReader<Buffer>& reader)
 {
+    bond::detail::RecursionGuard guard;
+
     if (uint32_t size = reader.ArraySize())
     {
         boost::shared_ptr<char[]> buffer = boost::make_shared_noinit<char[]>(size);
@@ -84,6 +89,8 @@ template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_list_container<X> >::type
 DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
+    bond::detail::RecursionGuard guard;
+
     detail::JsonTypeMatching type(get_type_id<typename element_type<X>::type>::value,
                                   GetTypeId(element),
                                   std::is_enum<typename element_type<X>::type>::value);
@@ -116,6 +123,8 @@ template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_set_container<X> >::type
 DeserializeContainer(X& var, const T& element, SimpleJsonReader<Buffer>& reader)
 {
+    bond::detail::RecursionGuard guard;
+
     detail::JsonTypeMatching type(get_type_id<typename element_type<X>::type>::value,
                                   GetTypeId(element),
                                   std::is_enum<typename element_type<X>::type>::value);
@@ -139,6 +148,8 @@ template <typename Protocols, typename X, typename T, typename Buffer>
 inline typename boost::enable_if<is_map_container<X> >::type
 DeserializeMap(X& var, BondDataType keyType, const T& element, SimpleJsonReader<Buffer>& reader)
 {
+    bond::detail::RecursionGuard guard;
+
     detail::JsonTypeMatching key_type(
         get_type_id<typename element_type<X>::type::first_type>::value,
         keyType,
