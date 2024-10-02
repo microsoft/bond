@@ -28,7 +28,7 @@ param
     [string]
     $Version,
 
-    [ValidateSet('12.0', '14.0', '14.1', '14.2')]
+    [ValidateSet('12.0', '14.0', '14.1', '14.2', '14.3')]
     [string]
     $VcToolsetVer,
     
@@ -123,13 +123,26 @@ function Install-BoostComponent([string]$Component)
             -InstallDir $workDir `
             -PackageVersion $Version
 
-        Move-Item `
-            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-32', 'lib', '*')) `
-            -Destination $lib32Dir
+        if ($Version -gt 1.66)
+        {
+            $sourceFolder = ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native'))
+            $itemsToMove32 = Get-ChildItem -Path $sourceFolder | Where-Object { $_.Name -like "*x32*" }
+            $itemsToMove64 = Get-ChildItem -Path $sourceFolder | Where-Object { $_.Name -like "*x64*" }
+            
+            $itemsToMove32 | ForEach-Object { Move-Item -Path $_.FullName -Destination $lib32Dir }
+            $itemsToMove64 | ForEach-Object { Move-Item -Path $_.FullName -Destination $lib64Dir }
 
-        Move-Item `
-            -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-64', 'lib', '*')) `
-            -Destination $lib64Dir
+        } 
+        else 
+        {
+            Move-Item `
+                -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-64', 'lib', '*')) `
+                -Destination $lib64Dir
+
+            Move-Item `
+                -Path ([System.IO.Path]::Combine($workDir, $packageId, 'lib', 'native', 'address-model-32', 'lib', '*')) `
+                -Destination $lib32Dir   
+        }
     }
 }
 
