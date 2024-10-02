@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import AbstractSet, Iterable
 
-from .acr import ImageManifest
+from .acr import NamedImageManifest
 from .live_images import ImageTag
 
 _LOGGER = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 def find_garbage_manifests(
         min_age: timedelta,
         active_tags: AbstractSet[ImageTag],
-        image_manifests: Iterable[ImageManifest]) -> Iterable[ImageManifest]:
+        image_manifests: Iterable[NamedImageManifest]) -> Iterable[NamedImageManifest]:
     """Yield a sequence of the manifests that are considered garbage.
 
     Image manifests are considered garbage if they are both:
@@ -25,7 +25,8 @@ def find_garbage_manifests(
     keep_newer_than_time = datetime.now(timezone.utc) - min_age
     _LOGGER.debug('Keeping images newer than %s', keep_newer_than_time)
 
-    for manifest in image_manifests:
+    for named_manifest in image_manifests:
+        manifest = named_manifest.manifest
         # It would probably be faster to check timestamps before tags, but
         # the tags are more important of a reason to keep an image, so we
         # check tags first so that the tag reference gets logged instead of
@@ -40,4 +41,4 @@ def find_garbage_manifests(
             continue
 
         _LOGGER.info('%s: garbage', manifest.digest)
-        yield manifest
+        yield named_manifest
