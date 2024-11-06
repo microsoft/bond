@@ -17,6 +17,27 @@ The Bond open-source project will be ending development on March 31, 2025.
 For more information, see [the shutdown announcement
 issue](https://github.com/microsoft/bond/issues/1215).
 
+
+## 13.0.2: 2024-11-06 ##
+
+* IDL core version: 3.0
+* C++ version: 13.0.1
+* C# NuGet version: 13.0.2
+* Java version: 13.0.1
+* `gbc` & compiler library: 0.13.0.0
+
+### Java ###
+
+* There were no Java changes in this release.
+
+### C++ ###
+
+* There were no Java changes in this release.
+
+### C# ###
+
+* Fixed assembly versions in NuGet packages.
+
 ## 13.0.1: 2024-10-02 ##
 
 * IDL core version: 3.0
