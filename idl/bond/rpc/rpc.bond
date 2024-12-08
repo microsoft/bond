@@ -1,0 +1,160 @@
+
+import "bond/core/bond.bond"
+
+namespace cpp bond
+namespace csharp Microsoft.Bond
+
+//
+// Supported payload entities by rpc packets.
+//
+enum PayloadType
+{
+    //
+    // Packet contains exception.
+    //
+    PAYLOAD_EXCEPTION = 1,
+
+    //
+    // Packet contains regular payload.
+    //
+    PAYLOAD_DATA = 2,
+
+    //
+    // Packet contains an event.
+    //
+    PAYLOAD_EVENT = 4,
+
+    //
+    // Packet contains request.
+    //
+    PAYLOAD_REQUEST = 5,
+
+    //
+    // Packet contains response.
+    //
+    PAYLOAD_RESPONSE = 6,
+
+    //
+    // Packet contains service instance release command.
+    //
+    INSTANCE_RELEASE = 8,
+};
+
+//
+// Packet transport request envelope.
+//
+struct MethodSignatureHeader
+{
+    //
+    // Service name of remote call.
+    //
+    1: optional string m_serviceName;
+
+    //
+    // Method name of remote call.
+    //
+    2: optional string m_methodName;
+};
+
+enum EncodingType
+{
+    //
+    // Payload is not compressed.
+    //
+    ENCODING_NONE = 1,
+
+    //
+    // Payload is compressed: ZLib.
+    //
+    ENCODING_ZLIB = 2,
+
+    //
+    // Payload is compressed: Snappy.
+    //
+    ENCODING_SNAPPY = 6,
+};
+
+//
+// Compression envelope.
+//
+struct CompressionHeader
+{
+    1: optional EncodingType m_type = ENCODING_NONE;
+
+    2: optional uint32 m_size;
+};
+
+//
+// Latency envelope.
+//
+struct NetworkLatencyHeader
+{
+    1: optional uint32 m_diff;
+};
+
+//
+// nettrace envelope.
+//
+// traceID: unique ID for tracing
+// callID: identify one pair of request and response
+// sequence: a counter for correlating call dependency
+struct NettraceHeader
+{
+    1: optional bond.GUID m_traceID;
+    2: optional bond.GUID m_callID;
+    3: optional uint32 m_sequence = 0;
+};
+
+
+//
+// Base class of all headers.
+//
+struct PacketHeaders
+{
+    1: optional MethodSignatureHeader m_methodSignature;
+
+    2: optional CompressionHeader m_compression;
+
+    3: optional NetworkLatencyHeader m_networkLatency;
+
+    4: optional NettraceHeader m_nettrace;
+};
+
+//
+// Generalized representation of message<T>.
+//
+struct Packet
+{
+    //
+    // Type of incapsulated entity.
+    //
+    1: optional PayloadType m_payloadType =  PAYLOAD_EXCEPTION;
+
+    //
+    // Protocol type of serialized payload.
+    //
+    2: optional ProtocolType m_payloadProtocol = MARSHALED_PROTOCOL;
+
+    //
+    // Payload itself.
+    //
+    3: optional vector<blob> m_payload;
+
+    //
+    // Headers.
+    //
+    4: optional PacketHeaders m_headers;
+
+    //
+    // Service instance id through this connection 
+    // if a packet is tunnelled.
+    //
+    5: optional uint32 m_instance = nothing;
+
+    //
+    // Reference id of a new service instance tunneled 
+    // through this connection.
+    //
+    6: optional uint32 m_reference = nothing;
+};
+
