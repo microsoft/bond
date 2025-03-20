@@ -1,3 +1,12 @@
+# Bond project has ended #
+
+As of March 2025, the Bond open-source project has ended. There will be no
+further activity in this project: no new features, no bug fixes, and,
+importantly, no security fixes. See the [README](README.md) for more
+details.
+
+The project's original changelog is below.
+
 # Bond Changelog #
 
 Notable changes--especially new features and **breaking changes**--are
@@ -10,13 +19,6 @@ tag versions. The Bond compiler (`gbc`) and
 [compiler library](https://hackage.haskell.org/package/bond) have a slightly
 different versioning scheme, following the Haskell community's
 [package versioning policy](https://wiki.haskell.org/Package_versioning_policy).
-
-## Bond open-source project ending March 2025
-
-The Bond open-source project will be ending development on March 31, 2025.
-For more information, see [the shutdown announcement
-issue](https://github.com/microsoft/bond/issues/1215).
-
 
 ## 13.0.2: 2024-11-06 ##
 

@@ -1,5 +1,18 @@
 % Why Bond?
 
+Bond project has ended
+======================
+
+As of March 2025, the Bond open-source project has ended. There will be no
+further activity in this project: no new features, no bug fixes, and,
+importantly, no security fixes.
+
+The documentation as it existed at the time of the end of the project
+follows.
+
+Why Bond?
+=========
+
 Bond is an [open source framework](https://github.com/microsoft/bond/) which
 addresses similar scenarios to Protocol Buffers, Thrift and Avro. In this 
 document we try to address similarities and differences between Bond and other 
