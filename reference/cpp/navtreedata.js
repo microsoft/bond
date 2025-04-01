@@ -25,11 +25,7 @@
 var NAVTREE =
 [
   [ "Bond", "index.html", [
-    [ "Introduction", "index.html", [
-      [ "Basic example", "index.html#autotoc_md0", [
-        [ "User's Manual", "index.html#autotoc_md1", null ]
-      ] ]
-    ] ],
+    [ "Introduction", "index.html", "index" ],
     [ "OutputBuffer", "namespacebond.html#a0e28a508e6180e6b0ce18d45a539a353", null ],
     [ "Apply", "namespacebond.html#aa3dd1fd18c4352154f0152a2727f2ca9", null ],
     [ "Apply", "namespacebond.html#ad1b72ca36c664ff9e137426b29ba1d77", null ],
@@ -52,6 +48,7 @@ var NAVTREE =
     [ "operator==", "namespacebond.html#aa9ccb22143510c36b9cdbbb33cef64d9", null ],
     [ "operator==", "namespacebond.html#a4910e0a7a42fab64eeaf2d00071c7049", null ],
     [ "Serialize", "namespacebond.html#a3c5e0c8c158f355e63cc748d6798bf9a", null ],
+    [ "SetDeserializeMaxDepth", "namespacebond.html#a9659ced4dae5742150f239ccb112e370", null ],
     [ "swap", "namespacebond.html#a4a0bd22aed8af92e7d6d58335d34b37a", null ],
     [ "swap", "namespacebond.html#ab800887609f29135201580ad0044452b", null ],
     [ "Unmarshal", "namespacebond.html#afe51d9bd184a8d8108485380861d8b33", null ],
@@ -72,7 +69,7 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
-        [ "Related Functions", "functions_rela.html", null ]
+        [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ]
   ] ]
@@ -80,8 +77,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"annotated.html",
+"structbond_1_1reflection_1_1_field_template.html#af53fe85abf056508f428f4cdfc66bc7e"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+var SYNCONMSG = 'click to disable panel synchronization';
+var SYNCOFFMSG = 'click to enable panel synchronization';

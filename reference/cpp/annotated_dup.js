@@ -9,7 +9,8 @@ var annotated_dup =
           [ "list", "structbond_1_1detail_1_1mpl_1_1list.html", null ]
         ] ],
         [ "allocator_holder", "classbond_1_1detail_1_1allocator__holder.html", null ],
-        [ "maybe_common", "classbond_1_1detail_1_1maybe__common.html", "classbond_1_1detail_1_1maybe__common" ]
+        [ "maybe_common", "classbond_1_1detail_1_1maybe__common.html", "classbond_1_1detail_1_1maybe__common" ],
+        [ "RecursionGuard", "classbond_1_1detail_1_1_recursion_guard.html", "classbond_1_1detail_1_1_recursion_guard" ]
       ] ],
       [ "ext", null, [
         [ "detail", null, [
