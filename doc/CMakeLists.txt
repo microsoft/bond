@@ -43,7 +43,7 @@ function (add_pandoc_markdown)
     endif()
     set (inputs "${arg_UNPARSED_ARGUMENTS}")
     foreach (file ${inputs})
-        get_filename_component (name ${file} NAME_WE)
+        get_filename_component (name ${file} NAME_WLE)
         if (arg_OUTPUT_NAME)
             set (outputName ${arg_OUTPUT_NAME})
         else()
@@ -107,6 +107,9 @@ if (Haskell_PANDOC_EXECUTABLE AND Doxygen_EXECUTABLE)
 
     add_pandoc_markdown (../README.md
         OUTPUT_NAME index
+        OPTIONS --table-of-contents "--title-prefix=Bond, Microsoft's cross-platform framework for working with schematized data")
+
+    add_pandoc_markdown (../README.old.md
         OPTIONS --table-of-contents "--title-prefix=Bond, Microsoft's cross-platform framework for working with schematized data")
 
     add_pandoc_markdown (src/why_bond.md
